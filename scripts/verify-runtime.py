@@ -37,6 +37,14 @@ def check_http(base, expected):
         require('components' not in health, 'Health details exposed')
     with urllib.request.urlopen(base + '/docs/index.html', timeout=5) as response:
         require(response.status == 200 and response.read() == expected, 'Served docs differ from generated docs')
+    with urllib.request.urlopen(base + '/api/v1/stations?latitude=37.5&longitude=126.6&radiusMeters=1000&connector=DC_COMBO', timeout=5) as response:
+        search = json.loads(response.read())
+        require(response.status == 200 and search == {'dataReady': False, 'lastSuccessfulRunAt': None, 'stations': []}, 'Initial station search mismatch')
+    try:
+        urllib.request.urlopen(base + '/api/v1/stations?latitude=91&longitude=126.6&radiusMeters=1000&connector=DC_COMBO', timeout=5)
+        raise RuntimeError('Invalid station query accepted')
+    except urllib.error.HTTPError as error:
+        require(error.code == 400 and json.loads(error.read())['code'] == 'INVALID_REQUEST', 'Station validation mismatch')
     try:
         with urllib.request.urlopen(base + '/actuator/env', timeout=5):
             raise RuntimeError('Environment endpoint exposed')

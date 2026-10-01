@@ -103,3 +103,12 @@ T06은 upsertPage 전체에 transaction을 열고 내부 upsert가 참여한다.
 [Java 25 Duration API](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Duration.html)의
 between/compareTo는 초+나노초 정밀도로 경과를 비교한다. 밀리초 절삭 대신 이 비교를 사용한 것은
 프로젝트의 maxAge 포함 경계 판단이다. 정책에 시스템 시각을 숨기지 않고 now를 명시적으로 전달한다.
+
+## T08 — MVC constructor binding·validation·REST Docs
+
+[Spring Framework 7 ModelAttribute](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/modelattrib-method-args.html)의
+record constructor binding과 Valid 검증, 기존 [REST Docs 4 가이드](https://docs.spring.io/spring-restdocs/tutorial/getting-started/index.html)를 확인했다.
+현재 Boot4.1.1 MVC slice·MockitoBean·REST Docs 구성에서 실제 컴파일/실행으로 계약을 확인했다.
+NaN/Infinity는 request DTO의 FiniteDouble로 거부하고 여러 violation은 유한수 오류를 우선 반환한다.
+Haversine 평균 지구 반지름6371008.8m, 코드 조합 호환, 준비 상태·보고 수 구분은 프로젝트 설계 판단이다.
+직선거리 모델은 도로/주행거리나 측지 타원체 정확도를 보장하지 않는다.

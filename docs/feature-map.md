@@ -55,3 +55,10 @@ SyncRun은 실행 상태와 실패 페이지/코드를 소유한다. StationSync
 
 FreshnessPolicy.evaluate/assess는 sourceObservedAt과 now만 받아 Freshness·이유를 반환한다.
 FreshnessPolicyTests 14건: 경계·누락·미래·재수집·설정 방어. 실제 공급자는 sourceObservedAt=null → UNVERIFIED.
+
+## T08 주변 조회
+
+GET /api/v1/stations → StationSearchRequest → StationQueryService → 저장 데이터/성공 이력 → StationSearchResponse.
+Connector는 조합 호환, GeoPoint는 직선거리, FreshnessPolicy는 관측 시각 판단을 소유한다.
+StationSearchTests7·StationSearchHttpTests20·StationSearchQueryTests6·ConnectorTests12·GeoDistanceTests4 =49건.
+Service 실제 DB와 MVC slice 계약을 구분한다. 공용 verify는 실행 JAR의 검색200·validation400도 확인한다.

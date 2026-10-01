@@ -111,10 +111,12 @@
 
 의존: T01, T03, T06. 파일: `freshness/Freshness.java`, `FreshnessPolicy.java`, `freshness/FreshnessPolicyTests.java`.
 
-- [ ] 고정 Clock으로 경과 시간 maxAge 미만·같음·초과, 미래/누락 시각, 재수집한 오래된 응답을 테스트한다.
-- [ ] `FreshnessPolicy.evaluate(Instant sourceObservedAt, Instant now): Freshness`로 RECENT/STALE/UNVERIFIED를 반환한다. maxAge와 같은 경계는 RECENT다.
-- [ ] collectedAt이나 상태 변경 시각을 관측 시각 대신 사용하는 경로를 막는다. 신뢰 가능한 관측 시각이 없는 공급자는 UNVERIFIED와 이유를 반환한다.
-- [ ] `./gradlew test --tests '*FreshnessPolicyTests'`를 통과하고 판정 기준을 설명하는 PR을 반영한다.
+- [x] 고정 Clock으로 경과 시간 maxAge 미만·같음·초과, 미래/누락 시각, 재수집한 오래된 응답을 테스트한다.
+- [x] `FreshnessPolicy.evaluate(Instant sourceObservedAt, Instant now): Freshness`로 RECENT/STALE/UNVERIFIED를 반환한다. maxAge와 같은 경계는 RECENT다.
+- [x] collectedAt이나 상태 변경 시각을 관측 시각 대신 사용하는 경로를 막는다. 신뢰 가능한 관측 시각이 없는 공급자는 UNVERIFIED와 이유를 반환한다.
+- [x] `./gradlew test --tests '*FreshnessPolicyTests'`를 통과하고 판정 기준을 설명하는 PR을 반영한다.
+
+완료 근거: [PR #12](https://github.com/seungmin-park/PlugPass/pull/12), main `16083e3`, [필수 CI 성공](https://github.com/seungmin-park/PlugPass/actions/runs/36892966722). 대상14건·전체193건·공용 검증 종료0. [실행 기록](docs/week2-verification.md).
 
 산출: 외부 I/O 없는 최신성 정책. null 관측 시각은 UNVERIFIED이며 미래 시각도 RECENT가 아니다.
 

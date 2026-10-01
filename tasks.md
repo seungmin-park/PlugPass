@@ -69,11 +69,13 @@
 
 의존: T02, T03. 파일: `station/StationRepository.java`, `station/ChargerRepository.java`, `ingestion/StationUpsertService.java`, `ingestion/StationSnapshot.java`, `station/StationPersistenceTests.java`, `ingestion/StationUpsertTests.java`. 수정: Station/Charger JPA 매핑.
 
-- [ ] Repository 매핑·쿼리는 기본 save 후 조회로 검증한다. 매핑 복원이 목적일 때만 이유를 명시해 flush/clear하며 참조 차이 자체를 assertion하지 않는다.
-- [ ] 반복 저장·식별자 충돌·역순 응답은 실제 StationUpsertService 트랜잭션 commit 후 별도 조회로 검증한다. 테스트 Transactional 없이 AfterEach에서 생성 데이터만 FK 역순으로 정리한다.
-- [ ] 유일 제약과 `StationUpsertService.upsert(StationSnapshot snapshot)`을 구현한다. `StationSnapshot`은 T01 필드의 정규화 입력이며 시각의 의미를 보존한다.
-- [ ] 신뢰할 수 있는 공급자 순서 시각이 있으면 이전 관측의 덮어쓰기를 거부한다. 없으면 순서를 보장할 수 없음을 기록하고 T06의 직렬 수집으로 제한한다.
-- [ ] `./gradlew test --tests '*StationPersistenceTests' --tests '*StationUpsertTests'`와 전체 테스트·공용 검증을 통과하고 PR을 반영한다.
+- [x] Repository 매핑·쿼리는 기본 save 후 조회로 검증한다. 매핑 복원이 목적일 때만 이유를 명시해 flush/clear하며 참조 차이 자체를 assertion하지 않는다.
+- [x] 반복 저장·식별자 충돌·역순 응답은 실제 StationUpsertService 트랜잭션 commit 후 별도 조회로 검증한다. 테스트 Transactional 없이 AfterEach에서 생성 데이터만 FK 역순으로 정리한다.
+- [x] 유일 제약과 `StationUpsertService.upsert(StationSnapshot snapshot)`을 구현한다. `StationSnapshot`은 T01 필드의 정규화 입력이며 시각의 의미를 보존한다.
+- [x] 신뢰할 수 있는 공급자 순서 시각이 있으면 이전 관측의 덮어쓰기를 거부한다. 없으면 순서를 보장할 수 없음을 기록하고 T06의 직렬 수집으로 제한한다.
+- [x] `./gradlew test --tests '*StationPersistenceTests' --tests '*StationUpsertTests'`와 전체 테스트·공용 검증을 통과하고 PR을 반영한다.
+
+완료 근거: [PR #8](https://github.com/seungmin-park/PlugPass/pull/8), 필수 CI 성공·main 반영. 대상 22건·전체 97건·공용 검증 통과. 현재 공급자 순서 보장 불가·T06 직렬 제한과 [실행 기록](docs/week1-verification.md)을 함께 남겼다.
 
 산출: 업무용 JPA 모델과 갱신 경계. 기존 PersistenceProbe 테스트를 업무 구현 완료의 근거로 대신하지 않는다.
 

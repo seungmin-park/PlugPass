@@ -9,7 +9,7 @@
 | JPA · H2 | Spring Boot 관리 버전 | 객체 저장·조회, 개발용 메모리 DB |
 | Spring REST Docs | 4.0.1 | 테스트 기반 API 문서 |
 
-현재는 서버 초기화, JPA·H2 연결, 상태 확인 API 문서 생성까지 구성했다. T02의 충전소·충전기 식별/위치 모델은 구현했다. 수집·저장·추천은 앞으로 구현할 기능이다.
+현재는 기반 HTTP·문서·JPA 검증, T02 식별/위치 모델, T03 상태 정규화, T04 업무 저장, T05 외부 클라이언트를 구현했다. 페이지 전체 수집·조회·추천은 후속 작업이다.
 
 ## 서비스의 큰 흐름
 
@@ -43,7 +43,7 @@ API는 HTTP 계약을, 서비스는 작업의 순서를, 도메인 객체는 데
 - 상세 출처는 [공식 문서 목록](official-sources.json)에 보관한다. 새 기술 도입·버전 변경 시 다시 확인한다.
 - 구현 범위는 [기능 지도](feature-map.md), 실행 절차는 [프로젝트 검증 안내](../.agents/skills/verify-plugpass/SKILL.md)를 따른다.
 
-H2는 메모리 방식이므로 서버 종료 시 데이터가 사라진다. 현재 저장·조회 검증에는 테스트 전용 엔티티를 사용하며, 충전소 업무 엔티티는 아직 없다.
+H2는 메모리 방식이므로 서버 종료 시 데이터가 사라진다. 기반 테스트 전용 엔티티와 T04의 업무 엔티티를 각각 검증한다.
 
 ## T02 — 생성 시 검증하는 값 모델
 
@@ -73,3 +73,17 @@ Station/Charger는 non-final JPA 엔티티, ChargerId/GeoPoint/ChargerDetails는
 원본 운영 정보·offset 없는 시각을 ChargerDetails에 보존하는 것은 프로젝트 판단이며 DB 매핑 복원 테스트로 확인한다.
 생성/수정 시각은 입력 경계에서 전달하고 JPA callback에 위임하지 않는다.
 공공 API 시각은 관측 시각으로 승격하지 않으며, DB unique 제약과 production 트랜잭션이 중복·부분 저장을 방어한다.
+
+## T05 — HTTP timeout·XML·외부 설정
+
+Java 25 [HttpClient connectTimeout](https://docs.oracle.com/en/java/javase/25/docs/api/java.net.http/java/net/http/HttpClient.Builder.html),
+[HttpRequest timeout](https://docs.oracle.com/en/java/javase/25/docs/api/java.net.http/java/net/http/HttpRequest.Builder.html),
+[DocumentBuilderFactory](https://docs.oracle.com/en/java/javase/25/docs/api/java.xml/javax/xml/parsers/DocumentBuilderFactory.html),
+[Spring Boot 외부 설정](https://docs.spring.io/spring-boot/reference/features/external-config.html)의 관련 API를 확인했다.
+HTTP 클라이언트·XML은 JDK 기본 API여서 신규 라이브러리 의존성은 없다. Boot 4.1.1 바인딩과 실제 응답 동작을 테스트로 확인했다.
+HTTP connect/request timeout과 별개로 body 완료 future 전체에도 응답 deadline을 적용한 것은 프로젝트 판단이며
+헤더·본문 지연을 실제 HTTP fixture로 각각 검증한다. sourceObservedAt과 원본 offset 없는 시각은 혼용하지 않는다.
+
+[BodyHandlers.ofByteArray](https://docs.oracle.com/en/java/javase/25/docs/api/java.net.http/java/net/http/HttpResponse.BodyHandlers.html)와
+[DocumentBuilder.parse(InputStream)](https://docs.oracle.com/en/java/javase/25/docs/api/java.xml/javax/xml/parsers/DocumentBuilder.html)를 사용해
+XML의 BOM/선언 인코딩을 유지한다. UTF-8 BOM·UTF-16 응답을 실제 HTTP fixture로 검증했다.

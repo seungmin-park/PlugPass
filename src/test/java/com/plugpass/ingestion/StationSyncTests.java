@@ -6,6 +6,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 import com.plugpass.exception.PublicDataException;
 import com.plugpass.exception.PublicDataFailure;
 import com.plugpass.station.ChargerId;
@@ -45,24 +46,24 @@ class StationSyncTests {
     @Test
     @DisplayName("여러 페이지를 순서대로 commit하고 전체 성공 이력을 저장한다")
     void synchronizesAllPages() {
-        StationSnapshot first = snapshot("one", "2");
+        List<StationSnapshot> firstPage = IntStream.rangeClosed(1,10).mapToObj(index -> snapshot("one-" + index,"2")).toList();
         StationSnapshot second = snapshot("two", "3");
-        pageClient.pages.add(new StationPage(1, 10, 11, List.of(first)));
+        pageClient.pages.add(new StationPage(1, 10, 11, firstPage));
         pageClient.pages.add(new StationPage(2, 10, 11, List.of(second)));
         SyncResult result = stationSyncService.synchronize();
         assertThat(result).isNotNull();
         assertThat(result.status()).isEqualTo(SyncStatus.SUCCESS);
-        assertThat(result.processedCount()).isEqualTo(2);
+        assertThat(result.processedCount()).isEqualTo(11);
         assertThat(result.failedPage()).isNull();
         assertThat(pageClient.requestedPages).containsExactly(1, 2);
         assertThat(pageClient.networkTransactions).containsExactly(false, false);
-        assertThat(chargerRepository.findAll()).extracting(charger -> charger.getId().stationId()).containsExactlyInAnyOrder("one", "two");
+        assertThat(chargerRepository.findAll()).extracting(charger -> charger.getId().stationId()).containsExactlyInAnyOrder("one-1","one-2","one-3","one-4","one-5","one-6","one-7","one-8","one-9","one-10","two");
         assertThat(syncRunRepository.findById(result.runId())).isPresent();
         SyncRun run = syncRunRepository.findById(result.runId()).orElseThrow();
         assertThat(run.getStartedAt()).isEqualTo(collectedAt);
         assertThat(run.getCompletedAt()).isEqualTo(collectedAt);
         assertThat(run.getStatus()).isEqualTo(SyncStatus.SUCCESS);
-        assertThat(run.getProcessedCount()).isEqualTo(2);
+        assertThat(run.getProcessedCount()).isEqualTo(11);
         assertThat(syncRunRepository.findFirstByStatusOrderByCompletedAtDesc(SyncStatus.SUCCESS)).isPresent();
     }
 
@@ -171,6 +172,19 @@ class StationSyncTests {
         SyncResult result = stationSyncService.synchronize();
         assertThat(result.status()).isEqualTo(SyncStatus.PARTIAL_FAILURE);
         assertThat(result.failureCode()).isEqualTo("CONTRACT");
+        assertThat(chargerRepository.count()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("마지막 페이지까지 받았어도 전체 건수보다 적으면 성공으로 기록하지 않는다")
+    void rejectsIncompleteRecordCount() {
+        pageClient.pages.add(new StationPage(1,10,2,List.of(snapshot("one","2"))));
+        SyncResult result = stationSyncService.synchronize();
+        assertThat(result.status()).isEqualTo(SyncStatus.PARTIAL_FAILURE);
+        assertThat(result.processedCount()).isEqualTo(1);
+        assertThat(result.failedPage()).isEqualTo(1);
+        assertThat(result.failureCode()).isEqualTo("CONTRACT");
+        assertThat(syncRunRepository.findFirstByStatusOrderByCompletedAtDesc(SyncStatus.SUCCESS)).isEmpty();
         assertThat(chargerRepository.count()).isEqualTo(1);
     }
 

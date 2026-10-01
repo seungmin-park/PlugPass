@@ -124,10 +124,12 @@
 
 의존: T04, T07. 파일: `search/StationQueryService.java`, `StationController.java`, `StationSearchQuery.java`, `search/StationSearchTests.java`. 수정: REST Docs 문서.
 
-- [ ] 위치·반경 경계 포함, 호환 커넥터, 거리 동률, 빈 결과, 잘못된 좌표/반경/limit의 HTTP 테스트를 작성한다.
-- [ ] `GET /api/v1/stations`와 `StationQueryService.search(StationSearchQuery query)`를 구현한다. plan.md의 입력 범위·기본 limit·거리/ID 순서를 적용한다.
-- [ ] 개별 충전기의 상태·최신성을 조합한 요약을 반환한다. 정상 초기 수집 전에는 빈 목록과 데이터 준비 상태를 구분해 제공한다.
-- [ ] `./gradlew test --tests '*StationSearchTests'`와 REST Docs·공용 검증을 통과하고 PR을 반영한다.
+- [x] 위치·반경 경계 포함, 호환 커넥터, 거리 동률, 빈 결과, 잘못된 좌표/반경/limit의 HTTP 테스트를 작성한다.
+- [x] `GET /api/v1/stations`와 `StationQueryService.search(StationSearchQuery query)`를 구현한다. plan.md의 입력 범위·기본 limit·거리/ID 순서를 적용한다.
+- [x] 개별 충전기의 상태·최신성을 조합한 요약을 반환한다. 정상 초기 수집 전에는 빈 목록과 데이터 준비 상태를 구분해 제공한다.
+- [x] `./gradlew test --tests '*StationSearchTests'`와 REST Docs·공용 검증을 통과하고 PR을 반영한다.
+
+완료 근거: [PR #13](https://github.com/seungmin-park/PlugPass/pull/13), main `828377a`, [필수 CI 성공](https://github.com/seungmin-park/PlugPass/actions/runs/36894771045). 대상49건·전체242건·공용 검증 종료0. [실행 기록](docs/week2-verification.md).
 
 산출: 외부 API를 호출하지 않는 저장 데이터 기반 검색. 지도 프런트엔드는 필요하지 않다.
 

@@ -114,3 +114,18 @@ DocumentBuilder에 전달해 해결했다. 문자열을 UTF-8로 먼저 해석�
 
 T05 최종 `bash scripts/verify.sh` 종료 0: 전체 161건, 실패·오류·skip 0.
 실행 JAR health UP, env 404, API 문서 일치, 테스트 fixture 미포함을 확인했다.
+
+
+## 1주차 전달 확인
+
+| 작업 | PR | 필수 CI | 실제 main 반영 |
+| --- | --- | --- | --- |
+| T03 | [#7](https://github.com/seungmin-park/PlugPass/pull/7) | [성공](https://github.com/seungmin-park/PlugPass/actions/runs/36883278097) | `027143a` |
+| T04 | [#8](https://github.com/seungmin-park/PlugPass/pull/8) | [성공](https://github.com/seungmin-park/PlugPass/actions/runs/36885675715) | `35786b4` |
+| T05 | [#9](https://github.com/seungmin-park/PlugPass/pull/9) | [성공](https://github.com/seungmin-park/PlugPass/actions/runs/36890384015) | `39ed230` |
+
+각 작업은 앞선 PR의 실제 머지 확인 후 시작했다. main 보호 규칙(필수 PlugPass verify,
+최신 main 요구, 관리자 적용, 강제 push/삭제 금지)을 조회하고 검증한 head SHA로 native auto-merge를 신청했다.
+T02~T05 구현 완료 체크와 T01의 키 의존 실응답 미확인 체크를 구분한다. T06은 시작하지 않았다.
+최종 구현 검증 161건·실패/오류/skip 0, 공용 검증 종료 0. 완료 체크 문서만 변경한 단계는
+링크·JSON·체크 근거 정합성을 확인하며 애플리케이션 테스트를 새로 실행한 것으로 표현하지 않는다.

@@ -149,3 +149,20 @@ StationDetail은 entity와 분리한 불변 유스케이스 결과다. 모든 Re
 T06~T09 전체 자체 리뷰에서 수정한 완료 건수 결함은 별도 PR #14로 기록했다. 독립 에이전트 리뷰는 아니다.
 실공공 API 인증·시간대 확인은 여전히 미검증이며 cmux 소켓 없이 보이는 E2E로 보고하지 않는다.
 T10 추천·T11 스케줄·T12 예산/재시도·T14 추천 포함 종합 데모·T15 성능 측정은 시작하지 않았다.
+
+## 2주차 전달 확인
+
+| 단위 | PR | 필수 CI | 실제 main 반영 |
+| --- | --- | --- | --- |
+| T06 | [#11](https://github.com/seungmin-park/PlugPass/pull/11) | [성공](https://github.com/seungmin-park/PlugPass/actions/runs/36892084534) | `e062034` |
+| T07 | [#12](https://github.com/seungmin-park/PlugPass/pull/12) | [성공](https://github.com/seungmin-park/PlugPass/actions/runs/36892966722) | `16083e3` |
+| T08 | [#13](https://github.com/seungmin-park/PlugPass/pull/13) | [성공](https://github.com/seungmin-park/PlugPass/actions/runs/36894771045) | `828377a` |
+| 수집 완료 회귀 | [#14](https://github.com/seungmin-park/PlugPass/pull/14) | [성공](https://github.com/seungmin-park/PlugPass/actions/runs/36895452835) | `7392d03` |
+| T09 | [#15](https://github.com/seungmin-park/PlugPass/pull/15) | [성공](https://github.com/seungmin-park/PlugPass/actions/runs/36897055110) | `3f354d6` |
+
+각 단위는 앞선 의존 PR의 실제 머지 확인 후 시작하고 완료 체크했다. native auto-merge 신청 전
+필수 PlugPass verify(app15368)·최신 main 요구·관리자 적용·강제 push/삭제 금지와 auto/squash 설정을 조회했다.
+머지는 검증한 head SHA로 신청했고 보호 우회나 main 직접 push는 하지 않았다.
+최종 구현 검증257건·실패/오류/skip0, 공용 검증 종료0. 완료 체크 단계는 문서 링크·JSON·근거 정합성 검사이며
+애플리케이션을 다시 실행했다고 표현하지 않는다. 원격 필수 CI 결과는 위 링크와 별개 문서 PR에서 확인한다.
+T01 실응답 두 체크는 열어 두고 T10 이후는 미시작이다. 실제 시간대·인증 성공, 재시작 영속성, 규모 성능 보장은 없다.

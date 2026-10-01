@@ -105,6 +105,8 @@ src/test/resources/publicdata/  비밀 정보 없는 외부 응답 fixture
 src/docs/asciidoc/index.adoc     테스트에서 생성한 업무 API 문서
 ```
 
+Service 이름은 유스케이스 인터페이스를 뜻하며 구현은 `Default{ServiceName}`으로 둔다. 테스트 경계·Java 명시적 타입·엔티티 생성·이름과 책임 검토는 [AGENTS.md](AGENTS.md)를 따른다.
+
 객체지향 생활 체조는 [프로젝트 기준](docs/object-calisthenics.md)을 따른다. ID·좌표 등 실제 불변조건이 있는 값에 책임을 부여한다. 규칙을 맞추기 위한 빈 래퍼·불필요한 인터페이스를 늘리지 않는다. 저장 기술 교체가 실제로 필요해질 때 해당 경계를 확장한다.
 
 ## 6. API 설계안
@@ -124,9 +126,10 @@ src/docs/asciidoc/index.adoc     테스트에서 생성한 업무 API 문서
 | 검증 층 | 입증할 내용 |
 | --- | --- |
 | 도메인 테스트 | 미지원 상태·중복 ID·최신성 경계·미래/누락 시각·후보 제외 이유 |
-| JPA 테스트 | 중복 upsert, flush/clear 후 실제 재조회, 이전 상태의 덮어쓰기 차단 |
+| Repository 테스트 | 실제 매핑·쿼리, 기본 save 후 조회. 매핑 복원이 목적일 때만 이유를 명시해 flush/clear |
+| Service 테스트 | 실제 production commit 후 별도 조회로 중복 upsert·이전 상태 덮어쓰기 차단 검증, 테스트 트랜잭션 없이 AfterEach 정리 |
 | 외부 계약 테스트 | 정상·빈 페이지·파싱 오류·인증 실패·429·5xx·timeout |
-| API·문서 테스트 | 정상·빈 결과·400·404·장애 중 읽기와 REST Docs 계약 |
+| API·문서 테스트 | MVC slice와 Service mock으로 정상·빈 결과·400·404·직렬화·REST Docs 계약; 장애 중 실제 데이터 읽기는 별도 통합 테스트 |
 | 실제 HTTP 흐름 | fixture 공급자 → 수집 → H2 → 주변/상세/후보 API. 실제 공공 API 연동은 별도 확인 |
 | 장애·성능 검증 | 수집 중 장애·재시도 종료·복구 후 재수집, 조회 지연·오류율·쿼리 수 |
 

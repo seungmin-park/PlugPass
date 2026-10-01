@@ -16,7 +16,7 @@ description: Verify PlugPass HTTP health, H2 JPA persistence, REST Docs contract
 
 1. `bash scripts/verify.sh`를 실행한다. clean build와 아래 JAR·실제 HTTP 검사를 같은 명령으로 수행한다. JDK 25와 Python 3이 필요하다. CI도 이 명령을 사용한다.
 2. 종료 0과 `build/test-results/test/TEST-*.xml`의 테스트 4개, 실패·오류·skip 0을 확인한다. 기능을 추가했다면 기대 개수도 갱신한다.
-3. JPA 테스트의 save/flush 이후 context clear와 재조회 assertion을 확인한다. 테스트 전용 엔티티가 실행 JAR에 들어가지 않아야 한다.
+3. [테스트 경계](../../../AGENTS.md)를 따른다. Repository는 기본 save 후 조회하고 매핑 복원이 검증 대상일 때만 이유를 명시해 flush/clear한다. 참조 차이 자체를 assertion하지 않는다. Service는 테스트 트랜잭션 없이 production commit 후 별도 조회하고 AfterEach로 정리한다. 테스트 전용 엔티티가 실행 JAR에 들어가지 않아야 한다.
 4. `build/generated-snippets/health/`와 `build/docs/asciidoc/index.html`이 생성돼야 한다.
 5. JAR의 `BOOT-INF/classes/static/docs/index.html`이 생성한 HTML과 같아야 한다.
 
@@ -38,6 +38,8 @@ SnippetException에 status가 문서화되지 않았다는 실패가 있어야 �
 이 검사는 문서 계약을 변경하거나 검사 동작을 확인할 때 수행한다.
 
 ## 증거와 종료
+
+기능 변경은 Red의 실제 assertion 실패, Green의 최소 구현, Refactor의 이유와 대상·전체 테스트 결과를 기록한다. 성공·예외·실패·엣지 케이스와 이름·책임 검토를 포함한다. 기존 기반 테스트가 새로운 작성 규칙까지 모두 준수한다고 추정하지 않는다. 문서만 변경하면 링크·참조·내용 정합성을 확인하고 애플리케이션 실행과 구분한다.
 
 종료 코드, XML 테스트 결과, 생성 HTML, `build/verification/server.log`와 `runtime.json`을 확인한다. 공용 검증은 테스트 0개·실패·오류·skip을 거부한다.
 PR은 `.github/workflows/verify.yml`의 `PlugPass verify` 결과를 확인한다. 로컬 성공을 원격 CI 성공으로 대신하지 않는다.

@@ -8,8 +8,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(PublicDataProperties.class)
 public class PublicDataConfiguration {
+    @Bean
+    Clock applicationClock() { return Clock.systemUTC(); }
+
     @Bean(destroyMethod = "close")
-    PublicDataClient publicDataClient(PublicDataProperties properties) {
-        return new DefaultPublicDataClient(properties, Clock.systemUTC());
+    PublicDataClient publicDataClient(PublicDataProperties properties, Clock clock) {
+        return new DefaultPublicDataClient(properties, clock);
     }
 }

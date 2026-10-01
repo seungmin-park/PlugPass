@@ -1,5 +1,6 @@
 package com.plugpass.ingestion;
 
+import java.util.List;
 import com.plugpass.station.Charger;
 import com.plugpass.station.ChargerId;
 import com.plugpass.station.ChargerRepository;
@@ -16,6 +17,12 @@ public class DefaultStationUpsertService implements StationUpsertService {
     public DefaultStationUpsertService(StationRepository stationRepository, ChargerRepository chargerRepository) {
         this.stationRepository = stationRepository;
         this.chargerRepository = chargerRepository;
+    }
+
+    @Override
+    @Transactional
+    public void upsertPage(List<StationSnapshot> snapshots) {
+        snapshots.forEach(this::upsert);
     }
 
     @Override

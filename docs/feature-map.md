@@ -50,3 +50,8 @@ Station/Charger 업무 엔티티와 Repository·upsert는 T04에서 구현했다
 StationSyncService → PublicDataClient → StationUpsertService.upsertPage → 실제 H2 commit.
 SyncRun은 실행 상태와 실패 페이지/코드를 소유한다. StationSyncTests 9건·SyncRunTests 9건으로
 순차 처리·부분 실패·반복 실행·rollback·시각과 상태 방어를 확인한다. 상세 근거: [2주차 기록](week2-verification.md).
+
+## T07 최신성
+
+FreshnessPolicy.evaluate/assess는 sourceObservedAt과 now만 받아 Freshness·이유를 반환한다.
+FreshnessPolicyTests 14건: 경계·누락·미래·재수집·설정 방어. 실제 공급자는 sourceObservedAt=null → UNVERIFIED.

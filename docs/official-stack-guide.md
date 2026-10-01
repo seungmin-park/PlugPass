@@ -87,3 +87,12 @@ HTTP connect/request timeout과 별개로 body 완료 future 전체에도 응답
 [BodyHandlers.ofByteArray](https://docs.oracle.com/en/java/javase/25/docs/api/java.net.http/java/net/http/HttpResponse.BodyHandlers.html)와
 [DocumentBuilder.parse(InputStream)](https://docs.oracle.com/en/java/javase/25/docs/api/java.xml/javax/xml/parsers/DocumentBuilder.html)를 사용해
 XML의 BOM/선언 인코딩을 유지한다. UTF-8 BOM·UTF-16 응답을 실제 HTTP fixture로 검증했다.
+
+## T06 — 짧은 저장 단위와 transaction proxy
+
+[Spring Data JPA 4.1.1 트랜잭션](https://docs.spring.io/spring-data/jpa/reference/jpa/transactions.html),
+[Spring Framework 7 transaction proxy/self invocation](https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html)을 재확인했다.
+외부 proxy 호출이 transaction 경계이며 self-call 자체는 새 transaction을 만들지 않는다.
+T06은 upsertPage 전체에 transaction을 열고 내부 upsert가 참여한다. synchronize는 NEVER로
+네트워크 대기를 DB transaction 안에 넣는 호출을 거부한다. 실행 이력 save는 Repository의 별도 transaction이다.
+페이지 원자성·SUCCESS 이력에서 마지막 성공을 계산하는 방식은 프로젝트 판단이다.

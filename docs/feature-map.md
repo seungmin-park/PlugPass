@@ -44,3 +44,9 @@ Station/Charger 업무 엔티티와 Repository·upsert는 T04에서 구현했다
 | 인증·서버·XML·설정·timeout 실패 | 오류 분류·키 비노출·헤더/본문 지연 종료 | PublicDataClientTests |
 
 공공 API 실인증은 미확인, 클라이언트는 아직 DB 수집 실행·스케줄과 연결되지 않았다.
+
+## T06 수집 실행
+
+StationSyncService → PublicDataClient → StationUpsertService.upsertPage → 실제 H2 commit.
+SyncRun은 실행 상태와 실패 페이지/코드를 소유한다. StationSyncTests 9건·SyncRunTests 9건으로
+순차 처리·부분 실패·반복 실행·rollback·시각과 상태 방어를 확인한다. 상세 근거: [2주차 기록](week2-verification.md).

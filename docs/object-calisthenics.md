@@ -93,3 +93,17 @@ StationUpsertService는 조회·생성·갱신과 트랜잭션을 조정하고, 
 PublicDataClient는 네트워크, XML parser는 외부 문법/페이지 계약, 외부 DTO는 입력 변환을 맡는다.
 불변 StationPage 목록과 실제 fixture HTTP 오류/timeout/인코딩·JPA 복원·commit 후 재조회 테스트로
 경계를 검증했다. HTTP DTO·설정의 문자열/접근자는 외부 계약 표현이며 도메인 상태 변경 권한을 주지 않는다.
+
+## T06~T09 책임 검토
+
+SyncRun은 실행 상태 전이를 소유한다. 서비스는 외부 요청과 페이지 commit을 조정하고
+실행 시작/완료 시각은 Clock 경계로 명시적으로 전달한다. 실행 이력의 시각은 JPA callback에 위임하지 않는다.
+마지막 성공은 SUCCESS 이력에서 계산하여 별도 가변 시계의 동기화 책임을 만들지 않았다.
+
+FreshnessPolicy는 관측 시각만으로 판단하고, Connector는 공급자 조합 호환, GeoPoint는 직선거리를 맡는다.
+검색/상세의 readOnly 서비스는 저장 데이터와 이 판단을 조합하며 HTTP DTO는 엔티티와 분리한다.
+record projection/DTO의 읽기 접근자는 불변 값 표현 예외다. ChargerResponse의 많은 원본 필드는
+공개 계약에 필요한 데이터이며 숫자만 맞추는 중첩 래퍼는 만들지 않았다.
+검색/상세 변환은 공통 ChargerResponse를 사용하고 필드별 REST Docs·실제 HTTP JSON으로 공개 계약을 확인했다.
+잘못된 수집 완료 판정은 조정 계층의 전체 범위 불변식으로 바로잡고 회귀 테스트를 남겼다.
+필드 수·줄 수 전체를 강제하는 자동 검사기를 도입했다는 의미는 아니다.

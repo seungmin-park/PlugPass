@@ -1,6 +1,6 @@
 # PlugPass 작업 체크리스트
 
-**목표·설계:** [plan.md](plan.md). T01 문서 계약은 main 반영, 인증된 실연동은 키 없어 미확인. T02~T05는 구현·검증·main 반영 완료. 1주차 구현은 완료했으며 T01 실응답 확인 두 항목은 보류한다. 아래 하위 체크와 근거를 따른다.
+**목표·설계:** [plan.md](plan.md). T01 문서 계약은 main 반영, 인증된 실연동은 키 없어 미확인. T02~T09는 구현·검증·main 반영 완료. 2주차 구현까지 완료했으며 T01 실응답 확인 두 항목은 키 없어 보류한다. 아래 하위 체크와 근거를 따른다.
 
 **실행 방식:** 작업 하나씩 순서대로 진행한다. 구현 시 `superpowers:executing-plans`를 사용한다. 이 파일을 만들었다는 이유로 이후 작업 전체를 자동 실행하지 않는다.
 
@@ -137,9 +137,11 @@
 
 의존: T08. 파일: `search/StationDetailTests.java`, 상세 응답 타입. 수정: StationController/StationQueryService와 REST Docs 문서.
 
-- [ ] 존재하는 충전소·없는 ID·여러 상태의 충전기·누락된 운영 정보에 대한 테스트를 작성한다.
-- [ ] `GET /api/v1/stations/{stationId}`에 충전기 상태·원본 코드·관측/수집 시각·최신성·이용 제한·미확인 이유를 제공한다. 없는 ID는 404다.
-- [ ] `./gradlew test --tests '*StationDetailTests'`와 API 문서·공용 검증을 통과하고 PR을 반영한다.
+- [x] 존재하는 충전소·없는 ID·여러 상태의 충전기·누락된 운영 정보에 대한 테스트를 작성한다.
+- [x] `GET /api/v1/stations/{stationId}`에 충전기 상태·원본 코드·관측/수집 시각·최신성·이용 제한·미확인 이유를 제공한다. 없는 ID는 404다.
+- [x] `./gradlew test --tests '*StationDetailTests'`와 API 문서·공용 검증을 통과하고 PR을 반영한다.
+
+완료 근거: [PR #15](https://github.com/seungmin-park/PlugPass/pull/15), main `3f354d6`, [필수 CI 성공](https://github.com/seungmin-park/PlugPass/actions/runs/36897055110). 대상14건·전체257건·공용 검증 종료0. 실제 fixture HTTP→H2→검색/상세와 공급자503 중 기존 조회 확인. [실행 기록](docs/week2-verification.md).
 
 산출: “왜 이 충전소를 믿거나 다시 확인해야 하는가”를 보여 주는 조회 응답.
 

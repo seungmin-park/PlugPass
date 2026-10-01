@@ -22,7 +22,7 @@ class StationPersistenceTests {
         Instant collectedAt = Instant.parse("2026-10-01T00:00:00Z");
         Station station = Station.builder().provider("ME").stationId("00260005").name("충전소").location(new GeoPoint(37.5,126.6)).createdAt(collectedAt).build();
         stationRepository.save(station);
-        ChargerDetails details = new ChargerDetails("03", "24시간", "Y", "입주민", "공사", "20190829121020", "20210801121020", "20210801123020", "20210802131020");
+        ChargerDetails details = new ChargerDetails("03", "24시간", "Y", "입주민", "공사", "20190829121020", "20210801121020", "20210801123020", "20210802131020", "Y", "이전 설치 장소 폐쇄");
         Charger charger = Charger.builder().id(new ChargerId("ME", "00260005", "02")).station(station).status(ChargerStatus.UNAVAILABLE).rawStatus("5").details(details).sourceObservedAt(null).collectedAt(collectedAt).build();
         chargerRepository.save(charger);
         // 값 객체/enum/관계가 실제 DB에서 복원되는지 확인하는 테스트이므로 flush/clear한다.

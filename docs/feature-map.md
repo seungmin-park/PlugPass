@@ -37,3 +37,10 @@ Station/Charger 업무 엔티티와 Repository·upsert는 T04에서 구현했다
 | 엔티티 저장/매핑 복원 | ID·위치·enum 문자열·운영 정보·원본 시각 복원, unique 제약 | StationPersistenceTests 3건 |
 | Service upsert → commit → 재조회 | 중복 방지·갱신·역순 거부·실패 rollback | StationUpsertTests 7건 |
 | 도메인 갱신 / Snapshot 생성 | 실패 후 상태/시각 유지·관계 방어·필수값 거부 | StationMutationTests 4건, StationSnapshotTests 8건 |
+
+| T05 경로 | 기대 결과 | 검증 |
+| --- | --- | --- |
+| 실제 fixture HTTP → Snapshot | 식별·위치·상태·운영/원본 시각 보존, 페이지 종료 | PublicDataClientTests |
+| 인증·서버·XML·설정·timeout 실패 | 오류 분류·키 비노출·헤더/본문 지연 종료 | PublicDataClientTests |
+
+공공 API 실인증은 미확인, 클라이언트는 아직 DB 수집 실행·스케줄과 연결되지 않았다.

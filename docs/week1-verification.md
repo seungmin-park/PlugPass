@@ -62,3 +62,55 @@ T04 Refactor: 업무 복합 ID 조회는 findByIdentity로 이름을 바꿔 JpaR
 
 T04 최종 Refactor 후 `bash scripts/verify.sh` 종료 0, 전체 97건·실패/오류/skip 0.
 패키징 문서 일치·실제 health 200/UP·env 404·docs 200 통과. Lombok annotationProcessor 실제 해석 1.18.46 확인.
+
+## T05 — 외부 HTTP 클라이언트
+
+- T04 PR #8의 필수 CI 성공 후 main `35786b4`에 반영하고 완료 체크 뒤 시작했다.
+- RED: `./gradlew test --tests '*PublicDataClientTests' --console=plain`, 48건 중 47 assertion 실패·오류/skip 0, 종료 1.
+  통신/변환 없는 최소 형태에서 정상 데이터·페이지·오류·설정 방어·timeout 실패를 확인했다. 빈 페이지 1건은 기존 빈 반환과 동일해 처음부터 통과했다.
+- GREEN: 실제 loopback HTTP 서버에 요청하여 XML 응답을 외부 DTO→StationSnapshot으로 변환.
+  상태·원본 코드·원본 시각 문자열·운영/삭제 정보를 보존, sourceObservedAt=null, Clock 경계에서 collectedAt 생성. 48건 통과.
+- 추가 검토/RED: endpoint·지역 입력 방어와 공급자 오류 04 분류의 22건 중 14 assertion 실패를 확인했다.
+  04는 요청 오류/처리 오류가 혼재해 일시 장애로 단정할 수 없으므로 CONTRACT로 분류했다.
+- 설정/경계: 키 외부 주입, 페이지 1 이상·크기 10~9999·지역 두 자리, endpoint에 userInfo/query/fragment 금지,
+  연결/응답 timeout 양수, 설정 문자열 표현의 키 redaction.
+- 정상/경계: 정상·빈·다음/마지막 페이지·UNKNOWN/누락 상태·페이지 실제 내용/totalCount/hasNext·불변 목록.
+- 실패: 401/403·429·5xx·404, 공급자 오류 코드, 깨진 XML/DOCTYPE, 필수 식별자 누락,
+  NaN/범위 밖/문자열 좌표, 응답 페이지 역전·건수/크기 오류·남은 데이터가 있는 빈 목록,
+  헤더 지연/본문 지연 timeout·연결 거부·키 누락, 예외 cause/로그/설정 표현의 키 비노출.
+- HTTP 헤더 뒤 본문이 정지해도 완료 future에 전체 응답 deadline을 적용하고 cancel한다. 단순 헤더 timeout만으로 끝내지 않았다.
+  기본 3초 연결/10초 응답이며, 테스트는 latch로 지연을 제어한다. timeout 요청이 1회인 것도 assertion했다.
+  unreachable 네트워크의 실제 connect timeout 만료는 환경 의존성이 커 재현하지 않았고, 연결 거부/실제 응답 timeout과 설정 검증을 구분한다.
+- XML parser는 외부 DTD/entity/Schema/XInclude를 차단하고 parser 원문 오류 출력을 억제한다.
+  I/O·파싱 cause의 URI/본문이 키를 노출하지 않도록 PublicDataException은 타입/범주/안전한 메시지만 반환한다.
+- Refactor: sendRequest는 실제 외부 호출 효과를 이름에 드러내고 responseFuture와 완성 응답을 구분했다.
+  XML parser의 requireProviderSuccess는 HTTP 상태 검사와 구분한다. transport·XML 해석·외부 DTO 변환의 변경 책임을 분리했다.
+- 현재 입력에 필요한 원본 삭제 플래그/사유를 ChargerDetails에 추가하고 실제 DB 매핑 복원 fixture에도 포함했다.
+  기존 9인자 생성은 새 필드 null로 유지한다. DB 컬럼 2개 추가, 업무 HTTP/JSON 라우트는 추가하지 않았다.
+- 요청마다 지역/결과/future를 로컬에 두고 공유 singleton에 사용자 요청 상태를 저장하지 않는다.
+  테스트별 서버·executor·client를 새로 만들고 소유 리소스만 정리한다. DB 저장은 클라이언트 책임이 아니다.
+- T05는 인증된 공공 API 성공·수집→DB 전체 사용자 흐름·재시도/스케줄을 증명하지 않는다.
+  T01의 키 없는 실응답 확인, T06 이후 수집, T12 재시도, T14 연결 흐름과 구분한다.
+
+```mermaid
+flowchart LR
+    Config[외부 인증·timeout 설정] --> Client[PublicDataClient: HTTP + 전체 응답 제한]
+    Server[실제 fixture HTTP 서버] --> Client
+    Client --> Parser[안전한 XML + 페이지 계약 검사]
+    Parser --> DTO[외부 응답 DTO]
+    DTO --> Snapshot[StationSnapshot: 관측 시각 null / 수집 시각 분리]
+    Snapshot -.T06에서 연결.-> Upsert[StationUpsertService]
+```
+
+T05 실행 로그: `/tmp/plugpass-t05-{red,edge-red,green,suite,verify}.log`.
+프런트엔드/Vue/TypeScript 적용 대상 없음. 공개 수집 실행 API·스케줄·실공급자 인증 성공을 추가하거나 주장하지 않았다.
+
+T05 최종 검토: 외부 entity fixture를 정상 문서 구조에 삽입하고 loopback resource 요청이 0회인지 검사해
+단순 헤더 누락으로 우연히 실패하는 보안 테스트를 보완했다. 프로덕션 보안 규칙은 유지했다.
+유효한 UTF-8 BOM/UTF-16 선언 XML 2건은 실제 assertion Red 후, HTTP 원본 bytes를
+DocumentBuilder에 전달해 해결했다. 문자열을 UTF-8로 먼저 해석하지 않아 선언/BOM을 파서가 처리한다.
+최종 대상은 64건이며 연결/인코딩/보안 확인은 실제 fixture HTTP 범위다.
+리뷰는 작성자 자체 검토이며 독립 에이전트 리뷰로 보고하지 않는다(병렬 에이전트 권한 없음).
+
+T05 최종 `bash scripts/verify.sh` 종료 0: 전체 161건, 실패·오류·skip 0.
+실행 JAR health UP, env 404, API 문서 일치, 테스트 fixture 미포함을 확인했다.

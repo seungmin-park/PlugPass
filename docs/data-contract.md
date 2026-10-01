@@ -77,3 +77,36 @@ T05/T11/T12 초기 예산 후보: 페이지 크기 9999, 회차 최대 10페이�
 
 검사: XML 구문, header/목록 구조, 필수 식별자·좌표·상태, 빈 목록 건수,
 정상/미지원 코드 차이, 키·연락처 미포함. 키 발급 후 인증 성공·지역 표본·필드 누락·시간대·한도·페이지 종료를 재확인한다.
+
+## T05 구현된 클라이언트 계약
+
+`PublicDataClient.fetchPage(1)`부터 시작한다. `StationPage.hasNext()`는 `pageNumber × pageSize < totalCount`로 판단한다.
+응답 페이지/크기가 요청과 다르거나, 총 건수가 음수이거나, 남은 데이터가 있는데 목록이 비면 CONTRACT 실패다.
+`busiId/statId/chgerId/statNm/lat/lng`는 필수, 상태·운영 정보 누락은 원본 null/미확인으로 보존한다.
+외부 응답 DTO를 JPA 엔티티나 HTTP 응답으로 직접 사용하지 않고 StationSnapshot으로 변환한다.
+
+현재 Snapshot은 식별자·이름·위치·원본/정규화 상태, 커넥터·이용시간·제한·note,
+원본 상태/충전 시각 문자열·삭제 플래그/사유를 보존한다. 주소·출력·층수 등 나머지 가이드 필드는
+현재 유스케이스의 저장 입력에 포함하지 않는다. 후속 조회 요구에 필요하면 정규화/저장/검증을 함께 확장한다.
+삭제 플래그를 보존하지만 DB 삭제 동작은 추가하지 않았다.
+
+인증 값은 `PLUGPASS_PUBLIC_DATA_SERVICE_KEY`로 외부 주입한다. `.env.example`은 변수 목록이며 자동 로딩 파일이 아니다.
+키가 없어도 앱은 기동하지만 fetchPage는 호출 전 AUTHENTICATION으로 실패한다. 스케줄/공개 수집 API는 없다.
+기본 connect timeout은 3초, 전체 HTTP 응답(헤더+본문) timeout은 10초다. 요청당 재시도는 T05에 없으며 T12에서 다룬다.
+HTTP URI/응답 원문/원본 I/O cause를 공개 예외·로그에 포함하지 않고 오류 범주만 반환한다. redirect는 따라가지 않는다.
+
+| 실패 | 분류 |
+| --- | --- |
+| HTTP 401/403, 공급자 20/30/31, 키 누락 | AUTHENTICATION |
+| HTTP 429, 공급자 22/23 | RATE_LIMIT |
+| HTTP 5xx, 공급자 01 | SERVER |
+| timeout, 공급자 05 | TIMEOUT |
+| 연결/I/O/interrupt | TRANSPORT (interrupt flag 유지) |
+| 기타 HTTP/코드, XML·필드·좌표·페이지 위반 | CONTRACT |
+
+공급자 04는 잘못된 HTTP 요청과 응답 처리 실패를 함께 설명해 일시 장애로 단정할 수 없으므로 CONTRACT로 보수적으로 분류한다.
+이 분류는 프로젝트 판단이다. 실제 인증 오류의 전체 XML envelope는 키가 없어 미확인이다. 공식 예제 response/header와
+HTTP 오류를 fixture 서버로 검증한 범위이며 다른 envelope는 CONTRACT로 거부한다.
+
+HTTP XML 본문은 원본 bytes로 전달하여 XML 선언/BOM의 인코딩을 유지한다. UTF-8 BOM·UTF-16 fixture도 정상 변환한다.
+DOCTYPE/외부 entity는 정상 문서 구조 안에서도 거부하고 외부 resource를 요청하지 않는 것을 테스트한다.

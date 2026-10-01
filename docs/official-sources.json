@@ -300,5 +300,17 @@
     "url": "https://docs.hibernate.org/orm/7.4/userguide/html_single/",
     "accessed": "2026-10-02",
     "coverage": "엔티티 기본 생성자·non-final·field access·record embeddable 관련 절; 실제 7.4.5.Final"
+  },
+  {
+    "id": "jdk25-http-timeouts",
+    "url": "https://docs.oracle.com/en/java/javase/25/docs/api/java.net.http/java/net/http/HttpRequest.Builder.html",
+    "accessed": "2026-10-02",
+    "coverage": "request timeout·HttpClient connectTimeout 관련 절; 전체 body 완료 제한은 실제 fixture 테스트"
+  },
+  {
+    "id": "jdk25-xml-parser",
+    "url": "https://docs.oracle.com/en/java/javase/25/docs/api/java.xml/javax/xml/parsers/DocumentBuilderFactory.html",
+    "accessed": "2026-10-02",
+    "coverage": "secure processing·외부 접근·error handler 관련 API"
   }
 ]

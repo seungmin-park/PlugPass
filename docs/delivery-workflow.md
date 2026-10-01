@@ -55,8 +55,18 @@ JDK 25와 Python 3이 필요하다. clean build → JUnit XML 검사 → JAR 내
 
 CI는 PR마다 실행하고 main push도 검사한다. 경로 필터나 성공으로 바꾸는 오류 무시 옵션을 두지 않는다. read-only token으로 검사하며 소스 코드의 실행 권한과 merge 권한을 같은 CI job에 넣지 않는다. GitHub Actions 실패 로그와 보고서는 7일 보관한다.
 
-## 도입 당시 제약
+## 실제 저장소 설정
 
-현재 비공개 저장소의 Rulesets API가 요금제 제한으로 HTTP 403을 반환했다. GitHub는 Free 비공개 저장소에서 native auto-merge·브랜치 보호 기능을 제공하지 않는다. 이 상태에서는 CI 파일을 추가해도 필수 검사나 자동 머지가 활성화되는 것은 아니다. 공개 전환 또는 사용자가 직접 요금제를 변경한 후 보호 설정을 별도로 적용·확인해야 한다.
+사용자가 저장소를 공개로 전환한 뒤 GitHub API에서 다음 설정을 확인했다.
+
+- 공개 저장소, native auto-merge 활성화, squash merge 사용 가능.
+- main의 필수 검사: `PlugPass verify`, 출처는 GitHub Actions 앱(ID 15368).
+- `strict: true`: 최신 main을 반영해야 머지할 수 있다.
+- PR 필수, 관리자에게도 규칙 적용, 강제 push·브랜치 삭제 금지.
+- 필수 승인 인원은 0명. 혼자 개발하는 프로젝트에서 본인 승인 불가로 멈추지 않도록 하며 CI 조건은 그대로 강제한다.
+
+저장소 설정과 개별 PR의 자동 머지 신청은 별개다. 에이전트는 승인된 작업 범위의 PR마다 위 순서대로 auto-merge를 신청한다. 설정이 나중에 변경될 수 있으므로 신청 전 실제 보호 상태를 조회한다.
+
+도입 당시에는 비공개 저장소의 요금제 제한으로 Rulesets API가 403을 반환했다. 공개 전환으로 해당 제약이 해소됐으며, 보호 없이 merge하는 우회는 사용하지 않았다.
 
 공식 근거: [auto-merge 지원 범위](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-auto-merge-for-pull-requests-in-your-repository), [보호 브랜치](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches), [Java CI](https://docs.github.com/en/actions/tutorials/build-and-test-code/java-with-gradle).

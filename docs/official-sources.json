@@ -312,5 +312,17 @@
     "url": "https://docs.oracle.com/en/java/javase/25/docs/api/java.xml/javax/xml/parsers/DocumentBuilderFactory.html",
     "accessed": "2026-10-02",
     "coverage": "secure processing·외부 접근·error handler 관련 API"
+  },
+  {
+    "id": "spring7-tx-proxy",
+    "url": "https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html",
+    "accessed": "2026-10-02",
+    "coverage": "7.0.9 실제 의존성 확인; proxy/self-call/NEVER 관련 절"
+  },
+  {
+    "id": "jdk25-duration",
+    "url": "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Duration.html",
+    "accessed": "2026-10-02",
+    "coverage": "between/compareTo 나노초 경계"
   }
 ]

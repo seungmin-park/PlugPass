@@ -43,3 +43,19 @@ flowchart LR
 상태 전이는 SyncRun이 소유한다. self-call upsert는 upsertPage의 외부 proxy transaction 안에서만 수행하므로
 새 transaction을 기대하지 않는다. 원본 예외 메시지를 이력에 저장하지 않는다. 업무 HTTP/JSON 변경 없음.
 로그: `/tmp/plugpass-t06-{red,edge-red,green,verify}.log`, XML: `build/test-results/test/`.
+
+## T07 — 관측 시각 기반 최신성
+
+T06 PR #11 필수 CI 성공·main `e062034` 확인 후 시작/체크했다.
+RED: `./gradlew test --tests '*FreshnessPolicyTests' --console=plain`, 14건 중12 실패, 오류/skip0, 종료1.
+일관된 UNVERIFIED stub에서 경계 판정·이유·양수 설정·기준 시각 방어가 실패했다. 누락 관측 관련2건은 처음부터 통과했다.
+GREEN: Duration으로 나노초 단위 경과를 비교하며 maxAge 이하 RECENT, 초과 STALE,
+누락/미래 UNVERIFIED와 각각 이유를 반환한다. 입력은 observedAt/now뿐으로 collectedAt/원본 문자열을 대입하는 API가 없다.
+고정 Clock, 경계 ±1ns, Instant.MIN/MAX, 재수집한 오래된 응답, 현재 수집+상태변경 시각에도 관측 누락,
+null/0/음수 maxAge, null 기준 시각을 검증했다. 정책은 순수 Java이며 DB/네트워크 실패는 적용 대상 없다.
+이름/책임 검토: FreshnessPolicy가 판정, FreshnessAssessment는 상태+이유의 불변 값이다.
+작은 정책은 추가 추출 없이 유지했다. evaluate는 assess의 동일 판단을 사용해 이유와 상태가 갈라지지 않는다.
+설정은 ISO Duration PLUGPASS_FRESHNESS_MAX_AGE, 기본 PT10M이다. 10분은 잠정 제품 판단이며 공급자 지연 보장이 아니다.
+파싱 실패 원본 시각은 변환 어댑터에서 관측 미확인으로 처리하며 이 정책은 Instant만 받는다. 현재 공급자는 관측 시각 null이다.
+T07 대상14건·전체193건 실패/오류/skip0, `bash scripts/verify.sh` 종료0.
+실행 JAR health UP·env404·문서 일치 통과. 로그 `/tmp/plugpass-t07-{red,green,verify}.log`.

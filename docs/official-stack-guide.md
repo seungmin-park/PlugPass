@@ -96,3 +96,10 @@ XML의 BOM/선언 인코딩을 유지한다. UTF-8 BOM·UTF-16 응답을 실제 
 T06은 upsertPage 전체에 transaction을 열고 내부 upsert가 참여한다. synchronize는 NEVER로
 네트워크 대기를 DB transaction 안에 넣는 호출을 거부한다. 실행 이력 save는 Repository의 별도 transaction이다.
 페이지 원자성·SUCCESS 이력에서 마지막 성공을 계산하는 방식은 프로젝트 판단이다.
+
+## T07 — Instant와 Duration 비교
+
+실제 Spring transaction 버전은 dependencyInsight로 7.0.9를 확인했다. T06에서 확인한 rolling reference의 표시 버전과 같다.
+[Java 25 Duration API](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Duration.html)의
+between/compareTo는 초+나노초 정밀도로 경과를 비교한다. 밀리초 절삭 대신 이 비교를 사용한 것은
+프로젝트의 maxAge 포함 경계 판단이다. 정책에 시스템 시각을 숨기지 않고 now를 명시적으로 전달한다.

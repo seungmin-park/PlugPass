@@ -98,10 +98,12 @@
 
 의존: T04, T05. 파일: `ingestion/StationSyncService.java`, `SyncResult.java`, `SyncRun.java`, `SyncRunRepository.java`, `ingestion/StationSyncTests.java`.
 
-- [ ] 여러 페이지 수집, 같은 응답 재실행, 중간 페이지 실패, 잘못된 레코드가 섞인 경우를 테스트한다.
-- [ ] `StationSyncService.synchronize(): SyncResult`로 페이지를 순차 처리하고 페이지별 짧은 저장 트랜잭션을 사용한다. 네트워크 대기 중 DB 트랜잭션을 열어 두지 않는다.
-- [ ] 실행 ID·시작/종료·처리/실패 건수·결과를 저장한다. 전체 성공만 lastSuccessfulRunAt을 바꾸고, 부분 실패에서 기존 행을 삭제하지 않는다.
-- [ ] `./gradlew test --tests '*StationSyncTests'`와 공용 검증으로 저장 결과를 확인하고 PR을 반영한다.
+- [x] 여러 페이지 수집, 같은 응답 재실행, 중간 페이지 실패, 잘못된 레코드가 섞인 경우를 테스트한다.
+- [x] `StationSyncService.synchronize(): SyncResult`로 페이지를 순차 처리하고 페이지별 짧은 저장 트랜잭션을 사용한다. 네트워크 대기 중 DB 트랜잭션을 열어 두지 않는다.
+- [x] 실행 ID·시작/종료·처리/실패 건수·결과를 저장한다. 전체 성공만 lastSuccessfulRunAt을 바꾸고, 부분 실패에서 기존 행을 삭제하지 않는다.
+- [x] `./gradlew test --tests '*StationSyncTests'`와 공용 검증으로 저장 결과를 확인하고 PR을 반영한다.
+
+완료 근거: [PR #11](https://github.com/seungmin-park/PlugPass/pull/11), main `e062034`, [필수 CI 성공](https://github.com/seungmin-park/PlugPass/actions/runs/36892084534). 대상18건·전체179건·공용 검증 종료0. [실행 기록](docs/week2-verification.md).
 
 산출: 반복 호출해도 중복되지 않는 수집 진입점과 성공/부분 실패/실패를 구분한 SyncResult.
 

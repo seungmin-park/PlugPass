@@ -15,7 +15,7 @@ description: Verify PlugPass HTTP health, H2 JPA persistence, REST Docs contract
 ## 빌드와 테스트
 
 1. `bash scripts/verify.sh`를 실행한다. clean build와 아래 JAR·실제 HTTP 검사를 같은 명령으로 수행한다. JDK 25와 Python 3이 필요하다. CI도 이 명령을 사용한다.
-2. 종료 0과 `build/test-results/test/TEST-*.xml`의 테스트 4개, 실패·오류·skip 0을 확인한다. 기능을 추가했다면 기대 개수도 갱신한다.
+2. 종료 0과 `build/test-results/test/TEST-*.xml`의 테스트 56개(기반 4개 + StationModelTests 52개), 실패·오류·skip 0을 확인한다. 기능을 추가했다면 기대 개수도 갱신한다.
 3. [테스트 경계](../../../AGENTS.md)를 따른다. Repository는 기본 save 후 조회하고 매핑 복원이 검증 대상일 때만 이유를 명시해 flush/clear한다. 참조 차이 자체를 assertion하지 않는다. Service는 테스트 트랜잭션 없이 production commit 후 별도 조회하고 AfterEach로 정리한다. 테스트 전용 엔티티가 실행 JAR에 들어가지 않아야 한다.
 4. `build/generated-snippets/health/`와 `build/docs/asciidoc/index.html`이 생성돼야 한다.
 5. JAR의 `BOOT-INF/classes/static/docs/index.html`이 생성한 HTML과 같아야 한다.
@@ -45,3 +45,10 @@ SnippetException에 status가 문서화되지 않았다는 실패가 있어야 �
 PR은 `.github/workflows/verify.yml`의 `PlugPass verify` 결과를 확인한다. 로컬 성공을 원격 CI 성공으로 대신하지 않는다.
 직접 시작한 서버만 종료하고 cmux 검증 pane은 유지한다.
 H2 메모리 데이터의 재시작 보존이나 충전소 업무 흐름이 검증됐다고 주장하지 않는다.
+
+## T01/T02 추가 범위
+
+- T01 계약·XML fixture는 docs/data-contract.md에 출처와 합성 여부를 기록한다. 키가 없으면 실응답 완료로 체크하지 않는다.
+- T02 반복 검증: `./gradlew test --tests '*StationModelTests'` → 52건, 실패·오류·skip 0.
+- 전체 검증은 56건이다. 범위는 ID 충돌·동일 ID 중복·선행 0·식별자 누락·좌표 경계/NaN/무한대·모델 필수값.
+- Station/Charger는 아직 JPA 엔티티가 아니며 업무 API도 없다. Lombok/엔티티 구성과 저장 검증은 T04 범위다.

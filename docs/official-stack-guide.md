@@ -44,3 +44,15 @@ API는 HTTP 계약을, 서비스는 작업의 순서를, 도메인 객체는 데
 - 구현 범위는 [기능 지도](feature-map.md), 실행 절차는 [프로젝트 검증 안내](../.agents/skills/verify-plugpass/SKILL.md)를 따른다.
 
 H2는 메모리 방식이므로 서버 종료 시 데이터가 사라진다. 현재 저장·조회 검증에는 테스트 전용 엔티티를 사용하며, 충전소 업무 엔티티는 아직 없다.
+
+## T02 — 생성 시 검증하는 값 모델
+
+Java 25의 [record 생성자와 값 동등성](https://docs.oracle.com/en/java/javase/25/language/records.html),
+[Double.isFinite](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Double.html#isFinite(double)) 관련 절을 확인했다.
+record compact constructor의 검증이 끝나야 final 필드에 값이 배정된다. equals/hashCode는 모든 구성값을 사용한다.
+이를 ChargerId의 세 요소 식별과 GeoPoint의 유효 범위에 적용하는 것은 프로젝트 설계 판단이다.
+NaN은 일반 비교만으로 거부되지 않아 isFinite를 함께 사용한다.
+
+Station/Charger는 T02의 불변 도메인 모델이며 아직 JPA 엔티티가 아니다. JPA 매핑은 T04에서 수행하므로
+이번에는 엔티티용 Lombok·보호 기본 생성자·시각 필드를 선구현하지 않는다. 신규 의존성·버전 변경은 없다.
+현재 프런트엔드·TypeScript는 적용 대상 없음.

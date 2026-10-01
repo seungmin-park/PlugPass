@@ -8,7 +8,7 @@
 | API 문서 생성 | 응답의 필드 설명이 일치해야 생성 성공 | HealthDocumentationTests + REST Docs |
 | 패키징 JAR의 GET /docs/index.html | 생성된 HTML과 같은 문서, 200 | 실행 JAR HTTP 확인 |
 
-JPA 엔티티와 Repository는 현재 테스트 전용이다. 충전소 업무 데이터·API는 아직 구현하지 않았다.
+JPA 엔티티와 Repository는 현재 테스트 전용이다. 충전소 업무 저장·API는 아직 구현하지 않았다. T02의 생성 시 검증하는 도메인 모델은 아래 테스트로 확인한다.
 문서 테스트는 MockMvc 기반이며 실제 네트워크 테스트와 구분한다. 실제 HTTP 검증은 별도 테스트와 JAR 실행으로 수행한다.
 
 문서에 status 설명을 누락시키면 REST Docs 테스트가 실패하는 것을 확인했다.
@@ -18,3 +18,11 @@ JPA 엔티티와 Repository는 현재 테스트 전용이다. 충전소 업무 �
 
 실행 절차: [verify-plugpass](../.agents/skills/verify-plugpass/SKILL.md)
 이번 실행 기록: [JPA·REST Docs 검증](jpa-restdocs-verification.md)
+
+| T02 도메인 경로 | 기대 결과 | 검증 |
+| --- | --- | --- |
+| ChargerId 생성·Set 등록 | 세 식별자의 차이는 구분, 동일 값 중복 판정, 선행 0 보존 | StationModelTests, Spring/DB 없는 단위 테스트 |
+| GeoPoint 생성 | 범위 양끝 포함, 바로 밖·NaN·무한대 거부 | StationModelTests |
+| Station/Charger 생성 | 빈 식별자·이름, null 위치·ID 거부 | StationModelTests |
+
+이 검증은 공공 API 인증 성공·충전소 JPA 저장·업무 HTTP 흐름을 증명하지 않는다.

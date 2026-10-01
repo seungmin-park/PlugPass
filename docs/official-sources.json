@@ -324,5 +324,11 @@
     "url": "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Duration.html",
     "accessed": "2026-10-02",
     "coverage": "between/compareTo 나노초 경계"
+  },
+  {
+    "id": "spring7-modelattribute",
+    "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/modelattrib-method-args.html",
+    "accessed": "2026-10-02",
+    "coverage": "constructor binding/validation; 실제7.0.9 MVC 테스트"
   }
 ]

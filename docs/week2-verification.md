@@ -59,3 +59,41 @@ null/0/음수 maxAge, null 기준 시각을 검증했다. 정책은 순수 Java�
 파싱 실패 원본 시각은 변환 어댑터에서 관측 미확인으로 처리하며 이 정책은 Instant만 받는다. 현재 공급자는 관측 시각 null이다.
 T07 대상14건·전체193건 실패/오류/skip0, `bash scripts/verify.sh` 종료0.
 실행 JAR health UP·env404·문서 일치 통과. 로그 `/tmp/plugpass-t07-{red,green,verify}.log`.
+
+## T08 — 저장 데이터 주변 검색
+
+T07 PR #12 필수 CI 성공·main `16083e3` 확인 후 완료 체크/시작했다.
+RED: 검색·거리·커넥터 23건 중20 assertion 실패. 동일 위치0과 미지원 코드2건은 baseline 통과.
+HTTP RED: `--tests '*StationSearchHttpTests'`, 20건 모두 assertion 실패(라우트 없어404).
+추가 query RED: HTTP 우회 입력6건 모두 assertion 실패 후 불변식 구현.
+GREEN: 호환 충전기를 묶고 Haversine 직선거리≤반경, 거리/내부ID순, limit으로 검색한다.
+조회는 실제 Repository만 사용하며 외부 PublicDataClient 의존성이 없다. SUCCESS 이력으로 준비 여부/마지막 성공 시각을 반환한다.
+ChargerObservation은 개별 상태·원본·관측/수집 시각·최신성/이유·이용 제한을 보존한다.
+HTTP response DTO에서 AVAILABLE 보고 수와 호환 충전기 수를 합산한다. 보고 수를 최신·실제 이용 가능 수로 표현하지 않는다.
+
+검증: 반경 포함/바로 밖, 동률/limit, 거리를 우선하는 순서, 날짜 변경선·대척점,
+공급자 조합 코드01~10/미지원/null, 준비 전후 빈 결과, 여러 상태/최신성/이용 제한.
+MVC slice는 실제 Spring 바인딩/validation/JSON과 Service 반환 mock을 사용했다. 필수값·유한수·좌표/반경/limit 범위·형식·미지원 커넥터의
+400과 정확한 한국어 필드 메시지, 기본 limit20/경계1·50 전달을 확인했다. 실제 DB는 Service 테스트가 소유한다.
+REST Docs: id 설명을 임시 제거한 documentsSearch가 SnippetException으로 실패했고 즉시 복원했다.
+단순 문서 생성 성공만 보고하지 않는다. 충전기 하위 필드는 검색 문서의 subsection과 명시 필드표로 설명한다.
+
+```mermaid
+flowchart LR
+    HTTP[GET stations: request DTO 검증] --> Controller[HTTP 변환]
+    Controller --> Query[StationQueryService: readOnly transaction]
+    DB[(저장된 Station/Charger + SUCCESS 이력)] --> Query
+    Query --> Connector[Connector: 조합 호환 규칙]
+    Query --> Geo[GeoPoint: 직선거리]
+    Query --> Policy[FreshnessPolicy: 관측 시각 판정]
+    Query --> Result[불변 검색 결과] --> Response[response DTO: 수·필드 직렬화]
+```
+
+Refactor: 공통 ApiError를 common/response로 배치해 예외 처리기의 JSON DTO 책임을 분리했다.
+이름·계약 검토: 공개 id는 내부 databaseId이고 providerStationId와 구분한다. reportedAvailableCount는 보고 수라는 의미를 이름에 드러냈다.
+readOnly transaction 안의 join fetch로 필요한 Station을 한 번에 로딩하고 entity를 HTTP에 반환하지 않는다.
+현재는 전체 저장 행을 읽어 메모리에서 거리를 필터링한다. 전국 규모 성능 보장 없이 T15 측정에서 개선 위치를 결정한다.
+HTTP 키 노출·재시도는 조회 책임에 없으며 원격 API 장애가 즉시 조회 호출로 전파되는 경로를 만들지 않았다.
+T08 최종 대상49건·전체242건 실패/오류/skip0, `bash scripts/verify.sh` 종료0.
+실제 JAR 검색 HTTP200(초기 준비 전 빈 목록), validation400, health UP·env404·문서 일치 통과.
+로그 `/tmp/plugpass-t08-{red,http-red,query-red,green,doc-contract,verify}.log`.

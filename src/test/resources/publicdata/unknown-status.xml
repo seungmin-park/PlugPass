@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='utf-8'?>
+<response>
+  <header>
+    <resultCode>00</resultCode>
+    <resultMsg>NORMAL SERVICE.</resultMsg>
+    <totalCount>1</totalCount>
+    <pageNo>1</pageNo>
+    <numOfRows>10</numOfRows>
+  </header>
+  <body>
+    <items>
+      <item>
+        <statNm>기후대기관</statNm>
+        <statId>28260005</statId>
+        <chgerId>02</chgerId>
+        <chgerType>03</chgerType>
+        <addr>인천광역시 서구 환경로 42</addr>
+        <addrDetail>지상주차장</addrDetail>
+        <lat>37.569620</lat>
+        <lng>126.641973</lng>
+        <useTime>24시간 이용가능</useTime>
+        <busiId>ME</busiId>
+        <bnm>환경부</bnm>
+        <busiNm>한국자동차환경협회</busiNm>
+        <stat>9</stat>
+        <statUpdDt>20190829121020</statUpdDt>
+        <lastTsdt>20210801121020</lastTsdt>
+        <lastTedt>20210801123020</lastTedt>
+        <nowTsdt>20210802131020</nowTsdt>
+        <powerType>급속(100kW동시)</powerType>
+        <output>50</output>
+        <method>단독</method>
+        <zcode>28</zcode>
+        <zscode>28260</zscode>
+        <kind>F0</kind>
+        <kindDetail>F002</kindDetail>
+        <parkingFree>Y</parkingFree>
+        <note>공사로 인해 이용 불가</note>
+        <limitYn>N</limitYn>
+        <limitDetail />
+        <delYn>N</delYn>
+        <delDetail />
+        <trafficYn>N</trafficYn>
+        <year>2025</year>
+        <floorNum>1</floorNum>
+        <floorType>F</floorType>
+      </item>
+    </items>
+  </body>
+</response>

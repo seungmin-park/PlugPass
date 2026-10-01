@@ -1,0 +1,7 @@
+{
+  "date": "2026-10-01",
+  "source": "https://www.data.go.kr/cmm/cmm/fileDownload.do?atchFileId=FILE_000000003680003&fileSn=1",
+  "version": "1.25",
+  "sha256": "b4996098429e15ef0841f1d5fa788e3fc0a9b472a865d480195c5ed6cdf64d17",
+  "coverage": "getChargerInfo 요청/응답·XML 예제·코드표 관련 절; 인증된 실응답 아님"
+}

@@ -33,6 +33,7 @@ H2는 메모리 DB이므로 서버 종료 시 데이터가 사라진다.
 - [기술 스택과 책임 흐름](docs/official-stack-guide.md)
 - [객체지향 생활 체조](docs/object-calisthenics.md)
 - [기능·검증 범위](docs/feature-map.md)
+- [작은 기능별 PR·자동 머지 절차](docs/delivery-workflow.md)
 - [작업 지침](AGENTS.md)
 
 `./gradlew test`로 HTTP·JPA·문서 계약을 검증한다. 테스트 보고서는 `build/reports/tests/test/index.html`에 생성된다.

@@ -14,7 +14,7 @@ description: Verify PlugPass HTTP health, H2 JPA persistence, REST Docs contract
 
 ## 빌드와 테스트
 
-1. `./gradlew clean build --console=plain`을 실행한다.
+1. `bash scripts/verify.sh`를 실행한다. clean build와 아래 JAR·실제 HTTP 검사를 같은 명령으로 수행한다. JDK 25와 Python 3이 필요하다. CI도 이 명령을 사용한다.
 2. 종료 0과 `build/test-results/test/TEST-*.xml`의 테스트 4개, 실패·오류·skip 0을 확인한다. 기능을 추가했다면 기대 개수도 갱신한다.
 3. JPA 테스트의 save/flush 이후 context clear와 재조회 assertion을 확인한다. 테스트 전용 엔티티가 실행 JAR에 들어가지 않아야 한다.
 4. `build/generated-snippets/health/`와 `build/docs/asciidoc/index.html`이 생성돼야 한다.
@@ -39,6 +39,7 @@ SnippetException에 status가 문서화되지 않았다는 실패가 있어야 �
 
 ## 증거와 종료
 
-종료 코드, XML 테스트 결과, 생성 HTML, 서버 로그를 확인한다.
+종료 코드, XML 테스트 결과, 생성 HTML, `build/verification/server.log`와 `runtime.json`을 확인한다. 공용 검증은 테스트 0개·실패·오류·skip을 거부한다.
+PR은 `.github/workflows/verify.yml`의 `PlugPass verify` 결과를 확인한다. 로컬 성공을 원격 CI 성공으로 대신하지 않는다.
 직접 시작한 서버만 종료하고 cmux 검증 pane은 유지한다.
 H2 메모리 데이터의 재시작 보존이나 충전소 업무 흐름이 검증됐다고 주장하지 않는다.

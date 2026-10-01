@@ -190,6 +190,53 @@ class StationSyncTests {
         assertThat(chargerRepository.count()).isEqualTo(1);
     }
 
+    @Test
+    @DisplayName("첫 페이지에 같은 충전기가 반복되면 페이지 전체를 저장하지 않고 실패한다")
+    void rejectsDuplicateIdentityWithinPage() {
+        StationSnapshot original = snapshot("duplicate", "2");
+        StationSnapshot repeated = snapshot("duplicate", "3");
+        pageClient.pages.add(new StationPage(1, 10, 2, List.of(original, repeated)));
+
+        SyncResult result = stationSyncService.synchronize();
+
+        assertThat(result.status()).isEqualTo(SyncStatus.FAILURE);
+        assertThat(result.failureCode()).isEqualTo("CONTRACT");
+        assertThat(result.processedCount()).isZero();
+        assertThat(result.failedPage()).isEqualTo(1);
+        assertThat(result.failedPageCount()).isEqualTo(1);
+        assertThat(syncRunRepository.findById(result.runId()).orElseThrow().result()).isEqualTo(result);
+        assertThat(syncRunRepository.findFirstByStatusOrderByCompletedAtDesc(SyncStatus.SUCCESS)).isEmpty();
+        assertThat(chargerRepository.count()).isZero();
+        assertThat(stationRepository.count()).isZero();
+        assertThat(pageClient.requestedPages).containsExactly(1);
+    }
+
+    @Test
+    @DisplayName("다음 페이지에 이전 충전기가 반복되면 새 항목과 덮어쓰기를 모두 거부하고 이전 페이지를 유지한다")
+    void rejectsDuplicateIdentityAcrossPages() {
+        List<StationSnapshot> firstPage = IntStream.rangeClosed(1, 10)
+                .mapToObj(index -> snapshot("one-" + index, "2")).toList();
+        StationSnapshot newCharger = snapshot("new", "2");
+        StationSnapshot repeated = snapshot("one-1", "3");
+        pageClient.pages.add(new StationPage(1, 10, 12, firstPage));
+        pageClient.pages.add(new StationPage(2, 10, 12, List.of(newCharger, repeated)));
+
+        SyncResult result = stationSyncService.synchronize();
+
+        assertThat(result.status()).isEqualTo(SyncStatus.PARTIAL_FAILURE);
+        assertThat(result.failureCode()).isEqualTo("CONTRACT");
+        assertThat(result.processedCount()).isEqualTo(10);
+        assertThat(result.failedPage()).isEqualTo(2);
+        assertThat(result.failedPageCount()).isEqualTo(1);
+        assertThat(syncRunRepository.findById(result.runId()).orElseThrow().result()).isEqualTo(result);
+        assertThat(syncRunRepository.findFirstByStatusOrderByCompletedAtDesc(SyncStatus.SUCCESS)).isEmpty();
+        assertThat(chargerRepository.findAll()).extracting(charger -> charger.getId().stationId())
+                .containsExactlyInAnyOrder("one-1", "one-2", "one-3", "one-4", "one-5", "one-6", "one-7", "one-8", "one-9", "one-10");
+        assertThat(stationRepository.count()).isEqualTo(10);
+        assertThat(chargerRepository.findByIdentity(repeated.chargerId()).orElseThrow().getRawStatus()).isEqualTo("2");
+        assertThat(pageClient.requestedPages).containsExactly(1, 2);
+    }
+
     private StationSnapshot snapshot(String stationId, String rawStatus) {
         return new StationSnapshot(new ChargerId("ME", stationId, "01"), "충전소", new GeoPoint(37.5, 126.6),
                 ChargerStatus.AVAILABLE, rawStatus, null, null, collectedAt);

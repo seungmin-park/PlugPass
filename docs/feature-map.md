@@ -8,7 +8,7 @@
 | API 문서 생성 | 응답의 필드 설명이 일치해야 생성 성공 | HealthDocumentationTests + REST Docs |
 | 패키징 JAR의 GET /docs/index.html | 생성된 HTML과 같은 문서, 200 | 실행 JAR HTTP 확인 |
 
-Station/Charger 업무 엔티티와 Repository·upsert는 T04에서 구현했다. 업무 조회 API는 아직 없다. T02의 생성 시 검증하는 도메인 모델은 아래 테스트로 확인한다.
+Station/Charger 업무 엔티티와 Repository·upsert는 T04에서 구현했다. 업무 조회 API는 T08/T09에서 구현했다. T02의 생성 시 검증하는 도메인 모델은 아래 테스트로 확인한다.
 문서 테스트는 MockMvc 기반이며 실제 네트워크 테스트와 구분한다. 실제 HTTP 검증은 별도 테스트와 JAR 실행으로 수행한다.
 
 문서에 status 설명을 누락시키면 REST Docs 테스트가 실패하는 것을 확인했다.
@@ -43,12 +43,12 @@ Station/Charger 업무 엔티티와 Repository·upsert는 T04에서 구현했다
 | 실제 fixture HTTP → Snapshot | 식별·위치·상태·운영/원본 시각 보존, 페이지 종료 | PublicDataClientTests |
 | 인증·서버·XML·설정·timeout 실패 | 오류 분류·키 비노출·헤더/본문 지연 종료 | PublicDataClientTests |
 
-공공 API 실인증은 미확인, 클라이언트는 아직 DB 수집 실행·스케줄과 연결되지 않았다.
+공공 API 실인증은 미확인이다. 클라이언트는 T06의 DB 수집 실행에 연결됐으며 스케줄은 아직 없다.
 
 ## T06 수집 실행
 
 StationSyncService → PublicDataClient → StationUpsertService.upsertPage → 실제 H2 commit.
-SyncRun은 실행 상태와 실패 페이지/코드를 소유한다. StationSyncTests 10건·SyncRunTests 10건으로
+SyncRun은 실행 상태와 실패 페이지/코드를 소유한다. StationSyncTests 12건·SyncRunTests 10건으로
 순차 처리·부분 실패·반복 실행·rollback·시각과 상태 방어를 확인한다. 상세 근거: [2주차 기록](week2-verification.md).
 
 ## T07 최신성
@@ -72,4 +72,7 @@ StationDetailTests5·StationDetailHttpTests7·StationReadFlowTests2 =14건.
 실제 fixture HTTP 수집부터 H2와 실제 검색/상세 HTTP, 공급자503 중 기존 정보 조회를 확인한다.
 공용 verify는 실행 JAR의 없는 상세404 공개 오류도 검증한다. 실제 공공 API 인증과 cmux 화면 검증은 별도 미확인이다.
 
-실패 페이지 건수를 failedPageCount로 명시 저장·반환한다. 최종 T06 관련20건, 전체258건이다.
+실패 페이지 건수를 failedPageCount로 명시 저장·반환한다. 리뷰 보완 후 T06 관련22건, 전체260건이다.
+
+회차 내 중복 ID 페이지는 저장 전에 거부한다. SyncProgress가 순서·헤더·중복·완료 건수를 소유한다.
+[리뷰·리팩터링 검증 기록](code-review-2026-10-02.md)에 Red/Green/Refactor와 한계를 기록했다.

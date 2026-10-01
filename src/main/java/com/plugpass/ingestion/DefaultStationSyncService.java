@@ -2,7 +2,6 @@ package com.plugpass.ingestion;
 
 import java.time.Clock;
 import com.plugpass.exception.PublicDataException;
-import com.plugpass.exception.PublicDataFailure;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -26,32 +25,22 @@ public class DefaultStationSyncService implements StationSyncService {
     @Transactional(propagation = Propagation.NEVER)
     public synchronized SyncResult synchronize() {
         SyncRun run = syncRunRepository.save(SyncRun.builder().startedAt(clock.instant()).build());
-        long processedCount = 0;
-        int pageNumber = 1;
-        Long totalCount = null;
-        Integer pageSize = null;
+        SyncProgress progress = new SyncProgress();
         try {
             while (true) {
-                StationPage page = publicDataClient.fetchPage(pageNumber);
-                if (page.pageNumber() != pageNumber || (totalCount != null && page.totalCount() != totalCount)
-                        || (pageSize != null && page.pageSize() != pageSize)) {
-                    throw new PublicDataException(PublicDataFailure.CONTRACT);
-                }
-                totalCount = page.totalCount();
-                pageSize = page.pageSize();
+                StationPage page = publicDataClient.fetchPage(progress.pageNumber());
+                progress.validatePage(page);
                 stationUpsertService.upsertPage(page.snapshots());
-                processedCount += page.snapshots().size();
+                progress.recordCommittedPage(page);
                 if (!page.hasNext()) { break; }
-                pageNumber = Math.incrementExact(pageNumber);
+                progress.advancePage();
             }
-            if (processedCount != totalCount) {
-                throw new PublicDataException(PublicDataFailure.CONTRACT);
-            }
-            return complete(run, processedCount, null, null);
+            progress.requireComplete();
+            return complete(run, progress.processedCount(), null, null);
         } catch (PublicDataException failure) {
-            return complete(run, processedCount, pageNumber, failure.getFailure().name());
+            return complete(run, progress.processedCount(), progress.pageNumber(), failure.getFailure().name());
         } catch (DataAccessException failure) {
-            return complete(run, processedCount, pageNumber, "STORAGE");
+            return complete(run, progress.processedCount(), progress.pageNumber(), "STORAGE");
         }
     }
     private SyncResult complete(SyncRun run, long processedCount, Integer failedPage, String failureCode) {

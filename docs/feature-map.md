@@ -48,7 +48,7 @@ Station/Charger 업무 엔티티와 Repository·upsert는 T04에서 구현했다
 ## T06 수집 실행
 
 StationSyncService → PublicDataClient → StationUpsertService.upsertPage → 실제 H2 commit.
-SyncRun은 실행 상태와 실패 페이지/코드를 소유한다. StationSyncTests 9건·SyncRunTests 9건으로
+SyncRun은 실행 상태와 실패 페이지/코드를 소유한다. StationSyncTests 10건·SyncRunTests 9건으로
 순차 처리·부분 실패·반복 실행·rollback·시각과 상태 방어를 확인한다. 상세 근거: [2주차 기록](week2-verification.md).
 
 ## T07 최신성
@@ -62,3 +62,5 @@ GET /api/v1/stations → StationSearchRequest → StationQueryService → 저장
 Connector는 조합 호환, GeoPoint는 직선거리, FreshnessPolicy는 관측 시각 판단을 소유한다.
 StationSearchTests7·StationSearchHttpTests20·StationSearchQueryTests6·ConnectorTests12·GeoDistanceTests4 =49건.
 Service 실제 DB와 MVC slice 계약을 구분한다. 공용 verify는 실행 JAR의 검색200·validation400도 확인한다.
+
+수집 완료는 마지막 페이지 도달과 실제 전체 처리 건수 일치를 함께 요구한다. 불일치는 CONTRACT 부분 실패로 기록한다.

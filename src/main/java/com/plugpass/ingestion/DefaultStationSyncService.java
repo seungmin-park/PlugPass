@@ -44,6 +44,9 @@ public class DefaultStationSyncService implements StationSyncService {
                 if (!page.hasNext()) { break; }
                 pageNumber = Math.incrementExact(pageNumber);
             }
+            if (processedCount != totalCount) {
+                throw new PublicDataException(PublicDataFailure.CONTRACT);
+            }
             return complete(run, processedCount, null, null);
         } catch (PublicDataException failure) {
             return complete(run, processedCount, pageNumber, failure.getFailure().name());

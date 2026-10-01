@@ -97,3 +97,15 @@ HTTP 키 노출·재시도는 조회 책임에 없으며 원격 API 장애가 �
 T08 최종 대상49건·전체242건 실패/오류/skip0, `bash scripts/verify.sh` 종료0.
 실제 JAR 검색 HTTP200(초기 준비 전 빈 목록), validation400, health UP·env404·문서 일치 통과.
 로그 `/tmp/plugpass-t08-{red,http-red,query-red,green,doc-contract,verify}.log`.
+
+## 완료 판정 회귀 수정 — T06
+
+T08 PR #13 성공·main `828377a` 확인 뒤 전체 흐름 자체 리뷰에서 발견했다.
+원인: hasNext=false만으로 전체 성공 처리하여 totalCount2/내용1도 SUCCESS였다.
+RED: `--tests '*StationSyncTests.rejectsIncompleteRecordCount'`, expected PARTIAL_FAILURE vs SUCCESS assertion 실패,1건,종료1.
+GREEN: 마지막 페이지 commit 후 processedCount와 최초/일관된 totalCount를 비교하며 다르면 CONTRACT로 완료한다.
+앞서 commit한 유효 데이터는 보존하고 마지막 성공 이력은 생성하지 않는다.
+정상 여러 페이지 fixture는 최소 pageSize10에 맞는 실제 10+1건으로 바로잡고 전체 원소/건수를 검증했다.
+Ruling: advertised total을 모두 처리하지 못하면 전체 성공이 아니다. 비용은 공급자가 부정확한 total을 주는 경우도 실패로 분류하는 보수적 정책이다.
+공용 verify 전체243건 실패/오류/skip0,종료0. 로그 `/tmp/plugpass-sync-count-{red,verify}.log`.
+작성자 자체 검토이며 T06 독립 수정 PR로 전달한다. 새 스케줄·재시도는 추가하지 않았다.

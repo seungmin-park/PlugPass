@@ -330,5 +330,11 @@
     "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/modelattrib-method-args.html",
     "accessed": "2026-10-02",
     "coverage": "constructor binding/validation; 실제7.0.9 MVC 테스트"
+  },
+  {
+    "id": "spring7-exceptionhandler",
+    "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-exceptionhandler.html",
+    "accessed": "2026-10-02",
+    "coverage": "7.0.9 advice/path 변환 및404 공개 계약 실제MVC 확인"
   }
 ]

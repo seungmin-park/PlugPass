@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface ChargerRepository extends JpaRepository<Charger, Long> {
+    List<Charger> findByStationDatabaseId(Long stationId);
+
     @Query("select charger from Charger charger join fetch charger.station")
     List<Charger> findAllWithStation();
 

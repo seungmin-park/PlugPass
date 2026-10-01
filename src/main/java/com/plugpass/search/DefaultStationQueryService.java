@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import com.plugpass.freshness.FreshnessPolicy;
+import com.plugpass.exception.StationNotFoundException;
+import com.plugpass.station.StationRepository;
 import com.plugpass.ingestion.SyncRun;
 import com.plugpass.ingestion.SyncRunRepository;
 import com.plugpass.ingestion.SyncStatus;
@@ -22,14 +24,28 @@ public class DefaultStationQueryService implements StationQueryService {
     private final SyncRunRepository syncRunRepository;
     private final FreshnessPolicy freshnessPolicy;
     private final Clock clock;
+    private final StationRepository stationRepository;
 
     public DefaultStationQueryService(ChargerRepository chargerRepository, SyncRunRepository syncRunRepository,
-            FreshnessPolicy freshnessPolicy, Clock clock) {
+            FreshnessPolicy freshnessPolicy, Clock clock, StationRepository stationRepository) {
         this.chargerRepository = chargerRepository;
         this.syncRunRepository = syncRunRepository;
         this.freshnessPolicy = freshnessPolicy;
         this.clock = clock;
+        this.stationRepository = stationRepository;
     }
+    @Override
+    @Transactional(readOnly = true)
+    public StationDetail detail(Long stationId) {
+        if (stationId == null) { throw new IllegalArgumentException("stationId must not be null"); }
+        Station station = stationRepository.findById(stationId).orElseThrow(StationNotFoundException::new);
+        Instant now = clock.instant();
+        List<ChargerObservation> chargers = chargerRepository.findByStationDatabaseId(stationId).stream()
+                .sorted(Comparator.comparing(charger -> charger.getId().chargerId()))
+                .map(charger -> observation(charger, now)).toList();
+        return new StationDetail(station.getDatabaseId(),station.getProvider(),station.getStationId(),station.getName(),station.getLocation(),chargers);
+    }
+
     @Override
     @Transactional(readOnly = true)
     public StationSearchResult search(StationSearchQuery query) {

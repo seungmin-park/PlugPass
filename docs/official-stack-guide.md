@@ -112,3 +112,11 @@ record constructor binding과 Valid 검증, 기존 [REST Docs 4 가이드](https
 NaN/Infinity는 request DTO의 FiniteDouble로 거부하고 여러 violation은 유한수 오류를 우선 반환한다.
 Haversine 평균 지구 반지름6371008.8m, 코드 조합 호환, 준비 상태·보고 수 구분은 프로젝트 설계 판단이다.
 직선거리 모델은 도로/주행거리나 측지 타원체 정확도를 보장하지 않는다.
+
+## T09 — path variable과 공개 오류 경계
+
+[Spring Framework7.0.9 request mapping](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-requestmapping.html),
+[ExceptionHandler](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-exceptionhandler.html) 관련 절을 확인했다.
+@PathVariable Long 변환 오류와 애플리케이션 StationNotFoundException은 공통 advice에서 각각400/404로 변환한다.
+공개 code·한국어 메시지·빈 fields는 프로젝트 계약이며 내부 예외 cause/DB 정보는 반환하지 않는다.
+readOnly transaction에서 DTO로 옮기고 open-in-view=false 상태에서도 실제 HTTP 직렬화가 성공하는 것을 연결 테스트로 확인했다.

@@ -3,6 +3,8 @@ package com.plugpass.search;
 import jakarta.validation.Valid;
 import com.plugpass.search.request.StationSearchRequest;
 import com.plugpass.search.response.StationSearchResponse;
+import com.plugpass.search.response.StationDetailResponse;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class StationController {
     private final StationQueryService stationQueryService;
     public StationController(StationQueryService stationQueryService) { this.stationQueryService = stationQueryService; }
+    @GetMapping("/{stationId}")
+    public StationDetailResponse detail(@PathVariable Long stationId) {
+        return StationDetailResponse.from(stationQueryService.detail(stationId));
+    }
+
     @GetMapping
     public StationSearchResponse search(@Valid @ModelAttribute StationSearchRequest request) {
         return StationSearchResponse.from(stationQueryService.search(request.toQuery()));

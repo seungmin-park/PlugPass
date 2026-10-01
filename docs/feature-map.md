@@ -64,3 +64,10 @@ StationSearchTests7·StationSearchHttpTests20·StationSearchQueryTests6·Connect
 Service 실제 DB와 MVC slice 계약을 구분한다. 공용 verify는 실행 JAR의 검색200·validation400도 확인한다.
 
 수집 완료는 마지막 페이지 도달과 실제 전체 처리 건수 일치를 함께 요구한다. 불일치는 CONTRACT 부분 실패로 기록한다.
+
+## T09 상세와 실제 연결
+
+GET /api/v1/stations/{stationId} → StationQueryService.detail → 실제 Station/Charger 조회 → StationDetailResponse.
+StationDetailTests5·StationDetailHttpTests7·StationReadFlowTests2 =14건.
+실제 fixture HTTP 수집부터 H2와 실제 검색/상세 HTTP, 공급자503 중 기존 정보 조회를 확인한다.
+공용 verify는 실행 JAR의 없는 상세404 공개 오류도 검증한다. 실제 공공 API 인증과 cmux 화면 검증은 별도 미확인이다.

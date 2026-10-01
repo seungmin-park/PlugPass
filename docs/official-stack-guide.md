@@ -120,3 +120,10 @@ Haversine 평균 지구 반지름6371008.8m, 코드 조합 호환, 준비 상태
 @PathVariable Long 변환 오류와 애플리케이션 StationNotFoundException은 공통 advice에서 각각400/404로 변환한다.
 공개 code·한국어 메시지·빈 fields는 프로젝트 계약이며 내부 예외 cause/DB 정보는 반환하지 않는다.
 readOnly transaction에서 DTO로 옮기고 open-in-view=false 상태에서도 실제 HTTP 직렬화가 성공하는 것을 연결 테스트로 확인했다.
+
+## 2주차 리뷰 — 회차별 식별자 중복 검사
+
+JDK25.0.4.1과 기존 해석 의존성을 유지했다. [Java25 Set API](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html)는
+equals로 원소 동등성을 판단하고 add는 기존 원소이면 false를 반환한다. 불변 ChargerId record의 세 값 전체를 사용한다.
+회차 내 중복을 CONTRACT로 거부하는 것은 프로젝트 설계 판단이며, DB unique 제약만으로 수집의 완전성을 보장할 수 없어 추가했다.
+실제 서비스·DB 테스트에서 페이지 내부/페이지 간 중복과 회차 간 정상 재수집을 확인했다. 신규 의존성·버전 변경은 없다.

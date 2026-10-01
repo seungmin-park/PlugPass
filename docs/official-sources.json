@@ -336,5 +336,11 @@
     "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-exceptionhandler.html",
     "accessed": "2026-10-02",
     "coverage": "7.0.9 advice/path 변환 및404 공개 계약 실제MVC 확인"
+  },
+  {
+    "id": "java25-set",
+    "url": "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html",
+    "accessed": "2026-10-02",
+    "coverage": "Set의 equals 기반 원소 동등성과 add 반환값; 수집 중복 검사에 적용"
   }
 ]

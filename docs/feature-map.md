@@ -8,7 +8,7 @@
 | API 문서 생성 | 응답의 필드 설명이 일치해야 생성 성공 | HealthDocumentationTests + REST Docs |
 | 패키징 JAR의 GET /docs/index.html | 생성된 HTML과 같은 문서, 200 | 실행 JAR HTTP 확인 |
 
-JPA 엔티티와 Repository는 현재 테스트 전용이다. 충전소 업무 저장·API는 아직 구현하지 않았다. T02의 생성 시 검증하는 도메인 모델은 아래 테스트로 확인한다.
+Station/Charger 업무 엔티티와 Repository·upsert는 T04에서 구현했다. 업무 조회 API는 아직 없다. T02의 생성 시 검증하는 도메인 모델은 아래 테스트로 확인한다.
 문서 테스트는 MockMvc 기반이며 실제 네트워크 테스트와 구분한다. 실제 HTTP 검증은 별도 테스트와 JAR 실행으로 수행한다.
 
 문서에 status 설명을 누락시키면 REST Docs 테스트가 실패하는 것을 확인했다.
@@ -31,3 +31,9 @@ JPA 엔티티와 Repository는 현재 테스트 전용이다. 충전소 업무 �
 | --- | --- | --- |
 | 외부 상태 코드 → ChargerStatus | 공식 코드 매핑, 미지원/null은 UNKNOWN | ProviderStatusMapperTests 19건 |
 | Charger 상태·원본 보존 | 정규화 값과 원본 분리, null 업무 상태 거부 | ProviderStatusMapperTests |
+
+| T04 경로 | 기대 결과 | 검증 |
+| --- | --- | --- |
+| 엔티티 저장/매핑 복원 | ID·위치·enum 문자열·운영 정보·원본 시각 복원, unique 제약 | StationPersistenceTests 3건 |
+| Service upsert → commit → 재조회 | 중복 방지·갱신·역순 거부·실패 rollback | StationUpsertTests 7건 |
+| 도메인 갱신 / Snapshot 생성 | 실패 후 상태/시각 유지·관계 방어·필수값 거부 | StationMutationTests 4건, StationSnapshotTests 8건 |

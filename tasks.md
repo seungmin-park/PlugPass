@@ -57,9 +57,11 @@
 
 의존: T01, T02. 파일: `station/ChargerStatus.java`, `ingestion/ProviderStatusMapper.java`, `ingestion/ProviderStatusMapperTests.java`.
 
-- [ ] 정상 코드·알 수 없는 코드·null을 입력하는 테스트를 작성한다. 미지원 값은 AVAILABLE이 아니라 UNKNOWN이어야 한다.
-- [ ] `ProviderStatusMapper.map(String rawCode): ChargerStatus`와 AVAILABLE/OCCUPIED/UNAVAILABLE/UNKNOWN을 구현하고 원본 코드를 보존한다.
-- [ ] `./gradlew test --tests '*ProviderStatusMapperTests'`의 실패·통과를 확인하고 계약 표와 함께 PR을 반영한다.
+- [x] 정상 코드·알 수 없는 코드·null을 입력하는 테스트를 작성한다. 미지원 값은 AVAILABLE이 아니라 UNKNOWN이어야 한다.
+- [x] `ProviderStatusMapper.map(String rawCode): ChargerStatus`와 AVAILABLE/OCCUPIED/UNAVAILABLE/UNKNOWN을 구현하고 원본 코드를 보존한다.
+- [x] `./gradlew test --tests '*ProviderStatusMapperTests'`의 실패·통과를 확인하고 계약 표와 함께 PR을 반영한다.
+
+완료 근거: [PR #7](https://github.com/seungmin-park/PlugPass/pull/7), 필수 CI 성공·main 반영. 대상 19건·전체 75건·공용 검증 통과. [실행 기록](docs/week1-verification.md).
 
 산출: T01 코드표에 근거한 상태 변환. 운영 시간·접근 제한은 상태 코드 하나로 추정하지 않는다.
 

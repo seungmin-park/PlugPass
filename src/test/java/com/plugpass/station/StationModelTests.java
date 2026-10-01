@@ -1,5 +1,6 @@
 package com.plugpass.station;
 
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -139,7 +140,7 @@ class StationModelTests {
     void stationRejectsBlankProvider(String provider) {
         GeoPoint location = new GeoPoint(37.569620, 126.641973);
 
-        assertThatThrownBy(() -> new Station(provider, "28260005", "검증 충전소", location))
+        assertThatThrownBy(() -> Station.builder().provider(provider).stationId("28260005").name("검증 충전소").location(location).createdAt(Instant.parse("2026-10-01T00:00:00Z")).build())
                 .isInstanceOf(IllegalArgumentException.class).hasMessage("provider must not be blank");
     }
 
@@ -150,7 +151,7 @@ class StationModelTests {
     void stationRejectsBlankStationId(String stationId) {
         GeoPoint location = new GeoPoint(37.569620, 126.641973);
 
-        assertThatThrownBy(() -> new Station("ME", stationId, "검증 충전소", location))
+        assertThatThrownBy(() -> Station.builder().provider("ME").stationId(stationId).name("검증 충전소").location(location).createdAt(Instant.parse("2026-10-01T00:00:00Z")).build())
                 .isInstanceOf(IllegalArgumentException.class).hasMessage("stationId must not be blank");
     }
 
@@ -161,21 +162,21 @@ class StationModelTests {
     void stationRejectsBlankName(String name) {
         GeoPoint location = new GeoPoint(37.569620, 126.641973);
 
-        assertThatThrownBy(() -> new Station("ME", "28260005", name, location))
+        assertThatThrownBy(() -> Station.builder().provider("ME").stationId("28260005").name(name).location(location).createdAt(Instant.parse("2026-10-01T00:00:00Z")).build())
                 .isInstanceOf(IllegalArgumentException.class).hasMessage("name must not be blank");
     }
 
     @Test
     @DisplayName("충전소는 누락된 위치를 거부한다")
     void stationRejectsMissingLocation() {
-        assertThatThrownBy(() -> new Station("ME", "28260005", "검증 충전소", null))
+        assertThatThrownBy(() -> Station.builder().provider("ME").stationId("28260005").name("검증 충전소").location(null).createdAt(Instant.parse("2026-10-01T00:00:00Z")).build())
                 .isInstanceOf(IllegalArgumentException.class).hasMessage("location must not be null");
     }
 
     @Test
     @DisplayName("충전기는 누락된 복합 식별자를 거부한다")
     void chargerRejectsMissingIdentity() {
-        assertThatThrownBy(() -> new Charger(null))
+        assertThatThrownBy(() -> Charger.builder().id(null).status(ChargerStatus.UNKNOWN).build())
                 .isInstanceOf(IllegalArgumentException.class).hasMessage("id must not be null");
     }
 
@@ -183,13 +184,13 @@ class StationModelTests {
     @DisplayName("유효한 충전소와 충전기는 업무 식별자와 위치를 보존한다")
     void createsValidModels() {
         GeoPoint location = new GeoPoint(37.569620, 126.641973);
-        Station station = new Station("ME", "28260005", "검증 충전소", location);
-        Charger charger = new Charger(new ChargerId("ME", "28260005", "02"));
+        Station station = Station.builder().provider("ME").stationId("28260005").name("검증 충전소").location(location).createdAt(Instant.parse("2026-10-01T00:00:00Z")).build();
+        Charger charger = Charger.builder().id(new ChargerId("ME", "28260005", "02")).station(station).status(ChargerStatus.UNKNOWN).collectedAt(Instant.parse("2026-10-01T00:00:00Z")).build();
 
-        assertThat(station.provider()).isEqualTo("ME");
-        assertThat(station.stationId()).isEqualTo("28260005");
-        assertThat(station.name()).isEqualTo("검증 충전소");
-        assertThat(station.location()).isEqualTo(new GeoPoint(37.569620, 126.641973));
-        assertThat(charger.id()).isEqualTo(new ChargerId("ME", "28260005", "02"));
+        assertThat(station.getProvider()).isEqualTo("ME");
+        assertThat(station.getStationId()).isEqualTo("28260005");
+        assertThat(station.getName()).isEqualTo("검증 충전소");
+        assertThat(station.getLocation()).isEqualTo(new GeoPoint(37.569620, 126.641973));
+        assertThat(charger.getId()).isEqualTo(new ChargerId("ME", "28260005", "02"));
     }
 }

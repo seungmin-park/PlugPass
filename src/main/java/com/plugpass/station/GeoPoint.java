@@ -1,6 +1,10 @@
 package com.plugpass.station;
 
-public record GeoPoint(double latitude, double longitude) {
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Column;
+
+@Embeddable
+public record GeoPoint(@Column(nullable = false) double latitude, @Column(nullable = false) double longitude) {
 
     public GeoPoint {
         if (!Double.isFinite(latitude) || latitude < -90 || latitude > 90) {

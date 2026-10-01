@@ -26,3 +26,8 @@ JPA 엔티티와 Repository는 현재 테스트 전용이다. 충전소 업무 �
 | Station/Charger 생성 | 빈 식별자·이름, null 위치·ID 거부 | StationModelTests |
 
 이 검증은 공공 API 인증 성공·충전소 JPA 저장·업무 HTTP 흐름을 증명하지 않는다.
+
+| T03 경로 | 기대 결과 | 검증 |
+| --- | --- | --- |
+| 외부 상태 코드 → ChargerStatus | 공식 코드 매핑, 미지원/null은 UNKNOWN | ProviderStatusMapperTests 19건 |
+| Charger 상태·원본 보존 | 정규화 값과 원본 분리, null 업무 상태 거부 | ProviderStatusMapperTests |

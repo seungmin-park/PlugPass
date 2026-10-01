@@ -105,6 +105,8 @@
 
 완료 근거: [PR #11](https://github.com/seungmin-park/PlugPass/pull/11), main `e062034`, [필수 CI 성공](https://github.com/seungmin-park/PlugPass/actions/runs/36892084534). 대상18건·전체179건·공용 검증 종료0. [실행 기록](docs/week2-verification.md).
 
+실패 건수의 단위는 실패 페이지 수이며 `failedPageCount`로 저장한다. 처리 수는 입력 레코드 수다. 미수신 페이지의 실패 레코드 수는 추정하지 않는다. 최종 전체258건 검증 근거는 [2주차 최종 검토 기록](docs/week2-verification.md)을 따른다.
+
 산출: 반복 호출해도 중복되지 않는 수집 진입점과 성공/부분 실패/실패를 구분한 SyncResult.
 
 ### T07 — 관측 시각에 근거한 최신성 판정

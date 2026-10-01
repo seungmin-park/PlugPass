@@ -15,7 +15,7 @@ description: Verify PlugPass HTTP health, H2 JPA persistence, REST Docs contract
 ## 빌드와 테스트
 
 1. `bash scripts/verify.sh`를 실행한다. clean build와 아래 JAR·실제 HTTP 검사를 같은 명령으로 수행한다. JDK 25와 Python 3이 필요하다. CI도 이 명령을 사용한다.
-2. 종료 0과 `build/test-results/test/TEST-*.xml`의 테스트 161개(기반 4개 + T02 52개 + T03 19개 + T04 22개 + T05 64개), 실패·오류·skip 0을 확인한다. 기능을 추가했다면 기대 개수도 갱신한다.
+2. 종료 0과 `build/test-results/test/TEST-*.xml`의 테스트 179개(기반 4개 + T02 52개 + T03 19개 + T04 22개 + T05 64개 + T06 18개), 실패·오류·skip 0을 확인한다. 기능을 추가했다면 기대 개수도 갱신한다.
 3. [테스트 경계](../../../AGENTS.md)를 따른다. Repository는 기본 save 후 조회하고 매핑 복원이 검증 대상일 때만 이유를 명시해 flush/clear한다. 참조 차이 자체를 assertion하지 않는다. Service는 테스트 트랜잭션 없이 production commit 후 별도 조회하고 AfterEach로 정리한다. 테스트 전용 엔티티가 실행 JAR에 들어가지 않아야 한다.
 4. `build/generated-snippets/health/`와 `build/docs/asciidoc/index.html`이 생성돼야 한다.
 5. JAR의 `BOOT-INF/classes/static/docs/index.html`이 생성한 HTML과 같아야 한다.
@@ -66,3 +66,7 @@ Service commit 후 별도 재조회·AfterEach FK 역순 정리·중복 제약·
 `./gradlew test --tests '*PublicDataClientTests'`: 64건. 전체 161건.
 실제 loopback HTTP fixture에서 페이지·정규화·키 비노출·헤더/본문 timeout·XML 거부를 확인한다.
 실제 공공 API 인증은 키 없어 미확인이다. 수집 실행/스케줄/업무 HTTP는 아직 없다.
+
+## T06
+
+`./gradlew test --tests "*StationSyncTests" --tests "*SyncRunTests"` → 18건. 실제 페이지 commit·실패 rollback·실행 이력을 확인한다.

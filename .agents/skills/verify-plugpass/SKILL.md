@@ -1,0 +1,44 @@
+---
+name: verify-plugpass
+description: Verify PlugPass HTTP health, H2 JPA persistence, REST Docs contracts, and packaged API documentation.
+---
+
+# PlugPass 검증
+
+## 환경 확인
+
+- 프로젝트 루트에서 `java -version`으로 JDK 25를 확인한다.
+- `CMUX_WORKSPACE_ID`, `CMUX_SURFACE_ID`, `cmux identify --json`으로 호출한 세션을 확인한다.
+- 현재 cmux의 검증 보조 pane을 재사용하고 workspace·surface를 명시한다. 사용자가 입력 중인 터미널은 사용하지 않는다.
+- cmux 연결이 없으면 그 한계를 먼저 설명하고 터미널 검증을 화면 E2E라고 보고하지 않는다.
+
+## 빌드와 테스트
+
+1. `./gradlew clean build --console=plain`을 실행한다.
+2. 종료 0과 `build/test-results/test/TEST-*.xml`의 테스트 4개, 실패·오류·skip 0을 확인한다. 기능을 추가했다면 기대 개수도 갱신한다.
+3. JPA 테스트의 save/flush 이후 context clear와 재조회 assertion을 확인한다. 테스트 전용 엔티티가 실행 JAR에 들어가지 않아야 한다.
+4. `build/generated-snippets/health/`와 `build/docs/asciidoc/index.html`이 생성돼야 한다.
+5. JAR의 `BOOT-INF/classes/static/docs/index.html`이 생성한 HTML과 같아야 한다.
+
+## 실제 HTTP 확인
+
+`java -jar build/libs/plugpass-0.0.1-SNAPSHOT.jar --server.port=18080`으로 실행한다. 해당 포트가 사용 중이면 빈 포트를 사용한다.
+
+- GET /actuator/health: HTTP 200, JSON status UP, components 없음.
+- GET /actuator/env: HTTP 404.
+- GET /docs/index.html: HTTP 200, 응답이 생성한 HTML과 동일.
+
+문서 생성 테스트는 MockMvc 기반이다. 실제 네트워크 검증과 구분해서 보고한다.
+
+## 문서 계약 검사
+
+HealthDocumentationTests의 status 필드 설명을 임시로 제거한 뒤 `./gradlew test --tests '*HealthDocumentationTests'`를 실행한다.
+SnippetException에 status가 문서화되지 않았다는 실패가 있어야 한다.
+반드시 설명을 복원하고 `./gradlew clean build` 전체 검증을 다시 통과시킨다.
+이 검사는 문서 계약을 변경하거나 검사 동작을 확인할 때 수행한다.
+
+## 증거와 종료
+
+종료 코드, XML 테스트 결과, 생성 HTML, 서버 로그를 확인한다.
+직접 시작한 서버만 종료하고 cmux 검증 pane은 유지한다.
+H2 메모리 데이터의 재시작 보존이나 충전소 업무 흐름이 검증됐다고 주장하지 않는다.

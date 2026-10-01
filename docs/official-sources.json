@@ -1,0 +1,274 @@
+[
+  {
+    "id": "httpclient",
+    "url": "https://docs.oracle.com/en/java/javase/25/docs/api/java.net.http/java/net/http/HttpClient.html",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/httpclient.md",
+    "coverage": "본문 중 현재 프로젝트 관련 절 확인; 전체 문서 완독 아님",
+    "sha256": "201081670e18e2b73552b81cbeb3f038120aed3133135038fdf2703c90cc5668"
+  },
+  {
+    "id": "boot-config",
+    "url": "https://docs.spring.io/spring-boot/4.1/reference/features/external-config.html",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/boot-config.md",
+    "coverage": "본문 중 현재 프로젝트 관련 절 확인; 전체 문서 완독 아님",
+    "sha256": "b3217a2a1274fde7a7b695cbb44408d2b3a5fd3edbe3afe846e26fd8e5798fe3"
+  },
+  {
+    "id": "boot-actuator",
+    "url": "https://docs.spring.io/spring-boot/4.1/reference/actuator/endpoints.html",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/boot-actuator.md",
+    "coverage": "본문 중 현재 프로젝트 관련 절 확인; 전체 문서 완독 아님",
+    "sha256": "e14f52f03a6dd5c8bc942e67f5b166399b15d34da9564b88275bd2e78aae940a"
+  },
+  {
+    "id": "boot-testing",
+    "url": "https://docs.spring.io/spring-boot/4.1/reference/testing/spring-boot-applications.html",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/boot-testing.md",
+    "coverage": "본문 중 현재 프로젝트 관련 절 확인; 전체 문서 완독 아님",
+    "sha256": "a54e9805e5a28f30af21e33f438e204f38650afaa03b9717a8c3c16e26a56136"
+  },
+  {
+    "id": "spring-di",
+    "url": "https://docs.spring.io/spring-framework/reference/core/beans/dependencies/factory-collaborators.html",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/spring-di.md",
+    "coverage": "본문 중 현재 프로젝트 관련 절 확인; 전체 문서 완독 아님",
+    "sha256": "a0e54ba446bebc9c88486d5f8a49a7e074b0e3fc889091b7fbee431b4a4eb34c"
+  },
+  {
+    "id": "spring-mvc",
+    "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-servlet.html",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/spring-mvc.md",
+    "coverage": "본문 중 현재 프로젝트 관련 절 확인; 전체 문서 완독 아님",
+    "sha256": "4a55674e44952f07484861bf3e2f2427834b2696d470f9c26b8234c1a8f02fe2"
+  },
+  {
+    "id": "spring-validation",
+    "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/spring-validation.md",
+    "coverage": "본문 중 현재 프로젝트 관련 절 확인; 전체 문서 완독 아님",
+    "sha256": "85b8fd73b61e0d5ccc628035a8aee4ca2763d008b4b4429f7ba7cf371b14b413"
+  },
+  {
+    "id": "gradle-toolchains",
+    "url": "https://docs.gradle.org/9.7.1/userguide/toolchains.html",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/gradle-toolchains.md",
+    "coverage": "본문 중 현재 프로젝트 관련 절 확인; 전체 문서 완독 아님",
+    "sha256": "e26550267e1ef97e99f5bda5f7aa3051688cdf45eed0263f1ec77576a9217e88"
+  },
+  {
+    "id": "gradle-wrapper",
+    "url": "https://docs.gradle.org/9.7.1/userguide/gradle_wrapper.html",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/gradle-wrapper.md",
+    "coverage": "본문 중 현재 프로젝트 관련 절 확인; 전체 문서 완독 아님",
+    "sha256": "abd685d891afa92b4e3f370e215fa6708789bd9c3f4f0bcd36b761a125e6bc40"
+  },
+  {
+    "id": "boot-gradle",
+    "url": "https://docs.spring.io/spring-boot/4.1/gradle-plugin/managing-dependencies.html",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/boot-gradle.md",
+    "coverage": "본문 중 현재 프로젝트 관련 절 확인; 전체 문서 완독 아님",
+    "sha256": "83dbd0e425bc636ddcd2c350ae45d875b0f9a990ea689584f2e66a0e130c914f"
+  },
+  {
+    "id": "dependency-plugin",
+    "url": "https://docs.spring.io/dependency-management-plugin/docs/current/reference/html/",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/dependency-plugin.md",
+    "coverage": "본문 중 현재 프로젝트 관련 절 확인; 전체 문서 완독 아님",
+    "sha256": "b0cdfc5985a769cd981669c9d88d8e62e3f4ca686b9b526cc414be970bde54b5"
+  },
+  {
+    "id": "tomcat",
+    "url": "https://tomcat.apache.org/tomcat-11.0-doc/architecture/overview.html",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/tomcat.md",
+    "coverage": "본문 중 현재 프로젝트 관련 절 확인; 전체 문서 완독 아님",
+    "sha256": "161f7020be3039f765ad17f239325bc0c71b8fa89f80b36f63e120636570c24a"
+  },
+  {
+    "id": "jackson3",
+    "url": "https://github.com/FasterXML/jackson/wiki/Jackson-Release-3.0",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/jackson3.md",
+    "coverage": "본문 중 현재 프로젝트 관련 절 확인; 전체 문서 완독 아님",
+    "sha256": "495057cdef8ecdcd80c00bf16fa3719e40f0c02957f9035ac0966e7c2045dd93"
+  },
+  {
+    "id": "hibernate-validation",
+    "url": "https://docs.jboss.org/hibernate/validator/9.1/reference/en-US/html_single/",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/hibernate-validation.md",
+    "coverage": "본문 중 현재 프로젝트 관련 절 확인; 전체 문서 완독 아님",
+    "sha256": "c4ff5855c72d8e6434d52fde9b3a073b10fe4a11db9434998e34879f4f5f5d56"
+  },
+  {
+    "id": "junit",
+    "url": "https://docs.junit.org/6.0.3/user-guide/",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/junit.md",
+    "coverage": "본문 중 현재 프로젝트 관련 절 확인; 전체 문서 완독 아님",
+    "sha256": "9f629afb0ba3fb65d72b0c85deaef1ba075e40c46d50ad969385b0345390c6d1"
+  },
+  {
+    "id": "assertj",
+    "url": "https://assertj.github.io/doc/",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/assertj.md",
+    "coverage": "본문 중 현재 프로젝트 관련 절 확인; 전체 문서 완독 아님",
+    "sha256": "58e7eea1501bbb92f00750b7a3a470dc3f32e2d074b3f24d7f6bfd41e6a5d82f"
+  },
+  {
+    "id": "mockito",
+    "url": "https://javadoc.io/static/org.mockito/mockito-core/5.23.0/org.mockito/org/mockito/Mockito.html",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/mockito.md",
+    "coverage": "본문 중 현재 프로젝트 관련 절 확인; 전체 문서 완독 아님",
+    "sha256": "a54213dab295cdf74c984b8cd4a1280360fba1124a91f1335513d2c3a5910081"
+  },
+  {
+    "id": "boot-logging",
+    "url": "https://docs.spring.io/spring-boot/4.1/reference/features/logging.html",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/boot-logging.md",
+    "coverage": "본문 중 현재 프로젝트 관련 절 확인; 전체 문서 완독 아님",
+    "sha256": "b601df245e94df2843b77e690e7d2e2c98e17c2a9117143f876b573635ea52e7"
+  },
+  {
+    "id": "micrometer",
+    "url": "https://docs.micrometer.io/micrometer/reference/concepts/meters.html",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/micrometer.md",
+    "coverage": "본문 중 현재 프로젝트 관련 절 확인; 전체 문서 완독 아님",
+    "sha256": "b935e247d9f5a67930e4b861c4a603f0748b0e3d47b1233800347cae6b370e55"
+  },
+  {
+    "id": "asdf",
+    "url": "https://asdf-vm.com/manage/configuration.html",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/asdf.md",
+    "coverage": "본문 중 현재 프로젝트 관련 절 확인; 전체 문서 완독 아님",
+    "sha256": "ca54e59bb561e52537d68fd05c9a1f8b65886fe4809557e69243e72e5c75f091"
+  },
+  {
+    "id": "jdk25",
+    "url": "https://openjdk.org/projects/jdk/25/",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/jdk25.md",
+    "coverage": "본문 중 현재 프로젝트 관련 절 확인; 전체 문서 완독 아님",
+    "sha256": "24171f46beddd039c23a8cae87b552d9ed9ff81edf16c9dbb414221b0c80547e"
+  },
+  {
+    "id": "slf4j",
+    "url": "https://www.slf4j.org/manual.html",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/slf4j.md",
+    "coverage": "본문 중 현재 프로젝트 관련 절 확인; 전체 문서 완독 아님",
+    "sha256": "21a9c33a3d68493baa785d5f599c51e0f572f5c02be550a0254c3622f22efe28"
+  },
+  {
+    "id": "logback",
+    "url": "https://logback.qos.ch/manual/architecture.html",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/logback.md",
+    "coverage": "본문 중 현재 프로젝트 관련 절 확인; 전체 문서 완독 아님",
+    "sha256": "8671fe69c364a528c957e838c318a021f496e729ddcb964811dd4aa29f8c9e31"
+  },
+  {
+    "id": "junit-lifecycle",
+    "url": "https://docs.junit.org/6.0.3/writing-tests/test-instance-lifecycle.html",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/junit-lifecycle.md",
+    "coverage": "본문 중 현재 프로젝트 관련 절 확인; 전체 문서 완독 아님",
+    "sha256": "6e7687fdf5e51659a0b2417fc9f00482b81e51cfbeedf138322f1369388d658d"
+  },
+  {
+    "id": "git",
+    "url": "https://git-scm.com/docs/gittutorial",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/git.md",
+    "coverage": "본문 중 현재 프로젝트 관련 절 확인; 전체 문서 완독 아님",
+    "sha256": "dc2760250892ae4b3e4509ffbce612c1e59dd8dd1690a54e85df9b8120494410"
+  },
+  {
+    "id": "groovy-dsl",
+    "url": "https://docs.gradle.org/9.7.1/userguide/groovy_build_script_primer.html",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/groovy-dsl.md",
+    "coverage": "본문 중 현재 프로젝트 관련 절 확인; 전체 문서 완독 아님",
+    "sha256": "1c33f1c1ea149f6522879572ad5b30b51eb238f1669f7784ebc8e1f55e2f8d81"
+  },
+  {
+    "id": "spring-scopes",
+    "url": "https://docs.spring.io/spring-framework/reference/core/beans/factory-scopes.html",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/spring-scopes.md",
+    "coverage": "본문 중 현재 프로젝트 관련 절 확인; 전체 문서 완독 아님",
+    "sha256": "6f4208ab9c206c3b82d3716c05e69aaa215835e87a1f105ec337868098bdb07d"
+  },
+  {
+    "id": "micrometer-filters",
+    "url": "https://docs.micrometer.io/micrometer/reference/concepts/meter-filters.html",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/micrometer-filters.md",
+    "coverage": "본문 중 현재 프로젝트 관련 절 확인; 전체 문서 완독 아님",
+    "sha256": "c99c74be433d2915c1ec6e908beea291f3c3d1c06fcddb34979ee4f90b06459f"
+  },
+  {
+    "id": "jackson-node",
+    "url": "https://javadoc.io/static/tools.jackson.core/jackson-databind/3.1.5/tools.jackson.databind/tools/jackson/databind/JsonNode.html",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/jackson-node.md",
+    "coverage": "본문 중 현재 프로젝트 관련 절 확인; 전체 문서 완독 아님",
+    "sha256": "d9e2830e2412496ccf899b41d9afd7e4e2845e62088139078d711319b1cf25e8"
+  },
+  {
+    "id": "boot-structure",
+    "url": "https://docs.spring.io/spring-boot/4.1/reference/using/structuring-your-code.html",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/boot-structure.md",
+    "coverage": "본문 중 현재 프로젝트 관련 절 확인; 전체 문서 완독 아님",
+    "sha256": "0621af39811ea9406dbafc8ab75a6a0d66e76bad7b3d5f05ced340b1ecd4e47d"
+  },
+  {
+    "id": "boot-jpa",
+    "url": "https://docs.spring.io/spring-boot/4.1/reference/data/sql.html",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/boot-jpa.md",
+    "coverage": "JPA/H2 및 REST Docs 도입에 필요한 관련 절 확인",
+    "sha256": "23ad235815bfa9aa909e323adff6491172078e87d6c5c9ebe22d8c9c76db18ff"
+  },
+  {
+    "id": "jpa",
+    "url": "https://docs.spring.io/spring-data/jpa/reference/jpa/transactions.html",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/jpa.md",
+    "coverage": "JPA/H2 및 REST Docs 도입에 필요한 관련 절 확인",
+    "sha256": "05c1179ab513c76b3a66dc59406b80c02f6f2c6e9906004f5aa9294abd77b10d"
+  },
+  {
+    "id": "restdocs4",
+    "url": "https://docs.spring.io/spring-restdocs/tutorial/getting-started/index.html",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/restdocs4.md",
+    "coverage": "JPA/H2 및 REST Docs 도입에 필요한 관련 절 확인",
+    "sha256": "0a5d5617eebc997eb62df7b4f704b8aa3a49f318bed17f534102238b592d58a8"
+  },
+  {
+    "id": "h2",
+    "url": "https://h2database.com/html/features.html",
+    "accessed": "2026-10-01",
+    "cache": ".firecrawl/official-docs/h2.md",
+    "coverage": "JPA/H2 및 REST Docs 도입에 필요한 관련 절 확인",
+    "sha256": "c9f0299ebc4060197843efce96895e57045d5a8505d63bd1d1b88ed7c58a62f7"
+  }
+]

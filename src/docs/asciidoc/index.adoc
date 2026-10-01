@@ -1,0 +1,24 @@
+= PlugPass API
+:doctype: book
+:toc: left
+:sectnums:
+:source-highlighter: highlight.js
+
+== 상태 확인
+
+서버의 상태를 확인한다. 충전소 데이터의 최신성이나 추천 정확도를 보장하는 응답은 아니다.
+
+=== 요청
+
+include::{snippets}/health/curl-request.adoc[]
+include::{snippets}/health/http-request.adoc[]
+
+=== 응답
+
+include::{snippets}/health/http-response.adoc[]
+include::{snippets}/health/response-fields.adoc[]
+
+== 개발용 데이터베이스
+
+현재는 메모리 H2를 사용한다. 서버를 종료하면 데이터가 사라진다.
+충전소 업무 API는 아직 구현되지 않았다.

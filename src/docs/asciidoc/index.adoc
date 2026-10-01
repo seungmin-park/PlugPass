@@ -50,3 +50,20 @@ include::{snippets}/station-search/response-fields.adoc[]
 
 잘못된 검색 입력은 HTTP 400, code INVALID_REQUEST와 fields의 필드별 한국어 메시지로 응답한다.
 검색 결과 없음은 HTTP 200과 빈 stations다. 초기 수집 전의 빈 결과는 dataReady=false다.
+
+
+== 충전소 상세
+
+공급자 ID와 구분되는 내부 충전소 ID로 조회한다. 모든 충전기를 번호순으로 반환한다.
+제공되지 않은 관측 시각·운영 정보는 null이며 제한 없음이나 최신 상태로 추측하지 않는다.
+관측 시각 누락/미래는 UNVERIFIED, 허용 기간 이하 RECENT, 초과 STALE이다.
+원본 시각 문자열은 시간대 미확인으로 UTC 변환하지 않는다.
+
+include::{snippets}/station-detail/curl-request.adoc[]
+include::{snippets}/station-detail/path-parameters.adoc[]
+include::{snippets}/station-detail/http-response.adoc[]
+include::{snippets}/station-detail/response-fields.adoc[]
+
+없는 내부 ID는 HTTP 404, code STATION_NOT_FOUND, message "충전소를 찾을 수 없습니다", fields 빈 객체로 응답한다.
+숫자가 아니거나 Long 범위를 넘는 ID는 HTTP 400, code INVALID_REQUEST와 fields.stationId의 형식 오류다.
+상세 조회는 외부 API 장애 중에도 저장 데이터로 응답한다. 이는 데이터가 최신이라는 보장은 아니다.

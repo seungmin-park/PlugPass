@@ -109,3 +109,43 @@ GREEN: 마지막 페이지 commit 후 processedCount와 최초/일관된 totalCo
 Ruling: advertised total을 모두 처리하지 못하면 전체 성공이 아니다. 비용은 공급자가 부정확한 total을 주는 경우도 실패로 분류하는 보수적 정책이다.
 공용 verify 전체243건 실패/오류/skip0,종료0. 로그 `/tmp/plugpass-sync-count-{red,verify}.log`.
 작성자 자체 검토이며 T06 독립 수정 PR로 전달한다. 새 스케줄·재시도는 추가하지 않았다.
+
+## T09 — 상세 조회와 실제 HTTP 연결
+
+T06 완료 건수 회귀 PR #14 필수 CI 성공·main `7392d03` 후 시작했다.
+RED: StationDetailTests5 assertion 실패(null/예외 없음), StationDetailHttpTests7 assertion 실패(404/공개 오류 없음),
+StationReadFlowTests2 assertion 실패(실제 상세 HTTP404). 연결 Red에서 수집·H2·검색은 이미 통과했으며 상세 부재에서 실패했다.
+GREEN: readOnly 서비스가 내부 ID로 Station과 그 Charger만 조회하고 없으면 StationNotFoundException을 던진다.
+Controller/response DTO는 HTTP 필드 변환만 하고 공통 예외 처리기가404/400을 변환한다.
+
+검증: 여러 상태·RECENT 경계/STALE/UNVERIFIED와 이유·원본 코드·관측/수집/원본 시각,
+다른 공급자의 동일 source ID·충전기 없는 충전소·없는/null ID·미제공 운영 정보.
+MVC slice는 Service 반환 mock, JSON 값·UTC offset·정확한404 메시지/코드·Long 범위/형식400·REST Docs 모든 하위 필드를 검사한다.
+reasonCode 문서 설명을 임시 제거해 SnippetException 실패를 확인한 뒤 복원했다.
+실제 연결 테스트는 production HTTP client → loopback fixture HTTP → 수집 서비스 → H2 commit → 실제 Tomcat 검색/상세 HTTP를 실행했다.
+반복 수집 중복 없음과 공급자503 이후 기존 데이터/마지막 성공 시각 유지, 조회가 공급자 요청 수를 늘리지 않는 것도 assertion했다.
+외부 client mock으로 실제 연결 성공을 대신하지 않았다. Clock/fixture 서버 응답만 제어했다.
+
+```mermaid
+flowchart LR
+    Fixture[실제 fixture HTTP] --> Client[production PublicDataClient]
+    Client --> Sync[StationSyncService]
+    Sync --> DB[(페이지 commit / H2 / 성공 이력)]
+    HTTP[실제 검색·상세 HTTP] --> Controller[HTTP 변환]
+    Controller --> Query[readOnly StationQueryService]
+    DB --> Query
+    Query --> Evidence[상태·시각·미확인 이유·이용 조건]
+    Evidence --> DTO[JSON response]
+```
+
+전체257건 실패/오류/skip0, `bash scripts/verify.sh` 종료0.
+실행 JAR 검색200·입력400·없는 상세404·health UP·env404·패키징 문서 일치 통과.
+실제 연결 응답은 `build/verification/station-read-flow/*.json`, runtime 결과는 `build/verification/runtime.json`,
+JUnit XML은 `build/test-results/test/`, 로그는 `/tmp/plugpass-t09-{red,http-red,flow-red,green,doc-contract,verify}.log`다.
+
+Refactor/이름/책임: 기존 ChargerResponse 변환을 검색/상세가 재사용해 원본과 최신성 필드가 갈라지지 않는다.
+새 위임 계층은 불필요해 추가하지 않았다. detail은 조회 계약, StationNotFoundException은 공개 도메인 실패,
+StationDetail은 entity와 분리한 불변 유스케이스 결과다. 모든 Repository/호출부는 새 Service 계약으로 compile/전체 테스트를 통과했다.
+T06~T09 전체 자체 리뷰에서 수정한 완료 건수 결함은 별도 PR #14로 기록했다. 독립 에이전트 리뷰는 아니다.
+실공공 API 인증·시간대 확인은 여전히 미검증이며 cmux 소켓 없이 보이는 E2E로 보고하지 않는다.
+T10 추천·T11 스케줄·T12 예산/재시도·T14 추천 포함 종합 데모·T15 성능 측정은 시작하지 않았다.

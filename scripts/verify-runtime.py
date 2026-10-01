@@ -46,6 +46,12 @@ def check_http(base, expected):
     except urllib.error.HTTPError as error:
         require(error.code == 400 and json.loads(error.read())['code'] == 'INVALID_REQUEST', 'Station validation mismatch')
     try:
+        urllib.request.urlopen(base + '/api/v1/stations/9223372036854775807', timeout=5)
+        raise RuntimeError('Missing station accepted')
+    except urllib.error.HTTPError as error:
+        body = json.loads(error.read())
+        require(error.code == 404 and body == {'code': 'STATION_NOT_FOUND', 'message': '충전소를 찾을 수 없습니다', 'fields': {}}, 'Station detail 404 mismatch')
+    try:
         with urllib.request.urlopen(base + '/actuator/env', timeout=5):
             raise RuntimeError('Environment endpoint exposed')
     except urllib.error.HTTPError as error:
@@ -86,7 +92,7 @@ def main():
             require(port is not None, f'Server startup timeout; see {log_file}')
             check_http(f'http://127.0.0.1:{port}', expected)
             result = {'tests': count, 'failures': 0, 'errors': 0, 'skipped': 0,
-                      'health': 'UP', 'env_http': 404, 'docs_match': True,
+                      'health': 'UP', 'env_http': 404, 'station_search_http': 200, 'station_validation_http': 400, 'station_detail_missing_http': 404, 'docs_match': True,
                       'test_fixtures_packaged': False}
             result_file.write_text(json.dumps(result, indent=2) + '\n')
             print(json.dumps(result), flush=True)

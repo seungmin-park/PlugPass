@@ -59,3 +59,10 @@ Gradle의 기존 deprecated feature 경고가 있으며 빌드/테스트는 종�
 실행 로그: `/tmp/plugpass-t02-red-evidence.log`, `/tmp/plugpass-t02-green.log`,
 `/tmp/plugpass-t02-suite.log`, `/tmp/plugpass-t02-verify.log`(로컬 임시 파일).
 원격 CI·main 반영 여부는 해당 PR에서 별도로 확인하고 tasks.md에 반영한다.
+
+## 실제 전달 완료
+
+[T02 PR #5](https://github.com/seungmin-park/PlugPass/pull/5)의
+[필수 CI](https://github.com/seungmin-park/PlugPass/actions/runs/36881897304)는 SUCCESS이며
+2026-10-02 00:10 KST에 실제 머지했다. main SHA는 `11a07668d5a023bcc18e1ad836a223b2b1d5049d`다.
+구현·검증·main 반영을 확인한 뒤 tasks.md의 T02 하위 항목 3개를 체크했다.

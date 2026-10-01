@@ -1,6 +1,6 @@
 # PlugPass 작업 체크리스트
 
-**목표·설계:** [plan.md](plan.md). T01 문서 계약은 main 반영, 인증된 실연동은 키 없어 미확인. T02의 진행 근거는 아래 기록을 따른다.
+**목표·설계:** [plan.md](plan.md). T01 문서 계약은 main 반영, 인증된 실연동은 키 없어 미확인. T02 모델은 구현·검증·main 반영 완료. 아래 하위 체크와 근거를 따른다.
 
 **실행 방식:** 작업 하나씩 순서대로 진행한다. 구현 시 `superpowers:executing-plans`를 사용한다. 이 파일을 만들었다는 이유로 이후 작업 전체를 자동 실행하지 않는다.
 
@@ -30,7 +30,7 @@
 
 ### T01 — 사용할 공공데이터 계약 확인
 
-의존: 없음. 파일: `docs/data-contract.md`, `src/test/resources/publicdata/normal.json`, `empty.json`, `unknown-status.json`(실제 포맷이 XML이면 확장자도 변경).
+의존: 없음. 파일: `docs/data-contract.md`, `src/test/resources/publicdata/normal.xml`, `empty.xml`, `unknown-status.xml`.
 
 - [x] 공식 API를 하나 선정하고 공식 URL·신청/인증·페이지 규칙·호출 한도·갱신 특성·이용 조건·확인일을 기록한다.
 - [ ] 검증 지역 하나와 충전소/충전기 식별자, 좌표, 커넥터, 이용 제한, 상태 코드, 각 시각 필드의 의미·시간대를 실제 응답으로 확인한다.
@@ -45,9 +45,11 @@
 
 의존: T01. 파일: `station/Station.java`, `Charger.java`, `ChargerId.java`, `GeoPoint.java`(main 패키지 아래), `station/StationModelTests.java`(test 패키지 아래).
 
-- [ ] 다른 공급자·충전소의 같은 충전기 번호가 충돌하지 않는 테스트, 빈 식별자·범위 밖 좌표를 거부하는 테스트를 먼저 작성한다.
-- [ ] `ChargerId(provider, stationId, chargerId)`와 `GeoPoint(latitude, longitude)`를 정의하고 Station/Charger가 각자의 데이터 유효성을 지키게 한다.
-- [ ] `./gradlew test --tests '*StationModelTests'`에서 실패 확인 후 구현·통과시키고 PR을 반영한다.
+- [x] 다른 공급자·충전소의 같은 충전기 번호가 충돌하지 않는 테스트, 빈 식별자·범위 밖 좌표를 거부하는 테스트를 먼저 작성한다.
+- [x] `ChargerId(provider, stationId, chargerId)`와 `GeoPoint(latitude, longitude)`를 정의하고 Station/Charger가 각자의 데이터 유효성을 지키게 한다.
+- [x] `./gradlew test --tests '*StationModelTests'`에서 실패 확인 후 구현·통과시키고 PR을 반영한다.
+
+완료 근거: [PR #5](https://github.com/seungmin-park/PlugPass/pull/5), main `11a0766`, [필수 CI 성공](https://github.com/seungmin-park/PlugPass/actions/runs/36881897304). 대상 52건·전체 56건 통과, 공용 검증 종료 0. Red assertion 실패·Green·책임 검토·cmux 표시 불가 범위는 [실행 기록](docs/t02-verification.md)에 남겼다.
 
 산출: 수집·저장의 공통 식별자와 유효한 위치 모델. 외부 API DTO를 업무 객체로 직접 사용하지 않는다.
 

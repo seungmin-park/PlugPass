@@ -10,7 +10,9 @@
 
 - `[x]`는 구현·실행 검증·main 반영 근거가 있는 완료 항목이다. 계획·fixture만으로 실연동을 완료 처리하지 않는다.
 - T번호 하나가 기본 PR 단위다. 의존 작업이 main에 들어온 후 시작한다. 완료 시 해당 T항목에 PR·검증 결과 링크를 남긴다.
-- 기능 변경은 실패하는 테스트 확인 → 최소 구현 → 해당 테스트 통과 → 공용 검증 → PR/CI 순서를 따른다.
+- 기능 변경은 의도한 assertion의 Red 확인 → 최소 구현 → 대상·전체 테스트 → Green 상태에서 Refactor → 전체 테스트 → 공용 검증 → PR/CI 순서를 따른다. 컴파일·환경·fixture 오류는 기능 Red가 아니다.
+- 성공·예외·실패·엣지 케이스를 각 동작에 맞춰 검증한다. 테스트 한글 DisplayName, 명시적 Java 타입, 데이터 준비·격리·teardown, 이름·책임 검토는 [AGENTS.md](AGENTS.md)를 따른다.
+- 계획의 Service 파일은 인터페이스이며 `Default{ServiceName}.java` 구현을 같은 작업에 추가한다. Service 테스트는 실제 commit과 별도 조회, MVC/REST Docs는 WebMvcTest와 MockitoBean, 연결된 전체 흐름은 T14의 별도 통합 테스트로 구분한다.
 - 아래 경로는 별도 표시가 없으면 새로 만들 파일이다. `src/test/java/com/plugpass/` 하위 테스트와 기능에 필요한 값·응답 타입도 같은 PR에 둔다.
 - 업무 HTTP API를 추가할 때는 같은 PR에서 `src/docs/asciidoc/index.adoc`와 REST Docs 테스트를 갱신한다.
 - 아래 검증 명령의 테스트명은 생성할 클래스명이다. 필터에 맞는 테스트가 0개이면 통과로 보지 않는다. 공용 검증은 `bash scripts/verify.sh`다.
@@ -59,12 +61,13 @@
 
 ### T04 — 중복 없는 업무 데이터 저장
 
-의존: T02, T03. 파일: `station/StationRepository.java`, `station/ChargerRepository.java`, `ingestion/StationUpsertService.java`, `ingestion/StationSnapshot.java`, `station/StationPersistenceTests.java`. 수정: Station/Charger JPA 매핑.
+의존: T02, T03. 파일: `station/StationRepository.java`, `station/ChargerRepository.java`, `ingestion/StationUpsertService.java`, `ingestion/StationSnapshot.java`, `station/StationPersistenceTests.java`, `ingestion/StationUpsertTests.java`. 수정: Station/Charger JPA 매핑.
 
-- [ ] 같은 식별자 반복 저장, 다른 충전소의 같은 충전기 번호, 순서가 뒤바뀐 상태 응답을 테스트한다. flush/clear 후 재조회한다.
+- [ ] Repository 매핑·쿼리는 기본 save 후 조회로 검증한다. 매핑 복원이 목적일 때만 이유를 명시해 flush/clear하며 참조 차이 자체를 assertion하지 않는다.
+- [ ] 반복 저장·식별자 충돌·역순 응답은 실제 StationUpsertService 트랜잭션 commit 후 별도 조회로 검증한다. 테스트 Transactional 없이 AfterEach에서 생성 데이터만 FK 역순으로 정리한다.
 - [ ] 유일 제약과 `StationUpsertService.upsert(StationSnapshot snapshot)`을 구현한다. `StationSnapshot`은 T01 필드의 정규화 입력이며 시각의 의미를 보존한다.
 - [ ] 신뢰할 수 있는 공급자 순서 시각이 있으면 이전 관측의 덮어쓰기를 거부한다. 없으면 순서를 보장할 수 없음을 기록하고 T06의 직렬 수집으로 제한한다.
-- [ ] `./gradlew test --tests '*StationPersistenceTests'`와 공용 검증을 통과하고 PR을 반영한다.
+- [ ] `./gradlew test --tests '*StationPersistenceTests' --tests '*StationUpsertTests'`와 전체 테스트·공용 검증을 통과하고 PR을 반영한다.
 
 산출: 업무용 JPA 모델과 갱신 경계. 기존 PersistenceProbe 테스트를 업무 구현 완료의 근거로 대신하지 않는다.
 
@@ -229,7 +232,8 @@
 ## 작업마다 공통으로 확인할 완료 조건
 
 - [ ] 이번 PR이 해결하는 동작 하나와 의존 작업을 설명했다.
-- [ ] 구현 변경은 실패 조건을 재현했고 최신 코드의 테스트가 실제로 실행됐다.
+- [ ] 구현 변경은 의도한 assertion 실패로 Red를 확인했고 Green·Refactor 후 대상·전체 테스트를 실행했다.
+- [ ] 성공·예외·실패·엣지 케이스와 이름·책임·공개 계약 검토 결과를 기록했다.
 - [ ] 필요한 REST Docs·기능 지도·검증 절차를 함께 갱신했다.
 - [ ] 로컬 E2E의 cmux 표시 여부와 실제 검증 범위를 기록했다.
 - [ ] 현재 PR head의 필수 CI를 확인하고 자동 머지 완료를 확인했다.

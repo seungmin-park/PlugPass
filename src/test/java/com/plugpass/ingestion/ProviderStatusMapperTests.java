@@ -1,6 +1,9 @@
 package com.plugpass.ingestion;
 
+import java.time.Instant;
 import java.util.stream.Stream;
+import com.plugpass.station.Station;
+import com.plugpass.station.GeoPoint;
 import com.plugpass.station.Charger;
 import com.plugpass.station.ChargerId;
 import com.plugpass.station.ChargerStatus;
@@ -44,13 +47,15 @@ class ProviderStatusMapperTests {
     @ValueSource(strings = {"2", "9", " 2"})
     void preservesRawStatus(String rawCode) {
         ProviderStatusMapper mapper = new ProviderStatusMapper();
-        Charger charger = new Charger(new ChargerId("ME", "28260005", "02"), mapper.map(rawCode), rawCode);
-        assertThat(charger.rawStatus()).isEqualTo(rawCode);
+        Instant collectedAt = Instant.parse("2026-10-01T00:00:00Z");
+        Station station = Station.builder().provider("ME").stationId("28260005").name("충전소").location(new GeoPoint(37.5,126.6)).createdAt(collectedAt).build();
+        Charger charger = Charger.builder().id(new ChargerId("ME", "28260005", "02")).station(station).status(mapper.map(rawCode)).rawStatus(rawCode).collectedAt(collectedAt).build();
+        assertThat(charger.getRawStatus()).isEqualTo(rawCode);
     }
     @Test
     @DisplayName("충전기는 누락된 업무 상태를 거부한다")
     void rejectsMissingNormalizedStatus() {
-        assertThatThrownBy(() -> new Charger(new ChargerId("ME", "28260005", "02"), null, "2"))
+        assertThatThrownBy(() -> Charger.builder().id(new ChargerId("ME", "28260005", "02")).status(null).rawStatus("2").build())
                 .isInstanceOf(IllegalArgumentException.class).hasMessage("status must not be null");
     }
 }

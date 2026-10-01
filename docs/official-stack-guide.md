@@ -56,3 +56,20 @@ NaN은 일반 비교만으로 거부되지 않아 isFinite를 함께 사용한�
 Station/Charger는 T02의 불변 도메인 모델이며 아직 JPA 엔티티가 아니다. JPA 매핑은 T04에서 수행하므로
 이번에는 엔티티용 Lombok·보호 기본 생성자·시각 필드를 선구현하지 않는다. 신규 의존성·버전 변경은 없다.
 현재 프런트엔드·TypeScript는 적용 대상 없음.
+
+## T04 — 저장 경계와 엔티티 생성
+
+실제 해석 결과: Hibernate ORM 7.4.5.Final, Spring Boot 4.1.1 관리 Lombok 1.18.46.
+[Lombok 변경 기록](https://projectlombok.org/changelog)의 JDK25 지원,
+[Gradle 구성](https://projectlombok.org/setup/gradle),
+[생성자 Builder](https://projectlombok.org/features/Builder),
+[보호 기본 생성자](https://projectlombok.org/features/constructor)를 확인했다.
+compileOnly/annotationProcessor와 테스트 구성을 함께 사용하고 runtime 의존성으로 추가하지 않았다.
+[Hibernate 7.4 엔티티·embeddable](https://docs.hibernate.org/orm/7.4/userguide/html_single/) 관련 절과
+[서비스 트랜잭션](https://docs.spring.io/spring-data/jpa/reference/jpa/transactions.html)을 확인했다.
+rolling Spring Data 문서는 현재 Spring Boot 관리 구성에서 실제 compile/test로 계약을 검증했다.
+
+Station/Charger는 non-final JPA 엔티티, ChargerId/GeoPoint/ChargerDetails는 record embeddable이다.
+원본 운영 정보·offset 없는 시각을 ChargerDetails에 보존하는 것은 프로젝트 판단이며 DB 매핑 복원 테스트로 확인한다.
+생성/수정 시각은 입력 경계에서 전달하고 JPA callback에 위임하지 않는다.
+공공 API 시각은 관측 시각으로 승격하지 않으며, DB unique 제약과 production 트랜잭션이 중복·부분 저장을 방어한다.

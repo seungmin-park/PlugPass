@@ -1,6 +1,10 @@
 package com.plugpass.station;
 
-public record ChargerId(String provider, String stationId, String chargerId) {
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Column;
+
+@Embeddable
+public record ChargerId(@Column(nullable = false) String provider, @Column(name = "station_id", nullable = false) String stationId, @Column(name = "charger_number", nullable = false) String chargerId) {
 
     public ChargerId {
         if (provider == null || provider.isBlank()) {

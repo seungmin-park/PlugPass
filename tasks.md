@@ -1,6 +1,6 @@
 # PlugPass 작업 체크리스트
 
-**목표·설계:** [plan.md](plan.md). T01 문서 계약은 main 반영, 인증된 실연동은 키 없어 미확인. T02 모델은 구현·검증·main 반영 완료. 아래 하위 체크와 근거를 따른다.
+**목표·설계:** [plan.md](plan.md). T01 문서 계약은 main 반영, 인증된 실연동은 키 없어 미확인. T02~T05는 구현·검증·main 반영 완료. 1주차 구현은 완료했으며 T01 실응답 확인 두 항목은 보류한다. 아래 하위 체크와 근거를 따른다.
 
 **실행 방식:** 작업 하나씩 순서대로 진행한다. 구현 시 `superpowers:executing-plans`를 사용한다. 이 파일을 만들었다는 이유로 이후 작업 전체를 자동 실행하지 않는다.
 
@@ -83,10 +83,12 @@
 
 의존: T01, T03, T04의 StationSnapshot 계약. 파일: `ingestion/PublicDataClient.java`, `ingestion/StationPage.java`, `ingestion/PublicDataClientTests.java`, 외부 페이지 DTO. 수정: `application.properties`의 외부 설정 참조.
 
-- [ ] fixture HTTP 서버로 정상·빈 페이지·페이지 마지막·잘못된 본문·인증 오류를 테스트한다. 서비스 키가 로그에 나오지 않는지도 확인한다.
-- [ ] `PublicDataClient.fetchPage(int page): StationPage`를 구현한다. 페이지 번호 기준과 종료 신호는 T01 계약을 따르고 결과는 StationSnapshot 목록으로 변환한다.
-- [ ] 연결·응답 timeout과 인증 값의 외부 주입을 적용한다. 공개 수집 실행 API는 추가하지 않는다.
-- [ ] `./gradlew test --tests '*PublicDataClientTests'`를 통과하고 정상·오류 계약을 문서화한 PR을 반영한다.
+- [x] fixture HTTP 서버로 정상·빈 페이지·페이지 마지막·잘못된 본문·인증 오류를 테스트한다. 서비스 키가 로그에 나오지 않는지도 확인한다.
+- [x] `PublicDataClient.fetchPage(int page): StationPage`를 구현한다. 페이지 번호 기준과 종료 신호는 T01 계약을 따르고 결과는 StationSnapshot 목록으로 변환한다.
+- [x] 연결·응답 timeout과 인증 값의 외부 주입을 적용한다. 공개 수집 실행 API는 추가하지 않는다.
+- [x] `./gradlew test --tests '*PublicDataClientTests'`를 통과하고 정상·오류 계약을 문서화한 PR을 반영한다.
+
+완료 근거: [PR #9](https://github.com/seungmin-park/PlugPass/pull/9), main `39ed230`, [필수 CI 성공](https://github.com/seungmin-park/PlugPass/actions/runs/36890384015). 대상 64건·전체 161건·공용 검증 종료 0. [실행 기록](docs/week1-verification.md)에 Red·Green·Refactor와 실패/경계·실연동 한계를 기록했다.
 
 산출: 외부 I/O 경계. 테스트 서버 통과와 실제 공공 API 인증 성공을 구분한다.
 

@@ -80,3 +80,16 @@ ChargerId의 3필드는 하나의 충전기를 식별하는 키이며, Station�
 서로 다른 변경 책임이 아직 없어서 필드 수만 맞추는 래퍼를 만들지 않았다. 문자열 식별자·좌표는
 실제 검증 규칙을 가진 ChargerId·GeoPoint에 모았다. record 접근자는 불변 값을 읽는 용도로 허용하며
 검증을 외부에 넘기거나 setter를 제공하지 않는다. 컬렉션 상태·네트워크·저장 책임은 이번 범위에 없다.
+
+
+## T04~T05 책임 검토
+
+Station/Charger는 JPA 엔티티로 전환됐다. 읽기 getter·보호 기본 생성자는 영속성 경계 예외이며
+public setter 없이 생성자와 update가 전체 입력 검증·시각 갱신·실패 시 상태 보존을 책임진다.
+필드 수는 식별·업무 상태·영속화 시각의 책임 검토 기준으로 사용했다. 원본 운영 정보는
+ChargerDetails로 묶었지만 숫자를 맞추려고 업무 상태를 무의미한 래퍼로 나누지는 않았다.
+
+StationUpsertService는 조회·생성·갱신과 트랜잭션을 조정하고, Charger는 관측 순서 판단을 맡는다.
+PublicDataClient는 네트워크, XML parser는 외부 문법/페이지 계약, 외부 DTO는 입력 변환을 맡는다.
+불변 StationPage 목록과 실제 fixture HTTP 오류/timeout/인코딩·JPA 복원·commit 후 재조회 테스트로
+경계를 검증했다. HTTP DTO·설정의 문자열/접근자는 외부 계약 표현이며 도메인 상태 변경 권한을 주지 않는다.

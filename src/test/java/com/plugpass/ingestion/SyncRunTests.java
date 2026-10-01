@@ -27,6 +27,16 @@ class SyncRunTests {
         assertThat(run.getProcessedCount()).isEqualTo(2);
         assertThat(run.getCompletedAt()).isEqualTo(startedAt.plusSeconds(1));
     }
+    @Test
+    @DisplayName("실패한 페이지 수를 명시적으로 기록하고 결과에도 전달한다")
+    void recordsFailurePageCount() {
+        Instant startedAt = Instant.parse("2026-10-02T00:00:00Z");
+        SyncRun run = SyncRun.builder().startedAt(startedAt).build();
+        run.complete(0,1,"TIMEOUT",startedAt.plusSeconds(1));
+        assertThat(run.getFailedPageCount()).isEqualTo(1);
+        assertThat(run.result().failedPageCount()).isEqualTo(1);
+    }
+
     @ParameterizedTest
     @DisplayName("잘못된 완료 입력은 실행의 상태와 시각을 바꾸지 않는다")
     @MethodSource("invalidCompletions")

@@ -23,6 +23,7 @@ public class SyncRun {
     @Column(nullable = false) @Enumerated(EnumType.STRING) private SyncStatus status;
     private long processedCount;
     private Integer failedPage;
+    @Column(nullable = false) private long failedPageCount;
     private String failureCode;
 
     @Builder
@@ -41,6 +42,7 @@ public class SyncRun {
         }
         this.processedCount = processedCount;
         this.failedPage = failedPage;
+        this.failedPageCount = failedPage == null ? 0 : 1;
         this.failureCode = failureCode;
         this.completedAt = completedAt;
         this.status = completionStatus(processedCount, failedPage);
@@ -50,5 +52,5 @@ public class SyncRun {
         if (processedCount > 0) { return SyncStatus.PARTIAL_FAILURE; }
         return SyncStatus.FAILURE;
     }
-    public SyncResult result() { return new SyncResult(id, status, processedCount, failedPage, failureCode); }
+    public SyncResult result() { return new SyncResult(id, status, processedCount, failedPage, failureCode, failedPageCount); }
 }

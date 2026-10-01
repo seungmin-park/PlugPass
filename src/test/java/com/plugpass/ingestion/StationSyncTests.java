@@ -93,6 +93,8 @@ class StationSyncTests {
         assertThat(result.processedCount()).isEqualTo(1);
         assertThat(result.failedPage()).isEqualTo(2);
         assertThat(result.failureCode()).isEqualTo("TIMEOUT");
+        assertThat(result.failedPageCount()).isEqualTo(1);
+        assertThat(syncRunRepository.findById(result.runId()).orElseThrow().getFailedPageCount()).isEqualTo(1);
         assertThat(chargerRepository.count()).isEqualTo(1);
         assertThat(syncRunRepository.findFirstByStatusOrderByCompletedAtDesc(SyncStatus.SUCCESS)).isEmpty();
         assertThat(syncRunRepository.findById(result.runId()).orElseThrow().getFailedPage()).isEqualTo(2);

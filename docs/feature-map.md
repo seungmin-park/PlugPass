@@ -48,7 +48,7 @@ Station/Charger 업무 엔티티와 Repository·upsert는 T04에서 구현했다
 ## T06 수집 실행
 
 StationSyncService → PublicDataClient → StationUpsertService.upsertPage → 실제 H2 commit.
-SyncRun은 실행 상태와 실패 페이지/코드를 소유한다. StationSyncTests 10건·SyncRunTests 9건으로
+SyncRun은 실행 상태와 실패 페이지/코드를 소유한다. StationSyncTests 10건·SyncRunTests 10건으로
 순차 처리·부분 실패·반복 실행·rollback·시각과 상태 방어를 확인한다. 상세 근거: [2주차 기록](week2-verification.md).
 
 ## T07 최신성
@@ -71,3 +71,5 @@ GET /api/v1/stations/{stationId} → StationQueryService.detail → 실제 Stati
 StationDetailTests5·StationDetailHttpTests7·StationReadFlowTests2 =14건.
 실제 fixture HTTP 수집부터 H2와 실제 검색/상세 HTTP, 공급자503 중 기존 정보 조회를 확인한다.
 공용 verify는 실행 JAR의 없는 상세404 공개 오류도 검증한다. 실제 공공 API 인증과 cmux 화면 검증은 별도 미확인이다.
+
+실패 페이지 건수를 failedPageCount로 명시 저장·반환한다. 최종 T06 관련20건, 전체258건이다.

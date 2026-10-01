@@ -166,3 +166,15 @@ T10 추천·T11 스케줄·T12 예산/재시도·T14 추천 포함 종합 데모
 최종 구현 검증257건·실패/오류/skip0, 공용 검증 종료0. 완료 체크 단계는 문서 링크·JSON·근거 정합성 검사이며
 애플리케이션을 다시 실행했다고 표현하지 않는다. 원격 필수 CI 결과는 위 링크와 별개 문서 PR에서 확인한다.
 T01 실응답 두 체크는 열어 두고 T10 이후는 미시작이다. 실제 시간대·인증 성공, 재시작 영속성, 규모 성능 보장은 없다.
+
+## 최종 검토 보완 — 실패 페이지 건수 명시
+
+완료 체크 PR #16이 CI 성공 후 main `4088f1a`에 반영된 뒤 별도 보완한다.
+Ruling: processedCount는 commit한 입력 레코드 수, failedPageCount는 실패한 페이지 수다.
+첫 실패에서 실행을 중단하므로 실패 페이지는0 또는1이고, 실패 응답의 레코드 수는 알 수 없어 추정하지 않는다.
+실패 페이지 번호·코드와 함께 이 건수를 DB에 명시적으로 저장하고 SyncResult로 반환한다.
+RED: `--tests '*SyncRunTests.recordsFailurePageCount' --tests '*StationSyncTests.recordsPartialFailure'`,
+2건 모두 expected1 vs actual0 assertion 실패, 종료1. GREEN: SyncRun의 검증 완료 뒤 건수를 배정한다.
+별도 Repository 재조회로 실패 페이지 수1의 실제 commit을 확인했다.
+최종 전체258건·실패/오류/skip0, 공용 verify 종료0. 실제 fixture 연결·JAR HTTP·문서 검증을 함께 다시 통과했다.
+로그 `/tmp/plugpass-sync-failure-count-{red,verify}.log`. 실행 정보 필드 추가이며 공개 업무 HTTP JSON은 바뀌지 않는다.

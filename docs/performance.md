@@ -50,3 +50,19 @@ flowchart LR
 ```
 
 SQL2개라서 N+1은 이 경로에서 관측하지 않았다. 대신 limit/반경/커넥터가 전체 fetch 후 적용되어 검색·추천이 매 요청마다60,001엔티티(성공 이력1 포함)를 로딩한다. 소스와 실제 통계가 일치하므로 T16의 첫 개선 후보는 DB에서 조회 후보를 줄이는 것이다. 상세도 혼합 부하에서 지연이 커졌으나 본 실험은 CPU/GC/connection 대기 시간을 분해하지 않아 단일 원인을 단정하지 않는다. 캐시·DB 교체를 추가하지 않았으며 개선 성공은 동일 조건의 전후 실험으로 별도 판단해야 한다. 화면 표시 한계: 현재 cmux 호출 env·live socket 없음. 실제 loopback HTTP·터미널 실험이며 화면 E2E는 미확인이다. 목표 실패에 대한 개선 판단은 T16에서 다룬다.
+
+## T16 동일 조건 재측정 — 2026-10-05
+
+측정 commit `4cf49493352817302ed81996c73ba967b1e26b1a`, 시작 시 dirty=false. 기존과 같은 머신·JVM/데이터/시간/동시성 조건이다. 기준선의 전체 응답 JSON과 새 측정 전후 응답 JSON이 동일함을 별도로 확인했다.
+
+| 경로 | 이전 p95 ms | 개선 p95 ms | 개선 SQL/요청 | 개선 엔티티/요청 |
+| --- | ---: | ---: | ---: | ---: |
+| 전체 | 1425.41 | 75.04 | 경로별 | 경로별 |
+| detail | 736.61 | 37.20 | 2 | 6 |
+| recommendation | 1420.78 | 61.62 | 2 | 541 |
+| search_center | 1547.75 | 109.33 | 2 | 1956 |
+| search_edge | 1555.97 | 61.30 | 2 | 541 |
+
+측정 176,051건·준비 52,188건, 오류/응답 불일치0. 전체p50 11.11ms·p95 75.04ms, 전체p95≤300ms/오류율<1% 달성. 종료0, 직접 시작한 서버 종료143. 전후10,000/50,000건수·검색/상세/추천 정확성 유지. closed-loop 실험의 같은 머신 관측이며 운영 환경·고정RPS 수용량 보장은 아니다.
+
+[결과](evidence/t16-performance/result.json)·[샘플](evidence/t16-performance/samples.json.gz)·[서버 로그](evidence/t16-performance/server.log)·[전](evidence/t16-performance/correctness-before.json.gz)/[후](evidence/t16-performance/correctness-after.json.gz). 원본 `/tmp/plugpass-t16-measurement`, 샘플SHA256 검증 일치. [T16 Red/Green·책임 기록](t16-verification.md).

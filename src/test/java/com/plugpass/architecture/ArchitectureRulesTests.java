@@ -16,6 +16,7 @@ import architecturefixture.RuleSamples.SampleServiceImpl;
 import architecturefixture.RuleSamples.SetterEntity;
 import architecturefixture.RuleSamples.TransactionalServiceTest;
 import architecturefixture.RuleSamples.UpdatingEntity;
+import com.plugpass.recommendation.InvalidCandidatePolicy;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import org.junit.jupiter.api.DisplayName;
@@ -23,6 +24,14 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ArchitectureRulesTests {
+    @Test
+    @DisplayName("추천 정책 도메인이 Repository에 의존하면 거부한다")
+    void rejectsRecommendationPolicyRepositoryDependency() {
+        JavaClasses classes = new ClassFileImporter().importClasses(UpdatingEntity.class, InvalidCandidatePolicy.class);
+        assertThatThrownBy(() -> ArchitectureRules.checkDomainDependencies(classes))
+                .isInstanceOf(AssertionError.class).hasMessageContaining("InvalidCandidatePolicy");
+    }
+
     @Test
     @DisplayName("Controller가 Repository를 직접 의존하면 거부한다")
     void rejectsControllerRepositoryDependency() {

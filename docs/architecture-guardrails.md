@@ -17,8 +17,8 @@ flowchart LR
 
 | 대상 선택 | 거부하는 구조 | 함께 확인할 동작·리뷰 |
 | --- | --- | --- |
-| `@RestController` | Repository·EntityManager·`@Service` 구현 직접 의존 | HTTP 변환에 업무 판단이 섞였는지 리뷰. 현재 REST Controller 한 개를 검사한다. |
-| `@Entity`, station/freshness 패키지의 값·규칙 객체 (Repository·Configuration 제외) | Repository·EntityManager·Service 계약/구현·프로젝트 request/response DTO·Spring web 의존 | 실패 후 필드와 시각 보존은 기존 동작 테스트가 확인. 새 도메인 패키지는 selector와 위반 예제를 함께 추가한다. |
+| `@RestController` | Repository·EntityManager·`@Service` 구현 직접 의존 | HTTP 변환에 업무 판단이 섞였는지 리뷰. 현재 검색·추천 REST Controller 두 개를 검사한다. |
+| `@Entity`, station/freshness 값·규칙 객체 (Repository·Configuration 제외), recommendation 루트의 값·정책 객체 (Service·Controller 제외) | Repository·EntityManager·Service 계약/구현·프로젝트 request/response DTO·Spring web 의존 | 실패 후 필드와 시각 보존은 기존 동작 테스트가 확인. 새 도메인 패키지는 selector와 위반 예제를 함께 추가한다. |
 | `@Entity`의 public 메서드 | `set[A-Z].*` 이름의 setter | 변경 메서드의 검증 순서·불변식은 동작 테스트와 리뷰가 확인. JPA 애너테이션과 읽기 getter는 허용한다. |
 | `@Service` | `Default<계약명>` 이름과 대응 Service 인터페이스 불일치 | 의미 있는 유스케이스 계약인지, 단순 위임·추측성 분리인지 리뷰. |
 | `@SpringBootTest`이며 Service 타입을 의존하는 테스트 | 클래스·메서드 테스트 트랜잭션, Mockito 및 Spring Mockito bean 대체 의존 | 실제 Service 종료/commit 후 별도 재조회는 기존 통합 테스트 assertion이 확인. 타입 의존성으로 선택하므로 테스트 의도 자체는 판정하지 않는다. |
@@ -30,7 +30,7 @@ flowchart LR
 
 ## 필수 테스트 누락
 
-[required-test-suites.json](required-test-suites.json)은 기존 기능 지도의 21개 suite와 구조 검사 2개 suite의 실행 요구 목록이다. 공용 검증은 실제 XML과 비교하고 누락 이름을 출력하며 실패한다. 총건수는 고정하지 않고 새로운 suite 추가는 허용한다. 테스트 0개·빈 suite·실패·오류·skip도 계속 거부한다.
+[required-test-suites.json](required-test-suites.json)은 T10/T11을 포함한 기존 기능 지도의 26개 suite와 구조 검사 2개 suite의 실행 요구 목록이다. 공용 검증은 실제 XML과 비교하고 누락 이름을 출력하며 실패한다. 총건수는 고정하지 않고 새로운 suite 추가는 허용한다. 새 기능 완료 시 핵심 suite를 목록에 등록한다. 테스트 0개·빈 suite·실패·오류·skip도 계속 거부한다.
 
 목록 삭제·suite 이름 변경에는 대체 검증과 [기능 지도](feature-map.md)를 함께 검토한다. suite 내부의 일부 테스트 삭제·잘못된 assertion·목록 자체의 의도적인 변경은 자동으로 판정하지 못하므로 리뷰가 맡는다.
 

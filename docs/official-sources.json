@@ -347,7 +347,7 @@
     "id": "archunit-1.5.1-core",
     "url": "https://www.archunit.org/userguide/html/000_Index.html",
     "accessed": "2026-10-05",
-    "coverage": "1.5.1 core import、dependency/member/annotation rules、custom conditions、empty-rule failure; existing JUnit 6.0.3 tests"
+    "coverage": "1.5.1 core import, dependency/member/annotation rules, custom conditions, empty-rule failure; existing JUnit 6.0.3 tests"
   },
   {
     "id": "archunit-releases",

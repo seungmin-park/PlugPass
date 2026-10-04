@@ -14,6 +14,14 @@
 4. `./gradlew test --tests '*ArchitectureRulesTests' --console=plain`: no-op 검사기에서 16건 중 금지 구조 11건이 예외를 내지 않아 assertion 실패. 컴파일/환경 실패가 아닌 누락된 검사 동작의 Red다.
 5. 최소 변경: ArchUnit core 1.5.1, 구조 규칙 6개, 허용/금지 예제 16개. `./gradlew test --tests '*Architecture*Tests' --console=plain`: 22건 통과.
 
+## 최신 main 통합
+
+작업 중 main에 T10 추천(`#19`)과 T11 반복 수집(`#20`)이 들어와 `8607e4693cc536e21b5514047d77017e7dd6a567`을 병합했다. 검증 스킬의 테스트 건수 충돌은 업무 293건을 유지하며 구조 23건을 더하는 방식으로 해결했다. 필수 suite는 기존 26개 + 구조 2개로 갱신했다.
+
+추천 루트의 값·정책 객체도 도메인 선택 범위에 추가했다. 먼저 `rejectsRecommendationPolicyRepositoryDependency`를 작성해 기존 selector가 정책의 저장소 의존을 받아들이는 assertion 실패를 확인했다. 최소 selector 변경 후 구조 검사는 23건 통과했다. 정책의 추천 판단은 기존 RecommendationTests가 맡으며, 이 검사로 추천 로직을 재구현하지 않았다.
+
+최신 main 통합 후 같은 공용 명령이 종료 0으로 통과했다. Java 316건·Python 8건, 실패·오류·skip 0을 확인했다. 추천 HTTP 200의 빈 그룹도 upstream 공용 검사가 그대로 확인했다. 최종 실제 결과는 아래 산출물과 원격 PR checks에서 확인한다. 임시 구조 위반은 복원했으며 운영 소스는 최신 main 대비 변경하지 않았다. 실행 JAR에 architecturefixture·architecture 테스트·InvalidCandidatePolicy가 없음을 ZIP 검사로 추가 확인했다.
+
 ## 실제 위반의 거부
 
 - `StationReadFlowTests`의 XML 하나를 임시 제거하고 `python3 scripts/verify-runtime.py`: 종료 1, `Missing required test suites: com.plugpass.search.StationReadFlowTests`. 다른 테스트가 남아 있어도 거부했다. XML은 finally에서 복원했다.

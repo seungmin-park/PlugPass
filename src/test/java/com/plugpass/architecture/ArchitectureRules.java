@@ -94,7 +94,9 @@ final class ArchitectureRules {
     private static boolean isDomain(JavaClass candidate) {
         return candidate.isAnnotatedWith(Entity.class) ||
                 (candidate.getPackageName().startsWith("com.plugpass.station") || candidate.getPackageName().startsWith("com.plugpass.freshness"))
-                        && !isPersistence(candidate) && !candidate.isAnnotatedWith(Configuration.class);
+                        && !isPersistence(candidate) && !candidate.isAnnotatedWith(Configuration.class) ||
+                candidate.getPackageName().equals("com.plugpass.recommendation") && !isService(candidate)
+                        && !candidate.isAnnotatedWith(RestController.class);
     }
 
     private static boolean isHttp(JavaClass target) {

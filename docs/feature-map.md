@@ -5,9 +5,9 @@
 도메인 규칙의 결과는 기존 동작 테스트가 맡는다. 의존성·공개 변경 경로는 [구조 검사](architecture-guardrails.md)가 맡고, 실제 규칙 소유권·이름·책임은 리뷰가 함께 확인한다.
 
 - ArchitectureTests 6건: 운영 객체 4개 경계와 Service/MVC 테스트 2개 경계.
-- ArchitectureRulesTests 16건: 허용·금지 구조의 bytecode 예제.
+- ArchitectureRulesTests 17건: 허용·금지 구조의 bytecode 예제. 최신 main의 추천 정책 선택 범위도 확인한다.
 - Python 검사기 테스트 8건: 필수 suite 누락, 새 suite 허용, 보고서 없음·0개·빈 suite·실패·오류·skip 거부.
-- [필수 suite 목록](required-test-suites.json): 기존 기능 21개 + 구조 검사 2개. 실제 XML에 모두 실행되어야 한다. 고정 총건수·coverage 비율은 강제하지 않는다.
+- [필수 suite 목록](required-test-suites.json): T10/T11을 포함한 기존 기능 26개 + 구조 검사 2개. 실제 XML에 모두 실행되어야 한다. 고정 총건수·coverage 비율은 강제하지 않는다.
 - Red/Green·실제 임시 위반·한계: [CI 보강 기록](ci-boundaries-verification.md). JaCoCo는 사용자 선택으로 제외했다.
 
 | 경로 | 기대 결과 | 검증 |
@@ -86,3 +86,14 @@ StationDetailTests5·StationDetailHttpTests7·StationReadFlowTests2 =14건.
 
 회차 내 중복 ID 페이지는 저장 전에 거부한다. SyncProgress가 순서·헤더·중복·완료 건수를 소유한다.
 [리뷰·리팩터링 검증 기록](code-review-2026-10-02.md)에 Red/Green/Refactor와 한계를 기록했다.
+
+## T10 후보 추천
+
+GET /api/v1/recommendations → RecommendationRequest → RecommendationService → 반경 내 저장 데이터 → CandidatePolicy → 응답 DTO.
+RecommendationTests14·RecommendationServiceTests3·RecommendationHttpTests9·RecommendationRouteTests1, 전체287건.
+fixture HTTP부터 추천 HTTP까지 관측 시각 누락의 UNVERIFIED 분리를 확인한다. 그룹별 limit 전에 판단·제외하며 각 그룹은 거리/ID 순서다.
+근거와 한계: [3주차 기록](week3-verification.md).
+
+## T11 반복 수집
+
+기본 비활성화. 명시적 설정+키 → SyncScheduler 고정 지연 → StationSyncService 실행 소유권 → 기존 수집 경로. SyncSchedulerTests6건, 전체293건. 예정/직접 중복 호출은 SKIPPED, 예외 후 다음 실행 가능. 단일 프로세스 범위다.

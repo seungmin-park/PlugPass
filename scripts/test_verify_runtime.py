@@ -72,6 +72,31 @@ class RequiredTestSuiteTests(unittest.TestCase):
             '<testsuite name="{}" tests="{}" failures="{}" errors="{}" skipped="{}"/>'.format(
                 name, tests, failures, errors, skipped))
 
+class JourneyEvidenceTests(unittest.TestCase):
+    def test_accepts_all_required_http_responses(self):
+        import json
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            fields = {'search': ('stations', 2), 'detail': ('chargers', 1),
+                      'alternative': ('requiresConfirmation', 1), 'stale': ('excluded', 1),
+                      'failure': ('chargers', 1), 'recovered': ('preferred', 1), 'empty': ('preferred', 0)}
+            for name, (field, count) in fields.items():
+                (directory / (name + '.json')).write_text(json.dumps({field: [{}] * count}))
+            self.assertTrue(verify_runtime.check_journey_evidence(directory))
+
+    def test_rejects_missing_http_journey_evidence(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            with self.assertRaisesRegex(RuntimeError, 'Missing charging journey evidence'):
+                verify_runtime.check_journey_evidence(Path(temporary))
+
+    def test_rejects_empty_http_response_evidence(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            for name in ('search', 'detail', 'alternative', 'stale', 'failure', 'recovered', 'empty'):
+                (directory / (name + '.json')).write_text('{}')
+            with self.assertRaisesRegex(RuntimeError, 'Invalid charging journey evidence'):
+                verify_runtime.check_journey_evidence(directory)
+
 
 if __name__ == '__main__':
     unittest.main()

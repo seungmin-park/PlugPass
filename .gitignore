@@ -45,3 +45,6 @@ out/
 
 ### Verification scripts ###
 __pycache__/
+
+### Agent execution scratch ###
+.superpowers/

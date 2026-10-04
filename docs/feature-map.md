@@ -125,3 +125,8 @@ IngestionRecoveryTests14·IngestionHttpBudgetTests6·IngestionConfigurationTests
 DB 관측 시각/성공 이력 + 현재 Clock → Gauge → 명시적으로 노출한 Actuator metrics HTTP.
 IngestionMetricsTests6건, 도입 시 전체330건·CI 구조 검사 통합 후 전체353건. 성공/부분 실패/실패·재시도·마지막 성공 시각 경과·최신성 경계/누락/미래/시간 경과·로그 비밀값 비노출을 확인한다.
 관측 연결은 `ingestion.metrics`가 소유하고 도메인·서비스·저장소의 기존 책임은 유지한다. [운영 확인 명령](operations.md), [3주차 근거](week3-verification.md).
+
+## T14 종합 HTTP 사용자 흐름
+
+ChargingJourneyTests3건: 실제 fixture HTTP→XML→수집 commit→H2→검색→상세→첫 ID 제외 추천. 중복·관측 시각 누락·합성 관측의601초 경과·503 중 기존 조회·복구·반경 밖 빈 결과를 확인한다. 외부 경계와 시계만 제어하며 실제 업무 객체는 유지한다. [재현 절차와 범위](demo.md).
+공용 verify는 필수 suite와 charging-journey HTTP 증거의 형식/건수를 검사한다. 화면 cmux·실공공 API 인증은 별도 미확인이다.

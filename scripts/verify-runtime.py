@@ -17,6 +17,20 @@ def require(condition, message):
         raise RuntimeError(message)
 
 
+def check_journey_evidence(directory):
+    fields = {'search': 'stations', 'detail': 'chargers', 'alternative': 'requiresConfirmation',
+              'stale': 'excluded', 'failure': 'chargers', 'recovered': 'preferred', 'empty': 'preferred'}
+    for name, field in fields.items():
+        path = directory / (name + '.json')
+        require(path.is_file(), 'Missing charging journey evidence: ' + name)
+        body = json.loads(path.read_text())
+        require(isinstance(body, dict) and isinstance(body.get(field), list),
+                'Invalid charging journey evidence: ' + name)
+        require(len(body[field]) == (0 if name == 'empty' else 1 if name != 'search' else 2),
+                'Invalid charging journey evidence count: ' + name)
+    return True
+
+
 def check_tests(directory, required_suites):
     reports = list(directory.glob('TEST-*.xml'))
     require(reports, 'No test reports: an empty suite is not a pass')
@@ -79,6 +93,7 @@ def main():
     require(all(isinstance(name, str) and name.strip() for name in required_suites), 'Invalid required test suite name')
     require(len(required_suites) == len(set(required_suites)), 'Duplicate required test suite names')
     count = check_tests(root / 'build/test-results/test', required_suites)
+    check_journey_evidence(evidence / 'charging-journey')
     jars = [jar for jar in (root / 'build/libs').glob('*.jar') if not jar.name.endswith('-plain.jar')]
     require(len(jars) == 1, 'Expected exactly one application JAR')
     expected = (root / 'build/docs/asciidoc/index.html').read_bytes()

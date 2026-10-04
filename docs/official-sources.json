@@ -413,7 +413,7 @@
     "id": "frontend-vite-guide-planned",
     "url": "https://vite.dev/guide/",
     "accessed": "2026-10-05",
-    "coverage": "프런트 웹앱 계획: Node 조건·개발/정적 build; 도입 버전은 F01에서 확정"
+    "coverage": "프런트 웹앱 계획: Node 조건·개발/정적 build; 도입 버전은 T18에서 확정"
   },
   {
     "id": "frontend-vite-base-planned",
@@ -455,18 +455,18 @@
     "id": "frontend-playwright-ui-planned",
     "url": "https://playwright.dev/docs/test-ui-mode",
     "accessed": "2026-10-05",
-    "coverage": "프런트 웹앱 계획: UI 러너; cmux 조작·headed assertion은 F06에서 실제 확인"
+    "coverage": "프런트 웹앱 계획: UI 러너; cmux 조작·headed assertion은 T23에서 실제 확인"
   },
   {
     "id": "frontend-geolocation-planned",
     "url": "https://developer.mozilla.org/en-US/docs/Web/API/Geolocation/getCurrentPosition",
     "accessed": "2026-10-05",
-    "coverage": "프런트 웹앱 계획: secure context·권한·timeout; 위치 실패/늦은 응답은 F03 검증 예정"
+    "coverage": "프런트 웹앱 계획: secure context·권한·timeout; 위치 실패/늦은 응답은 T20 검증 예정"
   },
   {
     "id": "frontend-boot-static-planned",
     "url": "https://docs.spring.io/spring-boot/4.1/reference/web/servlet.html#web.servlet.spring-mvc.static-content",
     "accessed": "2026-10-05",
-    "coverage": "프런트 웹앱 계획: 정적 리소스 제공; 실제 JAR의 /app/index.html·JS/CSS는 F07 검증 예정"
+    "coverage": "프런트 웹앱 계획: 정적 리소스 제공; 실제 JAR의 /app/index.html·JS/CSS는 T24 검증 예정"
   }
 ]

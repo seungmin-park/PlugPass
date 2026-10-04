@@ -6,12 +6,23 @@
 
 **공통 제약:** Java 25·Spring Boot 4.1.1·JPA/H2·Spring REST Docs, 단일 인스턴스·공급자 1곳·검증 지역 1곳. 공식 계약을 먼저 확인한다. 현재 H2는 메모리 모드다. 작은 PR·필수 CI·자동 머지와 cmux 검증 정책을 유지한다.
 
-**프런트 추가 (2026-10-05):** 사용자는 목록 중심 반응형 웹앱으로 검색·상세·대체 후보를 먼저 완성하고 지도를 후속 단계로 선택했다. [프런트 계획](docs/frontend-plan.md)에 따라 T16→T17→F01~F07→T18 순으로 진행한다. 프런트 작업은 모두 미착수이며 새 명령·테스트·의존성도 아직 없다.
+**프런트 추가 (2026-10-05):** 사용자는 목록 중심 반응형 웹앱으로 검색·상세·대체 후보를 먼저 완성하고 지도를 후속 단계로 선택했다. [프런트 계획](docs/frontend-plan.md)에 따라 T16→T17→T18~T24 순으로 진행한다. 프런트 작업은 모두 미착수이며 새 명령·테스트·의존성도 아직 없다.
+
+## 남은 작업 실행 순서
+
+```text
+T16 조회 개선 → T17 장애·복구 검증
+  → T18 기반 → T19 API 계약 → T20 검색 → T21 상세 → T22 대체 후보
+  → T23 실제 연결 E2E → T24 웹앱 패키징·품질·CI
+후속: T25 지도
+```
+
+아래 작업 본문도 이 순서로 배치한다. T01의 실공공 API 확인 두 항목은 키를 확보한 뒤 재개하며, 키 없는 fixture 기반 작업의 실행 순서와 구분한다. T02~T15와 기반·CI 보강 항목은 완료 기록이다.
 
 ## 체크 방법
 
 - `[x]`는 구현·실행 검증·main 반영 근거가 있는 완료 항목이다. 계획·fixture만으로 실연동을 완료 처리하지 않는다.
-- T/F번호 하나가 기본 PR 단위다. 의존 작업이 main에 들어온 후 시작한다. 완료 시 해당 항목에 PR·검증 결과 링크를 남긴다.
+- T번호 하나가 기본 PR 단위다. 의존 작업이 main에 들어온 후 시작한다. 완료 시 해당 항목에 PR·검증 결과 링크를 남긴다.
 - 기능 변경은 의도한 assertion의 Red 확인 → 최소 구현 → 대상·전체 테스트 → Green 상태에서 Refactor → 전체 테스트 → 공용 검증 → PR/CI 순서를 따른다. 컴파일·환경·fixture 오류는 기능 Red가 아니다.
 - 성공·예외·실패·엣지 케이스를 각 동작에 맞춰 검증한다. 테스트 한글 DisplayName, 명시적 Java 타입, 데이터 준비·격리·teardown, 이름·책임 검토는 [AGENTS.md](AGENTS.md)를 따른다.
 - 계획의 Service 파일은 인터페이스이며 `Default{ServiceName}.java` 구현을 같은 작업에 추가한다. Service 테스트는 실제 commit과 별도 조회, MVC/REST Docs는 WebMvcTest와 MockitoBean, 연결된 전체 흐름은 T14의 별도 통합 테스트로 구분한다.
@@ -229,7 +240,7 @@
 
 검증·반영: [PR #29](https://github.com/seungmin-park/PlugPass/pull/29), 필수 CI SUCCESS·main a7793423. Java357·Python14 실패/오류/skip0. 실제 10,000/50,000·20명·30초/180초,4591요청·오류0%·p50 768.01ms·p95 1425.41ms. **300ms 목표 미달**이며 측정 완료를 성능 목표 달성으로 바꾸지 않는다. [성능 원본·재현](docs/performance.md)·[검증/전달 근거](docs/week4-verification.md).
 
-## 5~6주차 — 개선·복구·포트폴리오 완성
+## 백엔드 조회 개선·장애 검증 (미착수)
 
 ### T16 — 측정된 조회 병목 하나 개선
 
@@ -252,115 +263,98 @@
 
 산출: 어떤 실패에서 어떻게 동작하는지 재현 가능한 복구 기록.
 
-### T18 — 포트폴리오와 최종 재현 절차
+## 프런트 — 목록 중심 웹앱
 
-의존: T13~T17, F07. 수정: `README.md`, `docs/demo.md`, `docs/feature-map.md`, `.agents/skills/verify-plugpass/SKILL.md`, 본 파일.
+범위·화면·API·실패 조건은 [프런트 계획](docs/frontend-plan.md)을 따른다. 아래 프런트의 `src/...`·설정 파일은 `frontend/` 기준이며, `frontend/`·`src/test/`·`scripts/`로 표시한 경로는 저장소 기준이다. 파일·명령은 구현 예정이며 아직 실행한 결과가 아니다.
 
-- [ ] 문제·사용자 흐름·책임 도식·공식 데이터 출처·최신성 판단·설계 선택·한계를 실제 구현에 맞춰 정리한다.
-- [ ] PR·CI·API 문서·장애 검증·성능 전후 결과를 연결하고 새 환경에서 따라 할 설정·실행·검증 명령을 확인한다.
-- [ ] 최신 main에서 공용 검증과 데모 절차를 실행한다. 서비스 키 없는 재현과 실제 공급자 연동의 차이를 설명한다.
-- [ ] 미완료 항목을 숨기지 않고 체크리스트를 갱신한 최종 PR을 반영한다. 공개 배포는 별도 요청이 있을 때 진행한다.
-- [ ] 목록 검색→상세→대체 후보의 실제 화면·검증 기록을 포트폴리오에 연결하고 지도 후속·실공공 API 미확인·H2 한계를 구분한다.
+### T18 — 프런트 실행과 검증 기반
 
-산출: 코드만 보여 주는 대신 선택 이유·실패 조건·검증 결과를 설명할 수 있는 포트폴리오.
+의존: T16, T17. 파일: `index.html`, `package.json`, `package-lock.json`, `vite.config.ts`, `vitest.config.ts`, `tsconfig*.json`, `eslint.config.js`, `src/main.ts`, `src/App.vue`, `src/router/index.ts`, `src/styles/base.css`, `src/features/search/components/{SearchForm.vue,SearchForm.spec.ts}`, `src/features/search/views/StationSearchView.vue`. 수정: `.gitignore`, 공용 verify·CI, 기술 기록·출처 목록.
 
-## 프런트 — 목록 중심 첫 버전 (계획, 미착수)
+- [ ] 공식 Vue 생성 구성을 확인하고 Vue 3·TypeScript·Vite와 상태/통신/테스트 도구의 실제 호환 버전·Node를 lockfile과 프로젝트 설정에 고정한다.
+- [ ] runner·DOM 환경을 준비한 뒤 반경·커넥터 라벨과 검색 버튼, 자동 위치 권한 요청 없음의 테스트를 먼저 작성한다. 최소 빈 컴포넌트에서 누락된 화면의 assertion 실패를 확인하고 검색 진입점을 구현한다.
+- [ ] `/app/index.html`·Vite base `/app/`·hash router를 구성하고 `/`에서 `/stations`로 이동한다. 기본 반경은 1000m, 커넥터는 DC_COMBO다.
+- [ ] `npm --prefix frontend run test:unit -- src/features/search/components/SearchForm.spec.ts`와 프런트 전체 test:unit·type-check·lint·build, 공용 검증을 확인하고 PR을 반영한다. 설치 버전과 실제 Red/Green을 기록한다.
 
-설계·공통 제약: [frontend-plan.md](docs/frontend-plan.md). 모든 프런트 파일/명령은 예정이며 지금 존재하는 것으로 취급하지 않는다. F01에서 runner·DOM 환경을 준비한 후, 제품 동작의 assertion 실패를 확인하고 구현한다. 구문·import·환경 오류를 Red로 세지 않는다. 각 작업은 대상 테스트→프런트 전체 테스트·type-check·lint·build→기존 공용 verify→필수 CI를 확인한다. 전체 verify의 로컬 실제 HTTP/E2E는 cmux 표시 규칙을 따른다.
+산출: 브라우저에서 열리는 검색 진입점과 실행 가능한 프런트 검증 명령. scaffolding 통과를 검색 사용자 흐름 완료로 보고하지 않는다.
 
-### F01 — 검색 진입점과 프런트 검증 기반
+### T19 — URL 조건과 API 계약
 
-의존: T16·T17. 생성: `frontend/index.html`, `package.json`, `package-lock.json`, `vite.config.ts`, `vitest.config.ts`, `tsconfig*.json`, `eslint.config.js`, `src/main.ts`, `src/App.vue`, `src/router/index.ts`, `src/styles/base.css`, `src/features/search/views/StationSearchView.vue`, `src/features/search/components/SearchForm.vue`. 이후 F01~F05의 축약 상대 경로는 `frontend/` 아래를 뜻한다. 수정: `.gitignore`, `.github/workflows/verify.yml`, `scripts/verify.sh`, 기술 기록·출처 목록.
+의존: T18. 파일: `src/features/search/{types.ts,criteria.ts,api/stationApi.ts}`, `src/features/station-detail/{types.ts,api/stationDetailApi.ts}`, `src/features/recommendation/{types.ts,api/recommendationApi.ts}`, `src/features/charging-info/types.ts`, `src/shared/api/{httpClient.ts,apiError.ts}`와 각 `.spec.ts`.
 
-계약: Vue 3·TypeScript·hash router로 `/`→`/stations` 이동, `/app/index.html`이 웹앱 진입점이며 Vite base는 `/app/`다. 초기 검색 화면은 자동 위치 권한/API 요청 없이 위치 선택·반경·커넥터·검색 버튼을 표시한다. 초기 폼 event는 F03이 연결한다.
+- [ ] 조건 없음·부분 누락·중복 query·위경도/반경/limit 경계·비정수·미지원 커넥터·안전 정수 밖 ID를 구분하는 입력 테스트를 먼저 작성한다.
+- [ ] `parseSearchCriteria(query)`와 `getStations(criteria, signal?)`, `getStationDetail(stationId, signal?)`, `getRecommendations(criteria, excludeStationId, signal?)`를 현재 Java DTO·REST Docs 계약에 맞춘다.
+- [ ] 정확한 HTTP 경로·query·취소 signal, timeout 10000ms·400 fields·404·429·5xx·network·취소·잘못된 JSON/응답 구조를 경계 테스트로 확인한다. 자동 재시도는 하지 않는다.
+- [ ] criteria·각 API·apiError 대상 테스트에서 assertion 실패→최소 구현→통과를 확인하고 전체 테스트·공용 검증·PR을 반영한다.
 
-- [ ] 공식 create-vue 구성을 확인하고 Vue/TypeScript/Vite/Pinia/Router/Axios·Vitest/VTU/jsdom·Playwright·ESLint의 실제 호환 버전과 Node를 lockfile·Node 설정에 고정한다. 기존 backend 의존성은 유지한다.
-- [ ] runner·DOM 실행 준비 후 `SearchForm.spec.ts`에 ‘반경·커넥터 라벨과 검색 버튼이 보이고 위치 권한을 자동 호출하지 않는다’는 테스트를 먼저 쓴다. 최소 빈 컴포넌트를 대상으로 `npm --prefix frontend run test:unit -- src/features/search/components/SearchForm.spec.ts`를 실행해 빠진 UI assertion 실패를 확인한다.
-- [ ] 필요한 초기 화면·route·기본 반경 1000m/커넥터 DC_COMBO를 구현해 대상 테스트를 통과시킨다. 알맹이 없는 scaffolding 통과를 사용자 흐름 완성으로 보고하지 않는다.
-- [ ] `test:unit`(Vitest run), `type-check`(vue-tsc), `lint`, `build`, `dev` 명령과 unit JUnit 출력을 마련한다. 실제 전체 테스트·타입·lint·build를 확인하고 CI에 Node 설치와 lockfile 설치·프런트 검증을 연결한다.
-- [ ] 중복 생성 예제·사용하지 않는 파일을 정리하고 재검증한다. 설치 버전·Red/Green·명령·한계를 기록한 작은 PR을 전달한다.
+산출: 화면이 공유하는 검색 조건·응답 타입·HTTP 오류 계약. nullable 시각은 보존하고 추천에 없는 좌표·dataReady를 만들어내지 않는다.
 
-### F02 — URL·API 입력과 응답/오류 계약
+### T20 — 위치 선택과 주변 검색 화면
 
-의존: F01. 생성: `frontend/src/features/search/{types.ts,criteria.ts,api/stationApi.ts}`, `features/station-detail/{types.ts,api/stationDetailApi.ts}`, `features/recommendation/{types.ts,api/recommendationApi.ts}`, `features/charging-info/types.ts`, `shared/api/{httpClient.ts,apiError.ts}`와 같은 경로의 `.spec.ts`.
+의존: T19. 파일: `src/shared/location/useCurrentLocation.ts`, `src/shared/ui/RequestState.vue`, `src/features/search/{stores/stationSearchStore.ts,components/StationCard.vue}`, `src/features/charging-info/{presentation.ts,components/StatusBadge.vue,components/FreshnessBadge.vue}`와 각 `.spec.ts`. 수정: SearchForm·StationSearchView·router.
 
-계약: `SearchCriteria={latitude,longitude,radiusMeters,connector,limit}`. `parseSearchCriteria(query: LocationQuery)`는 `empty / valid(criteria) / invalid(fields)`를 구분한다. API 함수는 `getStations(criteria, signal?)`, `getStationDetail(stationId, signal?)`, `getRecommendations(criteria, excludeStationId, signal?)`이고 Promise로 현재 DTO에 대응하는 response를 반환한다. HTTP 오류는 `validation / not-found / timeout / network / rate-limit / server / invalid-response`로 분류하고 취소는 별도 처리한다.
+- [ ] 위치 성공·권한 거부·10초 제한·늦은 위치 응답, URL 조건 복원·뒤로 가기, 데이터 준비 전/부분 결과/빈 결과, 400·서버 오류·응답 역전의 테스트를 먼저 작성한다.
+- [ ] `useCurrentLocation().requestLocation()`과 `useStationSearchStore().search(criteria)`를 구현한다. 폼은 입력, URL은 확정 조건, Store는 조회 상태·결과·요청 순번을 소유한다.
+- [ ] 위치 버튼 또는 명시적인 검증용 예시 위치 37.5/127에서 검색한다. 직선거리·이용 가능 보고 수·상태/최신성 배지·표시 상한을 보여 주고 이전 조건의 결과가 새 조건을 덮지 않게 한다.
+- [ ] `npm --prefix frontend run test:unit -- src/features/search src/shared/location src/features/charging-info`에서 실패·통과와 전체 검증을 확인하고 PR을 반영한다.
 
-- [ ] `criteria.spec.ts`에 완전한 유효 query·조건 없음·부분 누락·빈 문자열·중복 값·위경도 양끝/바로 밖·NaN/Infinity·반경 100/10000과 바로 밖·limit 1/50과 바로 밖·미지원 enum·비정수 입력의 기대 결과를 각각 먼저 쓴다.
-- [ ] API `.spec.ts`에 실제 `/api/v1/...` 경로·정확한 query·양수 안전 정수 상세/제외 ID·timeout 10000ms·signal 전달, 400 fields/404/429/5xx/network/timeout/취소와 잘못된 JSON/배열 누락을 검증한다. 정밀도 손실 ID는 거부하고 현재 DTO의 nullable 시각·이용 조건은 허용한다. 필수 ID/위치·반환 배열을 검증한다.
-- [ ] `npm --prefix frontend run test:unit -- src/features/search/criteria.spec.ts src/shared/api/apiError.spec.ts`와 추가 API 대상 테스트에서 의도한 assertion 실패를 확인한다. 필요한 최소 선언을 갖춰 컴파일 실패와 구분한다.
-- [ ] 현재 Java DTO/REST Docs 그대로 타입·query 변환·최소 응답 구조 검증·Axios 연결을 구현한다. 추천에는 좌표/dataReady가 없음을 타입에 반영한다.
-- [ ] 대상·전체 검증 후 공용 충전기 타입·오류 변환의 소유권과 호출부를 리뷰하고 PR/검증 근거를 기록한다.
+산출: 실제 API로 주변 충전소를 검색하는 화면. 데이터 준비 전·빈 결과·통신 오류를 구분하며 최신성 판정은 서버에 둔다.
 
-### F03 — 위치 선택과 주변 검색 흐름
+### T21 — 충전소 상세와 정보 근거
 
-의존: F02. 생성: `frontend/src/shared/location/useCurrentLocation.ts`, `shared/ui/RequestState.vue`, `features/search/stores/stationSearchStore.ts`, `features/search/components/StationCard.vue`, `features/charging-info/presentation.ts`, `features/charging-info/components/{StatusBadge.vue,FreshnessBadge.vue}` 및 `.spec.ts`. 수정: `SearchForm.vue`, `StationSearchView.vue`, router.
+의존: T20. 파일: `src/features/station-detail/{stores/stationDetailStore.ts,views/StationDetailView.vue,components/ChargerList.vue}`와 각 `.spec.ts`. 수정: 공용 charging-info 표시/테스트, router·검색 카드 이동.
 
-계약: `useStationSearchStore().search(criteria)`가 조회 상태/결과/요청 순번을 소유한다. `useCurrentLocation().requestLocation()`은 사용자 요청 시에만 위치를 얻고 권한 거부/실패/10초 제한을 구분한다. 확정 조건은 URL, 폼 입력은 SearchForm 소유다.
+- [ ] 상세 목록·빈 충전기·없는 ID·관측 시각 null·이용 조건 누락·알 수 없는 상태/사유·시각 변환·빠른 ID 변경의 응답 역전 테스트를 먼저 작성한다.
+- [ ] `useStationDetailStore().loadStation(stationId)`와 상태·최신성·사유·시각 표시를 구현한다. 관측 시각·수집 시각을 구분하고 AVAILABLE+UNVERIFIED를 확정 이용 가능으로 표시하지 않는다.
+- [ ] 검색 조건을 보존해 목록/대체 후보로 이동한다. 조건 없는 상세 직접 링크는 상세를 조회하되 대체 후보 조회 전에 조건을 선택하게 한다. 원본 비고는 텍스트로 표시한다.
+- [ ] `npm --prefix frontend run test:unit -- src/features/station-detail src/features/charging-info`에서 실패·통과와 전체 검증을 확인하고 PR을 반영한다.
 
-- [ ] `stationSearchStore.spec.ts`, `StationSearchView.spec.ts`, `useCurrentLocation.spec.ts`에 위치 성공·거부·timeout·늦은 위치 응답, 조건 제출·뒤로 가기 복원·직접 링크·중복 제출·API 재시도의 관찰 가능한 결과를 먼저 쓴다.
-- [ ] dataReady=false/결과 없음, dataReady=false/부분 결과 있음, dataReady=true/빈 목록, 성공 목록·400 fields·network/5xx, A→B 발송/B→A 응답과 이전 실패가 새 성공을 지우지 않는 사례를 별도로 검증한다.
-- [ ] 대상 명령 `npm --prefix frontend run test:unit -- src/features/search src/shared/location`에서 assertion Red를 확인한 뒤 상태 전이·위치 경계·폼 event·카드를 최소 구현한다.
-- [ ] ‘검증용 예시 위치’ 37.5/127·1000m·DC_COMBO·20, 직선거리·이용 가능 보고 수·독립 상태/최신성 배지·검색 상한 표시를 연결한다. 기존 데이터가 없으면 정상 빈 결과를 보여 준다.
-- [ ] 대상·전체 검증 후 요청 취소와 순번 검사의 책임·검색 조건별 결과 격리·URL 계약을 리뷰하고 실제 결과를 기록한다.
+산출: 충전기 상태와 정보의 근거를 확인하는 상세 화면. 관측 시각 누락을 수집 시각으로 대체하거나 추천 규칙을 프런트에서 재계산하지 않는다.
 
-### F04 — 충전소 상세와 정보 근거 표시
+### T22 — 같은 조건의 대체 후보 화면
 
-의존: F03. 생성: `frontend/src/features/station-detail/stores/stationDetailStore.ts`, `views/StationDetailView.vue`, `components/ChargerList.vue` 및 `.spec.ts`. 수정: `features/charging-info/presentation.ts`·테스트, router·검색 카드 이동.
+의존: T21. 파일: `src/features/recommendation/{stores/recommendationStore.ts,views/AlternativeStationsView.vue,components/CandidateGroup.vue}`와 각 `.spec.ts`. 수정: 상세의 대체 후보 이동·router.
 
-계약: `useStationDetailStore().loadStation(stationId)`가 상세 요청을 소유한다. `statusLabel(value)`, `freshnessLabel(value)`, `reasonLabel(code)`, `formatObservedTime(value)`는 한국어 표현만 맡고 서버 최신성/추천 판정을 재계산하지 않는다.
+- [ ] 같은 검색 조건·현재 충전소 제외 ID, 세 후보 그룹·빈 결과·알 수 없는 사유·잘못된 직접 링크·독립 재시도·응답 역전 테스트를 먼저 작성한다.
+- [ ] `useRecommendationStore().loadAlternatives(criteria, excludeStationId)`를 구현하고 preferred/requiresConfirmation/excluded의 그룹·순서·사유를 그대로 표시한다.
+- [ ] 같은 조건의 검색 메타를 조회해 준비 상태를 알리되, 메타 조회만 실패해도 성공한 후보를 유지한다. 후보를 누르면 실제 상세를 조회한다.
+- [ ] `npm --prefix frontend run test:unit -- src/features/recommendation`에서 실패·통과와 전체 검증을 확인하고 PR을 반영한다.
 
-- [ ] `StationDetailView.spec.ts`에 실제 DTO 구조의 충전기 목록·404·400 ID·빈 충전기·이용 조건 누락·관측 시각 null·서로 다른 관측/수집 시각·검색 조건 보존·검색 조건 없는 직접 링크를 먼저 검증한다.
-- [ ] `presentation.spec.ts`에 모든 현재 상태/최신성/사유 코드·미래의 알 수 없는 코드·잘못된 시각·UTC의 로컬 표시를 검증한다. `AVAILABLE + UNVERIFIED`가 확정 가능으로 표시되지 않는 assertion을 둔다. `stationDetailStore.spec.ts`는 빠른 ID 전환의 응답 역전을 확인한다.
-- [ ] `npm --prefix frontend run test:unit -- src/features/station-detail src/features/charging-info`로 Red를 확인하고 상세·표시 규칙·조회 시점·다른 충전소 찾기를 구현한다.
-- [ ] 상태 원본 문자열/비고를 HTML로 삽입하지 않고 텍스트로 표시한다. 같은 조건 새로고침 실패는 이전 정보와 실패 안내를 함께 보여 준다.
-- [ ] 대상·전체 검증 후 nullable 값·공용 표시 규칙·상세/검색 이동 계약을 리뷰하고 결과를 기록한다.
+산출: 현재 충전소를 제외한 대체 후보와 확인/제외 이유. 응답에 없는 좌표·충전기 수·전체 건수를 추측하지 않는다.
 
-### F05 — 제외 조건을 유지한 대체 후보
+### T23 — 브라우저와 실제 백엔드 연결 검증
 
-의존: F04. 생성: `frontend/src/features/recommendation/stores/recommendationStore.ts`, `views/AlternativeStationsView.vue`, `components/CandidateGroup.vue` 및 `.spec.ts`. 수정: 상세의 대체 후보 이동·router.
+의존: T22. 파일: `src/test/java/e2e/{ChargingDemoApplication.java,DemoProvider.java,ChargingDemoApplicationTests.java}`, `src/test/resources/publicdata/browser-demo.xml`, `frontend/playwright.config.ts`, `frontend/e2e/{charging-journey.spec.ts,ui-failures.spec.ts}`, `scripts/frontend-e2e.sh`, `docs/frontend-verification.md`. 수정: build.gradle의 test-classpath 실행 경로·프런트 명령·공용 JAR 검사·필수 Java suite 목록.
 
-계약: `useRecommendationStore().loadAlternatives(criteria, excludeStationId)`가 후보 요청과 같은 조건의 검색 메타 요청을 조정한다. 상태는 각각 관리해 검색 메타 실패가 성공 후보를 지우지 않는다. 결과는 서버의 preferred/requiresConfirmation/excluded 순서와 그룹을 유지한다.
+- [ ] 합성 충전소 2곳의 fixture HTTP→실제 수집→H2→검색/상세/제외 추천을 테스트한다. 공급자·시간만 제어하고 실제 Controller/Service/Repository를 사용한다.
+- [ ] 브라우저에서 예시 위치→검색→첫 상세→대체 후보→다른 상세의 텍스트·ID·제외 조건을 assertion한다. 권한 거부·빈 결과·HTTP 오류·timeout·응답 역전은 별도 UI 실패 spec으로 검증한다.
+- [ ] 현재 cmux의 확인한 workspace·보조 pane에 서버/러너 로그를 표시하고 headed/UI assertion과 같은 workspace의 실제 브라우저 클릭을 진행한다. mock UI 범위와 실제 DB 연결 범위를 구분한다.
+- [ ] 종료 코드·assertion·HTML/trace·서버 로그, 운영 JAR의 e2e 클래스 부재를 확인하고 공용 검증·PR을 반영한다. 직접 시작한 서버만 종료하고 검증 pane은 유지한다.
 
-- [ ] `recommendationStore.spec.ts`, `AlternativeStationsView.spec.ts`에 동일 조건·정확한 제외 ID 전달·3그룹·그룹별 빈 결과·전체 빈 결과·알 수 없는 사유·직접 링크의 잘못된 제외 ID·후보 상세 이동을 먼저 쓴다.
-- [ ] RECENT/UNVERIFIED/STALE의 서버 그룹을 화면이 재분류하지 않는 사례, 검색 메타만 실패해도 후보 유지, 후보 실패 재시도, 제외 ID 변경 시 응답 역전을 각각 검증한다.
-- [ ] `npm --prefix frontend run test:unit -- src/features/recommendation`으로 assertion Red를 확인하고 최소 카드·사유 설명·제외 그룹 접어 보기·독립 재시도를 구현한다.
-- [ ] 추천 카드에 없는 좌표/충전기 수/전체 건수를 만들어 표시하지 않는다. 클릭 시 실제 상세 조회로 연결한다.
-- [ ] 대상·전체 검증 후 검색·상세·대체 후보를 통과하는 URL 조건·원본 ID 계약과 책임을 리뷰하고 결과를 기록한다.
+산출: 실제 검색→상세→대체 후보 연결과 실패 화면의 실행 근거. 기존 흐름의 첫 통과는 기존 동작 확인이며 기능 Red로 바꾸어 보고하지 않는다. cmux 불가·실공공 API 미확인은 별도로 기록한다.
 
-### F06 — 실제 백엔드 연결과 화면에 보이는 E2E
+### T24 — 웹앱 패키징과 품질 검사
 
-의존: F05. 생성: `src/test/java/e2e/ChargingDemoApplication.java`, `DemoProvider.java`, `ChargingDemoApplicationTests.java`, `src/test/resources/publicdata/browser-demo.xml`, `frontend/playwright.config.ts`, `frontend/e2e/{charging-journey.spec.ts,ui-failures.spec.ts}`, `scripts/frontend-e2e.sh`, `docs/frontend-verification.md`. 수정: build.gradle의 test-classpath 실행 경로·frontend scripts·공용 JAR 검사·필수 Java suite 목록.
+의존: T23. 수정: `build.gradle`, `frontend/src/styles/base.css`, View/Component·관련 테스트, `frontend/eslint.config.js`, `scripts/verify.sh`, `scripts/verify-runtime.py`·검사기 회귀 테스트, `.github/workflows/verify.yml`, 기능 지도·검증 스킬·실행 기록.
 
-계약: 운영 Controller/Service/Repository와 H2를 사용하고 fixture HTTP 공급자·시간만 제어한다. test-classpath 데모 앱이 실제 수집을 호출한다. UI 실패 테스트와 실제 저장소 연결 E2E는 서로 다른 spec/보고서로 구분한다. 서버 시작/종료 도우미는 자신의 PID·포트·준비 상태만 관리한다.
+- [ ] 모바일 375×812·데스크톱 1440×900, 키보드 조작·라벨·오류 focus·상태 알림의 테스트를 먼저 작성하고 필요한 화면을 수정한다.
+- [ ] 실제 JAR의 `/app/index.html`·JS/CSS·직접 링크·같은 origin API·기존 REST Docs를 검증한다. 누락 assertion의 실패를 확인한 뒤 프런트 build→bootJar의 `static/app/` 포함을 구현한다.
+- [ ] Vue→Axios 직접 의존과 API→Store/View 역의존, 필수 suite 누락·0개·skip·failure·error를 기존 lint/검사기로 거부한다. 검사기 회귀 테스트와 실제 임시 위반의 거부·복원을 확인한다.
+- [ ] 프런트 전체 테스트·type-check·lint·build·E2E와 기존 공용 verify를 필수 `PlugPass verify`에 연결한다. 실제 결과·책임/이름·공개 계약을 리뷰하고 사용법·기능 지도·검증 기록을 해당 PR에서 갱신한다.
 
-- [ ] 데모 서버 테스트를 먼저 작성해 합성 2곳 수집·검색의 dataReady/ID·상세의 UNVERIFIED·첫 ID 제외 후 다른 후보만 반환을 실제 HTTP로 assertion한다. 테스트 시작 준비를 갖춘 뒤 의도한 Red를 확인하고 데모 외부 경계를 구현한다.
-- [ ] `charging-journey.spec.ts`를 먼저 작성해 ‘검증용 예시 위치’→검색→첫 상세→대체 후보→다른 상세의 텍스트·ID·제외 query·시각 누락 안내를 assertion한다. UI 실패 spec에는 권한 거부·empty·400/404/429/5xx·timeout·잘못된 응답·응답 역전을 별도로 둔다.
-- [ ] AGENTS.md의 현재 cmux 식별·보조 pane 규칙을 적용하고 저장소·흐름을 먼저 설명한다. 실패/통과 러너와 서버 로그를 해당 pane에서 실행한다. `npm --prefix frontend run test:e2e -- --headed` 또는 UI 러너를 사용하며 종료 코드와 실제 assertion을 확인한다.
-- [ ] 같은 workspace의 cmux browser에서도 실제 앱에 입력·클릭·이동해 연결 흐름을 보인다. mock UI spec과 실제 DB/HTTP 흐름의 범위 차이를 기록한다. 서버는 cmux 확인 동안 별도 serve 모드로 유지할 수 있게 한다.
-- [ ] 도우미의 초기화/실행 실패가 0 종료로 숨겨지지 않고 운영 JAR에는 `e2e/` 클래스가 없음을 확인한다. 직접 시작한 서버만 종료하고 pane은 남긴다. 실제 cmux 불가 시 원인·대체 범위·미확인을 기록한다.
-- [ ] 대상·프런트 전체·기존 공용 검증을 확인하고 JUnit/HTML/trace·서버 로그·source/버전과 Red/Green 근거를 연결한 PR을 전달한다.
+산출: Spring JAR에서 제공되는 웹앱과 필수 품질 검사. 개발 서버 검증·JAR HTTP·원격 CI·화면 E2E의 결과를 구분한다.
 
-### F07 — 웹앱 패키징·모바일·접근성·책임 경계·필수 CI
+## 후속 — 지도와 목록 연결
 
-의존: F06. 수정: `build.gradle`, `frontend/src/styles/base.css`, 각 View/Component·관련 테스트, `frontend/eslint.config.js`, `scripts/verify.sh`, `scripts/verify-runtime.py`·검사기 회귀 테스트, `.github/workflows/verify.yml`, `docs/feature-map.md`, `.agents/skills/verify-plugpass/SKILL.md`, `docs/frontend-verification.md`.
+### T25 — 지도와 목록 선택 연결
 
-계약: 필수 `PlugPass verify`가 backend와 frontend의 실제 테스트·타입·lint·build·전체 연결 E2E를 확인한다. existing verifier를 확장하며 별도 중복 CI/coverage 목표를 만들지 않는다. 로컬 E2E는 화면 표시, CI는 headless다.
+의존: T24, 지도 범위 결정. 파일·SDK는 [후속 지도 계획](docs/frontend-plan.md)의 범위를 확정할 때 정한다.
 
-- [ ] 모바일 375×812·데스크톱 1440×900, 키보드만 검색/상세/후보 이동, label·오류 focus·로딩 알림·색 외 상태 텍스트의 관찰 가능한 회귀 사례를 먼저 작성·실행한다. 필요한 UI만 수정해 대상·전체 검증한다.
-- [ ] Vue→Axios 직접 import, API→Store/View 역의존을 ESLint에서 거부하도록 허용/금지 예제를 먼저 검증한다. 실제 소스에 임시 위반을 넣어 공용 검사 실패를 확인하고 복원 후 성공을 확인한다.
-- [ ] 기존 XML 검사기에 프런트 JUnit의 필수 suite 누락·0개·skip·failure·error 거부를 확장한다. 회귀 테스트를 먼저 실패시키고 최소 구현한다. 고정 총건수·의미 없는 coverage 목표는 도입하지 않는다.
-- [ ] 실제 JAR의 `/app/index.html`·참조 JS/CSS·직접 링크 새로고침·같은 origin API·기존 `/docs/index.html`을 먼저 검증해 누락 assertion의 Red를 확인한다. Gradle 프런트 build→bootJar의 `static/app/` 포함을 구현하고 실제 HTTP로 재검증한다. 개발 서버 E2E와 JAR 파일 제공 검증의 범위를 구분한다.
-- [ ] 기존 `PlugPass verify` 안에서 lockfile 설치→프런트 unit/type-check/lint/build→UI 실패 spec·실제 백엔드 E2E를 실행한다. 원본 보고서를 보존하며 job timeout은 측정 후 필요할 때만 조정한다. `continue-on-error`·전체 skip 통과를 사용하지 않는다.
-- [ ] 현재 소스에서 로컬 공용 검증·원격 필수 CI·화면 E2E 범위를 확인하고 기능 지도/검증 스킬의 예정 경로를 실제 관측 결과로 바꾼다. 구현하지 않은 지도·실공공 API 인증·운영 배포는 완료 표시하지 않는다.
-- [ ] 이름→실제 수행→배치·상태 소유권·호출부/JSON 계약을 리뷰하고 기록한다. T18로 최종 포트폴리오 작업을 넘긴다.
+- [ ] SDK 공식 조건·키/허용 도메인·출처 표시·지원 브라우저와 지도에 표시할 데이터 범위를 확인한다. 추천 응답의 좌표 부재를 고려한다.
+- [ ] 마커/목록 선택·조건 변경·SDK 실패 테스트를 먼저 작성하고 지도와 카드 선택을 연결한다. SDK 실패 시 목록은 유지한다.
+- [ ] 대상·전체 검증과 현재 cmux에서 실제 지도 흐름을 확인하고 관련 계획·검증 근거를 갱신한 PR을 반영한다.
 
-### F08 — 지도와 목록 연결 (후속, 첫 버전에서 제외)
-
-의존: F07·별도 지도 설계. [후속 지도 범위](docs/frontend-plan.md)의 SDK 조건·마커/카드 동기화·SDK 실패 시 목록 유지·추천 좌표 한계를 따른다.
-
-- [ ] 지도 SDK·공식 사용 조건·허용 도메인/키·출처 표시·지원 브라우저를 확인한다. 주소 검색/경로 안내·추천 지도까지 필요한지 범위를 따로 결정한다.
-- [ ] 확정한 범위의 마커 선택·목록 선택·조건 변경·SDK 실패를 TDD로 검증하고 현재 cmux에서 실제 흐름을 확인한다.
+산출: 첫 목록 버전 이후의 지도 탐색. 주소 검색·경로 안내·유료 실행·공개 배포를 자동으로 포함하지 않는다.
 
 ## 작업마다 공통으로 확인할 완료 조건
 

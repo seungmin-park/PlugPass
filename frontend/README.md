@@ -6,6 +6,6 @@ Node26.7.0을 사용한다. `npm ci` 후 `npm run dev`로 실행하고 `/app/ind
 - `npm run test:unit`: 단위·컴포넌트 assertion
 - `npm run type-check`: Vue/TypeScript 타입
 - `npm run lint`: ESLint, 경고0
-- `npm run build`: `/app/` base의 dist 산출물
+- `npm run build`: 타입 검사 성공 후 `/app/` base의 dist 산출물
 
-저장소 공용 명령은 `bash scripts/verify.sh`다. 현재 T18은 검색 조건 폼·hash 이동·검증 기반이며, 실제 검색 화면 연결은 T20 이후다. 운영JAR 웹앱 패키징은 T24에서 검증한다.
+저장소 공용 명령은 `bash scripts/verify.sh`다. 현재 T18 검색 조건 폼·hash 이동·엄격 검사와 T19 URL/API 계약이 있으며, 실제 검색 화면 연결은 T20 이후다. 운영JAR 웹앱 패키징은 T24에서 검증한다.

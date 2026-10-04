@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import type { Connector } from '../../charging-info/types'
 
 const radiusMeters = ref(1000)
-const connector = ref('DC_COMBO')
-const emit = defineEmits<{ submit: [conditions: { radiusMeters: number; connector: string }] }>()
+const connector = ref<Connector>('DC_COMBO')
+const emit = defineEmits<{ submit: [conditions: { radiusMeters: number; connector: Connector }] }>()
 </script>
 
 <template>

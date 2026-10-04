@@ -47,3 +47,9 @@ T02~T15의 충전소 수집·저장·검색/상세·추천·반복 수집·장�
 
 빠른 반복은 `./gradlew test`, 공용 검증은 `bash scripts/verify.sh`다. 공용 검증은 동작·구조·필수 suite 실행과 JAR의 실제 HTTP를 확인하며 CI도 같은 명령을 사용한다. 테스트 보고서는 `build/reports/tests/test/index.html`에 생성된다.
 현재 소스와 검증 로그를 묶는 [검증 계획](.agents/verification.json)은 전역 agent-engineering의 기존 증거 도구로 실행한다. [verify-plugpass](.agents/skills/verify-plugpass/SKILL.md)의 절차를 따른다.
+
+## 웹앱 개발
+
+Node26.7.0에서 `npm --prefix frontend ci`, `npm --prefix frontend run dev` 후 `http://localhost:5173/app/index.html`을 연다. Vue·TypeScript 기반 검색 진입점과 URL/API 계약(T18/T19)을 제공한다. 실제 위치→검색→상세→대체 후보 화면 연결은 T20 이후다. 개발 서버의 `/api` 요청은 localhost8080의 Spring 서버에 전달한다. 운영JAR 웹앱 포함은 T24에서 진행한다.
+
+프런트 단위 테스트·타입·lint·build는 [frontend 사용법](frontend/README.md), 실제 Red/Green·브라우저·제한은 [실행 기록](docs/frontend-verification.md)을 따른다. 공용 `bash scripts/verify.sh`는 Node와 Java/Python 환경을 함께 사용한다.

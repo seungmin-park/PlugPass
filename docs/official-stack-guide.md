@@ -77,7 +77,7 @@ NaN은 일반 비교만으로 거부되지 않아 isFinite를 함께 사용한�
 
 Station/Charger는 T02의 불변 도메인 모델이며 아직 JPA 엔티티가 아니다. JPA 매핑은 T04에서 수행하므로
 이번에는 엔티티용 Lombok·보호 기본 생성자·시각 필드를 선구현하지 않는다. 신규 의존성·버전 변경은 없다.
-현재 프런트엔드·TypeScript는 적용 대상 없음.
+해당 백엔드 작업 당시 프런트엔드·TypeScript는 없었다. T18 이후 적용 범위는 아래 프런트 실제 도입/계약 기록을 따른다.
 
 ## T04 — 저장 경계와 엔티티 생성
 
@@ -166,7 +166,7 @@ monotonic 시간으로 예산을 계산하고 벽시계는 데이터 시각·이
 
 설정은 Java 25·Spring Boot 4.1.1이며 실제 runtimeClasspath의 spring-core는 7.0.9다. [Boot 코드 구조](https://docs.spring.io/spring-boot/4.1/reference/using/structuring-your-code.html)의 root package·component/entity 탐색 설명을 확인했다. 버전 경로는 rolling 문서로 redirect되지만 표시 버전은 현재 프로젝트와 같은 4.1.1이다.
 
-루트 PlugPassApplication을 유지하면 이동한 하위 패키지도 기본 탐색 범위에 속한다는 것은 공식 동작이다. 기능별 하위 역할 패키지와 DTO 묶음, 공유 Connector·validation의 소유 위치는 프로젝트 설계 판단이다. 신규 의존성·버전 변경은 없으며 기존 테스트와 실행 JAR HTTP로 실제 구성 유지 여부를 검증한다. 현재 프런트엔드·TypeScript는 적용 대상 없음.
+루트 PlugPassApplication을 유지하면 이동한 하위 패키지도 기본 탐색 범위에 속한다는 것은 공식 동작이다. 기능별 하위 역할 패키지와 DTO 묶음, 공유 Connector·validation의 소유 위치는 프로젝트 설계 판단이다. 신규 의존성·버전 변경은 없으며 기존 테스트와 실행 JAR HTTP로 실제 구성 유지 여부를 검증한다. 해당 백엔드 작업 당시 프런트엔드·TypeScript는 없었다. T18 이후 적용 범위는 아래 프런트 실제 도입/계약 기록을 따른다.
 
 ## T13 — 누적 횟수와 현재 품질
 
@@ -195,3 +195,9 @@ FreshnessPolicy가 최근 경계 시각을 소유하고 DB count 조건은 그 �
 ## T18 프런트 실제 도입
 
 [공식 Vue TypeScript](https://vuejs.org/guide/typescript/overview.html), [Vite base](https://vite.dev/config/shared-options.html#base), [Vue Router hash](https://router.vuejs.org/guide/essentials/history-mode.html), [Vitest](https://vitest.dev/guide/), [폼 검증](https://test-utils.vuejs.org/guide/essentials/forms) 관련절을 재확인했다. create-vue3.24.0 template의 실제 구성과 npm peer metadata를 대조하고 TypeScript6.0.3·Node26.7.0 및 [채택 버전](evidence/t18/dependencies.txt)을 실행 검증했다. 별도 타입 검사가 필요하다는 것은 공식 동작이고, `/app/index.html`·hash이동·일괄 공용verify는 프로젝트 판단이다. REST Docs·Spring JAR의 기존 계약은 유지한다.
+
+## T19 API 경계
+
+설치된 Axios1.20.0의 실제 defaults/dispatchRequest/settle와 [요청 설정](https://axios.rest/pages/advanced/request-config), [오류 처리](https://axios.rest/pages/advanced/error-handling), [AbortController](https://axios.rest/pages/advanced/cancellation)를 확인했다. rolling v1.x 문서의 이후 옵션은 도입하지 않았다. responseType json과 silentJSONParsing false를 함께 써야 SyntaxError를 실패로 받는 동작은 실제 잘못된 JSON 테스트로 확인했다. Adapter를 대체해도 실제 JSON 변환·AbortSignal·query 직렬화는 유지한다.10초 timeout·재시도 없음·ApiError 분류·unknown JSON guard는 프로젝트 판단이다.
+
+VueRouter4.6.4의 실제 LocationQuery 타입은 string/null 또는 그 배열이다. rolling v5 API와 구분해 [query 문서](https://router.vuejs.org/api/type-aliases/locationquery)와 설치된 타입을 대조했다. 알려진 조건 없음/부분/중복 구분과 양의 안전 ID 거부는 프로젝트 입력 정책이며 Java DTO/REST Docs와 함께 테스트했다. [실행 근거](frontend-verification.md).

@@ -13,6 +13,10 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.time.Clock;
+import java.time.Duration;
+import java.time.ZonedDateTime;
+import java.time.DateTimeException;
+import java.time.format.DateTimeFormatter;
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -36,17 +40,21 @@ public final class DefaultPublicDataClient implements PublicDataClient {
                 .followRedirects(HttpClient.Redirect.NEVER).build();
     }
     @Override
-    public StationPage fetchPage(int page) {
+    public StationPage fetchPage(int page) { return fetchPage(page,properties.responseTimeout()); }
+    @Override
+    public StationPage fetchPage(int page, Duration remaining) {
+        if (remaining == null || remaining.isZero() || remaining.isNegative()) { throw new IllegalArgumentException("remaining must be positive"); }
+        Duration timeout = remaining.compareTo(properties.responseTimeout()) < 0 ? remaining : properties.responseTimeout();
         if (page < 1) {
             throw new IllegalArgumentException("page must be at least 1");
         }
         if (properties.serviceKey() == null || properties.serviceKey().isBlank()) {
             throw new PublicDataException(PublicDataFailure.AUTHENTICATION);
         }
-        HttpRequest request = HttpRequest.newBuilder(requestUri(page)).timeout(properties.responseTimeout()).GET().build();
-        HttpResponse<byte[]> response = sendRequest(request);
+        HttpRequest request = HttpRequest.newBuilder(requestUri(page)).timeout(timeout).GET().build();
+        HttpResponse<byte[]> response = sendRequest(request,timeout);
         Instant collectedAt = clock.instant();
-        requireHttpSuccess(response.statusCode());
+        requireHttpSuccess(response);
         PublicDataResponse data = xmlParser.parse(response.body());
         if (data.pageNumber() != page || data.pageSize() != properties.pageSize()) {
             throw new PublicDataException(PublicDataFailure.CONTRACT);
@@ -62,10 +70,10 @@ public final class DefaultPublicDataClient implements PublicDataClient {
         return URI.create(properties.endpoint() + "?serviceKey=" + URLEncoder.encode(properties.serviceKey(), StandardCharsets.UTF_8)
                 + "&pageNo=" + page + "&numOfRows=" + properties.pageSize() + "&zcode=" + properties.region() + "&dataType=XML");
     }
-    private HttpResponse<byte[]> sendRequest(HttpRequest request) {
+    private HttpResponse<byte[]> sendRequest(HttpRequest request, Duration timeout) {
         CompletableFuture<HttpResponse<byte[]>> responseFuture = httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofByteArray());
         try {
-            return responseFuture.get(properties.responseTimeout().toNanos(), TimeUnit.NANOSECONDS);
+            return responseFuture.get(timeout.toNanos(), TimeUnit.NANOSECONDS);
         } catch (TimeoutException exception) {
             responseFuture.cancel(true);
             throw new PublicDataException(PublicDataFailure.TIMEOUT);
@@ -80,7 +88,8 @@ public final class DefaultPublicDataClient implements PublicDataClient {
             throw new PublicDataException(PublicDataFailure.TRANSPORT);
         }
     }
-    private void requireHttpSuccess(int status) {
+    private void requireHttpSuccess(HttpResponse<byte[]> response) {
+        int status = response.statusCode();
         if (status == 200) {
             return;
         }
@@ -88,12 +97,22 @@ public final class DefaultPublicDataClient implements PublicDataClient {
             throw new PublicDataException(PublicDataFailure.AUTHENTICATION);
         }
         if (status == 429) {
-            throw new PublicDataException(PublicDataFailure.RATE_LIMIT);
+            throw new PublicDataException(PublicDataFailure.RATE_LIMIT,retryAfter(response));
         }
         if (status >= 500 && status <= 599) {
-            throw new PublicDataException(PublicDataFailure.SERVER);
+            throw new PublicDataException(PublicDataFailure.SERVER,retryAfter(response));
         }
         throw new PublicDataException(PublicDataFailure.CONTRACT);
+    }
+    private Duration retryAfter(HttpResponse<byte[]> response) {
+        String header = response.headers().firstValue("Retry-After").orElse(null);
+        if (header == null) { return null; }
+        try {
+            if (header.matches("[0-9]+")) { return Duration.ofSeconds(Long.parseLong(header)); }
+            Instant retryAt = ZonedDateTime.parse(header,DateTimeFormatter.RFC_1123_DATE_TIME).toInstant();
+            Duration delay = Duration.between(clock.instant(),retryAt);
+            return delay.isNegative() ? Duration.ZERO : delay;
+        } catch (DateTimeException | IllegalArgumentException invalidHeader) { return null; }
     }
     @Override
     public void close() {

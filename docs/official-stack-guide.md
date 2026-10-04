@@ -128,6 +128,18 @@ equals로 원소 동등성을 판단하고 add는 기존 원소이면 false를 �
 회차 내 중복을 CONTRACT로 거부하는 것은 프로젝트 설계 판단이며, DB unique 제약만으로 수집의 완전성을 보장할 수 없어 추가했다.
 실제 서비스·DB 테스트에서 페이지 내부/페이지 간 중복과 회차 간 정상 재수집을 확인했다. 신규 의존성·버전 변경은 없다.
 
+## T11/T12 — 실행 소유권·고정 지연·유한 요청 예산
+
+실제 spring-core7.0.9, micrometer-core1.17.1을 dependencyInsight로 확인했다. Boot4.1.1과 JDK25.0.4.1을 유지하며 신규 의존성은 없다.
+[Spring7 scheduling](https://docs.spring.io/spring-framework/reference/integration/scheduling.html)의 fixed delay는 이전 실행 완료 이후의 간격이다.
+[@Scheduled](https://docs.spring.io/spring-framework/docs/7.0.9/javadoc-api/org/springframework/scheduling/annotation/Scheduled.html) 문자열 Duration은 현재 컨텍스트의 실제 등록으로 확인했다.
+Service의 AtomicBoolean 실행 소유권은 단일 프로세스에서 예정/직접 호출을 함께 방어하는 프로젝트 판단이다.
+
+[RFC9110 Retry-After](https://www.rfc-editor.org/rfc/rfc9110.html#section-10.2.3)는 초 또는 HTTP-date이며 음의 초는 허용하지 않는다.
+계약의960요청 계산을 지키는10페이지/20요청/1재시도/120초는 프로젝트 정책이며 공급자의 SLA가 아니다.
+남은 회차 시간을 JDK HTTP 전체 응답 future의 timeout에 전달하고 timeout/interrupt 시 취소한다.
+monotonic 시간으로 예산을 계산하고 벽시계는 데이터 시각·이력에만 사용한다. 실제 HTTP 본문 지연, Retry-After, 실제 DB의 부분 실패/복구로 검증했다.
+
 ## 패키지 구조 정리 — 2026-10-05
 
 설정은 Java 25·Spring Boot 4.1.1이며 실제 runtimeClasspath의 spring-core는 7.0.9다. [Boot 코드 구조](https://docs.spring.io/spring-boot/4.1/reference/using/structuring-your-code.html)의 root package·component/entity 탐색 설명을 확인했다. 버전 경로는 rolling 문서로 redirect되지만 표시 버전은 현재 프로젝트와 같은 4.1.1이다.

@@ -1,0 +1,4 @@
+[
+  "src/features/search/components/SearchForm.spec.ts",
+  "src/router/index.spec.ts"
+]

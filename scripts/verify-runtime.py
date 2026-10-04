@@ -17,6 +17,19 @@ def require(condition, message):
         raise RuntimeError(message)
 
 
+def check_frontend_tests(report, required_files):
+    results = report.get('testResults', [])
+    assertions = [assertion for result in results for assertion in result.get('assertionResults', [])]
+    require(assertions, 'Zero frontend tests')
+    require(report.get('success') is True, 'Frontend suite failed')
+    for assertion in assertions:
+        require(assertion.get('status') == 'passed', 'Frontend assertion not passed')
+    executed = [result['name'].replace('\\', '/') for result in results if result.get('assertionResults')]
+    missing = [name for name in required_files if not any(path.endswith('/' + name) for path in executed)]
+    require(not missing, 'Missing required frontend test files: ' + ', '.join(missing))
+    return len(assertions)
+
+
 def check_packaged_test_fixtures(names):
     require(not any('PersistenceProbe' in name or name.startswith(('BOOT-INF/classes/performance/',
                         'BOOT-INF/classes/reliability/')) for name in names), 'Test fixture packaged')
@@ -97,6 +110,9 @@ def main():
     require(isinstance(required_suites, list) and required_suites, 'Required test suite list is empty or invalid')
     require(all(isinstance(name, str) and name.strip() for name in required_suites), 'Invalid required test suite name')
     require(len(required_suites) == len(set(required_suites)), 'Duplicate required test suite names')
+    frontend_count = check_frontend_tests(
+        json.loads((root / 'frontend/test-results/unit.json').read_text()),
+        json.loads((root / 'docs/required-frontend-tests.json').read_text()))
     count = check_tests(root / 'build/test-results/test', required_suites)
     check_journey_evidence(evidence / 'charging-journey')
     jars = [jar for jar in (root / 'build/libs').glob('*.jar') if not jar.name.endswith('-plain.jar')]
@@ -125,7 +141,7 @@ def main():
                 time.sleep(0.2)
             require(port is not None, f'Server startup timeout; see {log_file}')
             check_http(f'http://127.0.0.1:{port}', expected)
-            result = {'tests': count, 'failures': 0, 'errors': 0, 'skipped': 0,
+            result = {'tests': count, 'frontend_tests': frontend_count, 'failures': 0, 'errors': 0, 'skipped': 0,
                       'health': 'UP', 'env_http': 404, 'station_search_http': 200, 'station_validation_http': 400, 'station_detail_missing_http': 404, 'docs_match': True,
                       'recommendations_http': 200, 'default_metrics_http': 404, 'test_fixtures_packaged': False}
             result_file.write_text(json.dumps(result, indent=2) + '\n')

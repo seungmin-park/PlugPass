@@ -1,6 +1,6 @@
 # PlugPass 목록 중심 웹앱 계획
 
-작성일: 2026-10-05. 사용자 요청은 프런트 계획 수립이다. 이 문서는 구현 전 계획이며 프런트 코드·의존성·검사기가 설치되었다는 뜻이 아니다.
+작성일: 2026-10-05. 사용자 요청은 프런트 계획 수립이다. T18 실행·검증 기반은 구현했으며 실제 근거는 [프런트 기록](frontend-verification.md)을 따른다. 후속 화면·전체E2E는 계획이다.
 
 기존 [프로젝트 계획](../plan.md)·[작업 체크리스트](../tasks.md)·[기능 지도](feature-map.md)·[검증 스킬](../.agents/skills/verify-plugpass/SKILL.md)을 확장한다. 새로운 계획 관리 체계는 만들지 않는다. 실행은 기존 `superpowers:executing-plans`로 작업 하나씩 진행하며 병렬 에이전트를 사용하지 않는다.
 
@@ -161,7 +161,7 @@ scripts/frontend-e2e.sh
 | 단위·컴포넌트 | Vitest · Vue Test Utils · jsdom | 입력·렌더링·event·상태 전이, 외부 경계만 제어 |
 | 브라우저 | Playwright | 실제 클릭·입력·이동과 assertion, 로컬 headed/UI·CI headless |
 
-2026-10-05 공식 문서의 관련 절을 확인했다. Vue 공식 생성 도구는 Vite/TypeScript 구성을 제공한다. Vite build는 타입 검사를 대신하지 않으므로 `vue-tsc`를 별도 실행한다. 당일 Vite guide는 Node `20.19+ / 22.12+`를 요구하지만 생성 template·Vitest의 실제 버전 조건까지 만족하는 Node를 T18에서 확정한다. 현재 package의 최신 patch나 실제 조합의 호환성을 검증했다고 처리하지 않는다.
+2026-10-05 공식 문서의 관련 절을 확인했다. Vue 공식 생성 도구는 Vite/TypeScript 구성을 제공한다. Vite build는 타입 검사를 대신하지 않으므로 `vue-tsc`를 별도 실행한다. 당일 Vite guide는 Node `20.19+ / 22.12+`를 요구하지만 생성 template·Vitest의 실제 버전 조건까지 만족하는 Node를 T18에서26.7.0으로 확정했다. 채택한 lockfile 조합의 실제검증은 프런트기록을 따르며 다른최신버전의 호환성을 보장하지 않는다.
 
 도입할 때 package-lock.json과 프로젝트 Node 설정에 채택 버전을 고정하고, `npm ls --depth=0`·실제 type-check/test/build 결과를 [기술 기록](official-stack-guide.md)·[출처 목록](official-sources.json)에 반영한다. 공식 동작과 이 계획의 구성 판단을 구분한다.
 
@@ -205,7 +205,7 @@ T23의 test-classpath 데모 서버는 `ChargingJourneyTests`의 외부 HTTP/시
 
 test-classpath 도우미는 운영 JAR에 포함하지 않고 공용 verify의 JAR 내용 검사로 부재를 확인한다. 브라우저 테스트는 읽기 중심의 고정 데이터를 사용하고 다른 데이터 시나리오가 필요하면 별도 프로세스/DB로 실행한다. 공유 DB를 전부 삭제하는 병렬 테스트를 쓰지 않는다. 기존 `ChargingJourneyTests` assertion과 `bash scripts/verify.sh`를 유지한다.
 
-예정 명령은 `npm --prefix frontend run test:unit`, `type-check`, `lint`, `build`, `test:e2e -- --headed`, 선택적 `test:e2e:ui`다. CI 공용 진입점은 기존 `bash scripts/verify.sh`를 확장한다. 프런트 명령·서버 도우미는 현재 미구현이며 지금 실행해 통과한다고 보고하지 않는다.
+예정 명령은 `npm --prefix frontend run test:unit`, `type-check`, `lint`, `build`, `test:e2e -- --headed`, 선택적 `test:e2e:ui`다. CI 공용 진입점은 기존 `bash scripts/verify.sh`를 확장한다. T18의 test:unit/type-check/lint/build와 기존CI연결은 구현·실행했다. 브라우저E2E명령·데모도우미는 T23의 미구현범위다.
 
 로컬 E2E는 [AGENTS.md](../AGENTS.md)를 따른다.
 
@@ -231,6 +231,6 @@ T25 지도는 첫 버전 이후의 후속 단계다. SDK 공식 조건·키/허�
 
 ## 12. 이번 계획 문서의 확인 범위
 
-현재 DTO·Controller·프런트 미구현·CI/verify 구성과 대조했다. 이는 계획 문서의 정합성 확인이며 프런트 기능·TDD Red/Green·브라우저 E2E 실행 근거가 아니다. 계획 PR의 필수 CI 통과도 미래 프런트 기능의 검증으로 해석하지 않는다.
+계획 작성 당시 DTO·Controller·프런트 미구현·CI/verify 구성과 대조했다. T18의 실제도입/검증은 별도실행기록을 따른다. 이는 계획 문서의 정합성 확인이며 프런트 기능·TDD Red/Green·브라우저 E2E 실행 근거가 아니다. 계획 PR의 필수 CI 통과도 미래 프런트 기능의 검증으로 해석하지 않는다.
 
 문서를 수정할 때는 현재 내용의 링크·작업 참조·선행 조건·문서 배치를 확인한다. 문서만 변경한 작업의 검사를 애플리케이션/프런트/E2E 실행으로 표현하지 않는다. 원격 필수 CI와 실제 main 반영은 전달 PR에서 별도로 확인한다.

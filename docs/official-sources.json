@@ -480,5 +480,41 @@
     "url": "https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html",
     "accessed": "2026-10-05",
     "coverage": "@Query and @Param; actual Boot4.1.1 query execution"
+  },
+  {
+    "id": "t18-vue",
+    "url": "https://vuejs.org/guide/typescript/overview.html",
+    "accessed": "2026-10-05",
+    "coverage": "T18 current generation/config APIs; actual pinned lockfile, unit/type/lint/build verification"
+  },
+  {
+    "id": "t18-vite-base",
+    "url": "https://vite.dev/config/shared-options.html#base",
+    "accessed": "2026-10-05",
+    "coverage": "T18 current generation/config APIs; actual pinned lockfile, unit/type/lint/build verification"
+  },
+  {
+    "id": "t18-router",
+    "url": "https://router.vuejs.org/guide/essentials/history-mode.html",
+    "accessed": "2026-10-05",
+    "coverage": "T18 current generation/config APIs; actual pinned lockfile, unit/type/lint/build verification"
+  },
+  {
+    "id": "t18-vitest",
+    "url": "https://vitest.dev/guide/",
+    "accessed": "2026-10-05",
+    "coverage": "T18 current generation/config APIs; actual pinned lockfile, unit/type/lint/build verification"
+  },
+  {
+    "id": "t18-form",
+    "url": "https://test-utils.vuejs.org/guide/essentials/forms",
+    "accessed": "2026-10-05",
+    "coverage": "T18 current generation/config APIs; actual pinned lockfile, unit/type/lint/build verification"
+  },
+  {
+    "id": "t18-node-action",
+    "url": "https://github.com/actions/setup-node",
+    "accessed": "2026-10-05",
+    "coverage": "T18 current generation/config APIs; actual pinned lockfile, unit/type/lint/build verification"
   }
 ]

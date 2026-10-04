@@ -10,9 +10,9 @@ JaCoCo는 사용자 선택으로 도입하지 않았다. 운영 의존성과 HTT
 
 ## 기술 스택
 
-### 프런트 웹앱 제안 (2026-10-05, 미도입)
+### 프런트 기반 도입 (2026-10-05, T18)
 
-사용자는 목록 중심 반응형 웹앱을 선택했다. [프런트 계획](frontend-plan.md)의 Vue 3·TypeScript·Vite·Vue Router·Pinia·Axios는 도입 전 제안이다. Vitest·Vue Test Utils·Playwright로 순수 규칙·표현·실제 브라우저를 나누어 검증할 예정이다. 프런트 의존성·Node·실제 호환 버전은 아직 설치/해석하지 않았다.
+사용자는 목록 중심 반응형 웹앱을 선택했다. [프런트 계획](frontend-plan.md)의 Vue3·TypeScript·Vite·VueRouter·Pinia·Axios의 실행 기반을 T18에서 도입했다. Vitest·Vue Test Utils·Playwright로 순수 규칙·표현·실제 브라우저를 나누어 검증할 예정이다. 실제 버전·Red/Green·검증 결과는 [프런트 기록](frontend-verification.md)과 lockfile을 따른다. Playwright 전체 흐름은 T23에서 도입한다.
 
 [Vue TypeScript 공식 안내](https://vuejs.org/guide/typescript/overview.html)의 Vite 기반 생성과 vue-tsc 별도 타입 검사, [Vite 실행 조건](https://vite.dev/guide/)·[base 경로](https://vite.dev/guide/build.html#public-base-path), [Pinia action](https://pinia.vuejs.org/core-concepts/actions.html), [Axios 취소](https://axios-http.com/docs/cancellation), [Playwright UI mode](https://playwright.dev/docs/test-ui-mode)의 관련 절을 확인했다. 이 구성 선택·hash route·Spring JAR에 웹앱 포함은 프로젝트의 설계 판단이다. T18에서 lockfile·Node·실제 실행 결과를 추가하고 T24에서 실제 JAR의 웹앱·API 연결을 확인한다. 공식 문서를 읽었다는 이유로 프런트 도입·검증 완료를 주장하지 않는다.
 
@@ -185,3 +185,7 @@ FreshnessPolicy가 최근 경계 시각을 소유하고 DB count 조건은 그 �
 ## T16 — DB 후보 축소와 실제 거리 유지
 
 현재 Hibernate7.4.5.Final에서 named parameter·join fetch·between/in 쿼리를 실행했다. [HQL7.4](https://docs.hibernate.org/orm/7.4/querylanguage/html_single/)의 rolling 문서는7.4.12이므로 문서만으로 동일성을 추정하지 않고 SQL/로딩수 회귀 테스트와 전체 HTTP 계약으로 확인했다. 커넥터 코드표는 Connector가 소유하고 불변 Set을 파라미터로 전달한다. 검색 범위는 구면 원을 감싸는 사각형이며 날짜 변경선/극점·반경 경계는 [T16 실행 기록](t16-verification.md)에 있다. 정확한 거리와 추천 순서 정책은 기존 Java 코드가 유지한다.
+
+## T18 프런트 실제 도입
+
+[공식 Vue TypeScript](https://vuejs.org/guide/typescript/overview.html), [Vite base](https://vite.dev/config/shared-options.html#base), [Vue Router hash](https://router.vuejs.org/guide/essentials/history-mode.html), [Vitest](https://vitest.dev/guide/), [폼 검증](https://test-utils.vuejs.org/guide/essentials/forms) 관련절을 재확인했다. create-vue3.24.0 template의 실제 구성과 npm peer metadata를 대조하고 TypeScript6.0.3·Node26.7.0 및 [채택 버전](evidence/t18/dependencies.txt)을 실행 검증했다. 별도 타입 검사가 필요하다는 것은 공식 동작이고, `/app/index.html`·hash이동·일괄 공용verify는 프로젝트 판단이다. REST Docs·Spring JAR의 기존 계약은 유지한다.

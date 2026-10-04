@@ -16,7 +16,7 @@ description: Verify PlugPass behavior and architecture checks, fixture ingestion
 ## 빌드와 테스트
 
 1. `bash scripts/verify.sh`를 실행한다. clean build와 아래 JAR·실제 HTTP 검사를 같은 명령으로 수행한다. JDK 25와 Python 3이 필요하다. CI도 이 명령을 사용한다.
-2. 종료 0과 `build/test-results/test/TEST-*.xml`의 테스트 357개(T14 3개·T15 데이터 1개 포함), 실패·오류·skip 0을 확인한다. Python 검사기·성능 집계 테스트 14개도 실행되어야 한다. 기능을 추가했다면 실행 기록의 관측 건수를 갱신한다. 고정 총건수를 CI의 요구값으로 사용하지 않는다.
+2. 종료 0과 `build/test-results/test/TEST-*.xml`의 테스트 360개(T16 3개 포함), 실패·오류·skip 0을 확인한다. Python 검사기·성능 집계 테스트 21개도 실행되어야 한다. 기능을 추가했다면 실행 기록의 관측 건수를 갱신한다. 고정 총건수를 CI의 요구값으로 사용하지 않는다.
 3. [테스트 경계](../../../AGENTS.md)를 따른다. Repository는 기본 save 후 조회하고 매핑 복원이 검증 대상일 때만 이유를 명시해 flush/clear한다. 참조 차이 자체를 assertion하지 않는다. Service는 테스트 트랜잭션 없이 production commit 후 별도 조회하고 AfterEach로 정리한다. 테스트 전용 엔티티가 실행 JAR에 들어가지 않아야 한다.
 4. `build/generated-snippets/health/`와 `build/docs/asciidoc/index.html`이 생성돼야 한다.
 5. JAR의 `BOOT-INF/classes/static/docs/index.html`이 생성한 HTML과 같아야 한다.
@@ -157,3 +157,13 @@ IngestionRecoveryTests14 + IngestionHttpBudgetTests6 + IngestionConfigurationTes
 ## T15 성능 기준선
 
 현재 필수 suite34개·Java357건·Python14건. `python3 scripts/performance/load.py --output <새폴더>`로 실제10,000/50,000 생성 데이터·동시20명·warmup30초·측정180초를 별도로 실행한다. 공용 verify만으로 성능 완료를 주장하지 않는다. 작은 데이터 매핑 테스트1건과 집계3건도 유지한다. 부하 전후 정확성·SQL/엔티티 수·p50/p95·unexpected error·대상 SHA/dirty·샘플 원본을 [성능 기록](../../../docs/performance.md)과 비교한다. smoke 설정은 기준선이 아니다. 운영 JAR에서 performance test 패키지가 제외되는지도 공용 검증이 확인한다.
+
+
+## T17/T18 최신 검증 범위
+
+현재 공용verify는 Java360건·Python21건·프런트6건(2파일)을 실행한다. 과거 T번호의 건수는 당시 기록이다. 실제 실행 뒤 XML/JSON의 현재 수를 읽고 고정 총건수를 CI요구값으로 만들지 않는다.
+
+- T17: 기존 recovery/sync/scheduler/journey35건과 `scripts/verify-memory-restart.py`의 별도JVM3회 실제HTTP로 수집완료→메모리H2소실/준비전→재수집완료를 확인한다. `build/verification/memory-restart/`를 확인한다. reliability 테스트클래스의 운영JAR 포함을 거부한다.
+- T18: Node26.7.0, lockfile을 사용한다. 공용verify가 npm ci→test:unit→type-check→lint(경고0)→build를 실행한다. `frontend/test-results/unit.json`의 실제assertion과 `docs/required-frontend-tests.json`의 필수파일을 기존runtime검사로 확인한다. 0개/실패/skip/누락을 거부한다.
+- 현재 프런트명령은 `npm --prefix frontend run test:unit`, `type-check`, `lint`, `build`다. 실행은 개발서버 `/app/index.html`·Vite base `/app/`·hashRouter다. JAR웹앱 포함은 T24에 남아 있다.
+- 이번 세션은 사용자가 cmux 대신 현재Codex세션을 허용했다. 실제Codex브라우저의 조건선택/클릭/새로고침/없는화면복귀는 `docs/frontend-verification.md`를 따른다. 이것을 T23의 실제API전체E2E·Playwright러너로 바꾸어 보고하지 않는다.

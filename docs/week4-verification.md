@@ -12,4 +12,17 @@
 - 최종 `bash scripts/verify.sh`: Java356건·Python11건, 실패/오류/skip0. 실제 JAR health200·검색200·추천200·validation400·없는 상세404·기본 metrics404·env404·REST Docs 동일. 로그: `/tmp/plugpass-t14-verify-final.log`, `build/verification/server.log`, `runtime.json`, `charging-journey/*.json`, `build/test-results/test/`.
 - cmux: 호출 env 없음·identify/ping/capabilities live socket 없음·escalated identify 동일. 표시 불가의 원인을 확인했고 터미널 HTTP로 검증했다. 화면 E2E와 실제 공급자 키 인증은 미확인이다.
 
-PR/원격 CI/main 반영은 전달 후 기록한다. T15 측정은 T14 main 반영 다음에 진행한다.
+[T14 PR#28](https://github.com/seungmin-park/PlugPass/pull/28) 필수 CI SUCCESS·2026-10-05 03:44 KST 실제 merge ed855d45. 검증 head2aec903의 evidence.py run/check 모두0·current. 원격 main의 검증 지침 통합 후 재검증했다. T15는 이 main에서 진행한다.
+
+## T15 준비와 검증
+
+- Summary Red: `python3 -m unittest discover -s scripts -p 'test_performance.py' -v` assertion3건 실패(0인 percentile, 빈 분포 허용, 요청 수0). [출력](evidence/week4-t15-summary-red.txt). 최소 구현 후3건 통과. warmup을 p95에 섞지 않고 모든 unexpected error를 포함한다.
+- Dataset Red: `./gradlew test --tests '*PerformanceDatasetTests'` expected16/actual0 assertion1건 실패. 최초 IN_USE enum 이름 컴파일 오류는 OCCUPIED로 바로잡은 준비 오류이며 Red로 세지 않았다. 생성 저장을 구현해1건 통과했다.
+- Refactor: 최초 데이터 준비의 JDBC insert를 도메인 Builder/실제 Repository saveAll로 교체해 생성 불변식과 현재 매핑을 따르게 했다. 로컬 수동 seed SQL 파일에 의존하지 않는다. 동일 테스트 통과와 전체 규모 smoke의 HTTP 정확성을 확인했다. Metadata는 test 전용 JDBC count·Statistics 읽기만 맡고 업무 Controller/Service는 유지한다.
+- 이름·경계: PerformanceDataset은 생성/저장, PerformanceApplication은 test 서버 진입, load.py는 고정 요청/정확성/집계/프로세스 정리를 맡는다. SQL/HTTP/JSON/도메인 공개 계약과 production 코드 변경 없음. 테스트 전용 endpoint/package는 운영 JAR에서 제외한다. TypeScript/Vue 없음.
+- 2users/0초 warmup/1초 smoke는 도구 동작 확인이며 기준선 결과가 아니다. 최종 전체/실측 결과는 아래에 기록한다.
+
+- 전체 `bash scripts/verify.sh`: Java357·Python14 실패/오류/skip0, 필수 suite34·JAR HTTP/문서 동일·performance 클래스 미포함.
+- 실측: `python3 scripts/performance/load.py --output /tmp/plugpass-week4-baseline` 종료0. measured SHA a852269·dirty=false. 10,000/50,000·20worker·warmup30초·측정180초, 요청4591·오류0·p50 768.01ms·p95 1425.41ms. latency 목표 미달/error 목표 달성. 부하 전후 실제 HTTP 전체 응답·건수 동일, 모든20worker 참여, 원본 샘플sha256 일치. [표·원본·원인 경계](performance.md).
+- SQL은 모든 경로2개지만 검색/추천60001엔티티, 상세6개를 로딩. N+1이 아닌 전체 fetch 비용을 T16 후보로 기록한다. 이번 범위에서 업무 최적화나 목표 조정은 하지 않았다. 최초 smoke 수치를 baseline으로 채택하지 않았다.
+- 시간 경과·장애/복구·API validation·역순·예산/동시성은 기존 T14/T05/T11/T12 필수 suite를 유지한다. 성능 서버의 시계 고정은 측정 반복성을 위한 합성 조건이며 실제 공공 API 최신성 보장을 하지 않는다.

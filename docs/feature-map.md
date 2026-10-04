@@ -130,3 +130,7 @@ IngestionMetricsTests6건, 도입 시 전체330건·CI 구조 검사 통합 후 
 
 ChargingJourneyTests3건: 실제 fixture HTTP→XML→수집 commit→H2→검색→상세→첫 ID 제외 추천. 중복·관측 시각 누락·합성 관측의601초 경과·503 중 기존 조회·복구·반경 밖 빈 결과를 확인한다. 외부 경계와 시계만 제어하며 실제 업무 객체는 유지한다. [재현 절차와 범위](demo.md).
 공용 verify는 필수 suite와 charging-journey HTTP 증거의 형식/건수를 검사한다. 화면 cmux·실공공 API 인증은 별도 미확인이다.
+
+## T15 성능 실험 경로
+
+`python3 scripts/performance/load.py --output <새폴더>` → test classpath의 실제 서버 → 도메인/Repository 생성 데이터 → HTTP 정확성/SQL 기준선 →20worker 준비30초/측정180초→전후 정확성. PerformanceDatasetTests1건은 작은 규모에서5개 충전기/충전소·4종 상태/시각의 실제 매핑을 확인한다. Python 집계3건은 nearest-rank·빈 측정 거부·HTTP/응답 오류 포함을 확인한다. 실제 전체 규모와 시간은 별도 [성능 기록](performance.md)의 원본 측정 결과로 확인한다. 운영 JAR에는 performance 패키지가 들어가지 않아야 한다.

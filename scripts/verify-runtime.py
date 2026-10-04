@@ -100,7 +100,8 @@ def main():
     require(expected and b'Unresolved directive' not in expected, 'Invalid generated docs')
     with ZipFile(jars[0]) as archive:
         require(archive.read('BOOT-INF/classes/static/docs/index.html') == expected, 'Packaged docs mismatch')
-        require(not any('PersistenceProbe' in name for name in archive.namelist()), 'Test fixture packaged')
+        require(not any('PersistenceProbe' in name or name.startswith('BOOT-INF/classes/performance/')
+                        for name in archive.namelist()), 'Test fixture packaged')
     java = str(Path(os.environ['JAVA_HOME']) / 'bin/java') if os.environ.get('JAVA_HOME') else 'java'
     log_file = evidence / 'server.log'
     with log_file.open('w') as log:

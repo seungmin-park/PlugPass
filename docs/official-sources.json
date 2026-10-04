@@ -389,6 +389,18 @@
     "id": "boot41-real-http-tests",
     "url": "https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html",
     "accessed": "2026-10-05",
-    "coverage": "Boot4.1.1表示・RANDOM_PORT actual server; T14 fixture HTTP execution, test config imports and transaction separation"
+    "coverage": "Boot4.1.1 표시·RANDOM_PORT 실제 서버; T14 fixture HTTP 실행·테스트 구성 import·서버 transaction 분리"
+  },
+  {
+    "id": "hibernate74-statistics",
+    "url": "https://docs.hibernate.org/orm/7.4/javadocs/org/hibernate/stat/Statistics.html",
+    "accessed": "2026-10-05",
+    "coverage": "실제7.4.5.Final; generate_statistics·prepared statements·entity loads; T15 isolated HTTP deltas"
+  },
+  {
+    "id": "python39-concurrent-futures",
+    "url": "https://docs.python.org/3.9/library/concurrent.futures.html",
+    "accessed": "2026-10-05",
+    "coverage": "Python3.9.6 standard-library ThreadPoolExecutor; T15 closed-loop20workers and barrier"
   }
 ]

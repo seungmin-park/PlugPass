@@ -205,12 +205,14 @@
 
 의존: T07~T13. 파일: `src/test/java/com/plugpass/ChargingJourneyTests.java`, `docs/demo.md`. 수정: `scripts/verify-runtime.py`, 기능 지도·검증 스킬.
 
-- [ ] 현재 cmux workspace·surface와 전용 pane을 확인해 실행 명령·로그·실제 요청을 보이게 준비한다. 연결 불가 시 원인과 대체 범위를 기록한다.
-- [ ] 제어 가능한 공급자 응답을 수집한 후 실제 HTTP로 주변 조회 → 상세 → 첫 충전소 제외 → 대체 후보 조회를 수행하고 값까지 assertion한다.
-- [ ] 같은 데이터 재수집, 시간 경과 후 stale, 외부 장애, 복구 후 갱신, 후보 없음도 확인한다. 실제 공공 API 표본 검증은 별도 증거로 남긴다.
-- [ ] `./gradlew test --tests '*ChargingJourneyTests'`와 업데이트된 공용 검증을 통과하고 결과·한계를 포함한 PR을 반영한다.
+- [x] 현재 cmux workspace·surface와 전용 pane을 확인해 실행 명령·로그·실제 요청을 보이게 준비한다. 연결 불가 시 원인과 대체 범위를 기록한다.
+- [x] 제어 가능한 공급자 응답을 수집한 후 실제 HTTP로 주변 조회 → 상세 → 첫 충전소 제외 → 대체 후보 조회를 수행하고 값까지 assertion한다.
+- [x] 같은 데이터 재수집, 시간 경과 후 stale, 외부 장애, 복구 후 갱신, 후보 없음도 확인한다. 실제 공공 API 표본 검증은 별도 증거로 남긴다.
+- [x] `./gradlew test --tests '*ChargingJourneyTests'`와 업데이트된 공용 검증을 통과하고 결과·한계를 포함한 PR을 반영한다.
 
 산출: 직접 재현할 수 있는 핵심 흐름. fixture 공급자와 실제 공급자 검증을 서로 대신하지 않는다.
+
+검증·반영: [PR #28](https://github.com/seungmin-park/PlugPass/pull/28), 필수 CI SUCCESS·main ed855d45. Java356·Python11 실패/오류/skip0. [종합 근거](docs/week4-verification.md)·[데모](docs/demo.md). cmux 화면·실공공 인증은 별도 미확인.
 
 ### T15 — 조회 성능 기준선 측정
 

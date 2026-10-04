@@ -75,3 +75,11 @@ tasks.named('bootJar') {
         into 'BOOT-INF/classes/static/docs'
     }
 }
+
+// The performance harness lives on the test classpath, outside the shipped JAR.
+tasks.register('performanceClasspath') {
+    dependsOn tasks.named('testClasses')
+    doLast {
+        layout.buildDirectory.file('performance-classpath.txt').get().asFile.text = sourceSets.test.runtimeClasspath.asPath
+    }
+}

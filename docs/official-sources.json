@@ -384,5 +384,11 @@
     "url": "https://docs.spring.io/spring-boot/reference/actuator/metrics.html",
     "accessed": "2026-10-05",
     "coverage": "Boot4.1.1의 노출 설정·metrics 이름/tag별 조회 실제 HTTP 확인"
+  },
+  {
+    "id": "boot41-real-http-tests",
+    "url": "https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html",
+    "accessed": "2026-10-05",
+    "coverage": "Boot4.1.1表示・RANDOM_PORT actual server; T14 fixture HTTP execution, test config imports and transaction separation"
   }
 ]

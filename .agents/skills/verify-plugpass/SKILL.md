@@ -121,3 +121,8 @@ IngestionRecoveryTests14 + IngestionHttpBudgetTests6 + IngestionConfigurationTes
 ## T13
 
 `./gradlew test --tests "*IngestionMetricsTests"` 6건. T13 도입 시 전체330건, CI 구조 검사 통합 후 전체353건. 성공/부분 실패/실패·요청·재시도·마지막 성공 경과·품질 분포/시간 경과·비밀값 없는 로그를 실제 DB와 metrics HTTP로 확인한다. 기본 metrics404, 명시적 노출의 품질 metrics200을 구분한다. 운영 확인은 docs/operations.md, HTTP 출력은 build/verification/ingestion-metrics/에 있다.
+
+## T14 종합 흐름
+
+`./gradlew test --tests '*ChargingJourneyTests'`3건. 실제 loopback 공급자·랜덤 포트 업무 HTTP로 검색→상세→첫 충전소 제외 추천·재수집·STALE·503·복구·빈 결과를 assertion한다. 관측 시각의 경과는 명시적 합성 관측 시각 범위이며 실제 공급자 계약은 UNVERIFIED를 유지한다.
+공용 verify는 필수 suite33개와 build/verification/charging-journey/의 필수 응답7종(search/detail/alternative/stale/failure/recovered/empty)을 검사한다. 전체 관측356건·Python11건. [데모](../../../docs/demo.md)의 cmux/실공공 API 한계를 함께 기록한다.

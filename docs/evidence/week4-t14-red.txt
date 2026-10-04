@@ -1,0 +1,31 @@
+test_rejects_empty_http_response_evidence (test_verify_runtime.JourneyEvidenceTests) ... FAIL
+test_rejects_missing_http_journey_evidence (test_verify_runtime.JourneyEvidenceTests) ... FAIL
+test_accepts_required_suites_and_new_optional_suites (test_verify_runtime.RequiredTestSuiteTests) ... ok
+test_rejects_absent_reports (test_verify_runtime.RequiredTestSuiteTests) ... ok
+test_rejects_empty_suite (test_verify_runtime.RequiredTestSuiteTests) ... ok
+test_rejects_failed_tests (test_verify_runtime.RequiredTestSuiteTests) ... ok
+test_rejects_missing_required_suite_even_when_other_tests_pass (test_verify_runtime.RequiredTestSuiteTests) ... ok
+test_rejects_skipped_tests (test_verify_runtime.RequiredTestSuiteTests) ... ok
+test_rejects_test_errors (test_verify_runtime.RequiredTestSuiteTests) ... ok
+test_rejects_zero_tests (test_verify_runtime.RequiredTestSuiteTests) ... ok
+
+======================================================================
+FAIL: test_rejects_empty_http_response_evidence (test_verify_runtime.JourneyEvidenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/seungmin/Desktop/repo/PlugPass/scripts/test_verify_runtime.py", line 91, in test_rejects_empty_http_response_evidence
+    verify_runtime.check_journey_evidence(directory)
+AssertionError: RuntimeError not raised
+
+======================================================================
+FAIL: test_rejects_missing_http_journey_evidence (test_verify_runtime.JourneyEvidenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/seungmin/Desktop/repo/PlugPass/scripts/test_verify_runtime.py", line 83, in test_rejects_missing_http_journey_evidence
+    verify_runtime.check_journey_evidence(Path(temporary))
+AssertionError: RuntimeError not raised
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.007s
+
+FAILED (failures=2)

@@ -30,5 +30,6 @@
   "com.plugpass.station.domain.GeoDistanceTests",
   "com.plugpass.station.domain.StationModelTests",
   "com.plugpass.station.domain.StationMutationTests",
-  "com.plugpass.station.repository.StationPersistenceTests"
+  "com.plugpass.station.repository.StationPersistenceTests",
+  "com.plugpass.ChargingJourneyTests"
 ]

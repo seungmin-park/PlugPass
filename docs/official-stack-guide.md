@@ -163,3 +163,7 @@ rolling 문서의 기능을 현재 Boot4.1.1 컨텍스트·실제 HTTP로 확인
 
 commit된 실행 결과를 카운터/로그에 연결하고, 마지막 SUCCESS 이력과 관측 시각 건수는 조회 때 계산하는 것이 프로젝트 판단이다.
 FreshnessPolicy가 최근 경계 시각을 소유하고 DB count 조건은 그 경계를 그대로 사용한다. 경계·null·미래 관측·실패 중 시각 경과와 로그 비밀값 비노출을 실제 DB/HTTP로 검증했다.
+
+## T14 — 실제 HTTP 종합 검증
+
+[Boot 공식 테스트 가이드](https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html)의 표시 버전4.1.1·RANDOM_PORT 실제 서버·TestConfiguration 명시 import·서버 요청의 독립 transaction을 확인했다. JDK25 HTTP Client와 기존 실제 XML 클라이언트를 재사용한다. Service/Domain을 대체하지 않고 fixture 공급자와 시계만 제어한다. 합성 관측 시각 adapter는 테스트 판단이며 공급자 계약을 확장하지 않는다. 3건의 HTTP assertion과 실행 산출물을 공용 검증에 연결했다.

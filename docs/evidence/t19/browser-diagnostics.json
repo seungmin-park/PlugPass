@@ -1,0 +1,36 @@
+{
+  "restartAt": "2026-10-04T20:36:00Z",
+  "earlier": [
+    {
+      "level": "error",
+      "message": "[vite] Failed to reload /src/styles/base.css. This could be due to syntax errors or importing non-existent modules. (see errors above)",
+      "timestamp": "2026-10-04T20:24:55.772Z",
+      "url": "http://localhost:5173/app/@vite/client"
+    },
+    {
+      "level": "error",
+      "message": "[vite] Failed to reload /src/shared/ui/PageNotFound.vue. This could be due to syntax errors or importing non-existent modules. (see errors above)",
+      "timestamp": "2026-10-04T20:24:55.772Z",
+      "url": "http://localhost:5173/app/@vite/client"
+    },
+    {
+      "level": "error",
+      "message": "[vite] Failed to reload /src/features/search/components/SearchForm.vue. This could be due to syntax errors or importing non-existent modules. (see errors above)",
+      "timestamp": "2026-10-04T20:24:55.773Z",
+      "url": "http://localhost:5173/app/@vite/client"
+    },
+    {
+      "level": "error",
+      "message": "[vite] Failed to reload /src/App.vue. This could be due to syntax errors or importing non-existent modules. (see errors above)",
+      "timestamp": "2026-10-04T20:24:55.774Z",
+      "url": "http://localhost:5173/app/@vite/client"
+    },
+    {
+      "level": "error",
+      "message": "[vite] Failed to reload /src/features/search/views/StationSearchView.vue. This could be due to syntax errors or importing non-existent modules. (see errors above)",
+      "timestamp": "2026-10-04T20:24:55.775Z",
+      "url": "http://localhost:5173/app/@vite/client"
+    }
+  ],
+  "afterRestart": []
+}

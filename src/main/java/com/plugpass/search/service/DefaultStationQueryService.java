@@ -1,6 +1,7 @@
 package com.plugpass.search.service;
 
 import com.plugpass.search.domain.StationSearchQuery;
+import com.plugpass.search.domain.SearchBounds;
 import com.plugpass.search.dto.ChargerObservation;
 import com.plugpass.search.dto.StationDetail;
 import com.plugpass.search.dto.StationMatch;
@@ -64,8 +65,10 @@ public class DefaultStationQueryService implements StationQueryService {
         Instant now = clock.instant();
         Instant lastSuccessfulRunAt = syncRunRepository.findFirstByStatusOrderByCompletedAtDesc(SyncStatus.SUCCESS)
                 .map(SyncRun::getCompletedAt).orElse(null);
-        Map<Station,List<Charger>> byStation = chargerRepository.findAllWithStation().stream()
-                .filter(charger -> charger.getDetails() != null && query.connector().matches(charger.getDetails().connectorCode()))
+        SearchBounds bounds = SearchBounds.around(query.location(), query.radiusMeters());
+        Map<Station,List<Charger>> byStation = chargerRepository.findSearchCandidates(
+                bounds.minLatitude(), bounds.maxLatitude(), bounds.minLongitude(), bounds.maxLongitude(),
+                query.connector().providerCodes()).stream()
                 .collect(Collectors.groupingBy(Charger::getStation));
         List<StationMatch> matches = byStation.entrySet().stream()
                 .map(entry -> match(entry.getKey(), entry.getValue(), query, now))

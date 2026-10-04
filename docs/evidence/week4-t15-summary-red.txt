@@ -1,0 +1,32 @@
+test_nearest_rank_percentiles_include_the_slowest_tail (test_performance.PerformanceSummaryTests) ... FAIL
+test_rejects_empty_measurement_instead_of_reporting_zero_latency (test_performance.PerformanceSummaryTests) ... FAIL
+test_reports_route_latency_and_all_unexpected_failures (test_performance.PerformanceSummaryTests) ... FAIL
+
+======================================================================
+FAIL: test_nearest_rank_percentiles_include_the_slowest_tail (test_performance.PerformanceSummaryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/seungmin/Desktop/repo/PlugPass/scripts/test_performance.py", line 12, in test_nearest_rank_percentiles_include_the_slowest_tail
+    self.assertEqual(performance_load.percentile(list(range(1, 101)), 95), 95)
+AssertionError: 0 != 95
+
+======================================================================
+FAIL: test_rejects_empty_measurement_instead_of_reporting_zero_latency (test_performance.PerformanceSummaryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/seungmin/Desktop/repo/PlugPass/scripts/test_performance.py", line 17, in test_rejects_empty_measurement_instead_of_reporting_zero_latency
+    performance_load.summarize([])
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_reports_route_latency_and_all_unexpected_failures (test_performance.PerformanceSummaryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/seungmin/Desktop/repo/PlugPass/scripts/test_performance.py", line 24, in test_reports_route_latency_and_all_unexpected_failures
+    self.assertEqual(result['requests'], 3)
+AssertionError: 0 != 3
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+FAILED (failures=3)

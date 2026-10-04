@@ -167,3 +167,9 @@ FreshnessPolicy가 최근 경계 시각을 소유하고 DB count 조건은 그 �
 ## T14 — 실제 HTTP 종합 검증
 
 [Boot 공식 테스트 가이드](https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html)의 표시 버전4.1.1·RANDOM_PORT 실제 서버·TestConfiguration 명시 import·서버 요청의 독립 transaction을 확인했다. JDK25 HTTP Client와 기존 실제 XML 클라이언트를 재사용한다. Service/Domain을 대체하지 않고 fixture 공급자와 시계만 제어한다. 합성 관측 시각 adapter는 테스트 판단이며 공급자 계약을 확장하지 않는다. 3건의 HTTP assertion과 실행 산출물을 공용 검증에 연결했다.
+
+## T15 — 생성 데이터와 HTTP 성능 기준선
+
+실제 의존성 `hibernate-core`는7.4.5.Final이다. [해당 major/minor Statistics API](https://docs.hibernate.org/orm/7.4/javadocs/org/hibernate/stat/Statistics.html)의 generate_statistics·getPrepareStatementCount·getEntityLoadCount를 확인했다. 이 통계는 SessionFactory 전역이므로 경쟁 부하가 없는 개별 HTTP 전후 차이로 조회당 수를 측정한다. Metadata 조회의 JDBC count는 Hibernate 통계에 포함되지 않는다. 공식 수집 기능과 grid-v1·seed0·고정 시계·로컬2GB heap의 실험 판단을 구분한다.
+
+부하 도구는 Python3.9.6 표준 라이브러리 ThreadPoolExecutor/http.client 하나다. [Python 공식 executor 문서](https://docs.python.org/3.9/library/concurrent.futures.html)를 확인했다. 20개 worker가 barrier에서 함께 시작하고 응답 후 다음 요청을 보내는 closed-loop다. warmup 샘플은 측정 분포에서 제외한다. p95는 nearest-rank로 계산하며 빈 측정·HTTP/전체 응답 불일치를 거부한다. 생성 준비는 실제 도메인 Builder·Repository saveAll을 사용하고 측정 시간에서 제외한다. 신규 운영 의존성은 없다.

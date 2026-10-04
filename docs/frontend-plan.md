@@ -138,9 +138,9 @@ scripts/frontend-e2e.sh
 
 단일 기능 테스트는 대상 파일과 같은 디렉터리에 `.spec.ts`로 둔다. 공용 충전기 DTO·표시 규칙은 `charging-info`가 소유하고 search/detail에서 중복 정의하지 않는다. API는 같은 origin의 `/api`를 쓰고 개발·E2E에서는 Vite proxy로 Spring에 연결한다. 공공데이터 키는 Spring만 사용하며 `VITE_*`에 넣지 않는다.
 
-웹앱 산출물은 `frontend/dist/`이며 Vite base를 `/app/`로 맞춘다. F07에서 Gradle의 프런트 build와 `bootJar`를 연결해 산출물을 `BOOT-INF/classes/static/app/`에 넣는다. 최종 로컬 실행은 Spring JAR 하나로 `/app/index.html` 웹앱·`/api/v1/...` API·기존 `/docs/index.html` API 문서를 같은 origin에서 제공한다. 프런트 소스와 Node 의존성은 JAR에 넣지 않는다. 외부 공개 배포는 별도 범위다.
+웹앱 산출물은 `frontend/dist/`이며 Vite base를 `/app/`로 맞춘다. T24에서 Gradle의 프런트 build와 `bootJar`를 연결해 산출물을 `BOOT-INF/classes/static/app/`에 넣는다. 최종 로컬 실행은 Spring JAR 하나로 `/app/index.html` 웹앱·`/api/v1/...` API·기존 `/docs/index.html` API 문서를 같은 origin에서 제공한다. 프런트 소스와 Node 의존성은 JAR에 넣지 않는다. 외부 공개 배포는 별도 범위다.
 
-의존 방향은 View→Store→API, Component→props/event다. Vue 자체에 SOLID 점수를 매기지 않고 상태·통신·표시 경계를 평가한다. F07에서 ESLint import 제한으로 Vue 파일의 Axios 직접 의존과 API→Store/View 역의존을 거부한다. 문서의 그림은 강제 검사가 아니므로, 실제 임시 위반이 검사에서 거부되는지 확인한다.
+의존 방향은 View→Store→API, Component→props/event다. Vue 자체에 SOLID 점수를 매기지 않고 상태·통신·표시 경계를 평가한다. T24에서 ESLint import 제한으로 Vue 파일의 Axios 직접 의존과 API→Store/View 역의존을 거부한다. 문서의 그림은 강제 검사가 아니므로, 실제 임시 위반이 검사에서 거부되는지 확인한다.
 
 ## 7. 비동기와 실패 규칙
 
@@ -161,7 +161,7 @@ scripts/frontend-e2e.sh
 | 단위·컴포넌트 | Vitest · Vue Test Utils · jsdom | 입력·렌더링·event·상태 전이, 외부 경계만 제어 |
 | 브라우저 | Playwright | 실제 클릭·입력·이동과 assertion, 로컬 headed/UI·CI headless |
 
-2026-10-05 공식 문서의 관련 절을 확인했다. Vue 공식 생성 도구는 Vite/TypeScript 구성을 제공한다. Vite build는 타입 검사를 대신하지 않으므로 `vue-tsc`를 별도 실행한다. 당일 Vite guide는 Node `20.19+ / 22.12+`를 요구하지만 생성 template·Vitest의 실제 버전 조건까지 만족하는 Node를 F01에서 확정한다. 현재 package의 최신 patch나 실제 조합의 호환성을 검증했다고 처리하지 않는다.
+2026-10-05 공식 문서의 관련 절을 확인했다. Vue 공식 생성 도구는 Vite/TypeScript 구성을 제공한다. Vite build는 타입 검사를 대신하지 않으므로 `vue-tsc`를 별도 실행한다. 당일 Vite guide는 Node `20.19+ / 22.12+`를 요구하지만 생성 template·Vitest의 실제 버전 조건까지 만족하는 Node를 T18에서 확정한다. 현재 package의 최신 patch나 실제 조합의 호환성을 검증했다고 처리하지 않는다.
 
 도입할 때 package-lock.json과 프로젝트 Node 설정에 채택 버전을 고정하고, `npm ls --depth=0`·실제 type-check/test/build 결과를 [기술 기록](official-stack-guide.md)·[출처 목록](official-sources.json)에 반영한다. 공식 동작과 이 계획의 구성 판단을 구분한다.
 
@@ -177,19 +177,19 @@ scripts/frontend-e2e.sh
 
 ## 9. 구현 순서와 예상 기간
 
-기존 T16 성능 개선·T17 장애 검증을 마친 뒤 F01→F07을 순서대로 진행하고 T18에서 백엔드·프런트를 함께 설명하는 자료를 마무리한다. API가 바뀌면 착수 전 계약을 재확인한다. 기존 백엔드 4~6주에 프런트 8~12작업일을 추가하는 개략 추정으로 전체 6~8주를 예상한다. 구현·리뷰·CI 대기·환경 준비에 따라 달라지며 날짜를 확약하는 일정은 아니다.
+기존 T16 성능 개선·T17 장애 검증을 마친 뒤 T18→T24을 순서대로 진행한다. 각 기능의 사용법·검증 근거는 해당 기능 작업에서 갱신한다. API가 바뀌면 착수 전 계약을 재확인한다. 기존 백엔드 4~6주에 프런트 8~12작업일을 추가하는 개략 추정으로 전체 6~8주를 예상한다. 구현·리뷰·CI 대기·환경 준비에 따라 달라지며 날짜를 확약하는 일정은 아니다.
 
 | 작업 | 독립적으로 확인할 결과 | 예상 | 선행 |
 | --- | --- | --- | --- |
-| F01 | Vue·테스트 기반과 실제 렌더링되는 검색 진입점 | 1일 | T16·T17·계약 확인 |
-| F02 | API 타입·입력/query·오류 변환 계약 | 1일 | F01 |
-| F03 | 위치 선택부터 실제 API 주변 검색까지 | 2일 | F02 |
-| F04 | 상세·상태/최신성/시각/이용 조건 표시 | 1~2일 | F03 |
-| F05 | 제외 조건을 유지한 대체 후보와 이유 | 1~2일 | F04 |
-| F06 | 실제 백엔드 연결과 화면에 보이는 브라우저 E2E | 1~2일 | F05 |
-| F07 | 모바일·키보드·웹앱 JAR 패키징·의존성 검사·필수 CI | 1~2일 | F06 |
+| T18 | Vue·테스트 기반과 실제 렌더링되는 검색 진입점 | 1일 | T16·T17·계약 확인 |
+| T19 | API 타입·입력/query·오류 변환 계약 | 1일 | T18 |
+| T20 | 위치 선택부터 실제 API 주변 검색까지 | 2일 | T19 |
+| T21 | 상세·상태/최신성/시각/이용 조건 표시 | 1~2일 | T20 |
+| T22 | 제외 조건을 유지한 대체 후보와 이유 | 1~2일 | T21 |
+| T23 | 실제 백엔드 연결과 화면에 보이는 브라우저 E2E | 1~2일 | T22 |
+| T24 | 모바일·키보드·웹앱 JAR 패키징·의존성 검사·필수 CI | 1~2일 | T23 |
 
-각 작업의 checkbox·파일·Red/Green/Refactor·명령은 [tasks.md](../tasks.md)의 F01~F07이 소유한다. 이 표는 검증 완료 목록이 아니다.
+각 작업의 checkbox·파일·Red/Green/Refactor·명령은 [tasks.md](../tasks.md)의 T18~T24이 소유한다. 이 표는 검증 완료 목록이 아니다.
 
 ## 10. 검증과 근거
 
@@ -201,7 +201,7 @@ scripts/frontend-e2e.sh
 | UI 브라우저 테스트 | 권한 거부·400/404/429/5xx·빈 결과·응답 역전 | Playwright mock 범위, 실제 DB 연결로 보고하지 않음 |
 | 전체 E2E | 공급자 fixture HTTP→수집→H2→실제 API→검색·상세·제외 추천 클릭 | 공급자·시간만 제어하고 실제 Service/Repository/Controller 사용. 인증된 공공 API 검증은 아님 |
 
-F06의 test-classpath 데모 서버는 `ChargingJourneyTests`의 외부 HTTP/시간 경계를 재사용한다. `browser-demo.xml`은 37.5/127 근처 합성 충전소 2곳을 명시하고 ApplicationRunner가 실제 `StationSyncService.synchronize()`를 호출한다. DB seed SQL·Service mock·운영 seed/admin route를 추가하지 않는다. 관측 시각 없는 일반 데모는 UNVERIFIED 상태로 확인 필요 후보에 나온다. RECENT/STALE 표시 테스트에서 합성 시각을 쓰면 별도의 제어 데이터임을 명시한다.
+T23의 test-classpath 데모 서버는 `ChargingJourneyTests`의 외부 HTTP/시간 경계를 재사용한다. `browser-demo.xml`은 37.5/127 근처 합성 충전소 2곳을 명시하고 ApplicationRunner가 실제 `StationSyncService.synchronize()`를 호출한다. DB seed SQL·Service mock·운영 seed/admin route를 추가하지 않는다. 관측 시각 없는 일반 데모는 UNVERIFIED 상태로 확인 필요 후보에 나온다. RECENT/STALE 표시 테스트에서 합성 시각을 쓰면 별도의 제어 데이터임을 명시한다.
 
 test-classpath 도우미는 운영 JAR에 포함하지 않고 공용 verify의 JAR 내용 검사로 부재를 확인한다. 브라우저 테스트는 읽기 중심의 고정 데이터를 사용하고 다른 데이터 시나리오가 필요하면 별도 프로세스/DB로 실행한다. 공유 DB를 전부 삭제하는 병렬 테스트를 쓰지 않는다. 기존 `ChargingJourneyTests` assertion과 `bash scripts/verify.sh`를 유지한다.
 
@@ -227,10 +227,10 @@ test-classpath 도우미는 운영 JAR에 포함하지 않고 공용 verify의 J
 - 실제 JAR의 `/app/index.html`과 연결된 JS/CSS가 정상 제공되고 직접 링크 새로고침·같은 origin의 API·기존 REST Docs 경로가 동작한다. 개발 서버에서만 확인한 결과를 JAR 웹앱 검증으로 바꾸어 말하지 않는다.
 - 이름→실제 처리→소유 위치·호출부를 리뷰하고 공개 API/JSON 변경 여부를 기록한다.
 
-F08 지도는 첫 버전 이후의 후속 단계다. SDK 공식 조건·키/허용 도메인·출처 표시·브라우저 지원을 확인한 뒤 채택한다. 첫 지도는 검색 응답의 위경도로 마커·카드 선택을 연결하고 SDK 실패 시에도 목록을 제공한다. 추천 응답에 위치가 없으므로 추천 지도까지 포함하면 좌표 DTO 확장과 HTTP/REST Docs 회귀 검증 또는 선택 시 상세 조회를 별도 설계한다. 주소 검색·경로 안내는 자동으로 포함하지 않는다. 지도 SDK는 아직 선택하지 않았으며 비용 발생·공개 배포 권한을 이 계획으로 확대하지 않는다.
+T25 지도는 첫 버전 이후의 후속 단계다. SDK 공식 조건·키/허용 도메인·출처 표시·브라우저 지원을 확인한 뒤 채택한다. 첫 지도는 검색 응답의 위경도로 마커·카드 선택을 연결하고 SDK 실패 시에도 목록을 제공한다. 추천 응답에 위치가 없으므로 추천 지도까지 포함하면 좌표 DTO 확장과 HTTP/REST Docs 회귀 검증 또는 선택 시 상세 조회를 별도 설계한다. 주소 검색·경로 안내는 자동으로 포함하지 않는다. 지도 SDK는 아직 선택하지 않았으며 비용 발생·공개 배포 권한을 이 계획으로 확대하지 않는다.
 
 ## 12. 이번 계획 문서의 확인 범위
 
 현재 DTO·Controller·프런트 미구현·CI/verify 구성과 대조했다. 이는 계획 문서의 정합성 확인이며 프런트 기능·TDD Red/Green·브라우저 E2E 실행 근거가 아니다. 계획 PR의 필수 CI 통과도 미래 프런트 기능의 검증으로 해석하지 않는다.
 
-로컬 문서 확인은 Markdown 5개·상대 링크 76개·코드 블록·F01~F08 번호·공식 출처 JSON의 고유 ID·현재 최신성/추천 사유 코드 대조·`git diff --check`가 통과했다. 이번 변경은 문서만 수정했으며 로컬 애플리케이션/프런트/E2E 테스트는 실행하지 않았다. 원격 필수 CI와 실제 main 반영은 전달 PR에서 별도로 확인한다.
+문서를 수정할 때는 현재 내용의 링크·작업 참조·선행 조건·문서 배치를 확인한다. 문서만 변경한 작업의 검사를 애플리케이션/프런트/E2E 실행으로 표현하지 않는다. 원격 필수 CI와 실제 main 반영은 전달 PR에서 별도로 확인한다.

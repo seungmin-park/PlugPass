@@ -17,7 +17,7 @@ def require(condition, message):
         raise RuntimeError(message)
 
 
-def check_tests(directory):
+def check_tests(directory, required_suites):
     reports = list(directory.glob('TEST-*.xml'))
     require(reports, 'No test reports: an empty suite is not a pass')
     suites = [ET.parse(report).getroot() for report in reports]
@@ -27,6 +27,8 @@ def check_tests(directory):
         require(int(suite.attrib['tests']) > 0, f"Empty suite: {suite.attrib['name']}")
         for field in ('failures', 'errors', 'skipped'):
             require(int(suite.attrib[field]) == 0, f"{field}: {suite.attrib['name']}")
+    missing = sorted(set(required_suites) - {suite.attrib['name'] for suite in suites})
+    require(not missing, 'Missing required test suites: ' + ', '.join(missing))
     return count
 
 
@@ -67,7 +69,11 @@ def main():
     evidence.mkdir(parents=True, exist_ok=True)
     result_file = evidence / 'runtime.json'
     result_file.unlink(missing_ok=True)
-    count = check_tests(root / 'build/test-results/test')
+    required_suites = json.loads((root / 'docs/required-test-suites.json').read_text())
+    require(isinstance(required_suites, list) and required_suites, 'Required test suite list is empty or invalid')
+    require(all(isinstance(name, str) and name.strip() for name in required_suites), 'Invalid required test suite name')
+    require(len(required_suites) == len(set(required_suites)), 'Duplicate required test suite names')
+    count = check_tests(root / 'build/test-results/test', required_suites)
     jars = [jar for jar in (root / 'build/libs').glob('*.jar') if not jar.name.endswith('-plain.jar')]
     require(len(jars) == 1, 'Expected exactly one application JAR')
     expected = (root / 'build/docs/asciidoc/index.html').read_bytes()

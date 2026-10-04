@@ -1,5 +1,20 @@
 # 기능과 검증 범위
 
+## 프런트 예정 경로 (2026-10-05, 미구현)
+
+사용자는 목록 중심 반응형 웹앱으로 검색·상세·대체 후보를 첫 버전으로 선택했다. [프런트 계획](frontend-plan.md)·[작업 목록](../tasks.md)의 F01~F07을 따른다. 아래는 계획 매핑이며 실행한 테스트·현재 화면으로 보고하지 않는다. 지도는 F08 후속 단계다.
+
+| 예정 사용자 경로 | 상태 소유자·경계 | 기대 결과·예정 검증 |
+| --- | --- | --- |
+| 위치·반경·커넥터 선택→검색 | URL 확정 조건, SearchForm 입력, stationSearchStore 비동기 상태, stationApi HTTP | 준비 전/부분 결과/빈 결과/목록·권한 거부·400·응답 역전; F02/F03 unit·View 테스트 |
+| 검색→상세·직접 링크 | route ID, stationDetailStore, 공용 charging-info 표시 | 상태/최신성·관측/수집 시각 구분·null·404·다른 ID 응답 역전; F04 |
+| 상세→현재 충전소 제외 추천→다른 상세 | URL 조건/제외 ID, recommendationStore, 서버 후보 그룹 | 같은 조건·제외 ID·우선/확인 필요/제외 사유·메타만 실패; F05 |
+| fixture 수집→실제 API→브라우저 클릭 | 테스트 외부 공급자/시간, 실제 Service/Repository/H2 | Playwright 실제 연결 assertion·같은 cmux workspace 실제 조작; F06 |
+| 모바일·키보드·필수 CI | 표현 컴포넌트, ESLint, 기존 공용 verify | 375×812/1440×900·focus·0개/skip/누락 거부·임시 금지 의존 실패; F07 |
+| 실제 JAR→웹앱 진입·직접 링크 | Vite base `/app/`, Gradle `static/app/`, 기존 Spring 정적 파일 제공 | `/app/index.html`·JS/CSS·직접 링크·같은 origin API·REST Docs HTTP; F07 |
+
+현재 프런트 코드·명령은 없다. 구현 후 실제 검증 근거로 갱신하며 기존 아래 백엔드 검증과 혼동하지 않는다.
+
 ## agent-engineering 적용 경로
 
 대표 경로는 **합성 공급자 HTTP 수집 → H2 commit → 실제 검색/상세/추천 HTTP**다. 사용자는 가용 상태여도 관측 시각이 없으면 추천을 확정하지 않고 확인 필요 그룹과 이유를 받는다.

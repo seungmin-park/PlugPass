@@ -1,6 +1,7 @@
 package com.plugpass.ingestion;
 
 import java.time.Clock;
+import java.util.concurrent.atomic.AtomicBoolean;
 import com.plugpass.exception.PublicDataException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ public class DefaultStationSyncService implements StationSyncService {
     private final StationUpsertService stationUpsertService;
     private final SyncRunRepository syncRunRepository;
     private final Clock clock;
+    private final AtomicBoolean running = new AtomicBoolean();
 
     public DefaultStationSyncService(PublicDataClient publicDataClient, StationUpsertService stationUpsertService,
             SyncRunRepository syncRunRepository, Clock clock) {
@@ -23,7 +25,12 @@ public class DefaultStationSyncService implements StationSyncService {
     }
     @Override
     @Transactional(propagation = Propagation.NEVER)
-    public synchronized SyncResult synchronize() {
+    public SyncResult synchronize() {
+        if (!running.compareAndSet(false,true)) { return new SyncResult(null,SyncStatus.SKIPPED,0,null,null,0); }
+        try { return runSynchronization(); }
+        finally { running.set(false); }
+    }
+    private SyncResult runSynchronization() {
         SyncRun run = syncRunRepository.save(SyncRun.builder().startedAt(clock.instant()).build());
         SyncProgress progress = new SyncProgress();
         try {
@@ -41,6 +48,9 @@ public class DefaultStationSyncService implements StationSyncService {
             return complete(run, progress.processedCount(), progress.pageNumber(), failure.getFailure().name());
         } catch (DataAccessException failure) {
             return complete(run, progress.processedCount(), progress.pageNumber(), "STORAGE");
+        } catch (RuntimeException failure) {
+            complete(run, progress.processedCount(), progress.pageNumber(), "INTERNAL");
+            throw failure;
         }
     }
     private SyncResult complete(SyncRun run, long processedCount, Integer failedPage, String failureCode) {

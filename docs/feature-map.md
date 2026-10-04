@@ -83,3 +83,7 @@ GET /api/v1/recommendations → RecommendationRequest → RecommendationService 
 RecommendationTests14·RecommendationServiceTests3·RecommendationHttpTests9·RecommendationRouteTests1, 전체287건.
 fixture HTTP부터 추천 HTTP까지 관측 시각 누락의 UNVERIFIED 분리를 확인한다. 그룹별 limit 전에 판단·제외하며 각 그룹은 거리/ID 순서다.
 근거와 한계: [3주차 기록](week3-verification.md).
+
+## T11 반복 수집
+
+기본 비활성화. 명시적 설정+키 → SyncScheduler 고정 지연 → StationSyncService 실행 소유권 → 기존 수집 경로. SyncSchedulerTests6건, 전체293건. 예정/직접 중복 호출은 SKIPPED, 예외 후 다음 실행 가능. 단일 프로세스 범위다.

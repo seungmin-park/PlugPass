@@ -1,12 +1,12 @@
 # PlugPass 작업 체크리스트
 
-**목표·설계:** [plan.md](plan.md). T01 문서 계약은 main 반영, 인증된 실연동은 키 없어 미확인. T02~T18은 구현·검증·main 반영 완료. T19는 로컬 구현·검증 후 PR 전달을 진행한다. T15 당시 p95 목표 미달은 T16 동일 조건 재측정75.04ms로 개선했다. T01 실응답 확인 두 항목은 키 없어 보류한다. 아래 하위 체크와 근거를 따른다.
+**목표·설계:** [plan.md](plan.md). T01 문서 계약은 main 반영, 인증된 실연동은 키 없어 미확인. T02~T19는 구현·검증·main 반영 완료. T15 당시 p95 목표 미달은 T16 동일 조건 재측정75.04ms로 개선했다. T01 실응답 확인 두 항목은 키 없어 보류한다. 아래 하위 체크와 근거를 따른다.
 
 **실행 방식:** 작업 하나씩 순서대로 진행한다. 구현 시 `superpowers:executing-plans`를 사용한다. 이 파일을 만들었다는 이유로 이후 작업 전체를 자동 실행하지 않는다.
 
 **공통 제약:** Java 25·Spring Boot 4.1.1·JPA/H2·Spring REST Docs, 단일 인스턴스·공급자 1곳·검증 지역 1곳. 공식 계약을 먼저 확인한다. 현재 H2는 메모리 모드다. 작은 PR·필수 CI·자동 머지와 cmux 검증 정책을 유지한다.
 
-**프런트 추가 (2026-10-05):** 사용자는 목록 중심 반응형 웹앱으로 검색·상세·대체 후보를 먼저 완성하고 지도를 후속 단계로 선택했다. [프런트 계획](docs/frontend-plan.md)에 따라 T16→T17→T18~T24 순으로 진행한다. T18 기반은 main 반영했고 T19 API 계약을 진행 중이며 실제 화면 연결은 T20부터다. 각 항목의 전달/검증 근거를 따른다.
+**프런트 추가 (2026-10-05):** 사용자는 목록 중심 반응형 웹앱으로 검색·상세·대체 후보를 먼저 완성하고 지도를 후속 단계로 선택했다. [프런트 계획](docs/frontend-plan.md)에 따라 T16→T17→T18~T24 순으로 진행한다. T18 기반과 T19 URL/API 계약은 main 반영했고 실제 화면 연결은 T20부터다. 각 항목의 전달/검증 근거를 따른다.
 
 ## 남은 작업 실행 순서
 
@@ -293,9 +293,11 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 - [x] 조건 없음·부분 누락·중복 query·위경도/반경/limit 경계·비정수·미지원 커넥터·안전 정수 밖 ID를 구분하는 입력 테스트를 먼저 작성한다.
 - [x] `parseSearchCriteria(query)`와 `getStations(criteria, signal?)`, `getStationDetail(stationId, signal?)`, `getRecommendations(criteria, excludeStationId, signal?)`를 현재 Java DTO·REST Docs 계약에 맞춘다.
 - [x] 정확한 HTTP 경로·query·취소 signal, timeout 10000ms·400 fields·404·429·5xx·network·취소·잘못된 JSON/응답 구조를 경계 테스트로 확인한다. 자동 재시도는 하지 않는다.
-- [ ] criteria·각 API·apiError 대상 테스트에서 assertion 실패→최소 구현→통과를 확인하고 전체 테스트·공용 검증·PR을 반영한다.
+- [x] criteria·각 API·apiError 대상 테스트에서 assertion 실패→최소 구현→통과를 확인하고 전체 테스트·공용 검증·PR을 반영한다.
 
 산출: 화면이 공유하는 검색 조건·응답 타입·HTTP 오류 계약. nullable 시각은 보존하고 추천에 없는 좌표·dataReady를 만들어내지 않는다.
+
+완료 근거: [PR #37](https://github.com/seungmin-park/PlugPass/pull/37), main `3191b89`, [필수 CI](https://github.com/seungmin-park/PlugPass/actions/runs/37232622126) 성공. Java360·Python21·프런트142·타입/lint/build·실제HTTP·재시작3회 성공, 실패/오류/skip0. Red107건과 필수값 Red6건·최소 구현·책임 리뷰는 [실행 기록](docs/frontend-verification.md), [원격 결과](docs/evidence/t19/ci-summary.json).
 
 ### T20 — 위치 선택과 주변 검색 화면
 

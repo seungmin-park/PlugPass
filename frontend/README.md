@@ -9,3 +9,5 @@ Node26.7.0을 사용한다. `npm ci` 후 `npm run dev`로 실행하고 `/app/ind
 - `npm run build`: 타입 검사 성공 후 `/app/` base의 dist 산출물
 
 저장소 공용 명령은 `bash scripts/verify.sh`다. 현재 T18 검색 조건 폼·hash 이동·엄격 검사와 T19 URL/API 계약이 있으며, 실제 검색 화면 연결은 T20 이후다. 운영JAR 웹앱 패키징은 T24에서 검증한다.
+
+의존성 재설치나 프런트 설정이 다른 브랜치로 전환한 뒤에는 켜 둔 개발 서버를 종료하고 `npm run dev`로 다시 시작한다. 최종 검증은 새 서버의 실제 화면으로 확인한다.

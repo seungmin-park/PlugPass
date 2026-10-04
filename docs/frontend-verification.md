@@ -78,3 +78,14 @@ Refactor: `parseNumericQueryField`는 query 숫자 검사, `getValidatedJson`은
 최종 계약 리뷰에서 Java Station/ChargerId의 필수 문자열과 비교했다. 빈 이름·provider·chargerId·추천 이유 코드6건은 기존 구조 검사에서 통과하여 실제 rejection assertion이 실패했다. [추가 Red](evidence/t19/t19-required-values-red.log.gz) 후 `isNonblankString`/`hasNonblankStrings`로 필수값만 보강했다. optional 원문/null 시각·미래 코드의 보존은 유지한다. [Green](evidence/t19/t19-required-values-green.log.gz)은 최종 대상133·전체142건, 타입/lint0이다. 성공한 초기 로그의136건을 최종 건수로 바꾸지 않는다.
 
 필수값 보강 후 최종 공용 verify 종료0: Java360·Python21·프런트142, 타입/lint/build·실제 HTTP·재시작3회 모두 성공, 실패/오류/skip0. [최종 runtime](evidence/t19/runtime.json)·[최종 전체 로그](evidence/t19/verify.log.gz)·[재시작](evidence/t19/memory-restart.json).
+
+
+## T19 전달과 최종 화면
+
+PR [#37](https://github.com/seungmin-park/PlugPass/pull/37)의 서명 head `b7f10dc`는 GitHub에서 valid, 필수 CI [37232622126](https://github.com/seungmin-park/PlugPass/actions/runs/37232622126)는 SUCCESS였다. native 보호/auto-squash 아래 실제 main `3191b89` 머지를 확인했다. 원격 로그도 Java360·Python21·프런트142·실제HTTP·재시작3회, 실패/오류/skip0이다. [원격 요약](evidence/t19/ci-summary.json)·[원본 CI 로그](evidence/t19/ci.log.gz). T16~T19 체크를 닫고 실공공 API 인증이 필요한 T01 두 항목은 유지한다.
+
+최종 브라우저 새로고침에서 이전 dev 프로세스의 Vue 변환 오류 화면을 발견했다. [이전 로그](evidence/t19/frontend-dev.log.gz)는 프런트가 없는 이전 main을 잠깐 checkout한05:24:55에 설정 재시작과 base가 `/app/`→`/`로 바뀐 것을 보여준다. 설정 파일/의존성 교체 중 살아 있던 프로세스의 임시 상태로 판단했다. 현재 설정에는 Vue plugin이 있고 현재 code의 clean build는 성공했다. 종료 코드130으로 자신이 시작한 서버만 종료하고 동일5173에서 새 프로세스를 시작하자 실제 화면이 복구됐다. 제품 코드를 바꾸거나 오류 overlay를 숨기지 않았다.
+
+[새 서버 로그](evidence/t19/frontend-dev-final.log.gz)의05:36:00 이후 실제 조건3km/NACS 선택·검색 클릭·없는경로·복귀 링크를 다시 확인했다. [브라우저 진단](evidence/t19/browser-diagnostics.json)은 이전 오류5건을 보존하고 재시작 후0건을 구분한다. 이전 오류를 전체기간0건으로 보고하지 않는다. 최종 화면은 아래와 같으며 서버와 Codex 브라우저를 유지했다. 이 흐름은 T18 진입점 검증이고 T20 위치/API 연결·T23 Playwright 전체 흐름은 미구현이다.
+
+![최종 검색 진입점](evidence/t19/search-screen-final.jpg)

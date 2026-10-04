@@ -117,6 +117,7 @@ class SyncSchedulerTests {
             return new StationPage(1,10,0,List.of());
         }
         void reset() { requests.set(0); started = new CountDownLatch(0); release = new CountDownLatch(0); failure = null; }
+        public StationPage fetchPage(int page, Duration remaining) { return fetchPage(page); }
         public void close() { }
     }
 }

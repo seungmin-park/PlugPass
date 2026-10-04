@@ -1,6 +1,7 @@
 package com.plugpass.ingestion;
 
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.ArrayDeque;
@@ -87,12 +88,14 @@ class StationSyncTests {
     void recordsPartialFailure() {
         pageClient.pages.add(new StationPage(1, 10, 11, List.of(snapshot("one", "2"))));
         pageClient.pages.add(new PublicDataException(PublicDataFailure.TIMEOUT));
+        pageClient.pages.add(new PublicDataException(PublicDataFailure.TIMEOUT));
         SyncResult result = stationSyncService.synchronize();
         assertThat(result).isNotNull();
         assertThat(result.status()).isEqualTo(SyncStatus.PARTIAL_FAILURE);
         assertThat(result.processedCount()).isEqualTo(1);
         assertThat(result.failedPage()).isEqualTo(2);
         assertThat(result.failureCode()).isEqualTo("TIMEOUT");
+        assertThat(pageClient.requestedPages).containsExactly(1,2,2);
         assertThat(result.failedPageCount()).isEqualTo(1);
         assertThat(syncRunRepository.findById(result.runId()).orElseThrow().getFailedPageCount()).isEqualTo(1);
         assertThat(chargerRepository.count()).isEqualTo(1);
@@ -257,6 +260,7 @@ class StationSyncTests {
             if (response instanceof RuntimeException failure) { throw failure; }
             return (StationPage) response;
         }
+        public StationPage fetchPage(int page, Duration remaining) { return fetchPage(page); }
         public void close() { }
     }
 }

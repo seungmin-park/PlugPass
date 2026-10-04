@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration(proxyBeanMethods = false)
-@EnableConfigurationProperties(PublicDataProperties.class)
+@EnableConfigurationProperties({PublicDataProperties.class, IngestionProperties.class})
 public class PublicDataConfiguration {
     @Bean
     Clock applicationClock() { return Clock.systemUTC(); }

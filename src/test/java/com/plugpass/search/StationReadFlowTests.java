@@ -135,7 +135,7 @@ class StationReadFlowTests {
             Files.writeString(evidence.resolve("search-during-provider-failure.json"),searchResponse.body());
             Files.writeString(evidence.resolve("detail-during-provider-failure.json"),detailResponse.body());
         }
-        assertThat(fixtureProvider.requests).hasValue(2);
+        assertThat(fixtureProvider.requests).hasValue(3);
         assertThat(chargerRepository.count()).isEqualTo(1);
     }
     private HttpResponse<String> get(HttpClient httpClient, String path) throws Exception {

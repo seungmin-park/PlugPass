@@ -87,3 +87,9 @@ fixture HTTP부터 추천 HTTP까지 관측 시각 누락의 UNVERIFIED 분리�
 ## T11 반복 수집
 
 기본 비활성화. 명시적 설정+키 → SyncScheduler 고정 지연 → StationSyncService 실행 소유권 → 기존 수집 경로. SyncSchedulerTests6건, 전체293건. 예정/직접 중복 호출은 SKIPPED, 예외 후 다음 실행 가능. 단일 프로세스 범위다.
+
+## T12 장애 제한과 복구
+
+회차 IngestionBudget → 제한 재시도 → PublicDataClient의 남은 시간 timeout → 페이지 commit/종료 이력.
+IngestionRecoveryTests14·IngestionHttpBudgetTests6·IngestionConfigurationTests11, 전체324건.
+일시 오류만 한 번 재시도, 인증/계약/interrupt는 즉시 종료. 페이지·전체요청·시간 상한과 Retry-After 예산, 부분 commit 보존, 시간 경과 STALE·다음 회차 복구를 실제 Service/DB·fixture HTTP로 확인한다.

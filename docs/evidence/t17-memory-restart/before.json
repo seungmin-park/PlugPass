@@ -1,0 +1,39 @@
+{
+  "dataReady": true,
+  "lastSuccessfulRunAt": "2026-10-04T19:56:16.744143Z",
+  "stations": [
+    {
+      "id": 1,
+      "provider": "ME",
+      "providerStationId": "28260005",
+      "name": "기후대기관",
+      "latitude": 37.56962,
+      "longitude": 126.641973,
+      "distanceMeters": 0.0,
+      "compatibleChargerCount": 1,
+      "reportedAvailableCount": 1,
+      "chargers": [
+        {
+          "chargerId": "02",
+          "status": "AVAILABLE",
+          "rawStatus": "2",
+          "sourceObservedAt": null,
+          "collectedAt": "2026-10-04T19:56:16.141143Z",
+          "freshness": "UNVERIFIED",
+          "reasonCode": "SOURCE_OBSERVED_AT_MISSING",
+          "connectorCode": "03",
+          "useTime": "24시간 이용가능",
+          "limitYn": "N",
+          "limitDetail": "",
+          "note": "공사로 인해 이용 불가",
+          "sourceStatusChangedAtRaw": "20190829121020",
+          "lastChargingStartedAtRaw": "20210801121020",
+          "lastChargingEndedAtRaw": "20210801123020",
+          "chargingStartedAtRaw": "20210802131020",
+          "delYn": "N",
+          "delDetail": ""
+        }
+      ]
+    }
+  ]
+}

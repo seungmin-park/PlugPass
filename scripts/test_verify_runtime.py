@@ -98,5 +98,14 @@ class JourneyEvidenceTests(unittest.TestCase):
                 verify_runtime.check_journey_evidence(directory)
 
 
+class PackagedFixtureTests(unittest.TestCase):
+    def test_rejects_reliability_probe_in_production_jar(self):
+        with self.assertRaisesRegex(RuntimeError, 'Test fixture packaged'):
+            verify_runtime.check_packaged_test_fixtures(['BOOT-INF/classes/reliability/RestartProbeApplication.class'])
+
+    def test_accepts_production_classes(self):
+        verify_runtime.check_packaged_test_fixtures(['BOOT-INF/classes/com/plugpass/PlugPassApplication.class'])
+
+
 if __name__ == '__main__':
     unittest.main()

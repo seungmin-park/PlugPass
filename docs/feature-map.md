@@ -153,3 +153,7 @@ ChargingJourneyTests3건: 실제 fixture HTTP→XML→수집 commit→H2→검�
 ## T16 조회 후보 축소
 
 SearchBounds → ChargerRepository.findSearchCandidates → 기존 정확한 거리·정렬·추천 정책. StationQueryEfficiencyTests의 SQL2/엔티티2 assertion과 기존 반경·날짜 변경선·양극 테스트로 계약 유지/로딩 축소를 검증한다. 측정 근거는 [T16](t16-verification.md)·[성능](performance.md)이다.
+
+## T17 장애·재시작 경계
+
+기존 recovery/sync/scheduler/journey assertion에 여러 회차 장애/복구 성공시각을 보강했다. `scripts/verify-memory-restart.py`는 별도JVM3개와 fixtureHTTP를 통해 수집완료→메모리소실/준비전→재수집완료를 확인한다. 공용 verify에 통합되어 실패를 거부하며 reliability 테스트 패키지의 운영JAR 포함도 거부한다. [보장·한계](reliability.md).

@@ -160,9 +160,19 @@ class IngestionRecoveryTests {
         assertThat(stationQueryService.search(new StationSearchQuery(new GeoPoint(0,0),1000,Connector.DC_COMBO,20)).stations()
                 .getFirst().chargers().getFirst().freshness().freshness()).isEqualTo(Freshness.STALE);
         assertThat(stationQueryService.search(new StationSearchQuery(new GeoPoint(0,0),1000,Connector.DC_COMBO,20)).lastSuccessfulRunAt()).isEqualTo(lastSuccess);
+        SyncResult repeatedFailure = stationSyncService.synchronize();
+        assertThat(repeatedFailure.status()).isEqualTo(SyncStatus.FAILURE);
+        assertThat(repeatedFailure.requestCount()).isEqualTo(2);
+        assertThat(repeatedFailure.retryCount()).isEqualTo(1);
+        assertThat(chargerRepository.count()).isEqualTo(1);
+        assertThat(stationQueryService.search(new StationSearchQuery(new GeoPoint(0,0),1000,Connector.DC_COMBO,20)).lastSuccessfulRunAt()).isEqualTo(lastSuccess);
         scriptedClient.fallbackFailure = null;
         scriptedClient.responses.add(new StationPage(1,10,1,List.of(snapshot("saved",ChargerStatus.OCCUPIED))));
-        assertThat(stationSyncService.synchronize().status()).isEqualTo(SyncStatus.SUCCESS);
+        SyncResult recovered = stationSyncService.synchronize();
+        assertThat(recovered.status()).isEqualTo(SyncStatus.SUCCESS);
+        assertThat(stationRepository.count()).isEqualTo(1);
+        assertThat(stationQueryService.search(new StationSearchQuery(new GeoPoint(0,0),1000,Connector.DC_COMBO,20)).lastSuccessfulRunAt())
+                .isEqualTo(syncRunRepository.findById(recovered.runId()).orElseThrow().getCompletedAt()).isAfter(lastSuccess);
         assertThat(chargerRepository.count()).isEqualTo(1);
         assertThat(chargerRepository.findByIdentity(new ChargerId("ME","saved","01")).orElseThrow().getStatus()).isEqualTo(ChargerStatus.OCCUPIED);
         assertThat(stationQueryService.search(new StationSearchQuery(new GeoPoint(0,0),1000,Connector.DC_COMBO,20)).stations()

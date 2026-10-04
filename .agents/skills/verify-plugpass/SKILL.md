@@ -161,7 +161,7 @@ IngestionRecoveryTests14 + IngestionHttpBudgetTests6 + IngestionConfigurationTes
 
 ## T17~T19 최신 검증 범위
 
-현재 공용verify는 Java360건·Python21건·프런트142건(9파일)을 실행한다. 과거 T번호의 건수는 당시 기록이다. 실제 실행 뒤 XML/JSON의 현재 수를 읽고 고정 총건수를 CI요구값으로 만들지 않는다.
+현재 공용verify는 Java360건·Python21건·프런트144건(10파일)을 실행한다. 과거 T번호의 건수는 당시 기록이다. 실제 실행 뒤 XML/JSON의 현재 수를 읽고 고정 총건수를 CI요구값으로 만들지 않는다.
 
 - T17: 기존 recovery/sync/scheduler/journey35건과 `scripts/verify-memory-restart.py`의 별도JVM3회 실제HTTP로 수집완료→메모리H2소실/준비전→재수집완료를 확인한다. `build/verification/memory-restart/`를 확인한다. reliability 테스트클래스의 운영JAR 포함을 거부한다.
 - T18: Node26.7.0, lockfile을 사용한다. 공용verify가 npm ci→test:unit→type-check→lint(경고0)→build를 실행한다. `frontend/test-results/unit.json`의 실제assertion과 `docs/required-frontend-tests.json`의 필수파일을 기존runtime검사로 확인한다. 0개/실패/skip/누락을 거부한다.

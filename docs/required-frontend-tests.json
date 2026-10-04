@@ -7,5 +7,6 @@
   "src/shared/api/apiError.spec.ts",
   "src/features/search/api/stationApi.spec.ts",
   "src/features/station-detail/api/stationDetailApi.spec.ts",
-  "src/features/recommendation/api/recommendationApi.spec.ts"
+  "src/features/recommendation/api/recommendationApi.spec.ts",
+  "tests/consoleDiagnostics.spec.ts"
 ]

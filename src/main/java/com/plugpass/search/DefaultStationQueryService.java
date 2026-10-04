@@ -49,6 +49,12 @@ public class DefaultStationQueryService implements StationQueryService {
     @Override
     @Transactional(readOnly = true)
     public StationSearchResult search(StationSearchQuery query) {
+        StationSearchResult result = searchWithinRadius(query);
+        return new StationSearchResult(result.dataReady(),result.lastSuccessfulRunAt(),result.stations().stream().limit(query.limit()).toList());
+    }
+    @Override
+    @Transactional(readOnly = true)
+    public StationSearchResult searchWithinRadius(StationSearchQuery query) {
         Instant now = clock.instant();
         Instant lastSuccessfulRunAt = syncRunRepository.findFirstByStatusOrderByCompletedAtDesc(SyncStatus.SUCCESS)
                 .map(SyncRun::getCompletedAt).orElse(null);
@@ -59,7 +65,7 @@ public class DefaultStationQueryService implements StationQueryService {
                 .map(entry -> match(entry.getKey(), entry.getValue(), query, now))
                 .filter(station -> station.distanceMeters() <= query.radiusMeters())
                 .sorted(Comparator.comparingDouble(StationMatch::distanceMeters).thenComparing(StationMatch::id))
-                .limit(query.limit()).toList();
+                .toList();
         return new StationSearchResult(lastSuccessfulRunAt != null, lastSuccessfulRunAt, matches);
     }
     private StationMatch match(Station station, List<Charger> chargers, StationSearchQuery query, Instant now) {

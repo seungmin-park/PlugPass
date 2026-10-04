@@ -149,3 +149,7 @@ ChargingJourneyTests3건: 실제 fixture HTTP→XML→수집 commit→H2→검�
 ## T15 성능 실험 경로
 
 `python3 scripts/performance/load.py --output <새폴더>` → test classpath의 실제 서버 → 도메인/Repository 생성 데이터 → HTTP 정확성/SQL 기준선 →20worker 준비30초/측정180초→전후 정확성. PerformanceDatasetTests1건은 작은 규모에서5개 충전기/충전소·4종 상태/시각의 실제 매핑을 확인한다. Python 집계3건은 nearest-rank·빈 측정 거부·HTTP/응답 오류 포함을 확인한다. 실제 전체 규모와 시간은 별도 [성능 기록](performance.md)의 원본 측정 결과로 확인한다. 운영 JAR에는 performance 패키지가 들어가지 않아야 한다.
+
+## T16 조회 후보 축소
+
+SearchBounds → ChargerRepository.findSearchCandidates → 기존 정확한 거리·정렬·추천 정책. StationQueryEfficiencyTests의 SQL2/엔티티2 assertion과 기존 반경·날짜 변경선·양극 테스트로 계약 유지/로딩 축소를 검증한다. 측정 근거는 [T16](t16-verification.md)·[성능](performance.md)이다.

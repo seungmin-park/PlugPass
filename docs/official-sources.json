@@ -468,5 +468,17 @@
     "url": "https://docs.spring.io/spring-boot/4.1/reference/web/servlet.html#web.servlet.spring-mvc.static-content",
     "accessed": "2026-10-05",
     "coverage": "프런트 웹앱 계획: 정적 리소스 제공; 실제 JAR의 /app/index.html·JS/CSS는 T24 검증 예정"
+  },
+  {
+    "id": "t16-hql",
+    "url": "https://docs.hibernate.org/orm/7.4/querylanguage/html_single/",
+    "accessed": "2026-10-05",
+    "coverage": "join fetch, named parameters, between/in; rolling7.4.12 vs actual7.4.5 verified by execution"
+  },
+  {
+    "id": "t16-jpa-query",
+    "url": "https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html",
+    "accessed": "2026-10-05",
+    "coverage": "@Query and @Param; actual Boot4.1.1 query execution"
   }
 ]

@@ -15,7 +15,7 @@ description: Verify PlugPass HTTP health, H2 JPA persistence, REST Docs contract
 ## 빌드와 테스트
 
 1. `bash scripts/verify.sh`를 실행한다. clean build와 아래 JAR·실제 HTTP 검사를 같은 명령으로 수행한다. JDK 25와 Python 3이 필요하다. CI도 이 명령을 사용한다.
-2. 종료 0과 `build/test-results/test/TEST-*.xml`의 테스트 260개(기반 4개 + T02 52개 + T03 19개 + T04 22개 + T05 64개 + T06 22개 + T07 14개 + T08 49개 + T09 14개), 실패·오류·skip 0을 확인한다. 기능을 추가했다면 기대 개수도 갱신한다.
+2. 종료 0과 `build/test-results/test/TEST-*.xml`의 테스트 282개(기존 업무/기반 260개 + 구조 검사 6개 + 검사기 회귀 16개), 실패·오류·skip 0을 확인한다. Python 검사기 테스트 8개도 실행되어야 한다. 기능을 추가했다면 실행 기록의 관측 건수를 갱신한다. 고정 총건수를 CI의 요구값으로 사용하지 않는다.
 3. [테스트 경계](../../../AGENTS.md)를 따른다. Repository는 기본 save 후 조회하고 매핑 복원이 검증 대상일 때만 이유를 명시해 flush/clear한다. 참조 차이 자체를 assertion하지 않는다. Service는 테스트 트랜잭션 없이 production commit 후 별도 조회하고 AfterEach로 정리한다. 테스트 전용 엔티티가 실행 JAR에 들어가지 않아야 한다.
 4. `build/generated-snippets/health/`와 `build/docs/asciidoc/index.html`이 생성돼야 한다.
 5. JAR의 `BOOT-INF/classes/static/docs/index.html`이 생성한 HTML과 같아야 한다.
@@ -43,6 +43,15 @@ SnippetException에 status가 문서화되지 않았다는 실패가 있어야 �
 
 종료 코드, XML 테스트 결과, 생성 HTML, `build/verification/server.log`와 `runtime.json`을 확인한다. 공용 검증은 테스트 0개·실패·오류·skip을 거부한다.
 PR은 `.github/workflows/verify.yml`의 `PlugPass verify` 결과를 확인한다. 로컬 성공을 원격 CI 성공으로 대신하지 않는다.
+
+## 구조와 필수 suite 검사
+
+- `./gradlew test --tests '*Architecture*Tests'`: 22건. [자동 검사 범위와 리뷰 경계](../../../docs/architecture-guardrails.md)를 따른다. 도메인 규칙의 정확성은 기존 동작 assertion으로 확인한다.
+- `python3 -m unittest discover -s scripts -p 'test_*.py' -v`: 8건. 필수 suite 누락과 기존 실패 조건, 신규 suite 허용을 확인한다.
+- 공용 verify는 [필수 suite 목록](../../../docs/required-test-suites.json)의 23개 이름이 실제 XML에 모두 있는지 검사한다. suite를 삭제·이름 변경하면 기능 지도와 대체 검증을 함께 리뷰한다. 내부 테스트 일부 삭제·assertion 품질은 이 목록 검사로 보장하지 않는다.
+- 검사기 변경 시 허용/금지 bytecode 예제를 확인하고 실제 임시 위반의 거부·복원을 확인한다. 기록: [CI 검증 보강](../../../docs/ci-boundaries-verification.md).
+- JaCoCo는 사용자 선택으로 제외했다. 수치 목표용 DTO/getter 테스트나 별도 coverage gate를 추가하지 않는다. 정적 검사는 좋은 이름·불변식 소유권 전체를 판정하지 않으므로 PR의 객체 책임 리뷰를 수행한다.
+
 직접 시작한 서버만 종료하고 cmux 검증 pane은 유지한다.
 H2 메모리 데이터의 재시작 보존은 보장하지 않는다. T09의 실제 fixture 수집→H2→검색/상세 HTTP 범위와 실공공 API 인증·추천 포함 후속 흐름을 구분한다.
 

@@ -27,7 +27,7 @@ jobs:
         with:
           distribution: zulu
           java-version: '25'
-      - name: Build, test and verify packaged HTTP endpoints
+      - name: Verify guardrails, build, required tests and packaged HTTP endpoints
         run: bash scripts/verify.sh
       - name: Preserve verification evidence
         if: always()

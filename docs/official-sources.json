@@ -342,5 +342,17 @@
     "url": "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html",
     "accessed": "2026-10-02",
     "coverage": "Set의 equals 기반 원소 동등성과 add 반환값; 수집 중복 검사에 적용"
+  },
+  {
+    "id": "archunit-1.5.1-core",
+    "url": "https://www.archunit.org/userguide/html/000_Index.html",
+    "accessed": "2026-10-05",
+    "coverage": "1.5.1 core import、dependency/member/annotation rules、custom conditions、empty-rule failure; existing JUnit 6.0.3 tests"
+  },
+  {
+    "id": "archunit-releases",
+    "url": "https://github.com/TNG/ArchUnit/releases",
+    "accessed": "2026-10-05",
+    "coverage": "ArchUnit release history; Java 25 compatibility additionally checked with actual compile/test"
   }
 ]

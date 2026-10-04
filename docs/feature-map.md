@@ -1,5 +1,15 @@
 # 기능과 검증 범위
 
+## CI 구조·누락 검사
+
+도메인 규칙의 결과는 기존 동작 테스트가 맡는다. 의존성·공개 변경 경로는 [구조 검사](architecture-guardrails.md)가 맡고, 실제 규칙 소유권·이름·책임은 리뷰가 함께 확인한다.
+
+- ArchitectureTests 6건: 운영 객체 4개 경계와 Service/MVC 테스트 2개 경계.
+- ArchitectureRulesTests 16건: 허용·금지 구조의 bytecode 예제.
+- Python 검사기 테스트 8건: 필수 suite 누락, 새 suite 허용, 보고서 없음·0개·빈 suite·실패·오류·skip 거부.
+- [필수 suite 목록](required-test-suites.json): 기존 기능 21개 + 구조 검사 2개. 실제 XML에 모두 실행되어야 한다. 고정 총건수·coverage 비율은 강제하지 않는다.
+- Red/Green·실제 임시 위반·한계: [CI 보강 기록](ci-boundaries-verification.md). JaCoCo는 사용자 선택으로 제외했다.
+
 | 경로 | 기대 결과 | 검증 |
 | --- | --- | --- |
 | GET /actuator/health | 200, status UP, 세부 정보 미노출 | 실제 HTTP 통합 테스트 |

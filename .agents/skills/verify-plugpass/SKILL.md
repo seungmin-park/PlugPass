@@ -1,6 +1,6 @@
 ---
 name: verify-plugpass
-description: Verify PlugPass HTTP health, H2 JPA persistence, REST Docs contracts, and packaged API documentation.
+description: Verify PlugPass behavior and architecture checks, fixture ingestion through H2 to search/detail/recommendation HTTP, packaged REST Docs, current-source evidence, and PR delivery state.
 ---
 
 # PlugPass 검증
@@ -8,6 +8,7 @@ description: Verify PlugPass HTTP health, H2 JPA persistence, REST Docs contract
 ## 환경 확인
 
 - 프로젝트 루트에서 `java -version`으로 JDK 25를 확인한다.
+- 일반 verify는 Python 3을 사용한다. 전역 증거 도구를 사용할 때는 해당 Python이 3.10 이상인지 확인한다. JAVA_HOME을 설정하면 그 Java도 25여야 한다.
 - `CMUX_WORKSPACE_ID`, `CMUX_SURFACE_ID`, `cmux identify --json`으로 호출한 세션을 확인한다.
 - 현재 cmux의 검증 보조 pane을 재사용하고 workspace·surface를 명시한다. 사용자가 입력 중인 터미널은 사용하지 않는다.
 - cmux 연결이 없으면 그 한계를 먼저 설명하고 터미널 검증을 화면 E2E라고 보고하지 않는다.
@@ -43,6 +44,32 @@ SnippetException에 status가 문서화되지 않았다는 실패가 있어야 �
 
 종료 코드, XML 테스트 결과, 생성 HTML, `build/verification/server.log`와 `runtime.json`을 확인한다. 공용 검증은 테스트 0개·실패·오류·skip을 거부한다.
 PR은 `.github/workflows/verify.yml`의 `PlugPass verify` 결과를 확인한다. 로컬 성공을 원격 CI 성공으로 대신하지 않는다.
+
+## 현재 소스와 실행 근거 연결
+
+전역 agent-engineering이 설치된 환경에서 [검증 계획](../../verification.json)을 사용한다. 새 검사기가 아니라 기존 `bash scripts/verify.sh`의 실행 계획이다. 동작·구조·필수 suite·JAR HTTP 판단은 기존 검사들이 맡고, 전역 `evidence.py`는 명령·로그와 소스의 일치를 기록한다.
+
+Python 3.10+와 JDK 25 환경에서 프로젝트 루트의 아래 명령을 실행한다. 출력 폴더는 저장소 밖의 새 경로여야 한다.
+
+```bash
+plugpass_evidence_dir="$(mktemp -d "${TMPDIR:-/tmp}/plugpass-evidence.XXXXXX")/proof"
+python3 ~/.agents/skills/agent-engineering/scripts/evidence.py run \
+  --repo . --plan .agents/verification.json --out "$plugpass_evidence_dir"
+python3 ~/.agents/skills/agent-engineering/scripts/evidence.py check \
+  --repo . --plan .agents/verification.json --out "$plugpass_evidence_dir"
+```
+
+둘 다 종료 0이어야 한다. plan은 exit-only 기록이므로 증거 도구가 JUnit을 직접 세었다고 보고하지 않는다. 실제 실행 건수·실패·오류·skip·필수 suite는 `verify-runtime.py`와 XML·`build/verification/runtime.json`에서 확인한다. 전역 도구는 요구사항 완전성이나 assertion 품질을 증명하지 않는다.
+
+commit·같은 HEAD의 파일 변경·plan 변경 후에는 이전 증거가 현재 검증을 대신할 수 없다. 최종 commit의 현재 내용을 검증하고, 실패 로그를 보존한 채 원인에 맞춰 수정·재검증한다. runtime·의존성·환경·외부 상태의 식별은 별도로 기록한다. [대표 흐름과 실제 거부 확인](../../../docs/agent-engineering-application.md)을 참고한다.
+
+## 현재 PR의 완료 확인
+
+[전달 절차](../../../docs/delivery-workflow.md)에 따라 실제 main 보호 정책과 검사 출처를 먼저 확인한다. `PlugPass verify`라는 이름만으로 보호 정책이나 테스트 실행을 추정하지 않는다. 전역 `pr_status.py`로 검증한 commit과 현재 PR head, 필요한 검사, native 머지 상태를 읽기만 할 수 있다.
+
+검사 실패·대기·누락/skip·head 변경·머지 차단을 구분한다. CI 성공, 머지 가능, 실제 머지를 별도 관찰로 기록한다. 요청 범위와 프로젝트 정책이 실제 머지까지 요구하면 `--goal merged`로 최종 상태를 확인한다. ready나 auto-merge 신청만으로 완료 처리하지 않는다. 실행 명령은 전달 절차에 있다.
+
+필수 승인 인원은 현재 0명이며 구조 검사가 의미적 책임 리뷰를 대신하지 않는다. 도메인 규칙의 정확성은 동작 테스트가, 책임 배치는 구조 검사와 리뷰가 맡는다. 스킬 지침 검토·도구 테스트·실제 에이전트 행동 평가도 구분한다. 이 검증 스킬은 에이전트 병렬화나 추가 배포 권한을 주지 않는다.
 
 ## 구조와 필수 suite 검사
 

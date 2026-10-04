@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "checks": [
+    {
+      "id": "plugpass-verify",
+      "argv": ["bash", "scripts/verify.sh"],
+      "timeout_seconds": 900
+    }
+  ]
+}

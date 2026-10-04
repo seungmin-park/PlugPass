@@ -7,7 +7,7 @@
 - ArchitectureTests 6건: 운영 객체 4개 경계와 Service/MVC 테스트 2개 경계.
 - ArchitectureRulesTests 17건: 허용·금지 구조의 bytecode 예제. 역할별 domain 패키지의 추천 정책 선택 범위도 확인한다.
 - Python 검사기 테스트 8건: 필수 suite 누락, 새 suite 허용, 보고서 없음·0개·빈 suite·실패·오류·skip 거부.
-- [필수 suite 목록](required-test-suites.json): T10/T11을 포함한 기존 기능 26개 + 구조 검사 2개. 실제 XML에 모두 실행되어야 한다. 고정 총건수·coverage 비율은 강제하지 않는다.
+- [필수 suite 목록](required-test-suites.json): T10/T11/T12를 포함한 기존 기능 29개 + 구조 검사 2개. 실제 XML에 모두 실행되어야 한다. 고정 총건수·coverage 비율은 강제하지 않는다.
 - Red/Green·실제 임시 위반·한계: [CI 보강 기록](ci-boundaries-verification.md). JaCoCo는 사용자 선택으로 제외했다.
 
 | 경로 | 기대 결과 | 검증 |
@@ -98,6 +98,12 @@ fixture HTTP부터 추천 HTTP까지 관측 시각 누락의 UNVERIFIED 분리�
 
 기본 비활성화. 명시적 설정+키 → SyncScheduler 고정 지연 → StationSyncService 실행 소유권 → 기존 수집 경로. SyncSchedulerTests6건, 전체293건. 예정/직접 중복 호출은 SKIPPED, 예외 후 다음 실행 가능. 단일 프로세스 범위다.
 
+## T12 장애 제한과 복구
+
+회차 IngestionBudget → 제한 재시도 → PublicDataClient의 남은 시간 timeout → 페이지 commit/종료 이력.
+IngestionRecoveryTests14·IngestionHttpBudgetTests6·IngestionConfigurationTests11, 전체324건.
+일시 오류만 한 번 재시도, 인증/계약/interrupt는 즉시 종료. 페이지·전체요청·시간 상한과 Retry-After 예산, 부분 commit 보존, 시간 경과 STALE·다음 회차 복구를 실제 Service/DB·fixture HTTP로 확인한다.
+
 ## 패키지 책임과 탐색
 
-기능별 묶음 안에서 domain·repository·service·controller·dto를 구분한다. [패키지 구조](package-structure.md)에 현재 소유자와 의존성을, [변경 검증](package-structure-verification.md)에 동작 보존 결과를 기록한다. 검색·추천의 공통 Connector는 station.domain, 공통 숫자 검증은 common.validation이 소유한다.
+기능별 묶음 안에서 domain·repository·service·controller·dto를 구분한다. [변경 검증](package-structure-verification.md)에 동작 보존 결과를 기록한다. 검색·추천의 공통 Connector는 station.domain, 공통 숫자 검증은 common.validation이 소유한다.

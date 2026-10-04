@@ -28,6 +28,12 @@
 
 추천 위반 예제를 `recommendation.domain`으로 옮겨 같은 테스트를 먼저 실행했다. `./gradlew test --tests '*Architecture*Tests'`: 기존 selector가 새 위치를 놓쳐 `rejectsRecommendationPolicyRepositoryDependency`의 assertion 1건이 실패했다. 컴파일은 성공했다. 도메인 선택을 `@Entity` 또는 `com.plugpass` 아래 `domain`과 그 하위 패키지로 바꾼 뒤 구조 테스트 23건이 통과했다. Service/Repository/Controller 예제 import도 이동한 실제 타입으로 바꿨다.
 
+### 최신 복구 기능과 문서 정리 통합
+
+최종 main `c1e4cd2`의 T12 재시도·회차 예산·복구 기능(`#22`)과 중복 패키지 문서 삭제(`#24`)를 유지했다. 새 동작 31건의 핵심 suite 세 개를 필수 목록에 등록했다. 현재 요구 목록은 업무 29개 + 구조 2개 = 31개 suite다. 검사 정책을 느슨하게 바꾸거나 upstream 운영 코드를 수정하지 않았다.
+
+같은 JDK 25의 `bash scripts/verify.sh`가 종료 0으로 통과했다. Java 347건(업무/기반 324건 + 구조/검사기 23건)·Python 8건, 실패/오류/skip 0이다. 실제 XML 31개와 요구 목록, 최종 runtime 결과, 실행 JAR의 검사 예제 미포함을 확인했다. 변경 문서의 로컬 링크 39개와 출처 JSON의 고유 ID, diff를 확인했다. 삭제된 패키지 문서를 다시 추가하지 않았다.
+
 ## 실제 위반의 거부
 
 - `StationReadFlowTests`의 XML 하나를 임시 제거하고 `python3 scripts/verify-runtime.py`: 종료 1, `Missing required test suites: com.plugpass.search.StationReadFlowTests`. 다른 테스트가 남아 있어도 거부했다. XML은 finally에서 복원했다.

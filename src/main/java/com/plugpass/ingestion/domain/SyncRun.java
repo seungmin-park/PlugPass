@@ -27,6 +27,8 @@ public class SyncRun {
     private Integer failedPage;
     @Column(nullable = false) private long failedPageCount;
     private String failureCode;
+    private int requestCount;
+    private int retryCount;
 
     @Builder
     private SyncRun(Instant startedAt) {
@@ -35,6 +37,10 @@ public class SyncRun {
         this.status = SyncStatus.RUNNING;
     }
     public void complete(long processedCount, Integer failedPage, String failureCode, Instant completedAt) {
+        complete(processedCount,failedPage,failureCode,completedAt,0,0);
+    }
+    public void complete(long processedCount, Integer failedPage, String failureCode, Instant completedAt, int requestCount, int retryCount) {
+        if (requestCount < 0 || retryCount < 0 || retryCount > requestCount) { throw new IllegalArgumentException("invalid request/retry counts"); }
         if (status != SyncStatus.RUNNING) { throw new IllegalStateException("sync run is already completed"); }
         if (processedCount < 0 || completedAt == null || completedAt.isBefore(startedAt)) {
             throw new IllegalArgumentException("invalid sync completion");
@@ -42,6 +48,8 @@ public class SyncRun {
         if ((failedPage == null) != (failureCode == null) || (failedPage != null && (failedPage < 1 || failureCode.isBlank()))) {
             throw new IllegalArgumentException("failure page and code must be supplied together");
         }
+        this.requestCount = requestCount;
+        this.retryCount = retryCount;
         this.processedCount = processedCount;
         this.failedPage = failedPage;
         this.failedPageCount = failedPage == null ? 0 : 1;
@@ -54,5 +62,5 @@ public class SyncRun {
         if (processedCount > 0) { return SyncStatus.PARTIAL_FAILURE; }
         return SyncStatus.FAILURE;
     }
-    public SyncResult result() { return new SyncResult(id, status, processedCount, failedPage, failureCode, failedPageCount); }
+    public SyncResult result() { return new SyncResult(id, status, processedCount, failedPage, failureCode, failedPageCount, requestCount, retryCount); }
 }

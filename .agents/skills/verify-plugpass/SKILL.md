@@ -15,7 +15,7 @@ description: Verify PlugPass HTTP health, H2 JPA persistence, REST Docs contract
 ## 빌드와 테스트
 
 1. `bash scripts/verify.sh`를 실행한다. clean build와 아래 JAR·실제 HTTP 검사를 같은 명령으로 수행한다. JDK 25와 Python 3이 필요하다. CI도 이 명령을 사용한다.
-2. 종료 0과 `build/test-results/test/TEST-*.xml`의 테스트 316개(업무/기반 293개 + 구조 검사 6개 + 검사기 회귀 17개), 실패·오류·skip 0을 확인한다. Python 검사기 테스트 8개도 실행되어야 한다. 기능을 추가했다면 실행 기록의 관측 건수를 갱신한다. 고정 총건수를 CI의 요구값으로 사용하지 않는다.
+2. 종료 0과 `build/test-results/test/TEST-*.xml`의 테스트 347개(업무/기반 324개 + 구조 검사 6개 + 검사기 회귀 17개), 실패·오류·skip 0을 확인한다. Python 검사기 테스트 8개도 실행되어야 한다. 기능을 추가했다면 실행 기록의 관측 건수를 갱신한다. 고정 총건수를 CI의 요구값으로 사용하지 않는다.
 3. [테스트 경계](../../../AGENTS.md)를 따른다. Repository는 기본 save 후 조회하고 매핑 복원이 검증 대상일 때만 이유를 명시해 flush/clear한다. 참조 차이 자체를 assertion하지 않는다. Service는 테스트 트랜잭션 없이 production commit 후 별도 조회하고 AfterEach로 정리한다. 테스트 전용 엔티티가 실행 JAR에 들어가지 않아야 한다.
 4. `build/generated-snippets/health/`와 `build/docs/asciidoc/index.html`이 생성돼야 한다.
 5. JAR의 `BOOT-INF/classes/static/docs/index.html`이 생성한 HTML과 같아야 한다.
@@ -48,7 +48,7 @@ PR은 `.github/workflows/verify.yml`의 `PlugPass verify` 결과를 확인한다
 
 - `./gradlew test --tests '*Architecture*Tests'`: 23건. [자동 검사 범위와 리뷰 경계](../../../docs/architecture-guardrails.md)를 따른다. 도메인 규칙의 정확성은 기존 동작 assertion으로 확인한다.
 - `python3 -m unittest discover -s scripts -p 'test_*.py' -v`: 8건. 필수 suite 누락과 기존 실패 조건, 신규 suite 허용을 확인한다.
-- 공용 verify는 [필수 suite 목록](../../../docs/required-test-suites.json)의 28개 이름이 실제 XML에 모두 있는지 검사한다. 새 기능 완료 시 해당 핵심 suite를 등록하고, 삭제·이름 변경 시 기능 지도와 대체 검증을 함께 리뷰한다. 내부 테스트 일부 삭제·assertion 품질은 이 목록 검사로 보장하지 않는다.
+- 공용 verify는 [필수 suite 목록](../../../docs/required-test-suites.json)의 31개 이름이 실제 XML에 모두 있는지 검사한다. 새 기능 완료 시 해당 핵심 suite를 등록하고, 삭제·이름 변경 시 기능 지도와 대체 검증을 함께 리뷰한다. 내부 테스트 일부 삭제·assertion 품질은 이 목록 검사로 보장하지 않는다.
 - 검사기 변경 시 허용/금지 bytecode 예제를 확인하고 실제 임시 위반의 거부·복원을 확인한다. 기록: [CI 검증 보강](../../../docs/ci-boundaries-verification.md).
 - JaCoCo는 사용자 선택으로 제외했다. 수치 목표용 DTO/getter 테스트나 별도 coverage gate를 추가하지 않는다. 정적 검사는 좋은 이름·불변식 소유권 전체를 판정하지 않으므로 PR의 객체 책임 리뷰를 수행한다.
 
@@ -110,6 +110,10 @@ StationSyncTests12건·SyncRunTests10건으로 수집 관련22건, 전체260건�
 
 `./gradlew test --tests "*SyncSchedulerTests"` 6건. 전체293건. 수집 기본 비활성화, 키 없는 활성화 거부, 고정 지연 등록, 중복 즉시 SKIPPED·예외 후 회복을 확인한다. 실제 공공 API 스케줄 실행은 키 없어 미확인이다.
 
+## T12
+
+IngestionRecoveryTests14 + IngestionHttpBudgetTests6 + IngestionConfigurationTests11 =31건. 전체324건. 제한 재시도·페이지/요청/시간 상한·Retry-After·interrupt·부분 저장 보존·STALE 경과와 다음 회차 복구를 검증한다.
+
 ## 패키지 구조 정리
 
-기능 아래 domain·repository·service·controller·dto로 나뉜다. 검색 서비스 예: `./gradlew test --tests 'com.plugpass.search.service.StationSearchTests'`; 기존 클래스 이름 wildcard 명령도 유지한다. 전체 연결 테스트는 search.integration과 recommendation.integration에 있다. 공유 Connector는 station.domain, FiniteDouble은 common.validation이다. 책임과 검증 기록은 docs/package-structure.md와 docs/package-structure-verification.md를 참고한다.
+기능 아래 domain·repository·service·controller·dto로 나뉜다. 검색 서비스 예: `./gradlew test --tests 'com.plugpass.search.service.StationSearchTests'`; 기존 클래스 이름 wildcard 명령도 유지한다. 전체 연결 테스트는 search.integration과 recommendation.integration에 있다. 공유 Connector는 station.domain, FiniteDouble은 common.validation이다. 검증 기록은 docs/package-structure-verification.md를 참고한다.

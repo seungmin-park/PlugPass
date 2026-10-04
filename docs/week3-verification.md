@@ -35,3 +35,20 @@
 - 이름/책임: Scheduler는 실행 시점, Service는 실행 허가·수집 흐름, SyncRun은 이력 불변식이다. 제어 가능한 외부 I/O·latch로 경합/예외 회복을 검증하며 장시간 sleep은 없다.
 
 - 전체 verify 종료0,293건 실패/오류/skip0. SyncSchedulerTests6건은 실제 Service/DB·기본 비활성화·키 없는 활성화 거부·키 있는 고정 지연 등록·간격 방어를 확인했다.
+
+- T11 PR [#20](https://github.com/seungmin-park/PlugPass/pull/20), 필수 CI [성공](https://github.com/seungmin-park/PlugPass/actions/runs/37220900851), main `8607e46`.
+
+## T12
+
+- Red: Recovery14건 중8건 assertion 실패(재시도·페이지·요청·시간 상한 누락). HTTP6건 중3건 실패(남은 시간 대신 CONTRACT, Retry-After 값 누락). 설정11건 모두 거부 assertion 실패. 명령은 `./gradlew test --tests '*IngestionRecoveryTests'`, `*IngestionHttpBudgetTests`, `*IngestionConfigurationTests`; 로그 `/tmp/plugpass-week3/t12-*-red.log`.
+- Green: 회차 소유 IngestionBudget은 monotonic 시간·페이지·전체 요청을 제한하고 RetryingPageFetcher는 일시 오류만 한 번 재시도한다. 인증/계약/예산 오류·interrupt는 반복하지 않는다. Retry-After 초·HTTP-date를 읽고 잘못된 값은 버린다. 대기가 남은 예산 이상이면 재시도하지 않는다. DefaultPublicDataClient는 응답 timeout과 남은 회차 시간 중 작은 값으로 헤더/본문 전체 future를 취소한다.
+- 기본10페이지/20요청/1재시도/120초/대기1초. 상한을 높이는 설정은 거부해30분 스케줄의 최대960요청 계산을 유지한다. 수동 회차와 재시작 횟수는 이 일일 계산에 포함되지 않으므로 실제 계정 quota 확인 전 기본 비활성화를 유지한다.
+- 대상31건 Green 후 전체324건 실행에서 기존2건 실패: T06 fixture의 timeout1개가 재시도에 소진, T09 실제 HTTP 횟수 기대2→3. timeout fixture2개와 요청1,2,2/전체3회 assertion으로 현재 계약을 명시했다. 기존 commit/부분 실패/조회 보존 assertion은 유지했다. 전체 재실행·공용 verify324건 실패/오류/skip0, JAR HTTP·문서 일치.
+- Refactor: 모든 PublicDataClient 구현이 남은 Duration을 받도록 필수 인터페이스 계약으로 정리했다. 운영 구현은 실제 timeout을 적용하고 외부 fake만 제어된 실행으로 대체한다. 기존 스케줄/직접 호출은 같은 예산을 사용한다. 객체/메서드 이름·호출부·반환값·저장 필드를 함께 검토했다.
+- 예산은 외부 요청/재시도 대기를 제한한다. DB 저장을 강제 중단하는 실시간 타이머나 프로세스 재시작 후 복구는 아니다. 장애 중 기존 데이터는 유지되지만 관측 시각이11분 지나면 STALE, 공급자 다음 정상 회차에서 같은 ID가 갱신돼 RECENT로 복구함을 실제 Service·DB로 확인했다. TS/프런트엔드는 해당 없음.
+
+- Refactor 후 공용 verify 종료0,324건 실패/오류/skip0, JAR HTTP·문서 일치.
+
+- main에 패키지 구조 PR #21(`789ba21`)이 먼저 반영되어 보호 규칙 strict 조건상 T12가 BEHIND가 됐다. 최신 main을 병합하고 양쪽 문서·기능을 유지했다. T12 설정은 config, 시간/HTTP 경계는 client, 회차 조정은 service로 이동하며 import·테스트 위치를 함께 갱신한다. 공개 HTTP/DB 계약은 유지하고 전체 검증·CI를 다시 실행한다.
+
+- 최신 main 충돌 해결 뒤 공용 verify324건 실패/오류/skip0, 실제 JAR HTTP·문서 일치. 구조 변경에 따른 컴파일·Spring 탐색·계약 보존을 확인했다.

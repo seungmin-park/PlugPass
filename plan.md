@@ -99,7 +99,7 @@ flowchart LR
 | `StationQueryService` | 저장된 데이터 검색·도메인 판단을 응답으로 조합 | 사용자 요청마다 외부 API 호출 |
 | `CandidatePolicy` | 호환성·최신성·거리와 제외 이유에 따라 후보 구성 | 근거 없는 확률 점수·예측 |
 
-기능별 묶음 안에서 역할을 구분한다. 현재 파일 배치와 선택 이유는 [패키지 구조](docs/package-structure.md)를 따른다.
+기능별 묶음 안에서 역할을 구분한다.
 
 ```text
 src/main/java/com/plugpass/

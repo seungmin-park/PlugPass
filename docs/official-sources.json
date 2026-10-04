@@ -356,6 +356,18 @@
     "coverage": "ArchUnit release history; Java 25 compatibility additionally checked with actual compile/test"
   },
   {
+    "id": "spring7-scheduling",
+    "url": "https://docs.spring.io/spring-framework/reference/integration/scheduling.html",
+    "accessed": "2026-10-05",
+    "coverage": "7.0.9 fixed delay·initial delay, 실제 스케줄 등록·Service 실행 소유권 검증"
+  },
+  {
+    "id": "rfc9110-retry-after",
+    "url": "https://www.rfc-editor.org/rfc/rfc9110.html#section-10.2.3",
+    "accessed": "2026-10-05",
+    "coverage": "초·HTTP-date·음수 거부, 실제 HTTP 헤더와 남은 회차 예산 검증"
+  },
+  {
     "id": "boot-package-structure",
     "url": "https://docs.spring.io/spring-boot/4.1/reference/using/structuring-your-code.html",
     "accessed": "2026-10-05",

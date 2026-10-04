@@ -93,3 +93,7 @@ fixture HTTP부터 추천 HTTP까지 관측 시각 누락의 UNVERIFIED 분리�
 회차 IngestionBudget → 제한 재시도 → PublicDataClient의 남은 시간 timeout → 페이지 commit/종료 이력.
 IngestionRecoveryTests14·IngestionHttpBudgetTests6·IngestionConfigurationTests11, 전체324건.
 일시 오류만 한 번 재시도, 인증/계약/interrupt는 즉시 종료. 페이지·전체요청·시간 상한과 Retry-After 예산, 부분 commit 보존, 시간 경과 STALE·다음 회차 복구를 실제 Service/DB·fixture HTTP로 확인한다.
+
+## 패키지 책임과 탐색
+
+기능별 묶음 안에서 domain·repository·service·controller·dto를 구분한다. [패키지 구조](package-structure.md)에 현재 소유자와 의존성을, [변경 검증](package-structure-verification.md)에 동작 보존 결과를 기록한다. 검색·추천의 공통 Connector는 station.domain, 공통 숫자 검증은 common.validation이 소유한다.

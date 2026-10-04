@@ -104,3 +104,7 @@ StationSyncTests12건·SyncRunTests10건으로 수집 관련22건, 전체260건�
 ## T12
 
 IngestionRecoveryTests14 + IngestionHttpBudgetTests6 + IngestionConfigurationTests11 =31건. 전체324건. 제한 재시도·페이지/요청/시간 상한·Retry-After·interrupt·부분 저장 보존·STALE 경과와 다음 회차 복구를 검증한다.
+
+## 패키지 구조 정리
+
+기능 아래 domain·repository·service·controller·dto로 나뉜다. 검색 서비스 예: `./gradlew test --tests 'com.plugpass.search.service.StationSearchTests'`; 기존 클래스 이름 wildcard 명령도 유지한다. 전체 연결 테스트는 search.integration과 recommendation.integration에 있다. 공유 Connector는 station.domain, FiniteDouble은 common.validation이다. 책임과 검증 기록은 docs/package-structure.md와 docs/package-structure-verification.md를 참고한다.

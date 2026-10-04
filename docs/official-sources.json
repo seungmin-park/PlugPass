@@ -354,5 +354,11 @@
     "url": "https://www.rfc-editor.org/rfc/rfc9110.html#section-10.2.3",
     "accessed": "2026-10-05",
     "coverage": "초·HTTP-date·음수 거부, 실제 HTTP 헤더와 남은 회차 예산 검증"
+  },
+  {
+    "id": "boot-package-structure",
+    "url": "https://docs.spring.io/spring-boot/4.1/reference/using/structuring-your-code.html",
+    "accessed": "2026-10-05",
+    "coverage": "Spring Boot 4.1.1 표시 확인; root package와 component/entity 탐색 설명 확인. 코드 구조 선택은 프로젝트 판단."
   }
 ]

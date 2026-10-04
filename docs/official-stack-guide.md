@@ -139,3 +139,9 @@ Service의 AtomicBoolean 실행 소유권은 단일 프로세스에서 예정/�
 계약의960요청 계산을 지키는10페이지/20요청/1재시도/120초는 프로젝트 정책이며 공급자의 SLA가 아니다.
 남은 회차 시간을 JDK HTTP 전체 응답 future의 timeout에 전달하고 timeout/interrupt 시 취소한다.
 monotonic 시간으로 예산을 계산하고 벽시계는 데이터 시각·이력에만 사용한다. 실제 HTTP 본문 지연, Retry-After, 실제 DB의 부분 실패/복구로 검증했다.
+
+## 패키지 구조 정리 — 2026-10-05
+
+설정은 Java 25·Spring Boot 4.1.1이며 실제 runtimeClasspath의 spring-core는 7.0.9다. [Boot 코드 구조](https://docs.spring.io/spring-boot/4.1/reference/using/structuring-your-code.html)의 root package·component/entity 탐색 설명을 확인했다. 버전 경로는 rolling 문서로 redirect되지만 표시 버전은 현재 프로젝트와 같은 4.1.1이다.
+
+루트 PlugPassApplication을 유지하면 이동한 하위 패키지도 기본 탐색 범위에 속한다는 것은 공식 동작이다. 기능별 하위 역할 패키지와 DTO 묶음, 공유 Connector·validation의 소유 위치는 프로젝트 설계 판단이다. 신규 의존성·버전 변경은 없으며 기존 테스트와 실행 JAR HTTP로 실제 구성 유지 여부를 검증한다. 현재 프런트엔드·TypeScript는 적용 대상 없음.

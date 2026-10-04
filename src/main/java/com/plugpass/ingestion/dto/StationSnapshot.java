@@ -1,0 +1,28 @@
+package com.plugpass.ingestion.dto;
+
+import java.time.Instant;
+import com.plugpass.station.domain.ChargerDetails;
+import com.plugpass.station.domain.ChargerId;
+import com.plugpass.station.domain.ChargerStatus;
+import com.plugpass.station.domain.GeoPoint;
+
+public record StationSnapshot(ChargerId chargerId, String stationName, GeoPoint location,
+        ChargerStatus status, String rawStatus, ChargerDetails details, Instant sourceObservedAt, Instant collectedAt) {
+    public StationSnapshot {
+        if (chargerId == null) {
+            throw new IllegalArgumentException("chargerId must not be null");
+        }
+        if (stationName == null || stationName.isBlank()) {
+            throw new IllegalArgumentException("stationName must not be blank");
+        }
+        if (location == null) {
+            throw new IllegalArgumentException("location must not be null");
+        }
+        if (status == null) {
+            throw new IllegalArgumentException("status must not be null");
+        }
+        if (collectedAt == null) {
+            throw new IllegalArgumentException("collectedAt must not be null");
+        }
+    }
+}

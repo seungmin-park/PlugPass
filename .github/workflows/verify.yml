@@ -27,7 +27,12 @@ jobs:
         with:
           distribution: zulu
           java-version: '25'
-      - name: Verify guardrails, build, required tests and packaged HTTP endpoints
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version-file: .node-version
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Verify guardrails, frontend, build, required tests and packaged HTTP endpoints
         run: bash scripts/verify.sh
       - name: Preserve verification evidence
         if: always()
@@ -41,3 +46,5 @@ jobs:
             build/reports/tests/test/
             build/verification/
             build/docs/asciidoc/
+            frontend/test-results/
+            frontend/dist/

@@ -1,0 +1,5 @@
+
+> plugpass-web@0.1.0 type-check
+> vue-tsc --build
+
+vite.config.probe.ts(1,14): error TS2322: Type 'string' is not assignable to type 'number'.

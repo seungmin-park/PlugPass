@@ -1,0 +1,5 @@
+[
+  "src/features/search/components/SearchForm.spec.ts",
+  "src/router/index.spec.ts",
+  "tests/vueWarnings.spec.ts"
+]

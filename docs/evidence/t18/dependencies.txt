@@ -1,0 +1,22 @@
+plugpass-web@0.1.0 /Users/seungmin/Desktop/repo/PlugPass/frontend
+├── @eslint/js@10.0.1
+├── @tsconfig/node24@24.0.5
+├── @types/jsdom@30.0.0
+├── @types/node@26.6.4
+├── @vitejs/plugin-vue@6.0.9
+├── @vue/test-utils@2.5.1
+├── @vue/tsconfig@0.9.1
+├── axios@1.20.0
+├── eslint-plugin-vue@10.11.1
+├── eslint@10.12.0
+├── globals@17.13.0
+├── jsdom@30.1.2
+├── pinia@4.0.3
+├── typescript-eslint@8.71.0
+├── typescript@6.0.3
+├── vite@8.3.2
+├── vitest@5.0.3
+├── vue-router@4.6.4
+├── vue-tsc@3.3.12
+└── vue@3.5.43
+

@@ -107,5 +107,34 @@ class PackagedFixtureTests(unittest.TestCase):
         verify_runtime.check_packaged_test_fixtures(['BOOT-INF/classes/com/plugpass/PlugPassApplication.class'])
 
 
+class FrontendEvidenceTests(unittest.TestCase):
+    def test_accepts_executed_required_frontend_assertions(self):
+        report = {'success': True, 'testResults': [{'name': '/repo/frontend/src/SearchForm.spec.ts',
+                  'assertionResults': [{'status': 'passed'}, {'status': 'passed'}]}]}
+        self.assertEqual(verify_runtime.check_frontend_tests(report, ['src/SearchForm.spec.ts']), 2)
+
+    def test_rejects_zero_frontend_assertions(self):
+        with self.assertRaisesRegex(RuntimeError, 'Zero frontend tests'):
+            verify_runtime.check_frontend_tests({'success': True, 'testResults': []}, [])
+
+    def test_rejects_missing_required_frontend_file(self):
+        report = {'success': True, 'testResults': [{'name': '/repo/frontend/src/other.spec.ts',
+                  'assertionResults': [{'status': 'passed'}]}]}
+        with self.assertRaisesRegex(RuntimeError, 'Missing required frontend'):
+            verify_runtime.check_frontend_tests(report, ['src/SearchForm.spec.ts'])
+
+    def test_rejects_failed_frontend_assertion_even_if_summary_says_success(self):
+        report = {'success': True, 'testResults': [{'name': '/repo/frontend/src/SearchForm.spec.ts',
+                  'assertionResults': [{'status': 'failed'}]}]}
+        with self.assertRaisesRegex(RuntimeError, 'Frontend assertion not passed'):
+            verify_runtime.check_frontend_tests(report, ['src/SearchForm.spec.ts'])
+
+    def test_rejects_skipped_frontend_assertion(self):
+        report = {'success': True, 'testResults': [{'name': '/repo/frontend/src/SearchForm.spec.ts',
+                  'assertionResults': [{'status': 'pending'}]}]}
+        with self.assertRaisesRegex(RuntimeError, 'Frontend assertion not passed'):
+            verify_runtime.check_frontend_tests(report, ['src/SearchForm.spec.ts'])
+
+
 if __name__ == '__main__':
     unittest.main()

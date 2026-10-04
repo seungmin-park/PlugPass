@@ -1,0 +1,169 @@
+[
+  {
+    "probe": "null",
+    "exit": 2,
+    "command": [
+      "npm",
+      "run",
+      "type-check"
+    ]
+  },
+  {
+    "probe": "array",
+    "exit": 2,
+    "command": [
+      "npm",
+      "run",
+      "type-check"
+    ]
+  },
+  {
+    "probe": "optional",
+    "exit": 2,
+    "command": [
+      "npm",
+      "run",
+      "type-check"
+    ]
+  },
+  {
+    "probe": "test-type",
+    "exit": 2,
+    "command": [
+      "npm",
+      "run",
+      "type-check"
+    ]
+  },
+  {
+    "probe": "config-type",
+    "exit": 2,
+    "command": [
+      "npm",
+      "run",
+      "type-check"
+    ]
+  },
+  {
+    "probe": "e2e-type",
+    "exit": 2,
+    "command": [
+      "npm",
+      "run",
+      "type-check"
+    ]
+  },
+  {
+    "probe": "template",
+    "exit": 2,
+    "command": [
+      "npm",
+      "run",
+      "type-check"
+    ]
+  },
+  {
+    "probe": "props",
+    "exit": 2,
+    "command": [
+      "npm",
+      "run",
+      "type-check"
+    ]
+  },
+  {
+    "probe": "build-gate",
+    "exit": 2,
+    "command": [
+      "npm",
+      "run",
+      "build"
+    ]
+  },
+  {
+    "probe": "lint-warning",
+    "exit": 1,
+    "command": [
+      "npm",
+      "run",
+      "lint"
+    ]
+  },
+  {
+    "probe": "vue-warning",
+    "exit": 1,
+    "command": [
+      "npm",
+      "run",
+      "test:unit",
+      "--",
+      "tests/DiagnosticProbe.spec.ts"
+    ]
+  },
+  {
+    "probe": "empty-handler",
+    "exit": 1,
+    "command": [
+      "npm",
+      "run",
+      "test:unit",
+      "--",
+      "tests/DiagnosticProbe.spec.ts"
+    ]
+  },
+  {
+    "probe": "console-warning",
+    "exit": 1,
+    "command": [
+      "npm",
+      "run",
+      "test:unit",
+      "--",
+      "tests/DiagnosticProbe.spec.ts"
+    ]
+  },
+  {
+    "probe": "console-error",
+    "exit": 1,
+    "command": [
+      "npm",
+      "run",
+      "test:unit",
+      "--",
+      "tests/DiagnosticProbe.spec.ts"
+    ]
+  },
+  {
+    "probe": "console-mock",
+    "exit": 1,
+    "command": [
+      "npm",
+      "run",
+      "test:unit",
+      "--",
+      "tests/DiagnosticProbe.spec.ts"
+    ]
+  },
+  {
+    "probe": "cleanup-warning",
+    "exit": 1,
+    "command": [
+      "npm",
+      "run",
+      "test:unit",
+      "--",
+      "tests/DiagnosticProbe.spec.ts"
+    ]
+  },
+  {
+    "probe": "async-exception",
+    "exit": 1,
+    "command": [
+      "npm",
+      "run",
+      "test:unit",
+      "--",
+      "tests/DiagnosticProbe.spec.ts"
+    ]
+  }
+]

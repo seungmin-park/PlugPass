@@ -1,0 +1,9 @@
+
+> plugpass-web@0.1.0 build
+> npm run type-check && vite build
+
+
+> plugpass-web@0.1.0 type-check
+> vue-tsc --build
+
+src/StrictProbe.ts(1,14): error TS2322: Type 'string' is not assignable to type 'number'.

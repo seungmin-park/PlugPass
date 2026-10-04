@@ -6,7 +6,7 @@
 - 기술 스택은 Java, Spring Boot, JPA·H2, Spring REST Docs의 큰 줄기로 설명한다. 전이 라이브러리·빌드 도구를 스택 표에 늘어놓지 않으며 실행 명령은 안내한다.
 - [프로젝트 계획](plan.md), [작업 체크리스트](tasks.md), [기능 지도](docs/feature-map.md), [verify-plugpass](.agents/skills/verify-plugpass/SKILL.md)를 재사용한다.
 - agent-engineering 적용 시 [검증 계획](.agents/verification.json)으로 기존 공용 verify를 실행하고 현재 소스와 로그를 연결할 수 있다. 사용법과 실제 적용 범위는 [적용 기록](docs/agent-engineering-application.md)을 따른다. CI는 저장소의 `scripts/verify.sh`를 사용한다.
-- 현재 프런트엔드는 없다. Vue·TypeScript 규칙은 해당 코드가 생길 때 적용하고, 현재 검토에서는 적용 대상 없음으로 기록한다.
+- T18부터 `frontend/`의 Vue·TypeScript 코드에 프런트 규칙을 적용한다. 구현 완료 범위와 실제 검증은 tasks.md·기능 지도의 최신 근거로 판단한다.
 - 이 문서는 개발·리뷰 기준이다. 문서를 추가했다는 이유로 기존 코드 전체가 준수하거나 자동 검사기가 강제한다고 보고하지 않는다.
 
 ## 공식 문서와 설명
@@ -160,7 +160,7 @@ View/Component ── 사용자 이벤트 ──► Store/상태 관리 ──�
 
 ## 프런트 정적 검사와 실행 경고
 
-- 프런트 도입 시 [엄격한 검증 계획](docs/frontend-plan.md#101-엄격한-정적-검사와-vue-경고)을 T18·T23·T24에 적용한다. 현재 프런트 코드·검사기는 없으며, 이 지침 자체가 실행 중인 강제 검사라는 뜻은 아니다.
+- 프런트 도입 시 [엄격한 검증 계획](docs/frontend-plan.md#101-엄격한-정적-검사와-vue-경고)을 T18·T23·T24에 적용한다. T18의 실제 강제 검사와 거부 근거는 [프런트 실행 기록](docs/frontend-verification.md)을 따른다.
 - TypeScript는 `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`를 켜고, Vue Language Tools의 `vueCompilerOptions.strictTemplates`를 켠다. `.vue` 템플릿·운영 소스·단위 테스트·설정·E2E TypeScript가 검사에서 빠지지 않게 각 tsconfig의 포함 범위를 확인한다. `strictTemplates`는 런타임 `app.config.compilerOptions`에 넣는 옵션이 아니다.
 - `type-check`는 `vue-tsc` 등 실제 타입 검사를 수행하고, `build`는 타입 검사 성공 후에만 Vite 산출물을 만든다. Vite build·에디터 진단만으로 타입 검사 통과를 주장하지 않는다. lint는 `--max-warnings 0`으로 경고도 실패시킨다.
 - 컴포넌트 테스트의 공용 setup과 브라우저 테스트의 공용 fixture가 `[Vue warn]`·예상 밖 console 경고/오류·처리되지 않은 예외를 실패시킨다. 경고 수집 상태는 테스트별로 격리하고 컴포넌트 정리·비동기 작업 완료까지 감시한 뒤 assertion한다. handler에서 throw하는 것만으로 실패 처리를 보장했다고 보지 않는다.

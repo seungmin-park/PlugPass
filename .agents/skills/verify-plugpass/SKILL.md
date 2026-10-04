@@ -74,8 +74,8 @@ commit·같은 HEAD의 파일 변경·plan 변경 후에는 이전 증거가 현
 ## 구조와 필수 suite 검사
 
 - `./gradlew test --tests '*Architecture*Tests'`: 23건. [자동 검사 범위와 리뷰 경계](../../../docs/architecture-guardrails.md)를 따른다. 도메인 규칙의 정확성은 기존 동작 assertion으로 확인한다.
-- `python3 -m unittest discover -s scripts -p 'test_*.py' -v`: 8건. 필수 suite 누락과 기존 실패 조건, 신규 suite 허용을 확인한다.
-- 공용 verify는 [필수 suite 목록](../../../docs/required-test-suites.json)의 32개 이름이 실제 XML에 모두 있는지 검사한다. 새 기능 완료 시 해당 핵심 suite를 등록하고, 삭제·이름 변경 시 기능 지도와 대체 검증을 함께 리뷰한다. 내부 테스트 일부 삭제·assertion 품질은 이 목록 검사로 보장하지 않는다.
+- `python3 -m unittest discover -s scripts -p 'test_*.py' -v`: 14건. 필수 suite 검사8건·HTTP 산출물3건·성능 집계3건으로 실패 조건과 정상 입력을 확인한다.
+- 공용 verify는 [필수 suite 목록](../../../docs/required-test-suites.json)의 34개 이름이 실제 XML에 모두 있는지 검사한다. 새 기능 완료 시 해당 핵심 suite를 등록하고, 삭제·이름 변경 시 기능 지도와 대체 검증을 함께 리뷰한다. 내부 테스트 일부 삭제·assertion 품질은 이 목록 검사로 보장하지 않는다.
 - 검사기 변경 시 허용/금지 bytecode 예제를 확인하고 실제 임시 위반의 거부·복원을 확인한다. 기록: [CI 검증 보강](../../../docs/ci-boundaries-verification.md).
 - JaCoCo는 사용자 선택으로 제외했다. 수치 목표용 DTO/getter 테스트나 별도 coverage gate를 추가하지 않는다. 정적 검사는 좋은 이름·불변식 소유권 전체를 판정하지 않으므로 PR의 객체 책임 리뷰를 수행한다.
 

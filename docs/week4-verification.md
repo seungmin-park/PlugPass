@@ -26,3 +26,14 @@
 - 실측: `python3 scripts/performance/load.py --output /tmp/plugpass-week4-baseline` 종료0. measured SHA a852269·dirty=false. 10,000/50,000·20worker·warmup30초·측정180초, 요청4591·오류0·p50 768.01ms·p95 1425.41ms. latency 목표 미달/error 목표 달성. 부하 전후 실제 HTTP 전체 응답·건수 동일, 모든20worker 참여, 원본 샘플sha256 일치. [표·원본·원인 경계](performance.md).
 - SQL은 모든 경로2개지만 검색/추천60001엔티티, 상세6개를 로딩. N+1이 아닌 전체 fetch 비용을 T16 후보로 기록한다. 이번 범위에서 업무 최적화나 목표 조정은 하지 않았다. 최초 smoke 수치를 baseline으로 채택하지 않았다.
 - 시간 경과·장애/복구·API validation·역순·예산/동시성은 기존 T14/T05/T11/T12 필수 suite를 유지한다. 성능 서버의 시계 고정은 측정 반복성을 위한 합성 조건이며 실제 공공 API 최신성 보장을 하지 않는다.
+
+## 전달·완료 판단
+
+| 작업 | 검증한 PR head | 실제 main merge | 원격 필수 CI |
+| --- | --- | --- | --- |
+| T14 [PR#28](https://github.com/seungmin-park/PlugPass/pull/28) | 2aec903296c169052e2434a854567072f0f4f396 | ed855d45cd92d8f5be177979c6e7c6524f83726e | [SUCCESS](https://github.com/seungmin-park/PlugPass/actions/runs/37225455521/job/111504061207) |
+| T15 [PR#29](https://github.com/seungmin-park/PlugPass/pull/29) | 079831549281646534cbfb0ff8185b7209dd7351 | a7793423c7e8f71e65f8728790845676f98951e7 | [SUCCESS](https://github.com/seungmin-park/PlugPass/actions/runs/37226353722/job/111506694737) |
+
+T15 원격 원본 로그에서도 Python14·Java357·실패/오류/skip0·JAR HTTP/문서 일치를 확인했다(`/tmp/plugpass-t15-ci.log`). 최종 head0798315의 전역 evidence run/check는 모두0·current(`/tmp/plugpass-t15-proof`). 로컬 측정은 별도 dirty=false SHA a852269이며, 0798315의 측정 코드와 동일하고 이후 차이는 문서/원본뿐이다. 보호 strict=true·GitHub Actions app15368의 PlugPass verify·관리자 적용·승인0·강제push금지와 native auto/squash를 실제 조회한 뒤 자동 머지를 신청했다. 2026-10-05 03:59 KST T15 실제 머지 이후 체크한다.
+
+4주차 8개 체크는 구현·실제 검증·main 반영 완료다. 조회 지연 목표300ms 미달·cmux 화면/공공키 인증 미확인·H2 재시작 비보존은 그대로 남긴다. 성능 개선은 T16, 장애 종합은 T17, 최종 포트폴리오는 T18 범위이며 앞당겨 완료 표시하지 않는다. 마지막 README/계획/체크/링크 정리의 문서 검증을 애플리케이션 실행으로 표현하지 않는다.

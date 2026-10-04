@@ -10,7 +10,6 @@ import com.tngtech.archunit.lang.SimpleConditionEvent;
 import jakarta.persistence.Entity;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.repository.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -93,10 +92,8 @@ final class ArchitectureRules {
 
     private static boolean isDomain(JavaClass candidate) {
         return candidate.isAnnotatedWith(Entity.class) ||
-                (candidate.getPackageName().startsWith("com.plugpass.station") || candidate.getPackageName().startsWith("com.plugpass.freshness"))
-                        && !isPersistence(candidate) && !candidate.isAnnotatedWith(Configuration.class) ||
-                candidate.getPackageName().equals("com.plugpass.recommendation") && !isService(candidate)
-                        && !candidate.isAnnotatedWith(RestController.class);
+                candidate.getPackageName().startsWith("com.plugpass.") &&
+                        (candidate.getPackageName().endsWith(".domain") || candidate.getPackageName().contains(".domain."));
     }
 
     private static boolean isHttp(JavaClass target) {

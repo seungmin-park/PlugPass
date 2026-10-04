@@ -43,7 +43,7 @@
 
 ### T02 — 충전소·충전기 식별과 위치 모델
 
-의존: T01. 파일: `station/Station.java`, `Charger.java`, `ChargerId.java`, `GeoPoint.java`(main 패키지 아래), `station/StationModelTests.java`(test 패키지 아래).
+의존: T01. 파일: `station/domain/Station.java`, `station/domain/Charger.java`, `station/domain/ChargerId.java`, `station/domain/GeoPoint.java`(main 패키지 아래), `station/domain/StationModelTests.java`(test 패키지 아래).
 
 - [x] 다른 공급자·충전소의 같은 충전기 번호가 충돌하지 않는 테스트, 빈 식별자·범위 밖 좌표를 거부하는 테스트를 먼저 작성한다.
 - [x] `ChargerId(provider, stationId, chargerId)`와 `GeoPoint(latitude, longitude)`를 정의하고 Station/Charger가 각자의 데이터 유효성을 지키게 한다.
@@ -55,7 +55,7 @@
 
 ### T03 — 공급자 상태 코드 정규화
 
-의존: T01, T02. 파일: `station/ChargerStatus.java`, `ingestion/ProviderStatusMapper.java`, `ingestion/ProviderStatusMapperTests.java`.
+의존: T01, T02. 파일: `station/domain/ChargerStatus.java`, `ingestion/client/ProviderStatusMapper.java`, `ingestion/client/ProviderStatusMapperTests.java`.
 
 - [x] 정상 코드·알 수 없는 코드·null을 입력하는 테스트를 작성한다. 미지원 값은 AVAILABLE이 아니라 UNKNOWN이어야 한다.
 - [x] `ProviderStatusMapper.map(String rawCode): ChargerStatus`와 AVAILABLE/OCCUPIED/UNAVAILABLE/UNKNOWN을 구현하고 원본 코드를 보존한다.
@@ -67,7 +67,7 @@
 
 ### T04 — 중복 없는 업무 데이터 저장
 
-의존: T02, T03. 파일: `station/StationRepository.java`, `station/ChargerRepository.java`, `ingestion/StationUpsertService.java`, `ingestion/StationSnapshot.java`, `station/StationPersistenceTests.java`, `ingestion/StationUpsertTests.java`. 수정: Station/Charger JPA 매핑.
+의존: T02, T03. 파일: `station/repository/StationRepository.java`, `station/repository/ChargerRepository.java`, `ingestion/service/StationUpsertService.java`, `ingestion/dto/StationSnapshot.java`, `station/repository/StationPersistenceTests.java`, `ingestion/service/StationUpsertTests.java`. 수정: Station/Charger JPA 매핑.
 
 - [x] Repository 매핑·쿼리는 기본 save 후 조회로 검증한다. 매핑 복원이 목적일 때만 이유를 명시해 flush/clear하며 참조 차이 자체를 assertion하지 않는다.
 - [x] 반복 저장·식별자 충돌·역순 응답은 실제 StationUpsertService 트랜잭션 commit 후 별도 조회로 검증한다. 테스트 Transactional 없이 AfterEach에서 생성 데이터만 FK 역순으로 정리한다.
@@ -81,7 +81,7 @@
 
 ### T05 — 외부 API 클라이언트
 
-의존: T01, T03, T04의 StationSnapshot 계약. 파일: `ingestion/PublicDataClient.java`, `ingestion/StationPage.java`, `ingestion/PublicDataClientTests.java`, 외부 페이지 DTO. 수정: `application.properties`의 외부 설정 참조.
+의존: T01, T03, T04의 StationSnapshot 계약. 파일: `ingestion/client/PublicDataClient.java`, `ingestion/dto/StationPage.java`, `ingestion/client/PublicDataClientTests.java`, 외부 페이지 DTO. 수정: `application.properties`의 외부 설정 참조.
 
 - [x] fixture HTTP 서버로 정상·빈 페이지·페이지 마지막·잘못된 본문·인증 오류를 테스트한다. 서비스 키가 로그에 나오지 않는지도 확인한다.
 - [x] `PublicDataClient.fetchPage(int page): StationPage`를 구현한다. 페이지 번호 기준과 종료 신호는 T01 계약을 따르고 결과는 StationSnapshot 목록으로 변환한다.
@@ -96,7 +96,7 @@
 
 ### T06 — 한 번의 수집 실행과 부분 실패 기록
 
-의존: T04, T05. 파일: `ingestion/StationSyncService.java`, `SyncResult.java`, `SyncRun.java`, `SyncRunRepository.java`, `ingestion/StationSyncTests.java`.
+의존: T04, T05. 파일: `ingestion/service/StationSyncService.java`, `ingestion/dto/SyncResult.java`, `ingestion/domain/SyncRun.java`, `ingestion/repository/SyncRunRepository.java`, `ingestion/service/StationSyncTests.java`.
 
 - [x] 여러 페이지 수집, 같은 응답 재실행, 중간 페이지 실패, 잘못된 레코드가 섞인 경우를 테스트한다.
 - [x] `StationSyncService.synchronize(): SyncResult`로 페이지를 순차 처리하고 페이지별 짧은 저장 트랜잭션을 사용한다. 네트워크 대기 중 DB 트랜잭션을 열어 두지 않는다.
@@ -111,7 +111,7 @@
 
 ### T07 — 관측 시각에 근거한 최신성 판정
 
-의존: T01, T03, T06. 파일: `freshness/Freshness.java`, `FreshnessPolicy.java`, `freshness/FreshnessPolicyTests.java`.
+의존: T01, T03, T06. 파일: `freshness/domain/Freshness.java`, `freshness/domain/FreshnessPolicy.java`, `freshness/domain/FreshnessPolicyTests.java`.
 
 - [x] 고정 Clock으로 경과 시간 maxAge 미만·같음·초과, 미래/누락 시각, 재수집한 오래된 응답을 테스트한다.
 - [x] `FreshnessPolicy.evaluate(Instant sourceObservedAt, Instant now): Freshness`로 RECENT/STALE/UNVERIFIED를 반환한다. maxAge와 같은 경계는 RECENT다.
@@ -124,7 +124,7 @@
 
 ### T08 — 주변 충전소 조회 API
 
-의존: T04, T07. 파일: `search/StationQueryService.java`, `StationController.java`, `StationSearchQuery.java`, `search/StationSearchTests.java`. 수정: REST Docs 문서.
+의존: T04, T07. 파일: `search/service/StationQueryService.java`, `search/controller/StationController.java`, `search/domain/StationSearchQuery.java`, `search/service/StationSearchTests.java`. 수정: REST Docs 문서.
 
 - [x] 위치·반경 경계 포함, 호환 커넥터, 거리 동률, 빈 결과, 잘못된 좌표/반경/limit의 HTTP 테스트를 작성한다.
 - [x] `GET /api/v1/stations`와 `StationQueryService.search(StationSearchQuery query)`를 구현한다. plan.md의 입력 범위·기본 limit·거리/ID 순서를 적용한다.
@@ -137,7 +137,7 @@
 
 ### T09 — 충전소 상세와 판단 근거
 
-의존: T08. 파일: `search/StationDetailTests.java`, 상세 응답 타입. 수정: StationController/StationQueryService와 REST Docs 문서.
+의존: T08. 파일: `search/service/StationDetailTests.java`, 상세 응답 타입. 수정: StationController/StationQueryService와 REST Docs 문서.
 
 - [x] 존재하는 충전소·없는 ID·여러 상태의 충전기·누락된 운영 정보에 대한 테스트를 작성한다.
 - [x] `GET /api/v1/stations/{stationId}`에 충전기 상태·원본 코드·관측/수집 시각·최신성·이용 제한·미확인 이유를 제공한다. 없는 ID는 404다.
@@ -151,7 +151,7 @@
 
 ### T10 — 근거가 있는 대체 후보
 
-의존: T08, T09. 파일: `recommendation/CandidatePolicy.java`, `StationCandidate.java`, `CandidateGroups.java`, `RecommendationController.java`, `recommendation/RecommendationTests.java`. 수정: REST Docs 문서.
+의존: T08, T09. 파일: `recommendation/domain/CandidatePolicy.java`, `recommendation/domain/StationCandidate.java`, `recommendation/domain/CandidateGroups.java`, `recommendation/controller/RecommendationController.java`, `recommendation/domain/RecommendationTests.java`. 수정: REST Docs 문서.
 
 - [ ] 호환되지 않는 커넥터, 명시적 이용 제한, stale/unknown, 제외한 충전소, 후보 0개, 거리 동률을 테스트한다.
 - [ ] `CandidatePolicy.rank(List<StationCandidate> candidates): CandidateGroups`와 `GET /api/v1/recommendations`를 구현한다. StationSearchQuery로 검색한 뒤 제외 ID를 빼고, 추천 판단에 필요한 값만 StationCandidate로 전달한다.
@@ -162,7 +162,7 @@
 
 ### T11 — 중복 실행을 막는 수집 스케줄
 
-의존: T06. 파일: `ingestion/SyncScheduler.java`, `ingestion/SyncSchedulerTests.java`. 수정: 수집 활성화·간격 설정.
+의존: T06. 파일: `ingestion/scheduler/SyncScheduler.java`, `ingestion/scheduler/SyncSchedulerTests.java`. 수정: 수집 활성화·간격 설정.
 
 - [ ] 아직 실행 중인 수집을 다시 호출할 때 중복되지 않고, 예외 종료 후 다음 실행이 가능한지 테스트한다.
 - [ ] 단일 인스턴스용 실행 소유권을 두고 고정 지연 방식으로 synchronize를 호출한다. 수집은 기본 비활성화하며 명시적 설정과 인증이 있을 때 켠다.

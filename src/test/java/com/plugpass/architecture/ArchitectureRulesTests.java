@@ -16,7 +16,7 @@ import architecturefixture.RuleSamples.SampleServiceImpl;
 import architecturefixture.RuleSamples.SetterEntity;
 import architecturefixture.RuleSamples.TransactionalServiceTest;
 import architecturefixture.RuleSamples.UpdatingEntity;
-import com.plugpass.recommendation.InvalidCandidatePolicy;
+import com.plugpass.recommendation.domain.InvalidCandidatePolicy;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import org.junit.jupiter.api.DisplayName;

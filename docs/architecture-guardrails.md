@@ -18,7 +18,7 @@ flowchart LR
 | 대상 선택 | 거부하는 구조 | 함께 확인할 동작·리뷰 |
 | --- | --- | --- |
 | `@RestController` | Repository·EntityManager·`@Service` 구현 직접 의존 | HTTP 변환에 업무 판단이 섞였는지 리뷰. 현재 검색·추천 REST Controller 두 개를 검사한다. |
-| `@Entity`, station/freshness 값·규칙 객체 (Repository·Configuration 제외), recommendation 루트의 값·정책 객체 (Service·Controller 제외) | Repository·EntityManager·Service 계약/구현·프로젝트 request/response DTO·Spring web 의존 | 실패 후 필드와 시각 보존은 기존 동작 테스트가 확인. 새 도메인 패키지는 selector와 위반 예제를 함께 추가한다. |
+| `@Entity`, `com.plugpass` 아래 모든 `domain` 패키지와 그 하위 패키지 | Repository·EntityManager·Service 계약/구현·프로젝트 request/response DTO·Spring web 의존 | 실패 후 필드와 시각 보존은 기존 동작 테스트가 확인. 역할별 패키지 관례를 따르면 새 기능의 domain도 검사한다. 패키지 관례를 바꾸면 selector와 위반 예제를 함께 확인한다. |
 | `@Entity`의 public 메서드 | `set[A-Z].*` 이름의 setter | 변경 메서드의 검증 순서·불변식은 동작 테스트와 리뷰가 확인. JPA 애너테이션과 읽기 getter는 허용한다. |
 | `@Service` | `Default<계약명>` 이름과 대응 Service 인터페이스 불일치 | 의미 있는 유스케이스 계약인지, 단순 위임·추측성 분리인지 리뷰. |
 | `@SpringBootTest`이며 Service 타입을 의존하는 테스트 | 클래스·메서드 테스트 트랜잭션, Mockito 및 Spring Mockito bean 대체 의존 | 실제 Service 종료/commit 후 별도 재조회는 기존 통합 테스트 assertion이 확인. 타입 의존성으로 선택하므로 테스트 의도 자체는 판정하지 않는다. |

@@ -99,19 +99,23 @@ flowchart LR
 | `StationQueryService` | 저장된 데이터 검색·도메인 판단을 응답으로 조합 | 사용자 요청마다 외부 API 호출 |
 | `CandidatePolicy` | 호환성·최신성·거리와 제외 이유에 따라 후보 구성 | 근거 없는 확률 점수·예측 |
 
-예정 구조는 기능별로 묶는다. 파일명은 작업의 기준이며 T01의 실제 계약에 따라 조정할 경우 이 계획과 작업 목록도 함께 바꾼다.
+기능별 묶음 안에서 역할을 구분한다. 현재 파일 배치와 선택 이유는 [패키지 구조](docs/package-structure.md)를 따른다.
 
 ```text
 src/main/java/com/plugpass/
-  station/       Station, Charger, ChargerId, ChargerStatus, StationRepository
-  freshness/     Freshness, FreshnessPolicy
-  ingestion/     PublicDataClient, StationSyncService, SyncRun, SyncScheduler
-  search/        StationQueryService, StationController
-  recommendation/ CandidatePolicy, RecommendationController
-src/test/java/com/plugpass/  같은 기능별 경로의 테스트
+  station/        domain/ · repository/
+  freshness/      domain/ · config/
+  ingestion/      client/ · config/ · domain/ · dto/ · repository/ · service/ · scheduler/
+  search/         controller/ · domain/ · dto/ · service/
+  recommendation/ controller/ · domain/ · dto/ · service/
+  common/         dto/response/ · validation/
+  exception/      사용자 정의 예외 · 공통 HTTP 예외 처리
+src/test/java/com/plugpass/  같은 기능·역할별 경로, 전체 연결 검증은 integration/
 src/test/resources/publicdata/  비밀 정보 없는 외부 응답 fixture
 src/docs/asciidoc/index.adoc     테스트에서 생성한 업무 API 문서
 ```
+
+HTTP DTO는 각 기능의 `dto/request`, `dto/response`에 모은다. T11 스케줄 진입점은 `ingestion/scheduler`에 둔다. 외부 API 계약·저장 매핑·공개 HTTP 계약은 패키지 이동으로 변경하지 않는다.
 
 Service 이름은 유스케이스 인터페이스를 뜻하며 구현은 `Default{ServiceName}`으로 둔다. 테스트 경계·Java 명시적 타입·엔티티 생성·이름과 책임 검토는 [AGENTS.md](AGENTS.md)를 따른다.
 

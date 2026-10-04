@@ -1,7 +1,7 @@
 package architecturefixture;
 
-import com.plugpass.search.response.StationSearchResponse;
-import com.plugpass.station.StationRepository;
+import com.plugpass.search.dto.response.StationSearchResponse;
+import com.plugpass.station.repository.StationRepository;
 import jakarta.persistence.Entity;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;

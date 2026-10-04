@@ -135,3 +135,9 @@ JDK25.0.4.1과 기존 해석 의존성을 유지했다. [Java25 Set API](https:/
 equals로 원소 동등성을 판단하고 add는 기존 원소이면 false를 반환한다. 불변 ChargerId record의 세 값 전체를 사용한다.
 회차 내 중복을 CONTRACT로 거부하는 것은 프로젝트 설계 판단이며, DB unique 제약만으로 수집의 완전성을 보장할 수 없어 추가했다.
 실제 서비스·DB 테스트에서 페이지 내부/페이지 간 중복과 회차 간 정상 재수집을 확인했다. 신규 의존성·버전 변경은 없다.
+
+## 패키지 구조 정리 — 2026-10-05
+
+설정은 Java 25·Spring Boot 4.1.1이며 실제 runtimeClasspath의 spring-core는 7.0.9다. [Boot 코드 구조](https://docs.spring.io/spring-boot/4.1/reference/using/structuring-your-code.html)의 root package·component/entity 탐색 설명을 확인했다. 버전 경로는 rolling 문서로 redirect되지만 표시 버전은 현재 프로젝트와 같은 4.1.1이다.
+
+루트 PlugPassApplication을 유지하면 이동한 하위 패키지도 기본 탐색 범위에 속한다는 것은 공식 동작이다. 기능별 하위 역할 패키지와 DTO 묶음, 공유 Connector·validation의 소유 위치는 프로젝트 설계 판단이다. 신규 의존성·버전 변경은 없으며 기존 테스트와 실행 JAR HTTP로 실제 구성 유지 여부를 검증한다. 현재 프런트엔드·TypeScript는 적용 대상 없음.

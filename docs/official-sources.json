@@ -354,5 +354,11 @@
     "url": "https://github.com/TNG/ArchUnit/releases",
     "accessed": "2026-10-05",
     "coverage": "ArchUnit release history; Java 25 compatibility additionally checked with actual compile/test"
+  },
+  {
+    "id": "boot-package-structure",
+    "url": "https://docs.spring.io/spring-boot/4.1/reference/using/structuring-your-code.html",
+    "accessed": "2026-10-05",
+    "coverage": "Spring Boot 4.1.1 표시 확인; root package와 component/entity 탐색 설명 확인. 코드 구조 선택은 프로젝트 판단."
   }
 ]

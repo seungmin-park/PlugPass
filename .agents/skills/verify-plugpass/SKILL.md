@@ -109,3 +109,7 @@ StationSyncTests12건·SyncRunTests10건으로 수집 관련22건, 전체260건�
 ## T11
 
 `./gradlew test --tests "*SyncSchedulerTests"` 6건. 전체293건. 수집 기본 비활성화, 키 없는 활성화 거부, 고정 지연 등록, 중복 즉시 SKIPPED·예외 후 회복을 확인한다. 실제 공공 API 스케줄 실행은 키 없어 미확인이다.
+
+## 패키지 구조 정리
+
+기능 아래 domain·repository·service·controller·dto로 나뉜다. 검색 서비스 예: `./gradlew test --tests 'com.plugpass.search.service.StationSearchTests'`; 기존 클래스 이름 wildcard 명령도 유지한다. 전체 연결 테스트는 search.integration과 recommendation.integration에 있다. 공유 Connector는 station.domain, FiniteDouble은 common.validation이다. 책임과 검증 기록은 docs/package-structure.md와 docs/package-structure-verification.md를 참고한다.

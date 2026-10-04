@@ -1,6 +1,6 @@
 package com.plugpass.exception;
 
-import com.plugpass.common.response.ApiError;
+import com.plugpass.common.dto.response.ApiError;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;

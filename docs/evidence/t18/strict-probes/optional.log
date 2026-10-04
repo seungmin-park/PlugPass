@@ -1,0 +1,7 @@
+
+> plugpass-web@0.1.0 type-check
+> vue-tsc --build
+
+src/StrictProbe.ts(1,14): error TS2375: Type '{ value: undefined; }' is not assignable to type '{ value?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'value' are incompatible.
+    Type 'undefined' is not assignable to type 'string'.

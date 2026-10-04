@@ -158,6 +158,17 @@ View/Component ── 사용자 이벤트 ──► Store/상태 관리 ──�
 - 로딩·빈 결과·성공·유효성 오류·서버 오류를 구분하며 재시도·응답 순서 역전을 해당 동작의 회귀 사례에 포함한다.
 - 변경 후 전체 테스트와 lint를 실행하고 배포 산출물에 영향이 있으면 build도 확인한다. 실행하지 않은 테스트를 Red나 통과로 보고하지 않는다.
 
+## 프런트 정적 검사와 실행 경고
+
+- 프런트 도입 시 [엄격한 검증 계획](docs/frontend-plan.md#101-엄격한-정적-검사와-vue-경고)을 T18·T23·T24에 적용한다. T18의 실제 강제 검사와 거부 근거는 [프런트 실행 기록](docs/frontend-verification.md)을 따른다.
+- TypeScript는 `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`를 켜고, Vue Language Tools의 `vueCompilerOptions.strictTemplates`를 켠다. `.vue` 템플릿·운영 소스·단위 테스트·설정·E2E TypeScript가 검사에서 빠지지 않게 각 tsconfig의 포함 범위를 확인한다. `strictTemplates`는 런타임 `app.config.compilerOptions`에 넣는 옵션이 아니다.
+- `type-check`는 `vue-tsc` 등 실제 타입 검사를 수행하고, `build`는 타입 검사 성공 후에만 Vite 산출물을 만든다. Vite build·에디터 진단만으로 타입 검사 통과를 주장하지 않는다. lint는 `--max-warnings 0`으로 경고도 실패시킨다.
+- 컴포넌트 테스트의 공용 setup과 브라우저 테스트의 공용 fixture가 `[Vue warn]`·예상 밖 console 경고/오류·처리되지 않은 예외를 실패시킨다. 경고 수집 상태는 테스트별로 격리하고 컴포넌트 정리·비동기 작업 완료까지 감시한 뒤 assertion한다. handler에서 throw하는 것만으로 실패 처리를 보장했다고 보지 않는다.
+- Vue 경고는 개발 모드에서 확인한다. 개발 모드 브라우저 검사와 배포용 JAR 웹앱 검사를 모두 유지하며, production에서 Vue 경고가 없다는 결과를 개발 모드 검사의 대체로 쓰지 않는다. 브라우저 감시는 최초 이동 전에 등록한다.
+- handler·console mock·오류 무시 옵션으로 경고를 숨기지 않는다. 의도한 HTTP 실패에 따른 진단을 허용해야 하면 해당 테스트에서 종류·메시지/URL·횟수를 좁혀 검증한다. Vue 경고를 정상 테스트의 전역 허용 목록에 넣지 않는다. 검사기 자체의 실패 유도는 별도 임시 probe로 실행하고 복원한다.
+- 설정만 추가하고 완료하지 않는다. 잘못된 props 타입·템플릿 참조·null/배열 접근, lint 경고, 실제 Vue 경고·실행 예외가 각각 해당 명령을 비정상 종료시키는지 확인하고 복원 후 전체 검증한다. 테스트 0개·skip·수집 상태 누출도 거부해야 한다. 실제 결과는 해당 기능 작업 기록에 남긴다.
+- 타입 검사와 경고 감시는 테스트에서 실행하지 않은 경로·실제 API 응답 구조·업무 동작을 보장하지 않는다. API 경계 검증과 사용자 흐름 assertion을 유지하며 `any`·무검증 타입 단언으로 이를 우회하지 않는다.
+
 ## 이름·책임·배치의 상시 검토
 
 모든 코드 작업은 변경한 코드와 호출부를 **이름 → 실제 수행 내용 → 클래스 배치·추출 여부** 순서로 재검토한다. Java·JavaScript·TypeScript·Vue 코드 모두에 적용한다.

@@ -1,0 +1,39 @@
+
+> plugpass-web@0.1.0 test:unit
+> vitest run tests/DiagnosticProbe.spec.ts
+
+
+ RUN  v5.0.3 /Users/seungmin/Desktop/repo/PlugPass/frontend
+
+ ✓ tests/DiagnosticProbe.spec.ts (2 tests) 23ms
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 1 unhandled error during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯⎯ Uncaught Exception ⎯⎯⎯⎯⎯
+Error: async probe
+ ❯ Timeout._onTimeout tests/DiagnosticProbe.spec.ts:4:56
+      2| import { mount } from '@vue/test-utils'
+      3| import { defineComponent, onUnmounted } from 'vue'
+      4| it('reject diagnostic',async()=>{setTimeout(()=>{throw new Error('asyn…
+       |                                                        ^
+      5| it('next test is isolated',()=>{expect(true).toBe(true)})
+      6|
+ ❯ listOnTimeout node:internal/timers:685:17
+ ❯ processTimers node:internal/timers:618:7
+
+This error originated in "tests/DiagnosticProbe.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The last test to run before this error was "reject diagnostic". This means either:
+- the error was thrown while Vitest was running this test, or
+- the error was thrown after the test completed, and this was the most recent test at that point.
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+     Errors  1 error
+   Start at  05:19:21
+   Duration  375ms (environment 76%, setup 9%, tests 7%, transform 6%, import 1%, worker 1%)
+
+JSON report written to /Users/seungmin/Desktop/repo/PlugPass/frontend/test-results/unit.json

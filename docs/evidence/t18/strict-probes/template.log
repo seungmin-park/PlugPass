@@ -1,0 +1,5 @@
+
+> plugpass-web@0.1.0 type-check
+> vue-tsc --build
+
+src/StrictProbe.vue(1,68): error TS2339: Property 'missingTitle' does not exist on type 'ComponentPublicInstance<{}, {}, {}, {}, {}, {}, {}, {}, false, ComponentOptionsBase<any, any, any, any, any, any, any, any, any, {}, {}, string, {}, {}, {}, string, ComponentProvideOptions>, ... 4 more ..., any>'.

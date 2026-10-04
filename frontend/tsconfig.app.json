@@ -2,7 +2,10 @@
   "extends": "@vue/tsconfig/tsconfig.dom.json",
   "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
   "exclude": ["src/**/*.spec.ts"],
+  "vueCompilerOptions": { "strictTemplates": true },
   "compilerOptions": {
+    "strict": true,
+    "exactOptionalPropertyTypes": true,
     // Extra safety for array and object lookups, but may have false positives.
     "noUncheckedIndexedAccess": true,
 

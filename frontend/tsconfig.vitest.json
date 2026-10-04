@@ -3,10 +3,12 @@
 
   // Override to include only test files and clear exclusions.
   // Application code imported in tests is automatically included via module resolution.
-  "include": ["src/**/*.spec.ts", "env.d.ts"],
+  "include": ["src/**/*.spec.ts", "tests/**/*.ts", "e2e/**/*.ts", "env.d.ts"],
   "exclude": [],
 
   "compilerOptions": {
+    "strict": true,
+    "exactOptionalPropertyTypes": true,
     // Vitest runs in a different environment than the application code.
     // Adjust lib and types accordingly.
     "lib": [],

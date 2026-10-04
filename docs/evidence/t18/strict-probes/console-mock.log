@@ -1,0 +1,33 @@
+
+> plugpass-web@0.1.0 test:unit
+> vitest run tests/DiagnosticProbe.spec.ts
+
+
+ RUN  v5.0.3 /Users/seungmin/Desktop/repo/PlugPass/frontend
+
+ ❯ tests/DiagnosticProbe.spec.ts (2 tests | 1 failed) 3ms
+   × reject diagnostic 2ms
+   ✓ next test is isolated 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/DiagnosticProbe.spec.ts > reject diagnostic
+Error: [monitoring] console 진단 수집기를 교체하면 안 됩니다
+ ❯ TestDiagnostics.assertEmpty tests/vueWarnings.ts:9:41
+      7|
+      8|   assertEmpty(): void {
+      9|     if (this.messages.length > 0) throw new Error(this.messages.join('…
+       |                                         ^
+     10|   }
+     11| }
+ ❯ tests/setup.ts:68:17
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  05:19:19
+   Duration  342ms (environment 82%, setup 9%, transform 6%, tests 1%, import 1%, worker 1%)
+
+JSON report written to /Users/seungmin/Desktop/repo/PlugPass/frontend/test-results/unit.json

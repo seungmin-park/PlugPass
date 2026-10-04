@@ -1,5 +1,16 @@
 # 기능과 검증 범위
 
+## agent-engineering 적용 경로
+
+대표 경로는 **합성 공급자 HTTP 수집 → H2 commit → 실제 검색/상세/추천 HTTP**다. 사용자는 가용 상태여도 관측 시각이 없으면 추천을 확정하지 않고 확인 필요 그룹과 이유를 받는다.
+
+- 준비: JDK 25, Python 3, 합성 `src/test/resources/publicdata/normal.xml`, loopback의 동적 포트. 테스트가 공급자·Clock·데이터 정리를 소유하므로 공공 API 키나 seed SQL이 필요하지 않다.
+- 실행: `./gradlew test --tests '*Recommendation*Tests' --tests '*StationReadFlowTests' --tests '*Architecture*Tests'`. 최종 공용 검증은 `bash scripts/verify.sh`; 현재 소스 증거 계획은 [.agents/verification.json](../.agents/verification.json).
+- 관찰: 재수집 후 충전소·충전기 각 1건, HTTP 200, `preferred=[]`, `requiresConfirmation`의 해당 충전소에 `UNVERIFIED_AVAILABLE`. 공급자 503 후에도 이전 저장 내용·마지막 성공 시각과 확인 필요 추천을 유지한다.
+- 책임: StationSyncService는 수집 순서, StationUpsertService는 페이지 저장, Station/Charger는 상태 불변식, StationQueryService는 조회, FreshnessPolicy는 관측 최신성, CandidateCharger/CandidatePolicy는 제외 이유와 추천 분류, Controller/DTO는 HTTP 변환을 소유한다.
+- 경계: 실제 Controller의 Repository 직접 의존을 기존 ArchUnit이 거부한다. 바뀐 소스의 이전 검증 증거는 전역 증거 도구가 거부한다. 규칙 의미와 소유권 전체는 리뷰를 함께 수행한다.
+- 근거: `build/verification/station-read-flow/*.json`, JUnit XML과 [적용 기록](agent-engineering-application.md). 실공급자 인증·H2 재시작 보존은 별도 미확인이다.
+
 ## CI 구조·누락 검사
 
 도메인 규칙의 결과는 기존 동작 테스트가 맡는다. 의존성·공개 변경 경로는 [구조 검사](architecture-guardrails.md)가 맡고, 실제 규칙 소유권·이름·책임은 리뷰가 함께 확인한다.
@@ -53,7 +64,7 @@ Station/Charger 업무 엔티티와 Repository·upsert는 T04에서 구현했다
 | 실제 fixture HTTP → Snapshot | 식별·위치·상태·운영/원본 시각 보존, 페이지 종료 | PublicDataClientTests |
 | 인증·서버·XML·설정·timeout 실패 | 오류 분류·키 비노출·헤더/본문 지연 종료 | PublicDataClientTests |
 
-공공 API 실인증은 미확인이다. 클라이언트는 T06의 DB 수집 실행에 연결됐으며 스케줄은 아직 없다.
+공공 API 실인증은 미확인이다. 클라이언트는 T06의 DB 수집 실행에 연결됐으며 T11의 기본 비활성 스케줄과 T12의 실행 예산·제한 재시도에 연결됐다.
 
 ## T06 수집 실행
 

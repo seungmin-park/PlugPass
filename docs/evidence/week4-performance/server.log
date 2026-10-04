@@ -1,0 +1,51 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+2026-10-05T03:50:45.789+09:00  INFO 65635 --- [plugpass] [           main] performance.PerformanceApplication       : Starting PerformanceApplication using Java 25.0.4.1 with PID 65635 (/Users/seungmin/Desktop/repo/PlugPass/build/classes/java/test started by seungmin in /Users/seungmin/Desktop/repo/PlugPass)
+2026-10-05T03:50:45.790+09:00  INFO 65635 --- [plugpass] [           main] performance.PerformanceApplication       : No active profile set, falling back to 1 default profile: "default"
+2026-10-05T03:50:46.222+09:00  INFO 65635 --- [plugpass] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-05T03:50:46.261+09:00  INFO 65635 --- [plugpass] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 34 ms. Found 4 JPA repository interfaces.
+2026-10-05T03:50:46.538+09:00  INFO 65635 --- [plugpass] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 0 (http)
+2026-10-05T03:50:46.546+09:00  INFO 65635 --- [plugpass] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-05T03:50:46.546+09:00  INFO 65635 --- [plugpass] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-05T03:50:46.570+09:00  INFO 65635 --- [plugpass] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 753 ms
+2026-10-05T03:50:46.703+09:00  INFO 65635 --- [plugpass] [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-10-05T03:50:46.738+09:00  INFO 65635 --- [plugpass] [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.5.Final
+2026-10-05T03:50:46.927+09:00  INFO 65635 --- [plugpass] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-05T03:50:46.950+09:00  INFO 65635 --- [plugpass] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-10-05T03:50:47.041+09:00  INFO 65635 --- [plugpass] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:09ea1c57-c3d5-4a97-ad4a-554156a6b3d6 user=SA
+2026-10-05T03:50:47.042+09:00  INFO 65635 --- [plugpass] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-10-05T03:50:47.067+09:00  INFO 65635 --- [plugpass] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:h2:mem:09ea1c57-c3d5-4a97-ad4a-554156a6b3d6]
+	Database driver: H2 JDBC Driver
+	Database dialect: H2Dialect
+	Database version: 2.4.240
+	Default catalog/schema: 09EA1C57-C3D5-4A97-AD4A-554156A6B3D6/PUBLIC
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: 100
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-10-05T03:50:47.487+09:00  INFO 65635 --- [plugpass] [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-05T03:50:47.509+09:00  INFO 65635 --- [plugpass] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-05T03:50:47.556+09:00  INFO 65635 --- [plugpass] [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-10-05T03:50:48.223+09:00  INFO 65635 --- [plugpass] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-05T03:50:48.261+09:00  INFO 65635 --- [plugpass] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 64523 (http) with context path '/'
+2026-10-05T03:50:48.266+09:00  INFO 65635 --- [plugpass] [           main] performance.PerformanceApplication       : Started PerformanceApplication in 2.659 seconds (process running for 2.857)
+PERFORMANCE_DATA_READY grid-v1 seed=0 stations=10000 chargers=50000
+2026-10-05T03:50:49.992+09:00  INFO 65635 --- [plugpass] [1-auto-1-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-10-05T03:50:49.992+09:00  INFO 65635 --- [plugpass] [1-auto-1-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-10-05T03:50:49.993+09:00  INFO 65635 --- [plugpass] [1-auto-1-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-10-05T03:54:23.181+09:00  INFO 65635 --- [plugpass] [ionShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-10-05T03:54:23.185+09:00  INFO 65635 --- [plugpass] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-10-05T03:54:23.191+09:00  INFO 65635 --- [plugpass] [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-10-05T03:54:23.197+09:00  INFO 65635 --- [plugpass] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-10-05T03:54:23.198+09:00  INFO 65635 --- [plugpass] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

@@ -27,4 +27,26 @@ T14 정확성의 검색→상세→ID 제외 추천·최신성 분리 assertion�
 
 ## 측정 결과
 
-본 실행의 결과와 원본 위치는 실제180초 실험 후 기록한다. 화면 표시 한계: 현재 cmux 호출 env·live socket 없음. 실제 loopback HTTP·터미널 실험이며 화면 E2E는 미확인이다. 목표 실패에 대한 개선 판단은 T16에서 다룬다.
+2026-10-05, Apple M2·8 logical CPU·16GiB·macOS27 arm64·Zulu Java25.0.4.1·Python3.9.6. 측정 소스 `a8522694986039fc45c1b2f475434b30f6772553`, dirty=false. 실행/샘플 저장/전후 assertion/서버 종료 모두 완료, 도구 종료0·직접 시작한 서버의 종료143(SIGTERM).
+
+| 경로 | 요청 수 | p50 ms | p95 ms | SQL/요청 | 엔티티 로딩/요청 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 전체 | 4,591 | 768.01 | 1,425.41 | 아래 경로별 | 아래 경로별 |
+| 검색 edge | 1,150 | 862.53 | 1,555.97 | 2 | 60,001 |
+| 검색 center | 1,147 | 887.10 | 1,547.75 | 2 | 60,001 |
+| 상세 | 1,145 | 354.88 | 736.61 | 2 | 6 |
+| 제외 추천 | 1,149 | 817.52 | 1,420.78 | 2 | 60,001 |
+
+준비 요청990건·오류0. 측정 요청4,591건·unexpected error0(0%)·응답 불일치0. 20개 worker 모두 참여했고 실제 경로 비율은 각24.94~25.05%. 설정180초·drain 포함180.788초, 완료 요청/drain 포함 시간 약25.39요청/초. 전후 정확성과10,000/50,000 건수 유지. 전체 p95≤300ms **미달**, 오류율<1% **달성**. 성능 목표 미달을 숨기거나 목표를 바꾸지 않았다. 측정 도구 종료0은 실험 완료를 뜻하며 latency target true를 뜻하지 않는다.
+
+원본 [result.json](evidence/week4-performance/result.json)·[샘플 gzip](evidence/week4-performance/samples.json.gz)·[실행 조건](evidence/week4-performance/context.json)·[서버 로그](evidence/week4-performance/server.log)·[전](evidence/week4-performance/correctness-before.json.gz)/[후](evidence/week4-performance/correctness-after.json.gz) 응답. 원래 비압축 출력은 `/tmp/plugpass-week4-baseline`이다. 샘플을 압축 해제한 SHA256은 result.json의 samples_sha256과 실제로 일치함을 확인했다. 측정 이후 문서·증거만 추가하므로 source SHA의 측정 코드와 최종 PR의 관계를 확인할 수 있다.
+
+```mermaid
+flowchart LR
+  Request[반경1000m·limit20] --> Read[모든 충전기50000·충전소10000 읽기]
+  Read --> Filter[Java에서 호환·거리 필터]
+  Filter --> Sort[정렬·후보 판단]
+  Sort --> Limit[최종20개 응답]
+```
+
+SQL2개라서 N+1은 이 경로에서 관측하지 않았다. 대신 limit/반경/커넥터가 전체 fetch 후 적용되어 검색·추천이 매 요청마다60,001엔티티(성공 이력1 포함)를 로딩한다. 소스와 실제 통계가 일치하므로 T16의 첫 개선 후보는 DB에서 조회 후보를 줄이는 것이다. 상세도 혼합 부하에서 지연이 커졌으나 본 실험은 CPU/GC/connection 대기 시간을 분해하지 않아 단일 원인을 단정하지 않는다. 캐시·DB 교체를 추가하지 않았으며 개선 성공은 동일 조건의 전후 실험으로 별도 판단해야 한다. 화면 표시 한계: 현재 cmux 호출 env·live socket 없음. 실제 loopback HTTP·터미널 실험이며 화면 E2E는 미확인이다. 목표 실패에 대한 개선 판단은 T16에서 다룬다.

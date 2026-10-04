@@ -1,0 +1,87 @@
+{
+  "source_sha": "a8522694986039fc45c1b2f475434b30f6772553",
+  "source_dirty": false,
+  "pid": 65635,
+  "port": 64523,
+  "environment": {
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "machine": "arm64",
+    "python": "3.9.6"
+  },
+  "server": {
+    "java": "25.0.4.1",
+    "boot": "4.1.1",
+    "statements": 60001,
+    "chargers": 50000,
+    "entitiesLoaded": 0,
+    "hibernate": "7.4.5.Final",
+    "statisticsEnabled": true,
+    "stations": 10000
+  },
+  "users": 20,
+  "warmup_seconds": 30,
+  "measurement_seconds": 180,
+  "elapsed_with_drain_seconds": 180.78789891600002,
+  "dataset": "grid-v1",
+  "seed": 0,
+  "station_count": 10000,
+  "charger_count": 50000,
+  "full_baseline": true,
+  "sql_per_request": {
+    "search_edge": {
+      "statements": 2,
+      "entities_loaded": 60001
+    },
+    "search_center": {
+      "statements": 2,
+      "entities_loaded": 60001
+    },
+    "detail": {
+      "statements": 2,
+      "entities_loaded": 6
+    },
+    "recommendation": {
+      "statements": 2,
+      "entities_loaded": 60001
+    }
+  },
+  "correctness_before_after": true,
+  "warmup_requests": 990,
+  "warmup_errors": 0,
+  "summary": {
+    "requests": 4591,
+    "p50_ms": 768.0127500000111,
+    "p95_ms": 1425.4141669999854,
+    "unexpected_errors": 0,
+    "unexpected_error_rate": 0.0,
+    "routes": {
+      "detail": {
+        "requests": 1145,
+        "errors": 0,
+        "p50_ms": 354.8824590000095,
+        "p95_ms": 736.6059169999915
+      },
+      "recommendation": {
+        "requests": 1149,
+        "errors": 0,
+        "p50_ms": 817.5217919999795,
+        "p95_ms": 1420.7759999999894
+      },
+      "search_center": {
+        "requests": 1147,
+        "errors": 0,
+        "p50_ms": 887.101083999994,
+        "p95_ms": 1547.7489579999997
+      },
+      "search_edge": {
+        "requests": 1150,
+        "errors": 0,
+        "p50_ms": 862.5272090000067,
+        "p95_ms": 1555.9682919999887
+      }
+    },
+    "latency_target_met": false,
+    "error_target_met": true
+  },
+  "samples_sha256": "20b9be9563926c43edc0091eea7e301b3f0579d6d8e69671fcad3597816576fe"
+}

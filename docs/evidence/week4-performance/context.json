@@ -1,0 +1,18 @@
+{
+  "observed_date_kst": "2026-10-05",
+  "cpu": "Apple M2",
+  "cpu_logical_count": 8,
+  "memory_bytes": 17179869184,
+  "command": "python3 scripts/performance/load.py --output /tmp/plugpass-week4-baseline",
+  "server_jvm_arguments": [
+    "-Xms512m",
+    "-Xmx2g"
+  ],
+  "tool_exit": 0,
+  "server_exit_after_owned_termination": 143,
+  "original_output": "/tmp/plugpass-week4-baseline",
+  "console_log": "/tmp/plugpass-t15-baseline.log",
+  "source_sha": "a8522694986039fc45c1b2f475434b30f6772553",
+  "source_dirty": false,
+  "measurement_scope": "generated grid-v1, local loopback, single JVM H2, no real provider or visible cmux"
+}

@@ -21,3 +21,8 @@
 - Refactor: 최초 데이터 준비의 JDBC insert를 도메인 Builder/실제 Repository saveAll로 교체해 생성 불변식과 현재 매핑을 따르게 했다. 로컬 수동 seed SQL 파일에 의존하지 않는다. 동일 테스트 통과와 전체 규모 smoke의 HTTP 정확성을 확인했다. Metadata는 test 전용 JDBC count·Statistics 읽기만 맡고 업무 Controller/Service는 유지한다.
 - 이름·경계: PerformanceDataset은 생성/저장, PerformanceApplication은 test 서버 진입, load.py는 고정 요청/정확성/집계/프로세스 정리를 맡는다. SQL/HTTP/JSON/도메인 공개 계약과 production 코드 변경 없음. 테스트 전용 endpoint/package는 운영 JAR에서 제외한다. TypeScript/Vue 없음.
 - 2users/0초 warmup/1초 smoke는 도구 동작 확인이며 기준선 결과가 아니다. 최종 전체/실측 결과는 아래에 기록한다.
+
+- 전체 `bash scripts/verify.sh`: Java357·Python14 실패/오류/skip0, 필수 suite34·JAR HTTP/문서 동일·performance 클래스 미포함.
+- 실측: `python3 scripts/performance/load.py --output /tmp/plugpass-week4-baseline` 종료0. measured SHA a852269·dirty=false. 10,000/50,000·20worker·warmup30초·측정180초, 요청4591·오류0·p50 768.01ms·p95 1425.41ms. latency 목표 미달/error 목표 달성. 부하 전후 실제 HTTP 전체 응답·건수 동일, 모든20worker 참여, 원본 샘플sha256 일치. [표·원본·원인 경계](performance.md).
+- SQL은 모든 경로2개지만 검색/추천60001엔티티, 상세6개를 로딩. N+1이 아닌 전체 fetch 비용을 T16 후보로 기록한다. 이번 범위에서 업무 최적화나 목표 조정은 하지 않았다. 최초 smoke 수치를 baseline으로 채택하지 않았다.
+- 시간 경과·장애/복구·API validation·역순·예산/동시성은 기존 T14/T05/T11/T12 필수 suite를 유지한다. 성능 서버의 시계 고정은 측정 반복성을 위한 합성 조건이며 실제 공공 API 최신성 보장을 하지 않는다.

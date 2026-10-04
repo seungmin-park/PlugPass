@@ -1,0 +1,137 @@
+{
+  "startedAt": "2026-10-04T21:02:04.490Z",
+  "checks": [
+    {
+      "name": "mobile selection and submit",
+      "passed": true,
+      "actual": {
+        "guidance": "검색할 위치를 먼저 선택해 주세요.",
+        "scrollWidth": 360,
+        "selected": [
+          "3000",
+          "NACS"
+        ],
+        "width": 375
+      }
+    },
+    {
+      "name": "radio arrow key and visible focus",
+      "passed": true,
+      "actual": {
+        "outline": "solid",
+        "outlineWidth": "3px",
+        "value": "5000"
+      }
+    },
+    {
+      "name": "Tab and Enter skip navigation",
+      "passed": true,
+      "actual": {
+        "focus": "main-content",
+        "hash": "#/stations"
+      }
+    },
+    {
+      "name": "not-found return",
+      "passed": true,
+      "actual": "http://localhost:5173/app/index.html#/stations"
+    },
+    {
+      "name": "320px boundary and tap areas",
+      "passed": true,
+      "actual": {
+        "columns": "288px",
+        "controlHeights": [
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          52
+        ],
+        "scrollWidth": 320,
+        "selected": [
+          "10000",
+          "NACS"
+        ],
+        "width": 320
+      }
+    },
+    {
+      "name": "375px final layout and local logo",
+      "passed": true,
+      "actual": {
+        "clientWidth": 360,
+        "columns": "92.6641px 92.6641px 92.6641px",
+        "height": 812,
+        "logoLoaded": true,
+        "scrollWidth": 360,
+        "selected": [
+          "1000",
+          "DC_COMBO"
+        ],
+        "width": 375
+      }
+    },
+    {
+      "name": "1440px split layout",
+      "passed": true,
+      "actual": {
+        "columns": "583.656px 432.344px",
+        "height": 900,
+        "scrollWidth": 1440,
+        "width": 1440
+      }
+    },
+    {
+      "name": "development browser diagnostics",
+      "passed": true,
+      "actual": []
+    }
+  ],
+  "finishedAt": "2026-10-04T21:06:47.917Z",
+  "source": {
+    "base_commit": "7c24bd474d4df7bf9809c8fa87816d32b5a49f94",
+    "branch": "codex/stitch-search-design",
+    "files_sha256": {
+      "frontend/src/App.vue": "41a15205901427c01b7e94527c136afdb727c1b0e9167ca7ce4a3a28798591c0",
+      "frontend/src/features/charging-info/response.ts": "1d12eedd9edf4129515dc247919fdb75b37b054e3d19b1dd9939b398c9260ca7",
+      "frontend/src/features/charging-info/types.ts": "f8d7736a6d979e4c639fc850fdb5f5ebb82123c6616c6b1d4e3594e56b6f48a9",
+      "frontend/src/features/recommendation/api/recommendationApi.spec.ts": "b94041d21721058a8898d6fbb5a3714f7190de3ce2705334fed4bc3ab02d0ef2",
+      "frontend/src/features/recommendation/api/recommendationApi.ts": "5ed699f9edf5a63f9231edb1ce0c0e12f5933407e5ace6b919ca0a4afc9233c7",
+      "frontend/src/features/recommendation/types.ts": "24eec104f867f35a3d888fbd6d3fd74976aa143296d04bef6a536ed930b33237",
+      "frontend/src/features/search/api/stationApi.spec.ts": "1ef46d4dea70ce839e9f02c8468c37d3c0188a4e902d9132a30d758144697f0b",
+      "frontend/src/features/search/api/stationApi.ts": "63efaf598b5835e62fb126a97e3187ceb81f6f39b6883f077bcca56b33ff24bc",
+      "frontend/src/features/search/components/SearchForm.spec.ts": "67d51bfb7d27099db4b40c9c0becdb33da514e78bc9c7bd6aaefa23e1e8458e0",
+      "frontend/src/features/search/components/SearchForm.vue": "5bb791ab837596b5891c3428f8f4a457f155c0e1badc56ec6db01d4fb6f645b8",
+      "frontend/src/features/search/criteria.spec.ts": "889440577ddbeeac1bb8673bfd1be9c167aa87aa37f0bb75b78538a7017ce3ea",
+      "frontend/src/features/search/criteria.ts": "89a91f36ae48386a944c41a4e8237e56cdc7114d93644de947e02b28db877de7",
+      "frontend/src/features/search/types.ts": "0e6d1baee6fd862cd13b53ba463f660e1a0b96eaf5a2204c45d45bdd122782e8",
+      "frontend/src/features/search/views/StationSearchView.vue": "b050ccb29cfa9a7212b1033b64ec0618155802ba6db3a4a81b2d3fe478267485",
+      "frontend/src/features/station-detail/api/stationDetailApi.spec.ts": "a5fcdfb3efc4ca4f8fd1c4810ec175f86d57496ab158d6c94e5fb1459b6a4ca6",
+      "frontend/src/features/station-detail/api/stationDetailApi.ts": "f5c995b382a12c7a0d1d26d9be48ffd9d3829523892a3bb92f033b72c82e9eb6",
+      "frontend/src/features/station-detail/types.ts": "5755621110083cc93c94805cb909113d3e1ae50b7420b9793cf53ba0b21a1340",
+      "frontend/src/main.ts": "73f351faad4abce350919eb7a2867f35f0281c028a21273ec6ea5c20c3387405",
+      "frontend/src/router/index.spec.ts": "598fe5a21e3731a9fb244a9c16d18295e8c8eb0601b5f0da7ea7ca841919b912",
+      "frontend/src/router/index.ts": "e75b36b326e4fcaaf8e976baa234ce95b05edc7749156fd8e747ba8eb8cd23f7",
+      "frontend/src/shared/api/apiError.spec.ts": "a0a5c162ebb1af9598e21a55280995076cb28756de7be349d5d26e5590f08aed",
+      "frontend/src/shared/api/apiError.ts": "e0fe3cdbf6f204a5db72c2217beeb0cf08f4f7390e538d77138a77e186884474",
+      "frontend/src/shared/api/httpClient.ts": "3e4bf73c2c542c02eb6c5917db6ac1f44212ac450ae11082ae486b31d68f060b",
+      "frontend/src/shared/api/responseValidation.ts": "b23b4563e930cd1c6ea15a05aa3c6a44af4656ce630d097b03bcf29ad7ac93d6",
+      "frontend/src/shared/api/stationId.spec.ts": "8e32d84aed93bd3b464c84296bae6e85ab70379da087b489dfc3dcaa9845b19f",
+      "frontend/src/shared/api/stationId.ts": "6ccfadc18576fa7c80eb4dd789de0a04e8d2a67a2f24f3f1aa749974b4e81e5b",
+      "frontend/src/shared/assets/plugpass-logo.svg": "2a92d469acb6af031050704ea5c5f81b77cbd355a477e8d3265dc1599bdf2f1f",
+      "frontend/src/shared/ui/PageNotFound.vue": "2ddd677811c001bc9901b6c2708d544e829f42ce523a33ae86a10f381fd785aa",
+      "frontend/src/styles/base.css": "82de7bd6903df33cc55c9d1ca4a7a4c1095deaf546f98446e89c158ce66b6edf",
+      "frontend/index.html": "512fd9022c89f0a03b48e25bbdf6120933f70a87dcf189fbf9e9d932adf0be16",
+      "frontend/package.json": "89bbc026fa4d96cebe85785fff601b2bc9955a1803f4cec73067b8527187af1c",
+      "frontend/package-lock.json": "38042813ceb2c040358f44faf175fca5bb64b4dc3977bf8518ee722e5781708d",
+      "frontend/vite.config.ts": "d77adc8b1934e62f911fa2f3997be4ff1f264d0285523c41afe15a6e6381435d"
+    }
+  }
+}

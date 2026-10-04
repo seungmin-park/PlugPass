@@ -570,5 +570,17 @@
     "url": "https://router.vuejs.org/api/type-aliases/locationquery",
     "accessed": "2026-10-05",
     "coverage": "T19 실제 Axios1.20.0/Router4.6.4 소스와 계약 테스트로 rolling 문서 차이를 확인"
+  },
+  {
+    "id": "stitch-vue-radio",
+    "url": "https://vuejs.org/guide/essentials/forms.html#radio",
+    "accessed": "2026-10-05",
+    "coverage": "Vue3.5.43 radio v-model checked/change와 bound 숫자 value; 기본값과 submit은 실제 컴포넌트 검증"
+  },
+  {
+    "id": "stitch-html-radio",
+    "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/radio",
+    "accessed": "2026-10-05",
+    "coverage": "native name 그룹·label; 방향키·포커스는 실제 Codex 브라우저 검증"
   }
 ]

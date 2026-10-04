@@ -16,6 +16,8 @@
 
 T18은 검색조건폼·hash이동·단위/타입/lint/build·기존verify/CI연결을 구현했다. 폼4건·Router2건·진단수집3건과 현재Codex브라우저의 실제조작 근거는 [프런트 기록](frontend-verification.md)에 있다. 아래 T20~T24흐름은 여전히 계획이며 실제API연결/전체E2E 완료와 혼동하지 않는다.
 
+현재 검색 진입점의 Stitch 디자인 적용은 [디자인 대응 기록](frontend-design.md)을 따른다. Form의 native radio/submit과 App의 본문 focus를 실제 unit·Codex 클릭/키보드로 확인했다. 프런트147건/10파일이며 기존 T19 API133건은 유지한다. 검색 결과·상세·추천·위치 권한 시안의 실제 연결은 후속 범위다.
+
 ## agent-engineering 적용 경로
 
 대표 경로는 **합성 공급자 HTTP 수집 → H2 commit → 실제 검색/상세/추천 HTTP**다. 사용자는 가용 상태여도 관측 시각이 없으면 추천을 확정하지 않고 확인 필요 그룹과 이유를 받는다.

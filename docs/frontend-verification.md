@@ -100,3 +100,13 @@ Green: 테스트용 `monitorConsole`이 Proxy로 warn/error 호출과 속성 교
 [같은 실제 probe](evidence/console-restoration/console-restoration-after.log.gz)는 종료1/첫 테스트 실패·다음 정상 테스트 통과였다. 기존 Vue 경고·빈 handler·console warn/error·mock·정리 중 경고·비동기 예외와 복원 mock의 [8개 probe](evidence/console-restoration/probes/result.json) 모두 비정상 종료하고 복원했다. [단위 Red](evidence/console-restoration/console-restoration-red.log.gz)·[전체 Green144](evidence/console-restoration/console-restoration-green.log.gz). 기존142건은 당시 원격 CI 기록이고 후속 최종 프런트는144건/필수10파일이다.
 
 후속 최종 `bash scripts/verify.sh` 종료0: Java360·Python21·프런트144(필수10파일), strict 타입/lint/build·JAR 실제HTTP·별도JVM3회 모두 통과, 실패/오류/skip0. [후속 runtime](evidence/console-restoration/runtime.json)·[후속 공용 로그](evidence/console-restoration/verify.log.gz). 기존T19 응답/URL 계약은 변경하지 않았다.
+
+## Stitch 디자인 — T19 현재 화면 적용
+
+2026-10-05 사용자가 첨부 시안을 **T19 범위의 현재 화면**에 적용하도록 확정했다. [시안 대응·색/글자·객체 책임·공식 문서·TDD 기록](frontend-design.md)을 따른다. 라디오 필터의 500m~10km·5개 커넥터·기본값·submit과 본문 건너뛰기 focus를 Red6실패/3통과 후 Green147건으로 구현했다. 선택만으로 요청하지 않고 기존 View의 위치 안내를 유지한다. API/URL/JSON 계약 변경은 없다.
+
+최종 `bash scripts/verify.sh` 종료0: Java360·Python21·프런트147(필수10파일), strict 타입/lint/build·기존 JAR 실제HTTP·별도JVM3회 모두 통과, 실패/오류/skip0. [현재 runtime](evidence/stitch-design/runtime.json)·[전체 로그](evidence/stitch-design/verify.log.gz)·[재시작](evidence/stitch-design/memory-restart.json). 여기서 JAR HTTP는 기존 백엔드와 REST Docs 검증이며 T24 웹앱 패키징 완료를 뜻하지 않는다.
+
+현재 Codex의 실제 3km/NACS 선택·검색 버튼·방향키 반경 변경·Tab/Enter 본문 이동·잘못된 경로/복귀를 assertion했다. 1440/375/320px 배치·가로 넘침 없음·필터/검색 버튼44px 이상·개발 브라우저 경고/오류0건도 확인했다. [브라우저 기록](evidence/stitch-design/browser-checks.json)·[모바일](evidence/stitch-design/mobile.jpg)·[데스크톱](evidence/stitch-design/desktop.jpg). 브라우저/API/DB 전체 E2E·위치 권한·상세·추천은 T20 이후로 유지한다.
+
+공용검증 중 의존성 교체와 서버 상태가 섞이지 않도록 직접 시작한 이전 dev 세션만 종료130했다. 서버 재실행의 첫 시도는 제한된 실행 환경의 `listen EPERM`으로 종료1했다. 코드나 포트를 바꾸지 않고 허용된 실행 환경에서 동일127.0.0.1:5173을 열자 정상 렌더링·브라우저 진단0건을 확인했다. [첫 로그](evidence/stitch-design/frontend-dev-denied.log.gz)·[현재 서버 로그](evidence/stitch-design/frontend-dev.log.gz)를 구분한다. 현재 서버와 브라우저는 유지한다.

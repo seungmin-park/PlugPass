@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 36" fill="none">
+  <rect x="2" y="6" width="24" height="24" rx="6" fill="#0D9488"/>
+  <path d="M12 11V15M16 11V15M10 15H18C18.5523 15 19 15.4477 19 16V19C19 20.6569 17.6569 22 16 22H15V25H13V22H12C10.3431 22 9 20.6569 9 19V16C9 15.4477 9.44772 15 10 15Z" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M14 17L13 19H15L14 21" stroke="#FBBF24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="32" y="23" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="16" fill="#0F172A" letter-spacing="-0.5">PlugPass</text>
+  <circle cx="106" cy="14" r="3" fill="#10B981"/>
+</svg>

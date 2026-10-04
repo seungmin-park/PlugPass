@@ -299,6 +299,15 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 
 완료 근거: [PR #37](https://github.com/seungmin-park/PlugPass/pull/37), main `3191b89`, [필수 CI](https://github.com/seungmin-park/PlugPass/actions/runs/37232622126) 성공. Java360·Python21·프런트142·타입/lint/build·실제HTTP·재시작3회 성공, 실패/오류/skip0. Red107건과 필수값 Red6건·최소 구현·책임 리뷰는 [실행 기록](docs/frontend-verification.md), [원격 결과](docs/evidence/t19/ci-summary.json).
 
+### T19 범위 디자인 반영 — 사용자 제공 Stitch 시안
+
+사용자 확정: 현재 검색 화면과 공통 디자인에 적용하며 후속 기능으로 확장하지 않는다. [시안 대응·책임·검증](docs/frontend-design.md)을 따른다.
+
+- [x] 첨부 검색 시안·로고·색·입력 pill을 Vue 현재 화면에 반영하고 10km·5개 커넥터·submit 계약을 유지한다.
+- [x] native radio·본문 건너뛰기 assertion Red6건 후 Green147건을 확인한다. 스타일 자체의 복제 테스트는 추가하지 않는다.
+- [x] 현재 Codex의 실제 선택·버튼·방향키·Tab/Enter·없는 경로 복귀와 1440/375/320px 화면을 확인한다.
+- [x] 최종 공용 검증과 화면 assertion의 실제 결과·범위·한계를 [실행 기록](docs/frontend-verification.md)에 남긴다. 서명 PR·필수 CI·main 실제 반영은 [전달 절차](docs/delivery-workflow.md)로 확인하며 해당 PR의 원격 상태를 완료 기준으로 삼는다.
+
 ### T20 — 위치 선택과 주변 검색 화면
 
 의존: T19. 파일: `src/shared/location/useCurrentLocation.ts`, `src/shared/ui/RequestState.vue`, `src/features/search/{stores/stationSearchStore.ts,components/StationCard.vue}`, `src/features/charging-info/{presentation.ts,components/StatusBadge.vue,components/FreshnessBadge.vue}`와 각 `.spec.ts`. 수정: SearchForm·StationSearchView·router.

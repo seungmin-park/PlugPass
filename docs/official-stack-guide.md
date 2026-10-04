@@ -10,6 +10,14 @@ JaCoCo는 사용자 선택으로 도입하지 않았다. 운영 의존성과 HTT
 
 ## 기술 스택
 
+### 프런트 웹앱 제안 (2026-10-05, 미도입)
+
+사용자는 목록 중심 반응형 웹앱을 선택했다. [프런트 계획](frontend-plan.md)의 Vue 3·TypeScript·Vite·Vue Router·Pinia·Axios는 도입 전 제안이다. Vitest·Vue Test Utils·Playwright로 순수 규칙·표현·실제 브라우저를 나누어 검증할 예정이다. 프런트 의존성·Node·실제 호환 버전은 아직 설치/해석하지 않았다.
+
+[Vue TypeScript 공식 안내](https://vuejs.org/guide/typescript/overview.html)의 Vite 기반 생성과 vue-tsc 별도 타입 검사, [Vite 실행 조건](https://vite.dev/guide/)·[base 경로](https://vite.dev/guide/build.html#public-base-path), [Pinia action](https://pinia.vuejs.org/core-concepts/actions.html), [Axios 취소](https://axios-http.com/docs/cancellation), [Playwright UI mode](https://playwright.dev/docs/test-ui-mode)의 관련 절을 확인했다. 이 구성 선택·hash route·Spring JAR에 웹앱 포함은 프로젝트의 설계 판단이다. F01에서 lockfile·Node·실제 실행 결과를 추가하고 F07에서 실제 JAR의 웹앱·API 연결을 확인한다. 공식 문서를 읽었다는 이유로 프런트 도입·검증 완료를 주장하지 않는다.
+
+### 현재 백엔드
+
 | 기술 | 버전 | 역할 |
 | --- | --- | --- |
 | Java | 25 LTS | 서비스 구현 |

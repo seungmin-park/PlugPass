@@ -402,5 +402,71 @@
     "url": "https://docs.python.org/3.9/library/concurrent.futures.html",
     "accessed": "2026-10-05",
     "coverage": "Python3.9.6 standard-library ThreadPoolExecutor; T15 closed-loop20workers and barrier"
+  },
+  {
+    "id": "frontend-vue-typescript-planned",
+    "url": "https://vuejs.org/guide/typescript/overview.html",
+    "accessed": "2026-10-05",
+    "coverage": "프런트 웹앱 계획: Vite 기반 생성·vue-tsc 별도 검사; package 미설치·실제 버전 호환성 미검증"
+  },
+  {
+    "id": "frontend-vite-guide-planned",
+    "url": "https://vite.dev/guide/",
+    "accessed": "2026-10-05",
+    "coverage": "프런트 웹앱 계획: Node 조건·개발/정적 build; 도입 버전은 F01에서 확정"
+  },
+  {
+    "id": "frontend-vite-base-planned",
+    "url": "https://vite.dev/guide/build.html#public-base-path",
+    "accessed": "2026-10-05",
+    "coverage": "프런트 웹앱 계획: base와 HTML/JS/CSS 경로; /app/ 패키징은 아직 미구현"
+  },
+  {
+    "id": "frontend-router-planned",
+    "url": "https://router.vuejs.org/guide/",
+    "accessed": "2026-10-05",
+    "coverage": "프런트 웹앱 계획: route/history 개념; hash 선택은 프로젝트 판단"
+  },
+  {
+    "id": "frontend-pinia-actions-planned",
+    "url": "https://pinia.vuejs.org/core-concepts/actions.html",
+    "accessed": "2026-10-05",
+    "coverage": "프런트 웹앱 계획: 비동기 action; 상태 소유권·요청 순번은 프로젝트 설계"
+  },
+  {
+    "id": "frontend-axios-cancellation-planned",
+    "url": "https://axios-http.com/docs/cancellation",
+    "accessed": "2026-10-05",
+    "coverage": "프런트 웹앱 계획: AbortController 취소; 실제 HTTP/Store 검증은 미실행"
+  },
+  {
+    "id": "frontend-vitest-planned",
+    "url": "https://vitest.dev/guide/",
+    "accessed": "2026-10-05",
+    "coverage": "프런트 웹앱 계획: runner·환경 요구사항; 아직 테스트 명령 없음"
+  },
+  {
+    "id": "frontend-vue-test-utils-planned",
+    "url": "https://test-utils.vuejs.org/guide/",
+    "accessed": "2026-10-05",
+    "coverage": "프런트 웹앱 계획: Vue 3 컴포넌트 mount; 실제 화면 검증은 미실행"
+  },
+  {
+    "id": "frontend-playwright-ui-planned",
+    "url": "https://playwright.dev/docs/test-ui-mode",
+    "accessed": "2026-10-05",
+    "coverage": "프런트 웹앱 계획: UI 러너; cmux 조작·headed assertion은 F06에서 실제 확인"
+  },
+  {
+    "id": "frontend-geolocation-planned",
+    "url": "https://developer.mozilla.org/en-US/docs/Web/API/Geolocation/getCurrentPosition",
+    "accessed": "2026-10-05",
+    "coverage": "프런트 웹앱 계획: secure context·권한·timeout; 위치 실패/늦은 응답은 F03 검증 예정"
+  },
+  {
+    "id": "frontend-boot-static-planned",
+    "url": "https://docs.spring.io/spring-boot/4.1/reference/web/servlet.html#web.servlet.spring-mvc.static-content",
+    "accessed": "2026-10-05",
+    "coverage": "프런트 웹앱 계획: 정적 리소스 제공; 실제 JAR의 /app/index.html·JS/CSS는 F07 검증 예정"
   }
 ]

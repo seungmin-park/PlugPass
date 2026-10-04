@@ -1,12 +1,12 @@
 # PlugPass 작업 체크리스트
 
-**목표·설계:** [plan.md](plan.md). T01 문서 계약은 main 반영, 인증된 실연동은 키 없어 미확인. T02~T17은 구현·검증·main 반영 완료. 4주차 체크8개를 완료했고 조회 p95 목표 미달을 기록했다. T01 실응답 확인 두 항목은 키 없어 보류한다. 아래 하위 체크와 근거를 따른다.
+**목표·설계:** [plan.md](plan.md). T01 문서 계약은 main 반영, 인증된 실연동은 키 없어 미확인. T02~T18은 구현·검증·main 반영 완료. T19는 로컬 구현·검증 후 PR 전달을 진행한다. T15 당시 p95 목표 미달은 T16 동일 조건 재측정75.04ms로 개선했다. T01 실응답 확인 두 항목은 키 없어 보류한다. 아래 하위 체크와 근거를 따른다.
 
 **실행 방식:** 작업 하나씩 순서대로 진행한다. 구현 시 `superpowers:executing-plans`를 사용한다. 이 파일을 만들었다는 이유로 이후 작업 전체를 자동 실행하지 않는다.
 
 **공통 제약:** Java 25·Spring Boot 4.1.1·JPA/H2·Spring REST Docs, 단일 인스턴스·공급자 1곳·검증 지역 1곳. 공식 계약을 먼저 확인한다. 현재 H2는 메모리 모드다. 작은 PR·필수 CI·자동 머지와 cmux 검증 정책을 유지한다.
 
-**프런트 추가 (2026-10-05):** 사용자는 목록 중심 반응형 웹앱으로 검색·상세·대체 후보를 먼저 완성하고 지도를 후속 단계로 선택했다. [프런트 계획](docs/frontend-plan.md)에 따라 T16→T17→T18~T24 순으로 진행한다. T18 실행/검증 기반을 진행 중이며 실제 화면 연결은 T20부터다. 각 항목의 전달/검증 근거를 따른다.
+**프런트 추가 (2026-10-05):** 사용자는 목록 중심 반응형 웹앱으로 검색·상세·대체 후보를 먼저 완성하고 지도를 후속 단계로 선택했다. [프런트 계획](docs/frontend-plan.md)에 따라 T16→T17→T18~T24 순으로 진행한다. T18 기반은 main 반영했고 T19 API 계약을 진행 중이며 실제 화면 연결은 T20부터다. 각 항목의 전달/검증 근거를 따른다.
 
 ## 남은 작업 실행 순서
 
@@ -269,28 +269,30 @@ T16 조회 개선 → T17 장애·복구 검증
 
 ## 프런트 — 목록 중심 웹앱
 
-범위·화면·API·실패 조건은 [프런트 계획](docs/frontend-plan.md)을 따른다. 아래 프런트의 `src/...`·설정 파일은 `frontend/` 기준이며, `frontend/`·`src/test/`·`scripts/`로 표시한 경로는 저장소 기준이다. 파일·명령은 구현 예정이며 아직 실행한 결과가 아니다.
+범위·화면·API·실패 조건은 [프런트 계획](docs/frontend-plan.md)을 따른다. 아래 프런트의 `src/...`·설정 파일은 `frontend/` 기준이며, `frontend/`·`src/test/`·`scripts/`로 표시한 경로는 저장소 기준이다. T18/T19의 실제 구현·검증은 체크와 근거를 따르며 T20 이후는 계획이다.
 
 ### T18 — 프런트 실행과 검증 기반
 
 의존: T16, T17. 파일: `index.html`, `package.json`, `package-lock.json`, `vite.config.ts`, `vitest.config.ts`, `tsconfig*.json`, `eslint.config.js`, `tests/setup.ts`, `tests/vueWarnings.ts`, `tests/vueWarnings.spec.ts`, `src/main.ts`, `src/App.vue`, `src/router/index.ts`, `src/styles/base.css`, `src/features/search/components/{SearchForm.vue,SearchForm.spec.ts}`, `src/features/search/views/StationSearchView.vue`. 수정: `.gitignore`, 공용 verify·CI, 기술 기록·출처 목록.
 
-- [ ] 공식 Vue 생성 구성을 확인하고 Vue 3·TypeScript·Vite와 상태/통신/테스트 도구의 실제 호환 버전·Node를 lockfile과 프로젝트 설정에 고정한다.
-- [ ] [엄격한 검증 기준](docs/frontend-plan.md#101-엄격한-정적-검사와-vue-경고)에 따라 strict·배열/null·optional·템플릿 검사를 켜고 운영/테스트/설정/E2E TS의 검사 범위를 연결한다. `build`는 type-check 성공 후 Vite를 실행하고 lint는 `--max-warnings 0`을 적용한다. props 타입·템플릿 참조·null/배열 접근·undefined를 허용하지 않은 optional 속성 대입·테스트/설정 타입·lint 경고의 임시 위반을 각각 실제 거부하고 복원한다.
-- [ ] Vue 경고 수집기의 0건 통과·진단 발생 시 실패·테스트별 격리를 먼저 테스트한다. setup에 연결한 뒤 실제 Vue 경고·console 진단·비동기 예외의 임시 probe에서 runner 비정상 종료를 확인하고 복원한다. 빈 handler·console mock·오류 무시로 수집을 우회하지 못하게 한다.
-- [ ] runner·DOM 환경을 준비한 뒤 반경·커넥터 라벨과 검색 버튼, 자동 위치 권한 요청 없음의 테스트를 먼저 작성한다. 최소 빈 컴포넌트에서 누락된 화면의 assertion 실패를 확인하고 검색 진입점을 구현한다.
-- [ ] `/app/index.html`·Vite base `/app/`·hash router를 구성하고 `/`에서 `/stations`로 이동한다. 기본 반경은 1000m, 커넥터는 DC_COMBO다.
-- [ ] `npm --prefix frontend run test:unit -- tests/vueWarnings.spec.ts src/features/search/components/SearchForm.spec.ts`와 프런트 전체 test:unit·type-check·lint·build를 기존 공용 verify·필수 CI에 연결하고 실제 실패 전파·복원 후 통과와 PR 반영을 확인한다. 설치 버전과 실제 Red/Green을 기록한다.
+- [x] 공식 Vue 생성 구성을 확인하고 Vue 3·TypeScript·Vite와 상태/통신/테스트 도구의 실제 호환 버전·Node를 lockfile과 프로젝트 설정에 고정한다.
+- [x] [엄격한 검증 기준](docs/frontend-plan.md#101-엄격한-정적-검사와-vue-경고)에 따라 strict·배열/null·optional·템플릿 검사를 켜고 운영/테스트/설정/E2E TS의 검사 범위를 연결한다. `build`는 type-check 성공 후 Vite를 실행하고 lint는 `--max-warnings 0`을 적용한다. props 타입·템플릿 참조·null/배열 접근·undefined를 허용하지 않은 optional 속성 대입·테스트/설정 타입·lint 경고의 임시 위반을 각각 실제 거부하고 복원한다.
+- [x] Vue 경고 수집기의 0건 통과·진단 발생 시 실패·테스트별 격리를 먼저 테스트한다. setup에 연결한 뒤 실제 Vue 경고·console 진단·비동기 예외의 임시 probe에서 runner 비정상 종료를 확인하고 복원한다. 빈 handler·console mock·오류 무시로 수집을 우회하지 못하게 한다.
+- [x] runner·DOM 환경을 준비한 뒤 반경·커넥터 라벨과 검색 버튼, 자동 위치 권한 요청 없음의 테스트를 먼저 작성한다. 최소 빈 컴포넌트에서 누락된 화면의 assertion 실패를 확인하고 검색 진입점을 구현한다.
+- [x] `/app/index.html`·Vite base `/app/`·hash router를 구성하고 `/`에서 `/stations`로 이동한다. 기본 반경은 1000m, 커넥터는 DC_COMBO다.
+- [x] `npm --prefix frontend run test:unit -- tests/vueWarnings.spec.ts src/features/search/components/SearchForm.spec.ts`와 프런트 전체 test:unit·type-check·lint·build를 기존 공용 verify·필수 CI에 연결하고 실제 실패 전파·복원 후 통과와 PR 반영을 확인한다. 설치 버전과 실제 Red/Green을 기록한다.
 
 산출: 브라우저에서 열리는 검색 진입점과 실행 가능한 프런트 검증 명령. scaffolding 통과를 검색 사용자 흐름 완료로 보고하지 않는다.
+
+T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 머지 `1e4e544`, 필수 CI [37231741154](https://github.com/seungmin-park/PlugPass/actions/runs/37231741154) 성공. Java360·Python21·프런트9, strict/진단 probe17건 거부·복원.
 
 ### T19 — URL 조건과 API 계약
 
 의존: T18. 파일: `src/features/search/{types.ts,criteria.ts,api/stationApi.ts}`, `src/features/station-detail/{types.ts,api/stationDetailApi.ts}`, `src/features/recommendation/{types.ts,api/recommendationApi.ts}`, `src/features/charging-info/types.ts`, `src/shared/api/{httpClient.ts,apiError.ts}`와 각 `.spec.ts`.
 
-- [ ] 조건 없음·부분 누락·중복 query·위경도/반경/limit 경계·비정수·미지원 커넥터·안전 정수 밖 ID를 구분하는 입력 테스트를 먼저 작성한다.
-- [ ] `parseSearchCriteria(query)`와 `getStations(criteria, signal?)`, `getStationDetail(stationId, signal?)`, `getRecommendations(criteria, excludeStationId, signal?)`를 현재 Java DTO·REST Docs 계약에 맞춘다.
-- [ ] 정확한 HTTP 경로·query·취소 signal, timeout 10000ms·400 fields·404·429·5xx·network·취소·잘못된 JSON/응답 구조를 경계 테스트로 확인한다. 자동 재시도는 하지 않는다.
+- [x] 조건 없음·부분 누락·중복 query·위경도/반경/limit 경계·비정수·미지원 커넥터·안전 정수 밖 ID를 구분하는 입력 테스트를 먼저 작성한다.
+- [x] `parseSearchCriteria(query)`와 `getStations(criteria, signal?)`, `getStationDetail(stationId, signal?)`, `getRecommendations(criteria, excludeStationId, signal?)`를 현재 Java DTO·REST Docs 계약에 맞춘다.
+- [x] 정확한 HTTP 경로·query·취소 signal, timeout 10000ms·400 fields·404·429·5xx·network·취소·잘못된 JSON/응답 구조를 경계 테스트로 확인한다. 자동 재시도는 하지 않는다.
 - [ ] criteria·각 API·apiError 대상 테스트에서 assertion 실패→최소 구현→통과를 확인하고 전체 테스트·공용 검증·PR을 반영한다.
 
 산출: 화면이 공유하는 검색 조건·응답 타입·HTTP 오류 계약. nullable 시각은 보존하고 추천에 없는 좌표·dataReady를 만들어내지 않는다.

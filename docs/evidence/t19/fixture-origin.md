@@ -1,0 +1,1 @@
+search/detail/alternative JSON은 T18 최종 공용 verify의 실제 Java ChargingJourneyTests HTTP 산출물에서 복사했다. 합성 공급자 fixture와 고정 시계를 사용한 테스트 응답이다. 실공공 API 또는 사용자 위치가 아니다. Java DTO/REST Docs와 필드를 대조했으며 nullable 시각·UNVERIFIED·추천 그룹을 보존했다. 이후 계약 변경 시 fixture와 프런트 구조 검증을 함께 리뷰한다.

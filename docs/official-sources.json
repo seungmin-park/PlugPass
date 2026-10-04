@@ -546,5 +546,29 @@
     "url": "https://playwright.dev/docs/api/class-page",
     "accessed": "2026-10-05",
     "coverage": "console·pageerror 이벤트 관련 절; 최초 이동 전 감시·테스트 실패 정책은 T23 미구현"
+  },
+  {
+    "id": "t19-axios-config",
+    "url": "https://axios.rest/pages/advanced/request-config",
+    "accessed": "2026-10-05",
+    "coverage": "T19 실제 Axios1.20.0/Router4.6.4 소스와 계약 테스트로 rolling 문서 차이를 확인"
+  },
+  {
+    "id": "t19-axios-errors",
+    "url": "https://axios.rest/pages/advanced/error-handling",
+    "accessed": "2026-10-05",
+    "coverage": "T19 실제 Axios1.20.0/Router4.6.4 소스와 계약 테스트로 rolling 문서 차이를 확인"
+  },
+  {
+    "id": "t19-axios-cancel",
+    "url": "https://axios.rest/pages/advanced/cancellation",
+    "accessed": "2026-10-05",
+    "coverage": "T19 실제 Axios1.20.0/Router4.6.4 소스와 계약 테스트로 rolling 문서 차이를 확인"
+  },
+  {
+    "id": "t19-router-query",
+    "url": "https://router.vuejs.org/api/type-aliases/locationquery",
+    "accessed": "2026-10-05",
+    "coverage": "T19 실제 Axios1.20.0/Router4.6.4 소스와 계약 테스트로 rolling 문서 차이를 확인"
   }
 ]

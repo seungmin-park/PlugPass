@@ -1,8 +1,8 @@
 # 기능과 검증 범위
 
-## 프런트 경로 (2026-10-05, T18 기반 구현)
+## 프런트 경로 (2026-10-05, T18/T19 기반·API 계약 구현)
 
-사용자는 목록 중심 반응형 웹앱으로 검색·상세·대체 후보를 첫 버전으로 선택했다. [프런트 계획](frontend-plan.md)·[작업 목록](../tasks.md)의 T18~T24을 따른다. 아래는 계획 매핑이며 실행한 테스트·현재 화면으로 보고하지 않는다. 지도는 T25 후속 단계다.
+사용자는 목록 중심 반응형 웹앱으로 검색·상세·대체 후보를 첫 버전으로 선택했다. [프런트 계획](frontend-plan.md)·[작업 목록](../tasks.md)의 T18~T24을 따른다. 아래 표의 T20 이후 사용자 흐름과 브라우저 E2E는 계획이다. T18/T19 구현·실행 근거는 별도로 구분한다. 지도는 T25 후속 단계다.
 
 | 예정 사용자 경로 | 상태 소유자·경계 | 기대 결과·예정 검증 |
 | --- | --- | --- |
@@ -14,7 +14,7 @@
 | 모바일·키보드·필수 CI | 표현 컴포넌트, ESLint, 기존 공용 verify | 375×812/1440×900·focus·0개/skip/누락 거부·임시 금지 의존 실패; T24 |
 | 실제 JAR→웹앱 진입·직접 링크 | Vite base `/app/`, Gradle `static/app/`, 기존 Spring 정적 파일 제공 | `/app/index.html`·JS/CSS·직접 링크·같은 origin API·REST Docs HTTP; T24 |
 
-T18은 검색조건폼·hash이동·단위/타입/lint/build·기존verify/CI연결을 구현했다. 폼4건·Router2건과 현재Codex브라우저의 실제조작 근거는 [프런트 기록](frontend-verification.md)에 있다. 아래 T20~T24흐름은 여전히 계획이며 실제API연결/전체E2E 완료와 혼동하지 않는다.
+T18은 검색조건폼·hash이동·단위/타입/lint/build·기존verify/CI연결을 구현했다. 폼4건·Router2건·진단수집3건과 현재Codex브라우저의 실제조작 근거는 [프런트 기록](frontend-verification.md)에 있다. 아래 T20~T24흐름은 여전히 계획이며 실제API연결/전체E2E 완료와 혼동하지 않는다.
 
 ## agent-engineering 적용 경로
 
@@ -158,3 +158,7 @@ SearchBounds → ChargerRepository.findSearchCandidates → 기존 정확한 거
 ## T17 장애·재시작 경계
 
 기존 recovery/sync/scheduler/journey assertion에 여러 회차 장애/복구 성공시각을 보강했다. `scripts/verify-memory-restart.py`는 별도JVM3개와 fixtureHTTP를 통해 수집완료→메모리소실/준비전→재수집완료를 확인한다. 공용 verify에 통합되어 실패를 거부하며 reliability 테스트 패키지의 운영JAR 포함도 거부한다. [보장·한계](reliability.md).
+
+## T19 프런트 계약 경로
+
+URL query→criteria(empty/valid/invalid)→기능 API→공통 Axios/오류 경계→unknown JSON 구조 검사→타입 응답. criteria36·ID20·apiError14·검색31·상세14·추천18건, 기존9건과 전체142건이다. `[Vue warn]`/console 진단·정리/격리 공용 setup을 그대로 사용한다. 필수9파일과0개/skip/누락은 기존runtime 검사가 확인한다. [Red/Green/책임·한계](frontend-verification.md). 화면의 위치→검색 연결은 T20 범위다.

@@ -1,5 +1,11 @@
 [
   "src/features/search/components/SearchForm.spec.ts",
   "src/router/index.spec.ts",
-  "tests/vueWarnings.spec.ts"
+  "tests/vueWarnings.spec.ts",
+  "src/features/search/criteria.spec.ts",
+  "src/shared/api/stationId.spec.ts",
+  "src/shared/api/apiError.spec.ts",
+  "src/features/search/api/stationApi.spec.ts",
+  "src/features/station-detail/api/stationDetailApi.spec.ts",
+  "src/features/recommendation/api/recommendationApi.spec.ts"
 ]

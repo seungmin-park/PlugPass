@@ -159,11 +159,13 @@ IngestionRecoveryTests14 + IngestionHttpBudgetTests6 + IngestionConfigurationTes
 현재 필수 suite34개·Java357건·Python14건. `python3 scripts/performance/load.py --output <새폴더>`로 실제10,000/50,000 생성 데이터·동시20명·warmup30초·측정180초를 별도로 실행한다. 공용 verify만으로 성능 완료를 주장하지 않는다. 작은 데이터 매핑 테스트1건과 집계3건도 유지한다. 부하 전후 정확성·SQL/엔티티 수·p50/p95·unexpected error·대상 SHA/dirty·샘플 원본을 [성능 기록](../../../docs/performance.md)과 비교한다. smoke 설정은 기준선이 아니다. 운영 JAR에서 performance test 패키지가 제외되는지도 공용 검증이 확인한다.
 
 
-## T17/T18 최신 검증 범위
+## T17~T19 최신 검증 범위
 
-현재 공용verify는 Java360건·Python21건·프런트9건(2파일)을 실행한다. 과거 T번호의 건수는 당시 기록이다. 실제 실행 뒤 XML/JSON의 현재 수를 읽고 고정 총건수를 CI요구값으로 만들지 않는다.
+현재 공용verify는 Java360건·Python21건·프런트142건(9파일)을 실행한다. 과거 T번호의 건수는 당시 기록이다. 실제 실행 뒤 XML/JSON의 현재 수를 읽고 고정 총건수를 CI요구값으로 만들지 않는다.
 
 - T17: 기존 recovery/sync/scheduler/journey35건과 `scripts/verify-memory-restart.py`의 별도JVM3회 실제HTTP로 수집완료→메모리H2소실/준비전→재수집완료를 확인한다. `build/verification/memory-restart/`를 확인한다. reliability 테스트클래스의 운영JAR 포함을 거부한다.
 - T18: Node26.7.0, lockfile을 사용한다. 공용verify가 npm ci→test:unit→type-check→lint(경고0)→build를 실행한다. `frontend/test-results/unit.json`의 실제assertion과 `docs/required-frontend-tests.json`의 필수파일을 기존runtime검사로 확인한다. 0개/실패/skip/누락을 거부한다.
 - 현재 프런트명령은 `npm --prefix frontend run test:unit`, `type-check`, `lint`, `build`다. 실행은 개발서버 `/app/index.html`·Vite base `/app/`·hashRouter다. JAR웹앱 포함은 T24에 남아 있다.
 - 이번 세션은 사용자가 cmux 대신 현재Codex세션을 허용했다. 실제Codex브라우저의 조건선택/클릭/새로고침/없는화면복귀는 `docs/frontend-verification.md`를 따른다. 이것을 T23의 실제API전체E2E·Playwright러너로 바꾸어 보고하지 않는다.
+
+- T19: URL 입력36·ID20·오류14·검색31·상세14·추천18건, 합133건. `npm --prefix frontend run test:unit -- src/features/search/criteria.spec.ts src/shared/api/apiError.spec.ts src/features/search/api/stationApi.spec.ts src/features/station-detail/api/stationDetailApi.spec.ts src/features/recommendation/api/recommendationApi.spec.ts src/shared/api/stationId.spec.ts`로 대상 검증한다. 실제 Axios JSON/취소/직렬화는 유지하고 adapter만 제어한다. UI 검색·JAR 포함 E2E로 표현하지 않는다.

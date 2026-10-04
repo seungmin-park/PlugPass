@@ -76,3 +76,10 @@ StationDetailTests5·StationDetailHttpTests7·StationReadFlowTests2 =14건.
 
 회차 내 중복 ID 페이지는 저장 전에 거부한다. SyncProgress가 순서·헤더·중복·완료 건수를 소유한다.
 [리뷰·리팩터링 검증 기록](code-review-2026-10-02.md)에 Red/Green/Refactor와 한계를 기록했다.
+
+## T10 후보 추천
+
+GET /api/v1/recommendations → RecommendationRequest → RecommendationService → 반경 내 저장 데이터 → CandidatePolicy → 응답 DTO.
+RecommendationTests14·RecommendationServiceTests3·RecommendationHttpTests9·RecommendationRouteTests1, 전체287건.
+fixture HTTP부터 추천 HTTP까지 관측 시각 누락의 UNVERIFIED 분리를 확인한다. 그룹별 limit 전에 판단·제외하며 각 그룹은 거리/ID 순서다.
+근거와 한계: [3주차 기록](week3-verification.md).

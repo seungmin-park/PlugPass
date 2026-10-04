@@ -67,3 +67,21 @@ include::{snippets}/station-detail/response-fields.adoc[]
 없는 내부 ID는 HTTP 404, code STATION_NOT_FOUND, message "충전소를 찾을 수 없습니다", fields 빈 객체로 응답한다.
 숫자가 아니거나 Long 범위를 넘는 ID는 HTTP 400, code INVALID_REQUEST와 fields.stationId의 형식 오류다.
 상세 조회는 외부 API 장애 중에도 저장 데이터로 응답한다. 이는 데이터가 최신이라는 보장은 아니다.
+
+== 대체 후보
+
+저장 데이터만 조회한다. 호환 커넥터·반경 조건 뒤에 excludeStationId를 제거하고 후보 규칙을 적용한다.
+preferred는 같은 충전기가 AVAILABLE·RECENT이며 명시적 이용/삭제 제한이 없는 후보,
+requiresConfirmation은 AVAILABLE·UNVERIFIED 보고다. STALE·UNKNOWN·사용 중·명시적 제한은 excluded에 이유를 남긴다.
+미확인 이용 조건·운영 시간은 경고 코드로 보존한다. 운영 시간 원문의 자유 형식은 자동 영업 여부로 해석하지 않는다.
+같은 그룹은 직선거리·내부 ID 순서다. limit은 각 그룹의 최대 건수이며 기본20, 최대50이다.
+공급자의 관측 시각이 없으므로 현재 실공급자 보고로 preferred를 만들 수 없다. 도착 시 충전 성공을 보장하지 않는다.
+
+include::{snippets}/recommendations/curl-request.adoc[]
+include::{snippets}/recommendations/query-parameters.adoc[]
+include::{snippets}/recommendations/http-response.adoc[]
+include::{snippets}/recommendations/response-fields.adoc[]
+
+이유 코드: RECENT_AVAILABLE, UNVERIFIED_AVAILABLE, SOURCE_OBSERVED_AT_MISSING, SOURCE_OBSERVED_AT_IN_FUTURE,
+MAX_AGE_EXCEEDED, INCOMPATIBLE_CONNECTOR, ACCESS_RESTRICTED, DELETED_BY_PROVIDER, STATUS_UNKNOWN, NOT_AVAILABLE,
+NO_COMPATIBLE_CHARGER, ACCESS_CONDITIONS_UNVERIFIED, OPERATING_HOURS_UNVERIFIED, OPERATING_HOURS_REQUIRE_CHECK.

@@ -88,8 +88,16 @@ class StationReadFlowTests {
             assertThat(charger.path("sourceStatusChangedAtRaw").asString()).isEqualTo("20190829121020");
             assertThat(charger.path("note").asString()).isEqualTo("공사로 인해 이용 불가");
             assertThat(charger.path("limitYn").asString()).isEqualTo("N");
+            HttpResponse<String> recommendationResponse = get(httpClient,"/api/v1/recommendations?latitude=37.569620&longitude=126.641973&radiusMeters=1000&connector=DC_CHADEMO");
+            assertThat(recommendationResponse.statusCode()).isEqualTo(200);
+            JsonNode recommendation = jsonMapper.readTree(recommendationResponse.body());
+            assertThat(recommendation.path("preferred").size()).isZero();
+            assertThat(recommendation.path("requiresConfirmation").size()).isEqualTo(1);
+            assertThat(recommendation.path("requiresConfirmation").get(0).path("id").asLong()).isEqualTo(stationId);
+            assertThat(recommendation.path("requiresConfirmation").get(0).path("reasonCodes").get(0).asString()).isEqualTo("UNVERIFIED_AVAILABLE");
             Path evidence = Path.of("build/verification/station-read-flow");
             Files.createDirectories(evidence);
+            Files.writeString(evidence.resolve("recommendations.json"),recommendationResponse.body());
             Files.writeString(evidence.resolve("search.json"),searchResponse.body());
             Files.writeString(evidence.resolve("detail.json"),detailResponse.body());
         }
@@ -114,8 +122,16 @@ class StationReadFlowTests {
             HttpResponse<String> detailResponse = get(httpClient,"/api/v1/stations/"+stationId);
             assertThat(detailResponse.statusCode()).isEqualTo(200);
             assertThat(jsonMapper.readTree(detailResponse.body()).path("chargers").get(0).path("freshness").asString()).isEqualTo("UNVERIFIED");
+            HttpResponse<String> recommendationResponse = get(httpClient,"/api/v1/recommendations?latitude=37.569620&longitude=126.641973&radiusMeters=1000&connector=DC_CHADEMO");
+            assertThat(recommendationResponse.statusCode()).isEqualTo(200);
+            JsonNode recommendation = jsonMapper.readTree(recommendationResponse.body());
+            assertThat(recommendation.path("preferred").size()).isZero();
+            assertThat(recommendation.path("requiresConfirmation").size()).isEqualTo(1);
+            assertThat(recommendation.path("requiresConfirmation").get(0).path("id").asLong()).isEqualTo(stationId);
+            assertThat(recommendation.path("requiresConfirmation").get(0).path("reasonCodes").get(0).asString()).isEqualTo("UNVERIFIED_AVAILABLE");
             Path evidence = Path.of("build/verification/station-read-flow");
             Files.createDirectories(evidence);
+            Files.writeString(evidence.resolve("recommendations.json"),recommendationResponse.body());
             Files.writeString(evidence.resolve("search-during-provider-failure.json"),searchResponse.body());
             Files.writeString(evidence.resolve("detail-during-provider-failure.json"),detailResponse.body());
         }

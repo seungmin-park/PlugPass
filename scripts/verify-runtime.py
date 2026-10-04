@@ -40,6 +40,9 @@ def check_http(base, expected):
     with urllib.request.urlopen(base + '/api/v1/stations?latitude=37.5&longitude=126.6&radiusMeters=1000&connector=DC_COMBO', timeout=5) as response:
         search = json.loads(response.read())
         require(response.status == 200 and search == {'dataReady': False, 'lastSuccessfulRunAt': None, 'stations': []}, 'Initial station search mismatch')
+    with urllib.request.urlopen(base + '/api/v1/recommendations?latitude=0&longitude=0&radiusMeters=1000&connector=DC_COMBO', timeout=5) as response:
+        recommendation = json.loads(response.read())
+        require(response.status == 200 and recommendation == {'preferred': [], 'requiresConfirmation': [], 'excluded': []}, 'Initial recommendation mismatch')
     try:
         urllib.request.urlopen(base + '/api/v1/stations?latitude=91&longitude=126.6&radiusMeters=1000&connector=DC_COMBO', timeout=5)
         raise RuntimeError('Invalid station query accepted')

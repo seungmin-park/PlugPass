@@ -480,5 +480,35 @@
     "url": "https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html",
     "accessed": "2026-10-05",
     "coverage": "@Query and @Param; actual Boot4.1.1 query execution"
+  },
+  {
+    "id": "frontend-typescript-strict-planned",
+    "url": "https://www.typescriptlang.org/tsconfig/",
+    "accessed": "2026-10-05",
+    "coverage": "strict·noUncheckedIndexedAccess·exactOptionalPropertyTypes 관련 절; 실제 설정·오류 거부는 T18 미실행"
+  },
+  {
+    "id": "frontend-vue-language-options-planned",
+    "url": "https://github.com/vuejs/language-tools/blob/master/packages/language-core/lib/types.ts",
+    "accessed": "2026-10-05",
+    "coverage": "master의 strictTemplates·검사 옵션 타입 확인; rolling 소스이며 채택 버전·실제 템플릿 진단은 T18에서 확인"
+  },
+  {
+    "id": "frontend-vue-warnings-planned",
+    "url": "https://vuejs.org/api/application.html#app-config-warnhandler",
+    "accessed": "2026-10-05",
+    "coverage": "Vue 런타임 경고 handler·개발 모드 한계; 테스트 수집/assertion 정책은 프로젝트 판단·미구현"
+  },
+  {
+    "id": "frontend-eslint-zero-warnings-planned",
+    "url": "https://eslint.org/docs/latest/use/command-line-interface#--max-warnings",
+    "accessed": "2026-10-05",
+    "coverage": "경고 한도 초과의 비정상 종료; max-warnings 0 적용·실제 거부는 T18 미실행"
+  },
+  {
+    "id": "frontend-playwright-diagnostics-planned",
+    "url": "https://playwright.dev/docs/api/class-page",
+    "accessed": "2026-10-05",
+    "coverage": "console·pageerror 이벤트 관련 절; 최초 이동 전 감시·테스트 실패 정책은 T23 미구현"
   }
 ]

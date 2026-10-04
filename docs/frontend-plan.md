@@ -130,7 +130,8 @@ frontend/
     features/recommendation/
       types.ts · api/recommendationApi.ts · stores/recommendationStore.ts
       views/AlternativeStationsView.vue · components/CandidateGroup.vue
-  e2e/charging-journey.spec.ts · e2e/ui-failures.spec.ts
+  tests/setup.ts · tests/vueWarnings.ts · tests/vueWarnings.spec.ts
+  e2e/fixtures.ts · e2e/charging-journey.spec.ts · e2e/ui-failures.spec.ts
 src/test/java/e2e/ChargingDemoApplication.java · DemoProvider.java
 src/test/resources/publicdata/browser-demo.xml
 scripts/frontend-e2e.sh
@@ -201,6 +202,48 @@ scripts/frontend-e2e.sh
 | UI 브라우저 테스트 | 권한 거부·400/404/429/5xx·빈 결과·응답 역전 | Playwright mock 범위, 실제 DB 연결로 보고하지 않음 |
 | 전체 E2E | 공급자 fixture HTTP→수집→H2→실제 API→검색·상세·제외 추천 클릭 | 공급자·시간만 제어하고 실제 Service/Repository/Controller 사용. 인증된 공공 API 검증은 아님 |
 
+### 10.1 엄격한 정적 검사와 Vue 경고
+
+2026-10-05 사용자가 타입·템플릿 검사를 강하게 적용하고 `[Vue warn]`도 실패 처리하도록 요청했다. 이번 반영은 계획·작업 지침 확정이며 프런트 설치·검사 실행 완료가 아니다. T18에서 로컬 검사와 필수 CI의 타입·lint·단위 테스트를 마련하고, T23에서 브라우저 경고 검사를 확인한 뒤 T24에서 전체 E2E·배포 산출물 검증까지 기존 필수 CI에 연결한다.
+
+```mermaid
+flowchart TD
+    Source[프런트 소스·템플릿·테스트·설정] --> Types[타입·템플릿 검사]
+    Types --> Lint[lint: 경고 허용 0]
+    Lint --> Unit[컴포넌트 테스트: 경고·예외 검사]
+    Unit --> Browser[개발 모드 브라우저: 실제 흐름·경고 검사]
+    Browser --> Package[배포용 build·JAR 웹앱 확인]
+    Types -->|타입 오류| Fail[검증 실패]
+    Lint -->|경고 또는 오류| Fail
+    Unit -->|Vue 경고·예상 밖 오류| Fail
+    Browser -->|Vue 경고·예상 밖 오류| Fail
+```
+
+| 검사·소유 위치 | 강제할 계약 | 실제 거부 확인 |
+| --- | --- | --- |
+| `tsconfig*.json`·`type-check` | TypeScript `strict: true`, `noUncheckedIndexedAccess: true`, `exactOptionalPropertyTypes: true`; Vue `vueCompilerOptions.strictTemplates: true` | props 타입 오류·없는 템플릿 변수·미확인 null/배열 원소 접근·undefined를 허용하지 않은 optional 속성 대입이 타입 진단과 비정상 종료를 발생시킴 |
+| `package.json`·`build` | `type-check` 성공 후 `vite build`; 운영 `.vue`/TS·단위 테스트·설정·E2E TS를 해당 tsconfig로 모두 검사 | 운영 소스와 테스트/설정의 임시 타입 오류를 각각 검사하고, 오류가 있으면 build도 실패 |
+| `eslint.config.js`·`lint` | `eslint ... --max-warnings 0`; T24의 기존 의존성 규칙 유지 | 임시 lint 경고 1건으로 비정상 종료; 금지 import도 별도 거부 |
+| `tests/setup.ts`·`tests/vueWarnings.ts` | 테스트별 Vue 경고·예상 밖 console 경고/오류 수집, 정리까지 감시 후 assertion; Vitest의 처리되지 않은 예외 실패 유지 | 경고 0은 통과; 실제 Vue 경고·console 진단·비동기 예외의 임시 probe는 각각 실패; 다음 정상 테스트에 수집 상태 누출 없음 |
+| `e2e/fixtures.ts` | 최초 이동 전 `console`·`pageerror` 감시, 테스트 완료/정리까지 유지, 모든 UI/E2E spec이 공용 fixture 사용 | 초기 mount 경고·클릭 후 비동기 경고·처리되지 않은 예외의 임시 probe가 Playwright를 실패시킴 |
+| `scripts/verify.sh`·기존 필수 `PlugPass verify` | 실제 검사 종료 코드 전파, 테스트 0개·skip·누락·실패 거부 | T18 검사와 T24 전체 E2E 연결 시 실제 실패·누락을 공용 경로가 거부; 실패 유도는 복원 후 전체 통과 |
+
+Vite는 TypeScript를 변환하지만 타입 검사를 수행하지 않는다. 따라서 `type-check`는 `.vue`를 지원하는 `vue-tsc`와 필요한 설정용 TypeScript 검사를 실제로 실행해야 한다. tsconfig를 여러 개 두면 파일이 어느 검사에 포함되는지 확인하며, 루트 설정만 실행하고 하위 소스가 빠진 결과를 통과로 보지 않는다. `strictTemplates`는 Vue Language Tools 옵션이며 런타임 `app.config.compilerOptions`와 구분한다. 채택 버전의 실제 옵션·템플릿 진단은 T18에서 확인한다.
+
+`tests/setup.ts`는 수집기의 등록·해제와 테스트별 정리를, `tests/vueWarnings.ts`는 진단 수집·실패 판정을 맡는다. `tests/vueWarnings.spec.ts`는 정상/실패 판정과 격리를 검증한다. `e2e/fixtures.ts`는 브라우저 이벤트 수집·수명·마지막 assertion을 소유한다. 제품 View/Store가 검증 정책을 소유하지 않으며, 별도 검증 프레임워크나 제품용 경고 수집 API를 만들지 않는다.
+
+`app.config.warnHandler`와 console 경로를 함께 살펴 Vue 경고가 수집기를 우회하거나 조용히 소비되지 않게 한다. handler에서 throw한 오류는 Vue의 오류 처리 경로를 거칠 수 있으므로 수집 결과를 테스트 assertion으로 판정한다. 처리되지 않은 예외를 무시하는 runner 옵션·전역 빈 handler·console 출력만 없애는 mock은 금지한다. 경고 수집·spy·handler는 테스트별로 복원하고 mount 해제·대기 중 작업까지 감시한다. 일반 애플리케이션 테스트는 Vue 경고 0건이어야 하며, 실제 경고 발생 probe는 별도로 실행해 비정상 종료를 확인하고 제거한다.
+
+HTTP 400/404/429/5xx·timeout은 화면이 처리해야 하는 정상적인 실패 시나리오다. 이 과정에서 브라우저가 내는 예상 진단을 허용해야 하면 그 테스트에만 종류·메시지/URL·횟수를 명시하고 실제로 발생했는지 확인한다. 전체 console.error 무시·부분 문자열 하나로 광범위한 허용·Vue 경고의 전역 허용은 하지 않는다. 화면의 오류 안내·재시도·상태 유지 assertion도 함께 확인한다.
+
+Vue 경고는 개발 모드에서 발생하고 `warnHandler`도 production에서는 적용되지 않는다. 개발 모드의 UI/실제 DB 연결 E2E와 T24의 배포용 JAR 웹앱 검사를 모두 유지한다. production의 경고 0건은 개발 모드 검사를 대신하지 않으며, 개발 모드 통과도 JAR 경로·직접 링크·실제 산출물 동작을 대신하지 않는다. 로컬 두 범위의 실행은 기존 cmux 표시 규칙을 따른다.
+
+타입은 런타임에 외부 JSON을 검증하지 않고, 경고 감시는 실행한 경로에서 발생한 문제만 관찰한다. API 응답은 T19의 구조·필수값 검증을 유지하고, 검색/상세/추천·응답 역전·실패 복구의 실제 assertion을 생략하지 않는다. 수집기가 정상이어도 테스트 경로가 빠질 수 있으므로 T24의 필수 suite/0개/skip 검사와 기능 지도를 함께 확인한다.
+
+공식 근거는 [Vue 타입 검사](https://vuejs.org/guide/typescript/overview.html#overview), [TypeScript 옵션](https://www.typescriptlang.org/tsconfig/), [Vue Language Tools 옵션](https://github.com/vuejs/language-tools/blob/master/packages/language-core/lib/types.ts), [Vue warnHandler](https://vuejs.org/api/application.html#app-config-warnhandler), [ESLint 경고 한도](https://eslint.org/docs/latest/use/command-line-interface#--max-warnings), [Playwright console](https://playwright.dev/docs/api/class-page#page-event-console)·[pageerror](https://playwright.dev/docs/api/class-page#page-event-page-error)다. 공식 동작을 검증 정책으로 연결하는 것은 프로젝트 설계 판단이며 도입 버전·실제 거부 결과는 해당 작업에서 기록한다.
+
+### 10.2 사용자 흐름과 화면 표시
+
 T23의 test-classpath 데모 서버는 `ChargingJourneyTests`의 외부 HTTP/시간 경계를 재사용한다. `browser-demo.xml`은 37.5/127 근처 합성 충전소 2곳을 명시하고 ApplicationRunner가 실제 `StationSyncService.synchronize()`를 호출한다. DB seed SQL·Service mock·운영 seed/admin route를 추가하지 않는다. 관측 시각 없는 일반 데모는 UNVERIFIED 상태로 확인 필요 후보에 나온다. RECENT/STALE 표시 테스트에서 합성 시각을 쓰면 별도의 제어 데이터임을 명시한다.
 
 test-classpath 도우미는 운영 JAR에 포함하지 않고 공용 verify의 JAR 내용 검사로 부재를 확인한다. 브라우저 테스트는 읽기 중심의 고정 데이터를 사용하고 다른 데이터 시나리오가 필요하면 별도 프로세스/DB로 실행한다. 공유 DB를 전부 삭제하는 병렬 테스트를 쓰지 않는다. 기존 `ChargingJourneyTests` assertion과 `bash scripts/verify.sh`를 유지한다.
@@ -223,6 +266,7 @@ test-classpath 도우미는 운영 JAR에 포함하지 않고 공용 verify의 J
 - dataReady=false와 빈 결과, 상태와 최신성, 관측 시각과 수집 시각, 확인 필요와 우선 후보를 구분한다.
 - 위치 거부·조건 경계·알 수 없는 값·400/404·timeout/429/5xx·잘못된 응답·순서 역전 assertion이 있다.
 - 모바일 `375×812`·데스크톱 `1440×900`, 키보드 주요 조작·라벨·포커스·상태 알림을 검증한다. 가로 스크롤과 색만으로 상태를 표시하는 문제를 남기지 않는다.
+- 타입·템플릿 오류·lint 경고·Vue 경고·실행 예외의 실제 거부와 복원 후 전체 통과를 기록한다. 개발 모드 경고 검사와 배포용 JAR 검사를 구분한다.
 - 프런트 전체 테스트·type-check·lint·build, 기존 백엔드 공용 verify·필수 CI가 실제 통과한다. 화면 E2E 가능 여부와 실공공 API 미확인을 별도로 기록한다.
 - 실제 JAR의 `/app/index.html`과 연결된 JS/CSS가 정상 제공되고 직접 링크 새로고침·같은 origin의 API·기존 REST Docs 경로가 동작한다. 개발 서버에서만 확인한 결과를 JAR 웹앱 검증으로 바꾸어 말하지 않는다.
 - 이름→실제 처리→소유 위치·호출부를 리뷰하고 공개 API/JSON 변경 여부를 기록한다.

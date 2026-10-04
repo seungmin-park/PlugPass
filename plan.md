@@ -18,6 +18,10 @@
 - 실행: 검사기의 허용/금지 예제로 Red→Green을 확인하고, 실제 Controller의 임시 위반과 필수 XML 누락을 공용 경로에서 거부하는지 확인한다. 복원 후 `bash scripts/verify.sh`와 원격 CI를 확인한다.
 - 제외: 사용자 선택에 따라 JaCoCo를 도입하지 않는다. 동시성·성능·실공급자 검증은 기존 후속 기능 작업의 범위로 유지한다.
 
+## 프런트 검증 기준 확정 (2026-10-05, 구현 전)
+
+사용자 요청에 따라 TypeScript strict·배열/optional·Vue 템플릿 검사, 타입 검사 선행 build, lint 경고 0건, 개발 모드의 `[Vue warn]`·예상 밖 진단·실행 예외 실패를 T18·T23·T24의 필수 기준으로 확정한다. [검사 소유자·실제 거부 확인·한계](docs/frontend-plan.md#101-엄격한-정적-검사와-vue-경고)를 따른다. 현재는 계획·작업 지침 반영이며 프런트 검사기 구현·실행 완료가 아니다. T16→T17→T18의 기존 순서와 배포용 JAR 웹앱 확인을 유지한다.
+
 ## 1. 확정 사항과 현재 상태
 
 현재 프로젝트의 agent-engineering 적용은 기존 추천 흐름·구조 검사·verify를 재사용한다. [.agents/verification.json](.agents/verification.json)으로 현재 소스와 실행 로그를 연결하고, 전역 읽기 전용 PR 도구로 CI 통과·머지 준비·실제 머지를 구분한다. [적용 범위와 근거](docs/agent-engineering-application.md)를 따른다. 이 적용은 T14 이후 기능·실공공 API 인증·성능 검증을 완료한 것으로 바꾸지 않는다.

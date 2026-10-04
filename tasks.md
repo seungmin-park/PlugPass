@@ -271,12 +271,14 @@ T16 조회 개선 → T17 장애·복구 검증
 
 ### T18 — 프런트 실행과 검증 기반
 
-의존: T16, T17. 파일: `index.html`, `package.json`, `package-lock.json`, `vite.config.ts`, `vitest.config.ts`, `tsconfig*.json`, `eslint.config.js`, `src/main.ts`, `src/App.vue`, `src/router/index.ts`, `src/styles/base.css`, `src/features/search/components/{SearchForm.vue,SearchForm.spec.ts}`, `src/features/search/views/StationSearchView.vue`. 수정: `.gitignore`, 공용 verify·CI, 기술 기록·출처 목록.
+의존: T16, T17. 파일: `index.html`, `package.json`, `package-lock.json`, `vite.config.ts`, `vitest.config.ts`, `tsconfig*.json`, `eslint.config.js`, `tests/setup.ts`, `tests/vueWarnings.ts`, `tests/vueWarnings.spec.ts`, `src/main.ts`, `src/App.vue`, `src/router/index.ts`, `src/styles/base.css`, `src/features/search/components/{SearchForm.vue,SearchForm.spec.ts}`, `src/features/search/views/StationSearchView.vue`. 수정: `.gitignore`, 공용 verify·CI, 기술 기록·출처 목록.
 
 - [ ] 공식 Vue 생성 구성을 확인하고 Vue 3·TypeScript·Vite와 상태/통신/테스트 도구의 실제 호환 버전·Node를 lockfile과 프로젝트 설정에 고정한다.
+- [ ] [엄격한 검증 기준](docs/frontend-plan.md#101-엄격한-정적-검사와-vue-경고)에 따라 strict·배열/null·optional·템플릿 검사를 켜고 운영/테스트/설정/E2E TS의 검사 범위를 연결한다. `build`는 type-check 성공 후 Vite를 실행하고 lint는 `--max-warnings 0`을 적용한다. props 타입·템플릿 참조·null/배열 접근·undefined를 허용하지 않은 optional 속성 대입·테스트/설정 타입·lint 경고의 임시 위반을 각각 실제 거부하고 복원한다.
+- [ ] Vue 경고 수집기의 0건 통과·진단 발생 시 실패·테스트별 격리를 먼저 테스트한다. setup에 연결한 뒤 실제 Vue 경고·console 진단·비동기 예외의 임시 probe에서 runner 비정상 종료를 확인하고 복원한다. 빈 handler·console mock·오류 무시로 수집을 우회하지 못하게 한다.
 - [ ] runner·DOM 환경을 준비한 뒤 반경·커넥터 라벨과 검색 버튼, 자동 위치 권한 요청 없음의 테스트를 먼저 작성한다. 최소 빈 컴포넌트에서 누락된 화면의 assertion 실패를 확인하고 검색 진입점을 구현한다.
 - [ ] `/app/index.html`·Vite base `/app/`·hash router를 구성하고 `/`에서 `/stations`로 이동한다. 기본 반경은 1000m, 커넥터는 DC_COMBO다.
-- [ ] `npm --prefix frontend run test:unit -- src/features/search/components/SearchForm.spec.ts`와 프런트 전체 test:unit·type-check·lint·build, 공용 검증을 확인하고 PR을 반영한다. 설치 버전과 실제 Red/Green을 기록한다.
+- [ ] `npm --prefix frontend run test:unit -- tests/vueWarnings.spec.ts src/features/search/components/SearchForm.spec.ts`와 프런트 전체 test:unit·type-check·lint·build를 기존 공용 verify·필수 CI에 연결하고 실제 실패 전파·복원 후 통과와 PR 반영을 확인한다. 설치 버전과 실제 Red/Green을 기록한다.
 
 산출: 브라우저에서 열리는 검색 진입점과 실행 가능한 프런트 검증 명령. scaffolding 통과를 검색 사용자 흐름 완료로 보고하지 않는다.
 
@@ -326,10 +328,11 @@ T16 조회 개선 → T17 장애·복구 검증
 
 ### T23 — 브라우저와 실제 백엔드 연결 검증
 
-의존: T22. 파일: `src/test/java/e2e/{ChargingDemoApplication.java,DemoProvider.java,ChargingDemoApplicationTests.java}`, `src/test/resources/publicdata/browser-demo.xml`, `frontend/playwright.config.ts`, `frontend/e2e/{charging-journey.spec.ts,ui-failures.spec.ts}`, `scripts/frontend-e2e.sh`, `docs/frontend-verification.md`. 수정: build.gradle의 test-classpath 실행 경로·프런트 명령·공용 JAR 검사·필수 Java suite 목록.
+의존: T22. 파일: `src/test/java/e2e/{ChargingDemoApplication.java,DemoProvider.java,ChargingDemoApplicationTests.java}`, `src/test/resources/publicdata/browser-demo.xml`, `frontend/playwright.config.ts`, `frontend/e2e/{fixtures.ts,charging-journey.spec.ts,ui-failures.spec.ts}`, `scripts/frontend-e2e.sh`, `docs/frontend-verification.md`. 수정: build.gradle의 test-classpath 실행 경로·프런트 명령·공용 JAR 검사·필수 Java suite 목록.
 
 - [ ] 합성 충전소 2곳의 fixture HTTP→실제 수집→H2→검색/상세/제외 추천을 테스트한다. 공급자·시간만 제어하고 실제 Controller/Service/Repository를 사용한다.
 - [ ] 브라우저에서 예시 위치→검색→첫 상세→대체 후보→다른 상세의 텍스트·ID·제외 조건을 assertion한다. 권한 거부·빈 결과·HTTP 오류·timeout·응답 역전은 별도 UI 실패 spec으로 검증한다.
+- [ ] 개발 모드에서 공용 E2E fixture의 최초 이동 전 console/pageerror 감시를 모든 spec에 적용한다. 초기 mount Vue 경고·클릭 후 비동기 경고·처리되지 않은 예외를 각각 임시 probe로 발생시켜 Playwright 실패를 확인하고 복원한다. HTTP 실패의 예상 진단은 해당 테스트에서 종류·메시지/URL·횟수로 검증하고 Vue 경고의 전역 허용을 금지한다.
 - [ ] 현재 cmux의 확인한 workspace·보조 pane에 서버/러너 로그를 표시하고 headed/UI assertion과 같은 workspace의 실제 브라우저 클릭을 진행한다. mock UI 범위와 실제 DB 연결 범위를 구분한다.
 - [ ] 종료 코드·assertion·HTML/trace·서버 로그, 운영 JAR의 e2e 클래스 부재를 확인하고 공용 검증·PR을 반영한다. 직접 시작한 서버만 종료하고 검증 pane은 유지한다.
 
@@ -342,7 +345,7 @@ T16 조회 개선 → T17 장애·복구 검증
 - [ ] 모바일 375×812·데스크톱 1440×900, 키보드 조작·라벨·오류 focus·상태 알림의 테스트를 먼저 작성하고 필요한 화면을 수정한다.
 - [ ] 실제 JAR의 `/app/index.html`·JS/CSS·직접 링크·같은 origin API·기존 REST Docs를 검증한다. 누락 assertion의 실패를 확인한 뒤 프런트 build→bootJar의 `static/app/` 포함을 구현한다.
 - [ ] Vue→Axios 직접 의존과 API→Store/View 역의존, 필수 suite 누락·0개·skip·failure·error를 기존 lint/검사기로 거부한다. 검사기 회귀 테스트와 실제 임시 위반의 거부·복원을 확인한다.
-- [ ] 프런트 전체 테스트·type-check·lint·build·E2E와 기존 공용 verify를 필수 `PlugPass verify`에 연결한다. 실제 결과·책임/이름·공개 계약을 리뷰하고 사용법·기능 지도·검증 기록을 해당 PR에서 갱신한다.
+- [ ] T18의 필수 타입·lint·단위 테스트를 유지하며 개발 모드 경고 E2E와 배포용 JAR 웹앱 검증까지 기존 공용 verify·필수 `PlugPass verify`에 연결한다. 임시 Vue 경고·실행 예외·필수 E2E 누락/0개/skip이 실제 실패로 전파되는지 확인하고 복원 후 전체 검증한다. 실제 결과·책임/이름·공개 계약을 리뷰하고 사용법·기능 지도·검증 기록을 해당 PR에서 갱신한다.
 
 산출: Spring JAR에서 제공되는 웹앱과 필수 품질 검사. 개발 서버 검증·JAR HTTP·원격 CI·화면 E2E의 결과를 구분한다.
 

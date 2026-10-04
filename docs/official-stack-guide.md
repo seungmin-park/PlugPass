@@ -16,6 +16,12 @@ JaCoCo는 사용자 선택으로 도입하지 않았다. 운영 의존성과 HTT
 
 [Vue TypeScript 공식 안내](https://vuejs.org/guide/typescript/overview.html)의 Vite 기반 생성과 vue-tsc 별도 타입 검사, [Vite 실행 조건](https://vite.dev/guide/)·[base 경로](https://vite.dev/guide/build.html#public-base-path), [Pinia action](https://pinia.vuejs.org/core-concepts/actions.html), [Axios 취소](https://axios-http.com/docs/cancellation), [Playwright UI mode](https://playwright.dev/docs/test-ui-mode)의 관련 절을 확인했다. 이 구성 선택·hash route·Spring JAR에 웹앱 포함은 프로젝트의 설계 판단이다. T18에서 lockfile·Node·실제 실행 결과를 추가하고 T24에서 실제 JAR의 웹앱·API 연결을 확인한다. 공식 문서를 읽었다는 이유로 프런트 도입·검증 완료를 주장하지 않는다.
 
+### 프런트 엄격한 검증 기준 (2026-10-05, 미도입)
+
+[Vue 공식 안내](https://vuejs.org/guide/typescript/overview.html#overview)의 Vite 변환과 `vue-tsc` 타입 검사 차이, [TypeScript](https://www.typescriptlang.org/tsconfig/)의 strict·미확인 배열 접근·optional 값 구분, [Vue Language Tools 소스](https://github.com/vuejs/language-tools/blob/master/packages/language-core/lib/types.ts)의 `strictTemplates` 옵션을 확인했다. 설정 선택과 build의 검사 선행은 프로젝트 판단이다. Language Tools의 master와 문서는 rolling 기준이며 실제 채택 버전·각 tsconfig 포함 범위·타입 오류 거부는 T18에서 확인한다.
+
+[Vue warnHandler](https://vuejs.org/api/application.html#app-config-warnhandler)는 개발 모드의 경고 처리 경계이며 production에서는 적용되지 않는다. [ESLint](https://eslint.org/docs/latest/use/command-line-interface#--max-warnings)는 경고 한도를 넘으면 비정상 종료하고, [Playwright](https://playwright.dev/docs/api/class-page#page-event-console)는 console·pageerror 이벤트를 관찰할 수 있다. 경고/예외 수집 결과의 assertion·테스트별 격리·예상 HTTP 진단의 좁은 허용·개발 모드와 JAR 검증 병행은 [프로젝트 검증 정책](frontend-plan.md#101-엄격한-정적-검사와-vue-경고)이다. 아직 검사기가 없으므로 공식 문서 확인을 실제 강제력 입증으로 보고하지 않는다.
+
 ### 현재 백엔드
 
 | 기술 | 버전 | 역할 |

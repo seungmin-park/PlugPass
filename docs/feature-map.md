@@ -6,6 +6,7 @@
 
 | 예정 사용자 경로 | 상태 소유자·경계 | 기대 결과·예정 검증 |
 | --- | --- | --- |
+| 타입·템플릿·실행 경고 검사 | tsconfig·package 명령·단위 setup·E2E fixture·공용 verify | 임시 타입/lint/Vue 경고/예외 거부·복원·테스트별 격리; [T18/T23/T24 계획](frontend-plan.md#101-엄격한-정적-검사와-vue-경고), 개발 모드와 JAR 검증 구분 |
 | 위치·반경·커넥터 선택→검색 | URL 확정 조건, SearchForm 입력, stationSearchStore 비동기 상태, stationApi HTTP | 준비 전/부분 결과/빈 결과/목록·권한 거부·400·응답 역전; T19/T20 unit·View 테스트 |
 | 검색→상세·직접 링크 | route ID, stationDetailStore, 공용 charging-info 표시 | 상태/최신성·관측/수집 시각 구분·null·404·다른 ID 응답 역전; T21 |
 | 상세→현재 충전소 제외 추천→다른 상세 | URL 조건/제외 ID, recommendationStore, 서버 후보 그룹 | 같은 조건·제외 ID·우선/확인 필요/제외 사유·메타만 실패; T22 |

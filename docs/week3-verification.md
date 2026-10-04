@@ -23,3 +23,15 @@
 - 전체 `bash scripts/verify.sh` 종료0: 287건, 실패/오류/skip0. 정책14·Service3·MVC9·실제 빈 경로1 추가. fixture→H2→검색/상세/추천 실제 HTTP와 실행 JAR 추천200을 확인했다.
 - Refactor: 기존 검색을 `searchWithinRadius`와 최종 limit으로 나눠 일반 검색 계약을 유지하고 추천의 조기 limit 누락을 막았다. 별도 위임 객체나 새 의존성은 추가하지 않았다.
 - 이름→책임→배치 검토: CandidateCharger가 충전기 근거, CandidatePolicy가 그룹·순서, RecommendationService가 조회/제외/limit, Controller와 response가 HTTP 계약을 소유한다. 도메인·DTO record는 관련 값 묶음이며 JPA 엔티티 직접 응답 없음. TS/프런트엔드 없음. 추천에는 외부 I/O·상태 변경이 없어 timeout/rollback/동시 쓰기는 해당 없음; 수집 실패 중 조회는 실제 연결 테스트로 유지했다.
+
+- T10 PR [#19](https://github.com/seungmin-park/PlugPass/pull/19), 필수 CI [성공](https://github.com/seungmin-park/PlugPass/actions/runs/37220612868), 실제 main `6c40b0b`.
+
+## T11
+
+- Red: `./gradlew test --tests '*SyncSchedulerTests'` 5건 중4 실패. 중복 호출이 대기함, 예외 실행이 RUNNING으로 남음, 인증 없는 활성화·짧은 간격이 허용됨을 assertion으로 확인했다.
+- Green: 실행 소유권은 Service의 AtomicBoolean이 공유한다. 예정/직접 호출 모두 진입 전에 획득하고 finally에서 반환한다. 중복은 이력/네트워크를 만들지 않는 SKIPPED 결과다. 예외는 INTERNAL 종료 이력을 남기고 호출자에게 전달한다. 스케줄러는 비밀값 없이 경고하고 다음 회차를 유지한다.
+- 고정 지연은 이전 실행 종료 이후 기다린다. 최초 실행도 설정 간격 뒤에 시작한다. 기본 비활성화·명시적 활성화+키·최소30분을 적용한다. 20요청/회차 상한은 T12에서 연결한다.
+- Refactor: 기존 synchronized의 대기 큐를 실행 소유권으로 바꿨다. 다른 상태와 JPA 트랜잭션은 기존 경계를 유지한다. 소유권은 한 Service bean/한 프로세스만 보장하며 분산 락은 없다.
+- 이름/책임: Scheduler는 실행 시점, Service는 실행 허가·수집 흐름, SyncRun은 이력 불변식이다. 제어 가능한 외부 I/O·latch로 경합/예외 회복을 검증하며 장시간 sleep은 없다.
+
+- 전체 verify 종료0,293건 실패/오류/skip0. SyncSchedulerTests6건은 실제 Service/DB·기본 비활성화·키 없는 활성화 거부·키 있는 고정 지연 등록·간격 방어를 확인했다.

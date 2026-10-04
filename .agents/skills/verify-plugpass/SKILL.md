@@ -15,7 +15,7 @@ description: Verify PlugPass HTTP health, H2 JPA persistence, REST Docs contract
 ## 빌드와 테스트
 
 1. `bash scripts/verify.sh`를 실행한다. clean build와 아래 JAR·실제 HTTP 검사를 같은 명령으로 수행한다. JDK 25와 Python 3이 필요하다. CI도 이 명령을 사용한다.
-2. 종료 0과 `build/test-results/test/TEST-*.xml`의 테스트 287개(T10 27개 + 기반 4개 + T02 52개 + T03 19개 + T04 22개 + T05 64개 + T06 22개 + T07 14개 + T08 49개 + T09 14개), 실패·오류·skip 0을 확인한다. 기능을 추가했다면 기대 개수도 갱신한다.
+2. 종료 0과 `build/test-results/test/TEST-*.xml`의 테스트 293개(T11 6개 + T10 27개 + 기반 4개 + T02 52개 + T03 19개 + T04 22개 + T05 64개 + T06 22개 + T07 14개 + T08 49개 + T09 14개), 실패·오류·skip 0을 확인한다. 기능을 추가했다면 기대 개수도 갱신한다.
 3. [테스트 경계](../../../AGENTS.md)를 따른다. Repository는 기본 save 후 조회하고 매핑 복원이 검증 대상일 때만 이유를 명시해 flush/clear한다. 참조 차이 자체를 assertion하지 않는다. Service는 테스트 트랜잭션 없이 production commit 후 별도 조회하고 AfterEach로 정리한다. 테스트 전용 엔티티가 실행 JAR에 들어가지 않아야 한다.
 4. `build/generated-snippets/health/`와 `build/docs/asciidoc/index.html`이 생성돼야 한다.
 5. JAR의 `BOOT-INF/classes/static/docs/index.html`이 생성한 HTML과 같아야 한다.
@@ -96,3 +96,7 @@ StationSyncTests12건·SyncRunTests10건으로 수집 관련22건, 전체260건�
 ## T10
 
 `./gradlew test --tests "*Recommendation*Tests"` 27건. 전체287건. 정책·실제 DB·MVC를 구분하며 실제 fixture 수집→추천 HTTP와 JAR 추천200을 함께 확인한다.
+
+## T11
+
+`./gradlew test --tests "*SyncSchedulerTests"` 6건. 전체293건. 수집 기본 비활성화, 키 없는 활성화 거부, 고정 지연 등록, 중복 즉시 SKIPPED·예외 후 회복을 확인한다. 실제 공공 API 스케줄 실행은 키 없어 미확인이다.

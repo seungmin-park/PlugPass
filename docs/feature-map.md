@@ -164,3 +164,5 @@ SearchBounds → ChargerRepository.findSearchCandidates → 기존 정확한 거
 URL query→criteria(empty/valid/invalid)→기능 API→공통 Axios/오류 경계→unknown JSON 구조 검사→타입 응답. criteria36·ID20·apiError14·검색31·상세14·추천18건, 기존9건과 전체142건이다. `[Vue warn]`/console 진단·정리/격리 공용 setup을 그대로 사용한다. 필수9파일과0개/skip/누락은 기존runtime 검사가 확인한다. [Red/Green/책임·한계](frontend-verification.md). 화면의 위치→검색 연결은 T20 범위다.
 
 T19 PR37/main3191b89·필수 CI37232622126 실제 성공. T18/T19 화면 근거와 개발 서버 재시작 전후 진단은 프런트 실행 기록을 따른다. T20 이후 실제 검색 화면 연결/전체 E2E는 계획으로 유지한다.
+
+실행 진단 후속 회귀: console mock을 복원해도 교체/진단 이력을 잃지 않도록 테스트용 monitorConsole을 적용했다. 수명 단위2건·실제8probe 거부/복원, 최종 프런트144건/필수10파일. 제품/API 계약은 유지한다. 프런트 실행 기록의 후속 회귀를 따른다.

@@ -1,0 +1,36 @@
+
+> plugpass-web@0.1.0 test:unit
+> vitest run tests/ConsoleFollowupProbe.spec.ts
+
+
+ RUN  v5.0.3 /Users/seungmin/Desktop/repo/PlugPass/frontend
+
+stderr | tests/ConsoleFollowupProbe.spec.ts > reject diagnostic
+probe warning
+
+ ❯ tests/ConsoleFollowupProbe.spec.ts (2 tests | 1 failed) 3ms
+   × reject diagnostic 2ms
+   ✓ next test isolated 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/ConsoleFollowupProbe.spec.ts > reject diagnostic
+Error: [console.warn] probe warning
+ ❯ TestDiagnostics.assertEmpty tests/vueWarnings.ts:9:41
+      7|
+      8|   assertEmpty(): void {
+      9|     if (this.messages.length > 0) throw new Error(this.messages.join('…
+       |                                         ^
+     10|   }
+     11| }
+ ❯ tests/setup.ts:62:17
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  05:45:35
+   Duration  363ms (environment 81%, setup 10%, transform 7%, tests 1%, import 1%, worker 1%)
+
+JSON report written to /Users/seungmin/Desktop/repo/PlugPass/frontend/test-results/unit.json

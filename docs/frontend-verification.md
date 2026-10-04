@@ -89,3 +89,14 @@ PR [#37](https://github.com/seungmin-park/PlugPass/pull/37)의 서명 head `b7f1
 [새 서버 로그](evidence/t19/frontend-dev-final.log.gz)의05:36:00 이후 실제 조건3km/NACS 선택·검색 클릭·없는경로·복귀 링크를 다시 확인했다. [브라우저 진단](evidence/t19/browser-diagnostics.json)은 이전 오류5건을 보존하고 재시작 후0건을 구분한다. 이전 오류를 전체기간0건으로 보고하지 않는다. 최종 화면은 아래와 같으며 서버와 Codex 브라우저를 유지했다. 이 흐름은 T18 진입점 검증이고 T20 위치/API 연결·T23 Playwright 전체 흐름은 미구현이다.
 
 ![최종 검색 진입점](evidence/t19/search-screen-final.jpg)
+
+
+## 실행 진단 후속 회귀 — console mock 복원
+
+T19/체크리스트 전달 뒤 최종 지침 리뷰에서 console을 잠시 mock으로 숨겼다가 테스트 안에서 mockRestore하는 경로를 확인했다. 기존 setup은 끝의 함수 참조만 비교하여 이 probe가 잘못 통과(종료0)했다. 정상 테스트의 진단을 허용한 것으로 기록하지 않는다. [실제 이전 probe](evidence/console-restoration/console-restoration-before.log.gz). 별도 console 감시 수명 단위 테스트2건도 실제 assertion Red를 확인했다.
+
+Green: 테스트용 `monitorConsole`이 Proxy로 warn/error 호출과 속성 교체·정의·삭제 이력을 TestDiagnostics에 기록한다. 원래 출력은 계속 전달하고, mock이 복원돼도 수집된 진단은 유지한다. 제품 코드는 변경하지 않는다. setup은 컴포넌트 정리·flushPromises 후 assertion하고 finally에서 원래 console 객체/메서드·spy/global/plugin을 복원한다. 임의의 console 교체를 정상 테스트로 허용하지 않는다. 구조는 진단 메시지/판정(TestDiagnostics), console 수명(monitorConsole), 등록·정리(setup)로 나뉜다.
+
+[같은 실제 probe](evidence/console-restoration/console-restoration-after.log.gz)는 종료1/첫 테스트 실패·다음 정상 테스트 통과였다. 기존 Vue 경고·빈 handler·console warn/error·mock·정리 중 경고·비동기 예외와 복원 mock의 [8개 probe](evidence/console-restoration/probes/result.json) 모두 비정상 종료하고 복원했다. [단위 Red](evidence/console-restoration/console-restoration-red.log.gz)·[전체 Green144](evidence/console-restoration/console-restoration-green.log.gz). 기존142건은 당시 원격 CI 기록이고 후속 최종 프런트는144건/필수10파일이다.
+
+후속 최종 `bash scripts/verify.sh` 종료0: Java360·Python21·프런트144(필수10파일), strict 타입/lint/build·JAR 실제HTTP·별도JVM3회 모두 통과, 실패/오류/skip0. [후속 runtime](evidence/console-restoration/runtime.json)·[후속 공용 로그](evidence/console-restoration/verify.log.gz). 기존T19 응답/URL 계약은 변경하지 않았다.

@@ -2,6 +2,7 @@ import { config, enableAutoUnmount, flushPromises } from '@vue/test-utils'
 import { afterEach, beforeEach, vi } from 'vitest'
 import type { App, Plugin } from 'vue'
 import { TestDiagnostics } from './vueWarnings'
+import { monitorConsole } from './consoleDiagnostics'
 
 let unmountComponents: () => void
 enableAutoUnmount(cleanup => { unmountComponents = cleanup })
@@ -9,8 +10,8 @@ enableAutoUnmount(cleanup => { unmountComponents = cleanup })
 let diagnostics: TestDiagnostics
 let originalWarn: typeof console.warn
 let originalError: typeof console.error
-let monitoredWarn: typeof console.warn
-let monitoredError: typeof console.error
+let originalConsole: Console
+let monitoredConsole: Console
 let originalPlugins: typeof config.global.plugins
 
 function monitorVue(app: App): void {
@@ -41,18 +42,11 @@ function monitorVue(app: App): void {
 
 beforeEach(() => {
   diagnostics = new TestDiagnostics()
+  originalConsole = console
   originalWarn = console.warn
   originalError = console.error
-  monitoredWarn = (...messages: unknown[]) => {
-    diagnostics.record('console.warn', messages.map(String).join(' '))
-    originalWarn(...messages)
-  }
-  monitoredError = (...messages: unknown[]) => {
-    diagnostics.record('console.error', messages.map(String).join(' '))
-    originalError(...messages)
-  }
-  console.warn = monitoredWarn
-  console.error = monitoredError
+  monitoredConsole = monitorConsole(originalConsole, diagnostics)
+  globalThis.console = monitoredConsole
   originalPlugins = config.global.plugins
   const diagnosticsPlugin: Plugin = { install: monitorVue }
   config.global.plugins = [...originalPlugins, diagnosticsPlugin]
@@ -62,15 +56,16 @@ afterEach(async () => {
   try {
     unmountComponents()
     await flushPromises()
-    if (console.warn !== monitoredWarn || console.error !== monitoredError) {
+    if (console !== monitoredConsole) {
       diagnostics.record('monitoring', 'console 진단 수집기를 교체하면 안 됩니다')
     }
     diagnostics.assertEmpty()
   } finally {
     vi.restoreAllMocks()
     vi.unstubAllGlobals()
-    console.warn = originalWarn
-    console.error = originalError
+    globalThis.console = originalConsole
+    originalConsole.warn = originalWarn
+    originalConsole.error = originalError
     config.global.plugins = originalPlugins
   }
 })

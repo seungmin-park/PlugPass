@@ -1,0 +1,6 @@
+{
+  "separate_jvms": 3,
+  "memory_data_lost": true,
+  "readiness_reset": true,
+  "recollection_ready": true
+}

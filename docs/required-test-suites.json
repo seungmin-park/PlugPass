@@ -10,6 +10,7 @@
   "com.plugpass.ingestion.config.IngestionConfigurationTests",
   "com.plugpass.ingestion.domain.SyncRunTests",
   "com.plugpass.ingestion.dto.StationSnapshotTests",
+  "com.plugpass.ingestion.metrics.IngestionMetricsTests",
   "com.plugpass.ingestion.scheduler.SyncSchedulerTests",
   "com.plugpass.ingestion.service.IngestionRecoveryTests",
   "com.plugpass.ingestion.service.StationSyncTests",

@@ -61,6 +61,11 @@ def check_http(base, expected):
             raise RuntimeError('Environment endpoint exposed')
     except urllib.error.HTTPError as error:
         require(error.code == 404, f'Unexpected env status: {error.code}')
+    try:
+        with urllib.request.urlopen(base + '/actuator/metrics', timeout=5):
+            raise RuntimeError('Metrics unexpectedly exposed in default configuration')
+    except urllib.error.HTTPError as error:
+        require(error.code == 404, f'Unexpected default metrics status: {error.code}')
 
 
 def main():
@@ -102,7 +107,7 @@ def main():
             check_http(f'http://127.0.0.1:{port}', expected)
             result = {'tests': count, 'failures': 0, 'errors': 0, 'skipped': 0,
                       'health': 'UP', 'env_http': 404, 'station_search_http': 200, 'station_validation_http': 400, 'station_detail_missing_http': 404, 'docs_match': True,
-                      'test_fixtures_packaged': False}
+                      'recommendations_http': 200, 'default_metrics_http': 404, 'test_fixtures_packaged': False}
             result_file.write_text(json.dumps(result, indent=2) + '\n')
             print(json.dumps(result), flush=True)
         finally:

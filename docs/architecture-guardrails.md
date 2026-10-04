@@ -30,7 +30,7 @@ flowchart LR
 
 ## 필수 테스트 누락
 
-[required-test-suites.json](required-test-suites.json)은 T10/T11/T12를 포함한 기존 기능 지도의 29개 suite와 구조 검사 2개 suite의 실행 요구 목록이다. 공용 검증은 실제 XML과 비교하고 누락 이름을 출력하며 실패한다. 총건수는 고정하지 않고 새로운 suite 추가는 허용한다. 새 기능 완료 시 핵심 suite를 목록에 등록한다. 테스트 0개·빈 suite·실패·오류·skip도 계속 거부한다.
+[required-test-suites.json](required-test-suites.json)은 T10~T13을 포함한 기능 지도의 30개 suite와 구조 검사 2개 suite의 실행 요구 목록이다. 공용 검증은 실제 XML과 비교하고 누락 이름을 출력하며 실패한다. 총건수는 고정하지 않고 새로운 suite 추가는 허용한다. 새 기능 완료 시 핵심 suite를 목록에 등록한다. 테스트 0개·빈 suite·실패·오류·skip도 계속 거부한다.
 
 목록 삭제·suite 이름 변경에는 대체 검증과 [기능 지도](feature-map.md)를 함께 검토한다. suite 내부의 일부 테스트 삭제·잘못된 assertion·목록 자체의 의도적인 변경은 자동으로 판정하지 못하므로 리뷰가 맡는다.
 

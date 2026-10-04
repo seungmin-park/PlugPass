@@ -68,3 +68,23 @@
 
 - main의 CI 구조 검사 PR #23(`56aa63e`)을 통합했다. 양쪽 검증 안내를 유지하고 T13 핵심 suite를 필수 목록에 등록했다. `bash scripts/verify.sh` 종료0: Java353건(업무330+구조23), Python8건, 실패/오류/skip0. 실제 JAR 추천200·기본 metrics404·문서 일치도 다시 확인했다. 로그: `/tmp/plugpass-week3/t13-main-integration-verify.log`, 결과: `build/verification/runtime.json`.
 - 통합 검증 시 cmux를 다시 확인했으나 호출 workspace/surface가 없고 “cmux 내부에서 시작된 프로세스만 연결 가능”으로 접근이 거부됐다. 기존 live socket 부재와 함께 현재 실행에서 화면 E2E를 확인하지 못한 원인으로 기록한다.
+
+- T13 PR [#25](https://github.com/seungmin-park/PlugPass/pull/25), 필수 CI [성공](https://github.com/seungmin-park/PlugPass/actions/runs/37222985184), 실제 main `e8366d021fc2ef73a852968350025ae03d77c893`.
+
+## 3주차 최종 확인
+
+```mermaid
+flowchart LR
+    A[예정·직접 수집] --> B[중복 실행 방지]
+    B --> C[페이지·요청·시간 상한]
+    C --> D[페이지 저장·종료 이력]
+    D --> E[수집 결과·현재 품질 지표]
+    D --> F[저장 데이터 조회]
+    F --> G[충전기별 상태·최신성 판단]
+    G --> H[우선·확인 필요·제외 후보와 이유]
+```
+
+- T10~T13의 실제 필수 CI 성공과 main 머지 상태를 확인한 뒤 tasks.md의 해당14개 항목을 완료로 갱신했다. 문서 갱신은 별도 PR로 반영한다. 로컬 문서8개의 링크·체크 범위·출처53개/필수 suite32개 JSON 정합성 검사가 종료0이었다. 3주차 완료14개·T01 실응답 미완료2개·4주차 미완료8개를 대조했다. 이 문서 검사를 애플리케이션 실행으로 보고하지 않는다. 원격 필수 CI는 문서 PR에서도 별도 확인한다.
+- 이름→실제 수행 내용→배치 검토: Controller는 HTTP 변환, Service는 저장 데이터 조회/수집 흐름, CandidatePolicy와 FreshnessPolicy는 판단, Budget은 회차 상한, Scheduler는 호출 시점, Metrics는 관측을 소유한다. 선언부·호출부·REST Docs·DB 기록·실제 HTTP 결과를 함께 확인했다. 구조 검사 통과만으로 좋은 설계 전체를 보장한다고 주장하지 않는다.
+- 3주차 Java70건을 추가했다(T10 27 + T11 6 + T12 31 + T13 6). 기존260건과 main 구조23건을 합쳐353건, Python8건 통과. 실제 JAR 추천200·validation400·없는 상세404·기본 metrics404·health UP·REST Docs HTML 일치를 확인했다. 테스트 보고서는 `build/test-results/test/`, HTTP/문서 근거는 `build/verification/`에 있다.
+- 실제 공공 API 인증·검증 지역 실응답은 키 없어 미확인이며 T01 두 항목은 열어 둔다. cmux 화면 E2E도 미확인이다. H2 재시작 보존·다중 인스턴스 소유권·4주차 종합 데모/성능은 이번 완료 범위가 아니다.

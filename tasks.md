@@ -1,6 +1,6 @@
 # PlugPass 작업 체크리스트
 
-**목표·설계:** [plan.md](plan.md). T01 문서 계약은 main 반영, 인증된 실연동은 키 없어 미확인. T02~T09는 구현·검증·main 반영 완료. 2주차 구현까지 완료했으며 T01 실응답 확인 두 항목은 키 없어 보류한다. 아래 하위 체크와 근거를 따른다.
+**목표·설계:** [plan.md](plan.md). T01 문서 계약은 main 반영, 인증된 실연동은 키 없어 미확인. T02~T13은 구현·검증·main 반영 완료. 3주차 체크 14개를 완료했으며 T01 실응답 확인 두 항목은 키 없어 보류한다. 아래 하위 체크와 근거를 따른다.
 
 **실행 방식:** 작업 하나씩 순서대로 진행한다. 구현 시 `superpowers:executing-plans`를 사용한다. 이 파일을 만들었다는 이유로 이후 작업 전체를 자동 실행하지 않는다.
 
@@ -153,10 +153,12 @@
 
 의존: T08, T09. 파일: `recommendation/domain/CandidatePolicy.java`, `recommendation/domain/StationCandidate.java`, `recommendation/domain/CandidateGroups.java`, `recommendation/controller/RecommendationController.java`, `recommendation/domain/RecommendationTests.java`. 수정: REST Docs 문서.
 
-- [ ] 호환되지 않는 커넥터, 명시적 이용 제한, stale/unknown, 제외한 충전소, 후보 0개, 거리 동률을 테스트한다.
-- [ ] `CandidatePolicy.rank(List<StationCandidate> candidates): CandidateGroups`와 `GET /api/v1/recommendations`를 구현한다. StationSearchQuery로 검색한 뒤 제외 ID를 빼고, 추천 판단에 필요한 값만 StationCandidate로 전달한다.
-- [ ] RECENT·AVAILABLE 후보와 UNVERIFIED인 확인 필요 후보를 분리하고 reasonCodes를 제공한다. 미확인 운영 조건은 경고로 표시하며 STALE을 확정 이용 가능으로 올리지 않는다.
-- [ ] `./gradlew test --tests '*RecommendationTests'`와 REST Docs·공용 검증을 통과하고 PR을 반영한다.
+- [x] 호환되지 않는 커넥터, 명시적 이용 제한, stale/unknown, 제외한 충전소, 후보 0개, 거리 동률을 테스트한다.
+- [x] `CandidatePolicy.rank(List<StationCandidate> candidates): CandidateGroups`와 `GET /api/v1/recommendations`를 구현한다. StationSearchQuery로 검색한 뒤 제외 ID를 빼고, 추천 판단에 필요한 값만 StationCandidate로 전달한다.
+- [x] RECENT·AVAILABLE 후보와 UNVERIFIED인 확인 필요 후보를 분리하고 reasonCodes를 제공한다. 미확인 운영 조건은 경고로 표시하며 STALE을 확정 이용 가능으로 올리지 않는다.
+- [x] `./gradlew test --tests '*RecommendationTests'`와 REST Docs·공용 검증을 통과하고 PR을 반영한다.
+
+완료 근거: [PR #19](https://github.com/seungmin-park/PlugPass/pull/19), main `6c40b0b`, [필수 CI 성공](https://github.com/seungmin-park/PlugPass/actions/runs/37220612868). 추천 관련27건·전체287건·공용 검증 종료0. fixture 수집→H2→추천 실제 HTTP, 그룹별 limit 전 판단·제외와 REST Docs를 확인했다. [Red/Green·책임·실패/경계 기록](docs/week3-verification.md).
 
 산출: plan.md의 결정 가능한 규칙에 따른 후보. 예측 정확도나 충전 성공률을 임의로 표시하지 않는다.
 
@@ -164,30 +166,36 @@
 
 의존: T06. 파일: `ingestion/scheduler/SyncScheduler.java`, `ingestion/scheduler/SyncSchedulerTests.java`. 수정: 수집 활성화·간격 설정.
 
-- [ ] 아직 실행 중인 수집을 다시 호출할 때 중복되지 않고, 예외 종료 후 다음 실행이 가능한지 테스트한다.
-- [ ] 단일 인스턴스용 실행 소유권을 두고 고정 지연 방식으로 synchronize를 호출한다. 수집은 기본 비활성화하며 명시적 설정과 인증이 있을 때 켠다.
-- [ ] T01의 호출 한도와 한 회차의 페이지 수로 간격을 정한다. `./gradlew test --tests '*SyncSchedulerTests'`에서 실제 장시간 sleep 대신 제어 가능한 실행기를 사용하고 PR을 반영한다.
+- [x] 아직 실행 중인 수집을 다시 호출할 때 중복되지 않고, 예외 종료 후 다음 실행이 가능한지 테스트한다.
+- [x] 단일 인스턴스용 실행 소유권을 두고 고정 지연 방식으로 synchronize를 호출한다. 수집은 기본 비활성화하며 명시적 설정과 인증이 있을 때 켠다.
+- [x] T01의 호출 한도와 한 회차의 페이지 수로 간격을 정한다. `./gradlew test --tests '*SyncSchedulerTests'`에서 실제 장시간 sleep 대신 제어 가능한 실행기를 사용하고 PR을 반영한다.
+
+완료 근거: [PR #20](https://github.com/seungmin-park/PlugPass/pull/20), main `8607e46`, [필수 CI 성공](https://github.com/seungmin-park/PlugPass/actions/runs/37220900851). 대상6건·전체293건·공용 검증 종료0. 중복 즉시 SKIPPED, 예외 후 회복, 기본 비활성화·인증/간격 방어를 확인했다. 30분 고정 지연과 회차 최대20요청은 예정 수집 하루 최대960요청이며 실제 계정 quota·수동 실행은 별도 확인한다. [실행 기록](docs/week3-verification.md).
 
 산출: 한 프로세스에서 중복되지 않는 반복 수집. 분산 락·다중 인스턴스 보장은 하지 않는다.
 
 ### T12 — 외부 장애의 시간·재시도 제한과 복구
 
-의존: T05, T06, T11. 파일: `ingestion/IngestionRecoveryTests.java`. 수정: PublicDataClient/StationSyncService의 실패 분류와 실행 예산.
+의존: T05, T06, T11. 파일: `ingestion/service/IngestionRecoveryTests.java`. 수정: PublicDataClient/StationSyncService의 실패 분류와 실행 예산.
 
-- [ ] timeout, 429, 5xx, 401/403, 깨진 본문, 페이지 무진행을 주입한다. 종료까지 요청 횟수·총 소요 예산에 상한이 있는지 확인한다.
-- [ ] 일시 오류만 제한 재시도하고 인증·계약 오류는 같은 요청을 반복하지 않는다. Retry-After는 남은 실행 예산 안에서 적용한다.
-- [ ] 장애 중 조회가 기존 데이터를 반환하되 최신성은 시간에 따라 낮아지는지, 공급자 복구 후 다음 수집이 갱신하는지 테스트한다.
-- [ ] `./gradlew test --tests '*IngestionRecoveryTests'`와 공용 검증을 통과하고 실패 분류·복구 설명을 포함한 PR을 반영한다.
+- [x] timeout, 429, 5xx, 401/403, 깨진 본문, 페이지 무진행을 주입한다. 종료까지 요청 횟수·총 소요 예산에 상한이 있는지 확인한다.
+- [x] 일시 오류만 제한 재시도하고 인증·계약 오류는 같은 요청을 반복하지 않는다. Retry-After는 남은 실행 예산 안에서 적용한다.
+- [x] 장애 중 조회가 기존 데이터를 반환하되 최신성은 시간에 따라 낮아지는지, 공급자 복구 후 다음 수집이 갱신하는지 테스트한다.
+- [x] `./gradlew test --tests '*IngestionRecoveryTests'`와 공용 검증을 통과하고 실패 분류·복구 설명을 포함한 PR을 반영한다.
+
+완료 근거: [PR #22](https://github.com/seungmin-park/PlugPass/pull/22), main `c1e4cd2`, [필수 CI 성공](https://github.com/seungmin-park/PlugPass/actions/runs/37222055266). 대상31건·전체324건·공용 검증 종료0. 제한 재시도·Retry-After·페이지/요청/시간 상한·interrupt·부분 commit 보존·STALE 경과·다음 회차 회복을 검증했다. 기존 인증/깨진 응답 HTTP 검사도 유지했다. [실행 기록](docs/week3-verification.md).
 
 산출: 무한 재시도 없이 끝나고 다음 실행에서 회복하는 수집. 프로세스 재시작 뒤 H2 데이터 복구와는 구분한다.
 
 ### T13 — 수집 상태와 데이터 품질 관측
 
-의존: T06, T11, T12. 파일: `ingestion/IngestionMetrics.java`, `ingestion/IngestionMetricsTests.java`, `docs/operations.md`.
+의존: T06, T11, T12. 파일: `ingestion/metrics/IngestionMetrics.java`, `ingestion/metrics/IngestionMetricsTests.java`, `docs/operations.md`.
 
-- [ ] 성공/부분 실패/실패, 재시도, 마지막 성공 이후 경과, 조회 데이터의 최신성 분포를 구분하는 검증을 작성한다.
-- [ ] 실행 ID·처리 건수·실패 원인을 로그와 지표로 연결한다. 비밀 키·응답 원문 전체를 로그에 남기지 않고 충전소 ID를 지표 태그로 사용하지 않는다.
-- [ ] `./gradlew test --tests '*IngestionMetricsTests'`를 통과하고 health와 데이터 최신성의 차이·운영 확인 명령을 문서화한 PR을 반영한다.
+- [x] 성공/부분 실패/실패, 재시도, 마지막 성공 이후 경과, 조회 데이터의 최신성 분포를 구분하는 검증을 작성한다.
+- [x] 실행 ID·처리 건수·실패 원인을 로그와 지표로 연결한다. 비밀 키·응답 원문 전체를 로그에 남기지 않고 충전소 ID를 지표 태그로 사용하지 않는다.
+- [x] `./gradlew test --tests '*IngestionMetricsTests'`를 통과하고 health와 데이터 최신성의 차이·운영 확인 명령을 문서화한 PR을 반영한다.
+
+완료 근거: [PR #25](https://github.com/seungmin-park/PlugPass/pull/25), main `e8366d0`, [필수 CI 성공](https://github.com/seungmin-park/PlugPass/actions/runs/37222985184). 대상6건, main 구조 검사 통합 후 Java353건·Python8건 실패/오류/skip0·공용 검증 종료0. 실제 품질/경과 metrics HTTP와 비밀값 없는 종료 로그, 실행 JAR 기본 metrics404·추천200·문서 일치를 확인했다. [운영 확인](docs/operations.md), [실행 기록](docs/week3-verification.md).
 
 산출: 서버 정상과 데이터 수집 정상의 차이를 관찰하는 방법. 외부 모니터링 서비스 전송은 이 작업의 필수 범위가 아니다.
 

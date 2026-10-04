@@ -24,12 +24,12 @@
 | --- | --- |
 | 사용자와 확정 | 이름은 PlugPass·플러그패스, 목적은 백엔드 포트폴리오, 개발 기간은 4~6주 |
 | 현재 선택 | 서비스 언어는 Java, DB는 H2로 간단히 시작, API 문서는 Spring REST Docs |
-| 구현·검증 완료 | 애플리케이션 기동, health HTTP, JPA 저장·재조회 테스트, 문서 생성·JAR 제공, T02 식별/위치, T03 상태 정규화, T04 업무 저장, T05 외부 HTTP 클라이언트(fixture 검증), T06 페이지 수집/실행 이력, T07 관측 최신성, T08 주변 검색, T09 상세 조회/실제 fixture 연결 검증 |
+| 구현·검증 완료 | 애플리케이션 기동, health HTTP, JPA 저장·재조회 테스트, 문서 생성·JAR 제공, T02 식별/위치, T03 상태 정규화, T04 업무 저장, T05 외부 HTTP 클라이언트(fixture 검증), T06 페이지 수집/실행 이력, T07 관측 최신성, T08 주변 검색, T09 상세 조회/실제 fixture 연결 검증, T10 근거 있는 추천, T11 중복 방지 스케줄, T12 실행 예산/제한 재시도/다음 회차 복구, T13 수집·품질 지표 |
 | 협업 기반 완료 | 작은 PR, 필수 CI, 보호된 main, 자동 squash merge. [PR #1](https://github.com/seungmin-park/PlugPass/pull/1)에서 실제 동작 확인 |
-| 아직 미구현 | 후보 추천, 반복 수집 스케줄, 실행 예산/재시도, 자체 운영 지표 |
-| 첫 작업에서 확인 | 사용할 공공데이터 API, 활용 신청·인증, 필드 의미, 호출 한도, 갱신 주기, 제공 범위 |
+| 후속 작업 | T14 종합 HTTP 데모, T15 성능 기준선, T16 측정 기반 개선 판단, T17 장애 종합 검증, T18 최종 재현·포트폴리오 |
+| T01 실연동 미확인 | 키 없는 상태. 인증된 실제 응답으로 검증 지역·필드/시각 의미·공식 가이드 대조·계정 한도를 확인해야 함 |
 
-T04의 Station/Charger 엔티티·Repository와 실제 트랜잭션 upsert, T06~T09 수집·저장·최신성·주변/상세 조회를 구현했다. 공공 API 인증은 키 없어 미확인이며 실제 HTTP 연결 검증은 합성 fixture 범위다. 현재 H2는 메모리 모드이므로 서버 재시작 후 데이터를 보존하지 않는다. 서버가 살아 있다는 health 응답은 충전소 데이터가 최신이라는 뜻이 아니다.
+T02~T13을 구현·검증하고 main에 반영했다. 3주차 완료 근거는 [체크리스트](tasks.md)와 [실행 기록](docs/week3-verification.md)에 연결했다. 최종 공용 검증은 Java353건·Python8건 실패/오류/skip0과 실제 JAR HTTP·REST Docs 일치를 확인했다. 공공 API 인증은 키 없어 미확인이며 실제 HTTP 연결 검증은 합성 fixture 범위다. cmux 접근 제한으로 화면 E2E는 확인하지 못했다. 현재 H2는 메모리 모드이므로 서버 재시작 후 데이터를 보존하지 않는다. 서버가 살아 있다는 health 응답은 충전소 데이터가 최신이라는 뜻이 아니다.
 
 아래 API·객체·작업 분할은 이 목표를 구현하기 위한 설계안이다. 외부 API의 제공 사실과 구분하며, T01에서 확인한 계약과 충돌하면 관련 항목을 함께 수정한다.
 
@@ -98,6 +98,8 @@ flowchart LR
 | `StationSyncService` | 실행 결과·페이지 처리·중복 없는 저장·순서 역전 방지 | 긴 외부 호출을 DB 트랜잭션 안에서 수행 |
 | `StationQueryService` | 저장된 데이터 검색·도메인 판단을 응답으로 조합 | 사용자 요청마다 외부 API 호출 |
 | `CandidatePolicy` | 호환성·최신성·거리와 제외 이유에 따라 후보 구성 | 근거 없는 확률 점수·예측 |
+| `IngestionBudget`, `RetryingPageFetcher` | 회차의 페이지·요청·시간 상한과 일시 오류 재시도 | 인증/계약 오류 무한 반복·DB 저장 강제 중단 |
+| `IngestionMetrics` | 종료 결과 기록과 현재 성공 경과·최신성 관측 | DB 상태 변경·충전 가능 보장 |
 
 기능별 묶음 안에서 역할을 구분한다.
 
@@ -105,7 +107,7 @@ flowchart LR
 src/main/java/com/plugpass/
   station/        domain/ · repository/
   freshness/      domain/ · config/
-  ingestion/      client/ · config/ · domain/ · dto/ · repository/ · service/ · scheduler/
+  ingestion/      client/ · config/ · domain/ · dto/ · repository/ · service/ · scheduler/ · metrics/
   search/         controller/ · domain/ · dto/ · service/
   recommendation/ controller/ · domain/ · dto/ · service/
   common/         dto/response/ · validation/
@@ -115,7 +117,7 @@ src/test/resources/publicdata/  비밀 정보 없는 외부 응답 fixture
 src/docs/asciidoc/index.adoc     테스트에서 생성한 업무 API 문서
 ```
 
-HTTP DTO는 각 기능의 `dto/request`, `dto/response`에 모은다. T11 스케줄 진입점은 `ingestion/scheduler`에 둔다. 외부 API 계약·저장 매핑·공개 HTTP 계약은 패키지 이동으로 변경하지 않는다.
+HTTP DTO는 각 기능의 `dto/request`, `dto/response`에 모은다. T11 스케줄 진입점은 `ingestion/scheduler`, T13 관측은 `ingestion/metrics`에 둔다. 외부 API 계약·저장 매핑·공개 HTTP 계약은 패키지 이동으로 변경하지 않는다.
 
 Service 이름은 유스케이스 인터페이스를 뜻하며 구현은 `Default{ServiceName}`으로 둔다. 테스트 경계·Java 명시적 타입·엔티티 생성·이름과 책임 검토는 [AGENTS.md](AGENTS.md)를 따른다.
 

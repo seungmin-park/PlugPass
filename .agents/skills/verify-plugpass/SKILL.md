@@ -15,7 +15,7 @@ description: Verify PlugPass HTTP health, H2 JPA persistence, REST Docs contract
 ## 빌드와 테스트
 
 1. `bash scripts/verify.sh`를 실행한다. clean build와 아래 JAR·실제 HTTP 검사를 같은 명령으로 수행한다. JDK 25와 Python 3이 필요하다. CI도 이 명령을 사용한다.
-2. 종료 0과 `build/test-results/test/TEST-*.xml`의 테스트 324개(T12 31개 + T11 6개 + T10 27개 + 기반 4개 + T02 52개 + T03 19개 + T04 22개 + T05 64개 + T06 22개 + T07 14개 + T08 49개 + T09 14개), 실패·오류·skip 0을 확인한다. 기능을 추가했다면 기대 개수도 갱신한다.
+2. 종료 0과 `build/test-results/test/TEST-*.xml`의 테스트 330개(T13 6개 + T12 31개 + T11 6개 + T10 27개 + 기반 4개 + T02 52개 + T03 19개 + T04 22개 + T05 64개 + T06 22개 + T07 14개 + T08 49개 + T09 14개), 실패·오류·skip 0을 확인한다. 기능을 추가했다면 기대 개수도 갱신한다.
 3. [테스트 경계](../../../AGENTS.md)를 따른다. Repository는 기본 save 후 조회하고 매핑 복원이 검증 대상일 때만 이유를 명시해 flush/clear한다. 참조 차이 자체를 assertion하지 않는다. Service는 테스트 트랜잭션 없이 production commit 후 별도 조회하고 AfterEach로 정리한다. 테스트 전용 엔티티가 실행 JAR에 들어가지 않아야 한다.
 4. `build/generated-snippets/health/`와 `build/docs/asciidoc/index.html`이 생성돼야 한다.
 5. JAR의 `BOOT-INF/classes/static/docs/index.html`이 생성한 HTML과 같아야 한다.
@@ -44,7 +44,7 @@ SnippetException에 status가 문서화되지 않았다는 실패가 있어야 �
 종료 코드, XML 테스트 결과, 생성 HTML, `build/verification/server.log`와 `runtime.json`을 확인한다. 공용 검증은 테스트 0개·실패·오류·skip을 거부한다.
 PR은 `.github/workflows/verify.yml`의 `PlugPass verify` 결과를 확인한다. 로컬 성공을 원격 CI 성공으로 대신하지 않는다.
 직접 시작한 서버만 종료하고 cmux 검증 pane은 유지한다.
-H2 메모리 데이터의 재시작 보존은 보장하지 않는다. T09의 실제 fixture 수집→H2→검색/상세 HTTP 범위와 실공공 API 인증·추천 포함 후속 흐름을 구분한다.
+H2 메모리 데이터의 재시작 보존은 보장하지 않는다. 실제 fixture 수집→H2→검색/상세/추천 HTTP와 품질 metrics HTTP를 확인한다. 실공공 API 인증과 cmux 화면 E2E는 별도 미확인이다.
 
 ## T01/T02 추가 범위
 
@@ -108,3 +108,7 @@ IngestionRecoveryTests14 + IngestionHttpBudgetTests6 + IngestionConfigurationTes
 ## 패키지 구조 정리
 
 기능 아래 domain·repository·service·controller·dto로 나뉜다. 검색 서비스 예: `./gradlew test --tests 'com.plugpass.search.service.StationSearchTests'`; 기존 클래스 이름 wildcard 명령도 유지한다. 전체 연결 테스트는 search.integration과 recommendation.integration에 있다. 공유 Connector는 station.domain, FiniteDouble은 common.validation이다. 검증 기록은 docs/package-structure-verification.md를 참고한다.
+
+## T13
+
+`./gradlew test --tests "*IngestionMetricsTests"` 6건. 전체330건. 성공/부분 실패/실패·요청·재시도·마지막 성공 경과·품질 분포/시간 경과·비밀값 없는 로그를 실제 DB와 metrics HTTP로 확인한다. 기본 metrics404, 명시적 노출의 품질 metrics200을 구분한다. 운영 확인은 docs/operations.md, HTTP 출력은 build/verification/ingestion-metrics/에 있다.

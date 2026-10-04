@@ -2,6 +2,7 @@ package com.plugpass.ingestion.service;
 
 import com.plugpass.ingestion.config.IngestionProperties;
 import com.plugpass.ingestion.client.IngestionTime;
+import com.plugpass.ingestion.metrics.IngestionMetrics;
 
 import com.plugpass.ingestion.client.PublicDataClient;
 import com.plugpass.ingestion.domain.SyncRun;
@@ -26,16 +27,19 @@ public class DefaultStationSyncService implements StationSyncService {
     private final Clock clock;
     private final IngestionProperties ingestionProperties;
     private final IngestionTime ingestionTime;
+    private final IngestionMetrics ingestionMetrics;
     private final AtomicBoolean running = new AtomicBoolean();
 
     public DefaultStationSyncService(PublicDataClient publicDataClient, StationUpsertService stationUpsertService,
-            SyncRunRepository syncRunRepository, Clock clock, IngestionProperties ingestionProperties, IngestionTime ingestionTime) {
+            SyncRunRepository syncRunRepository, Clock clock, IngestionProperties ingestionProperties, IngestionTime ingestionTime,
+            IngestionMetrics ingestionMetrics) {
         this.publicDataClient = publicDataClient;
         this.stationUpsertService = stationUpsertService;
         this.syncRunRepository = syncRunRepository;
         this.clock = clock;
         this.ingestionProperties = ingestionProperties;
         this.ingestionTime = ingestionTime;
+        this.ingestionMetrics = ingestionMetrics;
     }
     @Override
     @Transactional(propagation = Propagation.NEVER)
@@ -71,6 +75,8 @@ public class DefaultStationSyncService implements StationSyncService {
     }
     private SyncResult complete(SyncRun run, IngestionBudget budget, long processedCount, Integer failedPage, String failureCode) {
         run.complete(processedCount, failedPage, failureCode, clock.instant(),budget.requestCount(),budget.retryCount());
-        return syncRunRepository.save(run).result();
+        SyncResult result = syncRunRepository.save(run).result();
+        ingestionMetrics.recordCompletion(result);
+        return result;
     }
 }

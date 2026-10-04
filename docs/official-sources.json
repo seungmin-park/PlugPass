@@ -360,5 +360,17 @@
     "url": "https://docs.spring.io/spring-boot/4.1/reference/using/structuring-your-code.html",
     "accessed": "2026-10-05",
     "coverage": "Spring Boot 4.1.1 표시 확인; root package와 component/entity 탐색 설명 확인. 코드 구조 선택은 프로젝트 판단."
+  },
+  {
+    "id": "micrometer-counters-gauges",
+    "url": "https://docs.micrometer.io/micrometer/reference/concepts/gauges.html",
+    "accessed": "2026-10-05",
+    "coverage": "Micrometer1.17.1에서 현재값 게이지와 누적 Counter·고정 태그를 실제 DB/HTTP로 검증"
+  },
+  {
+    "id": "boot-metrics-endpoint",
+    "url": "https://docs.spring.io/spring-boot/reference/actuator/metrics.html",
+    "accessed": "2026-10-05",
+    "coverage": "Boot4.1.1의 노출 설정·metrics 이름/tag별 조회 실제 HTTP 확인"
   }
 ]

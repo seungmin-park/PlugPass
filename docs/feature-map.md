@@ -97,3 +97,10 @@ IngestionRecoveryTests14·IngestionHttpBudgetTests6·IngestionConfigurationTests
 ## 패키지 책임과 탐색
 
 기능별 묶음 안에서 domain·repository·service·controller·dto를 구분한다. [변경 검증](package-structure-verification.md)에 동작 보존 결과를 기록한다. 검색·추천의 공통 Connector는 station.domain, 공통 숫자 검증은 common.validation이 소유한다.
+
+## T13 운영 관측
+
+페이지·실행 commit → IngestionMetrics.recordCompletion → 고정 태그 Counter·안전한 종료 로그.
+DB 관측 시각/성공 이력 + 현재 Clock → Gauge → 명시적으로 노출한 Actuator metrics HTTP.
+IngestionMetricsTests6건, 전체330건. 성공/부분 실패/실패·재시도·마지막 성공 시각 경과·최신성 경계/누락/미래/시간 경과·로그 비밀값 비노출을 확인한다.
+관측 연결은 `ingestion.metrics`가 소유하고 도메인·서비스·저장소의 기존 책임은 유지한다. [운영 확인 명령](operations.md), [3주차 근거](week3-verification.md).

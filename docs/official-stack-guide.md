@@ -9,7 +9,7 @@
 | JPA · H2 | Spring Boot 관리 버전 | 객체 저장·조회, 개발용 메모리 DB |
 | Spring REST Docs | 4.0.1 | 테스트 기반 API 문서 |
 
-현재는 기반 HTTP·문서·JPA 검증, T02 식별/위치 모델, T03 상태 정규화, T04 업무 저장, T05 외부 클라이언트를 구현했다. 페이지 전체 수집·조회·추천은 후속 작업이다.
+현재는 T02~T13의 모델·저장·외부 클라이언트·페이지 수집·최신성·검색/상세·추천·반복 수집·장애 제한·운영 관측을 구현했다. 실공공 API 인증은 키가 없어 미확인이다.
 
 ## 서비스의 큰 흐름
 
@@ -145,3 +145,13 @@ monotonic 시간으로 예산을 계산하고 벽시계는 데이터 시각·이
 설정은 Java 25·Spring Boot 4.1.1이며 실제 runtimeClasspath의 spring-core는 7.0.9다. [Boot 코드 구조](https://docs.spring.io/spring-boot/4.1/reference/using/structuring-your-code.html)의 root package·component/entity 탐색 설명을 확인했다. 버전 경로는 rolling 문서로 redirect되지만 표시 버전은 현재 프로젝트와 같은 4.1.1이다.
 
 루트 PlugPassApplication을 유지하면 이동한 하위 패키지도 기본 탐색 범위에 속한다는 것은 공식 동작이다. 기능별 하위 역할 패키지와 DTO 묶음, 공유 Connector·validation의 소유 위치는 프로젝트 설계 판단이다. 신규 의존성·버전 변경은 없으며 기존 테스트와 실행 JAR HTTP로 실제 구성 유지 여부를 검증한다. 현재 프런트엔드·TypeScript는 적용 대상 없음.
+
+## T13 — 누적 횟수와 현재 품질
+
+기존 Actuator가 제공하는 실제 micrometer-core1.17.1을 사용한다. [Counter](https://docs.micrometer.io/micrometer/reference/concepts/counters.html)는 누적 횟수,
+[Gauge](https://docs.micrometer.io/micrometer/reference/concepts/gauges.html)는 관측 시점의 값이다.
+[Boot metrics endpoint](https://docs.spring.io/spring-boot/reference/actuator/metrics.html)는 이름과 tag로 조회하며 별도 노출 설정이 필요하다.
+rolling 문서의 기능을 현재 Boot4.1.1 컨텍스트·실제 HTTP로 확인했다. 신규 의존성·외부 전송 설정은 없다.
+
+commit된 실행 결과를 카운터/로그에 연결하고, 마지막 SUCCESS 이력과 관측 시각 건수는 조회 때 계산하는 것이 프로젝트 판단이다.
+FreshnessPolicy가 최근 경계 시각을 소유하고 DB count 조건은 그 경계를 그대로 사용한다. 경계·null·미래 관측·실패 중 시각 경과와 로그 비밀값 비노출을 실제 DB/HTTP로 검증했다.

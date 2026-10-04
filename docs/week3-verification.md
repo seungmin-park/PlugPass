@@ -52,3 +52,16 @@
 - main에 패키지 구조 PR #21(`789ba21`)이 먼저 반영되어 보호 규칙 strict 조건상 T12가 BEHIND가 됐다. 최신 main을 병합하고 양쪽 문서·기능을 유지했다. T12 설정은 config, 시간/HTTP 경계는 client, 회차 조정은 service로 이동하며 import·테스트 위치를 함께 갱신한다. 공개 HTTP/DB 계약은 유지하고 전체 검증·CI를 다시 실행한다.
 
 - 최신 main 충돌 해결 뒤 공용 verify324건 실패/오류/skip0, 실제 JAR HTTP·문서 일치. 구조 변경에 따른 컴파일·Spring 탐색·계약 보존을 확인했다.
+
+- T12 PR [#22](https://github.com/seungmin-park/PlugPass/pull/22), 최신 문서 main도 병합한 필수 CI [성공](https://github.com/seungmin-park/PlugPass/actions/runs/37222055266), 실제 main `c1e4cd2`. 문서 정리 PR #24는 코드 변화 없어 문서 참조를 검사했다. 머지 신청의 잘못된 head 값은 거부됐으며 실제 local/remote SHA를 다시 조회해 바로잡았다. 보호를 우회하지 않았다.
+
+## T13
+
+- Red: `./gradlew test --tests '*IngestionMetricsTests'` 6건 모두 assertion 실패. 성공/부분 실패/실패 Counter와 경과 Gauge/종료 로그가 없었고 실제 품질 metrics HTTP가404였다. `/tmp/plugpass-week3/t13-red.log`.
+- Green: 실제 실행 이력 commit 뒤 Counter와 runId/처리 건수/실패 코드/요청·재시도 로그를 연결했다. 원본 예외·키·본문·URL을 출력하지 않고 태그는 outcome/cause/freshness만 사용한다.
+- 마지막 성공 경과는 SUCCESS 이력을 조회하므로 실패/부분 실패가 초기화하지 않는다. 최신성은 FreshnessPolicy의 경계와 DB count를 사용해 현재값을 계산한다. 실제 health200/UP와 동시에 최신2·오래됨1·미확인2의 지표 HTTP200을 확인했다. 해당 출력은 `build/verification/ingestion-metrics/`에 남긴다.
+- 대상6건·전체 공용 verify330건, 실패/오류/skip0. 기존 REST Docs·JAR HTTP·문서 일치도 통과했다. 시간 경과 품질 분포와 실제 경과 metrics HTTP를 추가 확인한다.
+- 책임 검토: `ingestion.metrics`는 관측 등록·종료 기록을 맡는다. 도메인의 최신성 규칙을 복제하지 않고 경계 시각을 받아 DB count한다. Service가 실행을 조정하고 Metrics는 DB를 바꾸지 않는다. 현재 관측 규모가 작고 외부 전송이 없으므로 추가 위임 객체 없이 유지한다. 다섯 협력 의존성과 record/DTO/JPA 형태는 이 역할의 좁은 예외로 유지하며 실제 DB·HTTP가 보완 검증이다. TS/프런트엔드는 없음.
+- 외부 전송·유료 모니터링·분산 수집은 해당 없음. 카운터는 프로세스마다 초기화되고 각 Gauge의 조회 시점은 달라 동시 수집 중 원자적 묶음 snapshot은 보장하지 않는다. [운영 문서](operations.md)에 확인 명령·단위·실패별 해석을 기록했다.
+
+- 보강한 최종 공용 verify 종료0,330건 실패/오류/skip0. 11분 경과 후 RECENT0/STALE4/UNVERIFIED1, 실제 마지막 성공 경과 HTTP120초, 기본 JAR metrics404·추천200·문서 일치를 확인했다. Refactor는 불필요해 관측 경계의 현재 구조를 유지했다.

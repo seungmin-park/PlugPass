@@ -14,6 +14,10 @@ public final class FreshnessPolicy {
     public Freshness evaluate(Instant sourceObservedAt, Instant now) {
         return assess(sourceObservedAt, now).freshness();
     }
+    public Instant oldestRecentObservationAt(Instant now) {
+        if (now == null) { throw new IllegalArgumentException("now must not be null"); }
+        return now.minus(maxAge);
+    }
     public FreshnessAssessment assess(Instant sourceObservedAt, Instant now) {
         if (now == null) { throw new IllegalArgumentException("now must not be null"); }
         if (sourceObservedAt == null) {

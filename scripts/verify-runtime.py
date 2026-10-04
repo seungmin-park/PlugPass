@@ -17,6 +17,11 @@ def require(condition, message):
         raise RuntimeError(message)
 
 
+def check_packaged_test_fixtures(names):
+    require(not any('PersistenceProbe' in name or name.startswith(('BOOT-INF/classes/performance/',
+                        'BOOT-INF/classes/reliability/')) for name in names), 'Test fixture packaged')
+
+
 def check_journey_evidence(directory):
     fields = {'search': 'stations', 'detail': 'chargers', 'alternative': 'requiresConfirmation',
               'stale': 'excluded', 'failure': 'chargers', 'recovered': 'preferred', 'empty': 'preferred'}
@@ -100,8 +105,7 @@ def main():
     require(expected and b'Unresolved directive' not in expected, 'Invalid generated docs')
     with ZipFile(jars[0]) as archive:
         require(archive.read('BOOT-INF/classes/static/docs/index.html') == expected, 'Packaged docs mismatch')
-        require(not any('PersistenceProbe' in name or name.startswith('BOOT-INF/classes/performance/')
-                        for name in archive.namelist()), 'Test fixture packaged')
+        check_packaged_test_fixtures(archive.namelist())
     java = str(Path(os.environ['JAVA_HOME']) / 'bin/java') if os.environ.get('JAVA_HOME') else 'java'
     log_file = evidence / 'server.log'
     with log_file.open('w') as log:

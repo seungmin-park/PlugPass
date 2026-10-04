@@ -9,6 +9,18 @@ describe('웹앱 화면 이동', () => {
     await router.isReady()
     expect(router.currentRoute.value.path).toBe('/stations')
   })
+  it('검색 본문으로 건너뛰는 링크와 포커스 대상을 제공한다', async () => {
+    await router.push('/stations')
+    const wrapper = mount(App, { attachTo: document.body, global: { plugins: [router] } })
+    await flushPromises()
+    expect(wrapper.find('a[href="#main-content"]').exists()).toBe(true)
+    expect(wrapper.get('a[href="#main-content"]').text()).toBe('본문으로 건너뛰기')
+    expect(wrapper.get('main#main-content').attributes('tabindex')).toBe('-1')
+    await wrapper.get('a[href="#main-content"]').trigger('click')
+    expect(document.activeElement).toBe(wrapper.get('main#main-content').element)
+    expect(router.currentRoute.value.path).toBe('/stations')
+    wrapper.unmount()
+  })
   it('없는 화면은 안내와 검색 복귀 링크를 제공한다', async () => {
     await router.push('/missing-screen')
     const wrapper = mount(App, { global: { plugins: [router] } })

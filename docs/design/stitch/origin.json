@@ -1,0 +1,7 @@
+{
+  "name": "stitch_plugpass_ev_charging_webapp.zip",
+  "sha256": "3e585b1807ef877353f3e8178af49c6105fbf3cf1c7fe7d0bb1a8f0b33bf668b",
+  "accepted_scope": "T19 current search screen and common design",
+  "reference_screen": "stitch_plugpass_ev_charging_webapp/plugpass_2/screen.png",
+  "design_document": "stitch_plugpass_ev_charging_webapp/precision_charge/DESIGN.md"
+}

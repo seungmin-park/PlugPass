@@ -201,3 +201,7 @@ FreshnessPolicy가 최근 경계 시각을 소유하고 DB count 조건은 그 �
 설치된 Axios1.20.0의 실제 defaults/dispatchRequest/settle와 [요청 설정](https://axios.rest/pages/advanced/request-config), [오류 처리](https://axios.rest/pages/advanced/error-handling), [AbortController](https://axios.rest/pages/advanced/cancellation)를 확인했다. rolling v1.x 문서의 이후 옵션은 도입하지 않았다. responseType json과 silentJSONParsing false를 함께 써야 SyntaxError를 실패로 받는 동작은 실제 잘못된 JSON 테스트로 확인했다. Adapter를 대체해도 실제 JSON 변환·AbortSignal·query 직렬화는 유지한다.10초 timeout·재시도 없음·ApiError 분류·unknown JSON guard는 프로젝트 판단이다.
 
 VueRouter4.6.4의 실제 LocationQuery 타입은 string/null 또는 그 배열이다. rolling v5 API와 구분해 [query 문서](https://router.vuejs.org/api/type-aliases/locationquery)와 설치된 타입을 대조했다. 알려진 조건 없음/부분/중복 구분과 양의 안전 ID 거부는 프로젝트 입력 정책이며 Java DTO/REST Docs와 함께 테스트했다. [실행 근거](frontend-verification.md).
+
+## T19 현재 화면의 Stitch 디자인 적용
+
+설치된 Vue3.5.43의 radio `v-model` checked/change와 bound value를 [Vue 공식 폼 문서](https://vuejs.org/guide/essentials/forms.html#radio)와 확인했다. [HTML radio 문서](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/radio)의 같은 name 그룹과 label을 유지한다. 인터페이스의 pill 모양은 CSS이며 실제 입력은 native radio다. 라벨·기본값·숫자 반경 submit·방향키/포커스는 현재 코드에서 실행했다. 의존성·버전 변경이 없으며 Inter는 시스템 fallback 선언으로만 사용한다. [시안 대응과 공식 동작/설계 구분](frontend-design.md)을 따른다.

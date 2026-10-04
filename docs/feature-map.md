@@ -18,7 +18,7 @@
 - ArchitectureTests 6건: 운영 객체 4개 경계와 Service/MVC 테스트 2개 경계.
 - ArchitectureRulesTests 17건: 허용·금지 구조의 bytecode 예제. 역할별 domain 패키지의 추천 정책 선택 범위도 확인한다.
 - Python 검사기 테스트 8건: 필수 suite 누락, 새 suite 허용, 보고서 없음·0개·빈 suite·실패·오류·skip 거부.
-- [필수 suite 목록](required-test-suites.json): T10~T13을 포함한 기능 30개 + 구조 검사 2개. 실제 XML에 모두 실행되어야 한다. 고정 총건수·coverage 비율은 강제하지 않는다.
+- [필수 suite 목록](required-test-suites.json): T10~T15를 포함한 기능·구조·성능 데이터 suite34개. 실제 XML에 모두 실행되어야 한다. 고정 총건수·coverage 비율은 강제하지 않는다.
 - Red/Green·실제 임시 위반·한계: [CI 보강 기록](ci-boundaries-verification.md). JaCoCo는 사용자 선택으로 제외했다.
 
 | 경로 | 기대 결과 | 검증 |

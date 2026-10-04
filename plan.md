@@ -20,6 +20,8 @@
 
 ## 1. 확정 사항과 현재 상태
 
+현재 프로젝트의 agent-engineering 적용은 기존 추천 흐름·구조 검사·verify를 재사용한다. [.agents/verification.json](.agents/verification.json)으로 현재 소스와 실행 로그를 연결하고, 전역 읽기 전용 PR 도구로 CI 통과·머지 준비·실제 머지를 구분한다. [적용 범위와 근거](docs/agent-engineering-application.md)를 따른다. 이 적용은 T14 이후 기능·실공공 API 인증·성능 검증을 완료한 것으로 바꾸지 않는다.
+
 | 구분 | 내용 |
 | --- | --- |
 | 사용자와 확정 | 이름은 PlugPass·플러그패스, 목적은 백엔드 포트폴리오, 개발 기간은 4~6주 |

@@ -24,15 +24,30 @@ PR 하나는 목적 하나, 독립적인 검증, 독립적인 되돌리기를 �
 
 ## 에이전트의 작업 순서
 
-1. 최신 main에서 `feat/...`, `fix/...`, `chore/...` 브랜치를 만든다. 사용자 변경을 덮거나 강제 push하지 않는다.
+1. 최신 main에서 작업 브랜치를 만든다. Codex의 기본 prefix는 `codex/`이며 사용자 지정이 있으면 따른다. 사용자 변경을 덮거나 강제 push하지 않는다.
 2. 변경 목적과 실패 조건을 설명하고 해당 동작·테스트를 구현한다. 변경 diff를 리뷰한다.
-3. [verify-plugpass](../.agents/skills/verify-plugpass/SKILL.md)에 따라 현재 cmux 가시성부터 확인하고 `bash scripts/verify.sh`를 실행한다. cmux가 없으면 실제 터미널 검증 범위를 명시한다.
+3. [verify-plugpass](../.agents/skills/verify-plugpass/SKILL.md)에 따라 `bash scripts/verify.sh`를 실행한다. 현재 소스 증거가 필요하면 [.agents/verification.json](../.agents/verification.json)으로 같은 명령을 기록한다. 최종 commit으로 HEAD가 바뀌면 그 HEAD에 대한 증거를 다시 확보한다.
 4. 기존 Git 서명 설정을 유지하여 커밋하고 해당 브랜치를 push한다. 인증 실패는 우회하지 않고 원인을 알린다.
 5. 같은 head 브랜치의 열린 PR이 있으면 갱신하고, 없으면 `gh pr create --base main --head <branch> --title <title> --body-file <file>`로 생성한다. 본문에는 목적·실제 검증·한계를 쓴다. Codex 작업에 PR을 첨부한다.
 6. 아래 보호 설정이 **실제로 적용된 것을 조회한 경우에만** 해당 PR에 `gh pr merge <number> --auto --squash --match-head-commit <verified-head-sha>`를 실행한다. 승인된 기능 범위 안에서 다시 일반적인 머지 허락을 묻지 않는다.
-7. GitHub에서 실제 머지 상태와 main의 SHA를 확인한다. CI 실패는 수정 후 재검증하며, 충돌·base 변경은 최신 main을 반영해 다시 검사한다. 대기 중인 자동 머지를 완료라고 보고하지 않는다.
+7. 검증한 commit과 현재 PR head를 대조하고 GitHub에서 실제 머지 상태·merge commit과 main의 SHA를 확인한다. 아래 읽기 전용 도구를 사용할 수 있다. CI 실패는 원인을 분류해 수정 후 재검증하며, 충돌·base 변경은 최신 main을 반영해 다시 검사한다. 누락·skip은 실제 실행 증거가 아니며 대기 중인 자동 머지를 완료라고 보고하지 않는다.
 
 에이전트가 작업하는 동안 PR을 만들고 자동 머지를 신청하는 흐름이다. 별도 예약 작업이나 임의의 새 기능을 계속 개발하는 무인 봇을 만드는 것은 아니다.
+
+### 읽기 전용 PR 상태 확인
+
+전역 agent-engineering 도구가 설치된 환경에서 실행한다. `PR_NUMBER`는 해당 작업의 실제 PR 번호로 바꾼다. `plugpass_verified_head`는 현재 소스 증거가 유효한 commit이어야 하며, dirty 변경을 원격 CI로 검증했다고 취급하지 않는다.
+
+```bash
+plugpass_verified_head="$(git rev-parse HEAD)"
+python3 ~/.agents/skills/agent-engineering/scripts/pr_status.py \
+  --repo seungmin-park/PlugPass --pr PR_NUMBER \
+  --head "$plugpass_verified_head" --check 'PlugPass verify' --goal merged
+```
+
+`--goal ready`는 선택한 검사와 native 머지 준비 상태를, `--goal merged`는 실제 머지까지 관찰한다. 종료 0은 선택한 목표를 관찰한 경우, 1은 미완료, 2는 입력·접근·조회 문제로 확인 불가인 경우다. `head_changed`, `failed`, `pending`, `unverified`, `blocked`에 맞춰 소스·검사 실행 경로·실패 로그·native 차단 원인을 조사한다.
+
+이 도구는 하나의 원격 스냅샷을 읽으며 보호 규칙·검사 출처 앱·assertion 건수·책임 리뷰·merge queue 후보를 직접 검증하지 않는다. 아래 실제 보호 설정과 원본 보고서를 별도로 확인한다. `ready`는 머지 권한이나 이후 변경에 대한 보장이 아니며 승인된 머지는 기존 `--match-head-commit`과 native 보호 아래 수행한다. CI는 전역 스킬 설치에 의존하지 않고 저장소의 공용 verify를 실행한다.
 
 ## GitHub가 강제할 조건
 
@@ -69,4 +84,4 @@ CI는 PR마다 실행하고 main push도 검사한다. 경로 필터나 성공�
 
 도입 당시에는 비공개 저장소의 요금제 제한으로 Rulesets API가 403을 반환했다. 공개 전환으로 해당 제약이 해소됐으며, 보호 없이 merge하는 우회는 사용하지 않았다.
 
-공식 근거: [auto-merge 지원 범위](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-auto-merge-for-pull-requests-in-your-repository), [보호 브랜치](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches), [Java CI](https://docs.github.com/en/actions/tutorials/build-and-test-code/java-with-gradle).
+공식 근거: [auto-merge 지원 범위](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-auto-merge-for-pull-requests-in-your-repository), [보호 브랜치](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches), [Java CI](https://docs.github.com/en/actions/tutorials/build-and-test-code/java-with-gradle), [CLI 머지 옵션](https://cli.github.com/manual/gh_pr_merge). CLI의 auto와 match-head-commit 동작은 2026-10-05 공식 설명을 확인했다.

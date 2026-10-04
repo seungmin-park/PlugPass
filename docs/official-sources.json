@@ -342,5 +342,11 @@
     "url": "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html",
     "accessed": "2026-10-02",
     "coverage": "Set의 equals 기반 원소 동등성과 add 반환값; 수집 중복 검사에 적용"
+  },
+  {
+    "id": "boot-package-structure",
+    "url": "https://docs.spring.io/spring-boot/4.1/reference/using/structuring-your-code.html",
+    "accessed": "2026-10-05",
+    "coverage": "Spring Boot 4.1.1 표시 확인; root package와 component/entity 탐색 설명 확인. 코드 구조 선택은 프로젝트 판단."
   }
 ]

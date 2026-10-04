@@ -85,7 +85,9 @@ View/Component ── 사용자 이벤트 ──► Store/상태 관리 ──�
 - Service는 `{ServiceName}` 인터페이스와 `Default{ServiceName}` 구현으로 구성한다. `{ServiceName}Impl` 이름은 금지한다.
 - 인터페이스는 유스케이스 계약을, 구현은 `@Service`, production `@Transactional`, Repository 의존성과 유스케이스 조정을 소유한다. 호출자·테스트는 Service 인터페이스에 의존한다.
 - 트랜잭션은 실제 저장·조회 경계에 둔다. 외부 네트워크 대기를 긴 DB 트랜잭션에 포함하지 않고 페이지 저장 등 필요한 단위에서 commit한다. 도메인이 판단할 규칙을 Service에만 두지 않는다.
-- 요청 DTO는 Controller가 속한 패키지의 `request`, 응답 DTO는 `response` 하위에 둔다. 공용 DTO도 역할별 공통 `request`·`response`로 나눈다.
+- 기능별 패키지 아래 `controller`, `service`, `domain`, `repository`, `dto`로 책임을 구분한다. 없는 역할의 빈 패키지는 만들지 않는다.
+- 요청 DTO는 해당 기능의 `dto.request`, 응답 DTO는 `dto.response`에 둔다. Service의 전달 모델은 `dto`, 공용 HTTP DTO는 `common.dto.request`·`common.dto.response`로 구분한다. 설정은 `config`, 외부 통신은 `client`, 스케줄 진입점은 `scheduler`에 둔다.
+- 여러 기능이 공유하는 업무 규칙은 소유 도메인에 두고, 공유 입력 검증은 `common.validation`에 둔다. 구체적인 배치와 예외는 [패키지 구조](docs/package-structure.md)를 따른다.
 - 입력 필수값·범위·형식·validation 메시지는 request DTO가 소유한다. Controller에 규칙·메시지를 분산하지 않는다.
 - 사용자 정의 예외는 프로젝트 루트에 맞는 `com.plugpass.exception`에 둔다. 공통 예외 처리기는 애플리케이션 예외를 HTTP 오류 응답으로 변환한다.
 

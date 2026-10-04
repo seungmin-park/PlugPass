@@ -10,6 +10,14 @@
 
 **실행 목록:** [tasks.md](tasks.md). 구현 시 `superpowers:executing-plans`로 작업 하나씩 진행하며, 병렬 에이전트 실행은 별도 사용자 지시 없이 시작하지 않는다. 이 문서는 계획이며 미완료 기능의 구현을 뜻하지 않는다.
 
+## CI 보강 — 동작과 구조의 검증 책임 분리 (2026-10-05)
+
+- 목적: 도메인 규칙의 결과는 기존 동작 테스트가 확인하고, 책임·의존성 위치는 구조 검사와 리뷰가 확인한다. HTTP와 업무 동작은 변경하지 않는다.
+- 구조: ArchUnit core를 기존 JUnit 실행에 연결한다. REST Controller→Service 계약, 도메인→HTTP/저장 호출 금지, 엔티티 공개 setter 금지, Service 이름/계약과 Service·MVC 테스트 경계를 검사한다. 검사 대상과 리뷰의 한계는 [검증 기준](docs/architecture-guardrails.md)에 기록한다.
+- 누락: [필수 테스트 목록](docs/required-test-suites.json)을 실제 JUnit XML과 비교한다. 고정 총건수나 coverage 비율을 강제하지 않는다. 새로운 선택 테스트는 허용하고 기존 필수 suite 삭제·이름 변경은 기능 지도와 함께 검토한다.
+- 실행: 검사기의 허용/금지 예제로 Red→Green을 확인하고, 실제 Controller의 임시 위반과 필수 XML 누락을 공용 경로에서 거부하는지 확인한다. 복원 후 `bash scripts/verify.sh`와 원격 CI를 확인한다.
+- 제외: 사용자 선택에 따라 JaCoCo를 도입하지 않는다. 동시성·성능·실공급자 검증은 기존 후속 기능 작업의 범위로 유지한다.
+
 ## 1. 확정 사항과 현재 상태
 
 | 구분 | 내용 |

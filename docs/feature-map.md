@@ -1,5 +1,15 @@
 # 기능과 검증 범위
 
+## CI 구조·누락 검사
+
+도메인 규칙의 결과는 기존 동작 테스트가 맡는다. 의존성·공개 변경 경로는 [구조 검사](architecture-guardrails.md)가 맡고, 실제 규칙 소유권·이름·책임은 리뷰가 함께 확인한다.
+
+- ArchitectureTests 6건: 운영 객체 4개 경계와 Service/MVC 테스트 2개 경계.
+- ArchitectureRulesTests 17건: 허용·금지 구조의 bytecode 예제. 역할별 domain 패키지의 추천 정책 선택 범위도 확인한다.
+- Python 검사기 테스트 8건: 필수 suite 누락, 새 suite 허용, 보고서 없음·0개·빈 suite·실패·오류·skip 거부.
+- [필수 suite 목록](required-test-suites.json): T10~T13을 포함한 기능 30개 + 구조 검사 2개. 실제 XML에 모두 실행되어야 한다. 고정 총건수·coverage 비율은 강제하지 않는다.
+- Red/Green·실제 임시 위반·한계: [CI 보강 기록](ci-boundaries-verification.md). JaCoCo는 사용자 선택으로 제외했다.
+
 | 경로 | 기대 결과 | 검증 |
 | --- | --- | --- |
 | GET /actuator/health | 200, status UP, 세부 정보 미노출 | 실제 HTTP 통합 테스트 |
@@ -102,5 +112,5 @@ IngestionRecoveryTests14·IngestionHttpBudgetTests6·IngestionConfigurationTests
 
 페이지·실행 commit → IngestionMetrics.recordCompletion → 고정 태그 Counter·안전한 종료 로그.
 DB 관측 시각/성공 이력 + 현재 Clock → Gauge → 명시적으로 노출한 Actuator metrics HTTP.
-IngestionMetricsTests6건, 전체330건. 성공/부분 실패/실패·재시도·마지막 성공 시각 경과·최신성 경계/누락/미래/시간 경과·로그 비밀값 비노출을 확인한다.
+IngestionMetricsTests6건, 도입 시 전체330건·CI 구조 검사 통합 후 전체353건. 성공/부분 실패/실패·재시도·마지막 성공 시각 경과·최신성 경계/누락/미래/시간 경과·로그 비밀값 비노출을 확인한다.
 관측 연결은 `ingestion.metrics`가 소유하고 도메인·서비스·저장소의 기존 책임은 유지한다. [운영 확인 명령](operations.md), [3주차 근거](week3-verification.md).

@@ -65,3 +65,6 @@
 - 외부 전송·유료 모니터링·분산 수집은 해당 없음. 카운터는 프로세스마다 초기화되고 각 Gauge의 조회 시점은 달라 동시 수집 중 원자적 묶음 snapshot은 보장하지 않는다. [운영 문서](operations.md)에 확인 명령·단위·실패별 해석을 기록했다.
 
 - 보강한 최종 공용 verify 종료0,330건 실패/오류/skip0. 11분 경과 후 RECENT0/STALE4/UNVERIFIED1, 실제 마지막 성공 경과 HTTP120초, 기본 JAR metrics404·추천200·문서 일치를 확인했다. Refactor는 불필요해 관측 경계의 현재 구조를 유지했다.
+
+- main의 CI 구조 검사 PR #23(`56aa63e`)을 통합했다. 양쪽 검증 안내를 유지하고 T13 핵심 suite를 필수 목록에 등록했다. `bash scripts/verify.sh` 종료0: Java353건(업무330+구조23), Python8건, 실패/오류/skip0. 실제 JAR 추천200·기본 metrics404·문서 일치도 다시 확인했다. 로그: `/tmp/plugpass-week3/t13-main-integration-verify.log`, 결과: `build/verification/runtime.json`.
+- 통합 검증 시 cmux를 다시 확인했으나 호출 workspace/surface가 없고 “cmux 내부에서 시작된 프로세스만 연결 가능”으로 접근이 거부됐다. 기존 live socket 부재와 함께 현재 실행에서 화면 E2E를 확인하지 못한 원인으로 기록한다.

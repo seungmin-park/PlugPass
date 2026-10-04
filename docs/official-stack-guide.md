@@ -1,5 +1,13 @@
 # PlugPass 기술 스택과 개발 기준
 
+## CI 구조 검사 (2026-10-05)
+
+기존 Java 25·Boot 4.1.1을 유지하며 test scope에 ArchUnit core 1.5.1을 도입했다. 실제 `testRuntimeClasspath`는 ArchUnit 1.5.1·JUnit Jupiter 6.0.3·Spring transaction 7.0.9로 해석됐다. 별도 ArchUnit JUnit 엔진을 추가하지 않고 기존 JUnit의 일반 `@Test` 안에서 bytecode 규칙을 실행한다.
+
+[공식 가이드](https://www.archunit.org/userguide/html/000_Index.html)의 core import, dependency/member/annotation rules, custom condition, empty-rule failure를 확인했다. bytecode 의존성을 검사하는 것은 공식 동작이고, Controller·도메인·Service·테스트의 선택 기준은 [프로젝트 설계 판단](architecture-guardrails.md)이다. Java 25의 실제 컴파일·허용/금지 예제·전체 테스트로 호환성을 확인한다. [릴리스 기록](https://github.com/TNG/ArchUnit/releases)도 확인했다.
+
+JaCoCo는 사용자 선택으로 도입하지 않았다. 운영 의존성과 HTTP/DB 계약은 바꾸지 않았다. 새 기술 검증과 한계는 [실행 기록](ci-boundaries-verification.md)에 남긴다.
+
 ## 기술 스택
 
 | 기술 | 버전 | 역할 |

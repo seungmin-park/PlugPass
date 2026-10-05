@@ -1,6 +1,6 @@
 # PlugPass 작업 체크리스트
 
-**목표·설계:** [plan.md](plan.md). T01 문서 계약은 main 반영, 인증된 실연동은 키 없어 미확인. T02~T24는 구현·검증·main 반영 완료. T15 당시 p95 목표 미달은 T16 동일 조건 재측정75.04ms로 개선했다. T01 실응답 확인 두 항목은 키 없어 보류한다. 아래 하위 체크와 근거를 따른다.
+**목표·설계:** [plan.md](plan.md). T01 문서 계약은 main 반영, 인증된 실연동은 키 없어 미확인. T02~T25는 구현·검증·main 반영 완료. T15 당시 p95 목표 미달은 T16 동일 조건 재측정75.04ms로 개선했다. T01 실응답 확인 두 항목은 키 없어 보류한다. 아래 하위 체크와 근거를 따른다.
 
 **실행 방식:** 작업 하나씩 순서대로 진행한다. 구현 시 `superpowers:executing-plans`를 사용한다. 이 파일을 만들었다는 이유로 이후 작업 전체를 자동 실행하지 않는다.
 
@@ -380,11 +380,11 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 
 의존: T24. SDK: Leaflet1.9.4 + OpenStreetMap 공용 타일(사용자 선택). 파일: `frontend/src/features/search/map/{stationMap.ts,loadStationMap.ts,leafletStationMap.ts}`, `components/StationMap.vue`, 검색 View·Card와 관련 테스트, `frontend/e2e/station-map.spec.ts`. [확정 지도 범위](docs/frontend-plan.md#11-완료-기준과-후속-지도)를 따른다.
 
-진행: [T25 진행 기록](docs/t25-verification.md). 사용자 선택으로 검색 결과 지도 범위를 확정했다. 공용verify 종료0, Java361·프런트27파일/290건·Python32·개발E2E21·JAR브라우저3건과 현재cmux 실제지도 흐름을 확인했다. PR·필수CI·main 반영은 진행 중이며 아래 완료 체크는 실제 반영 후 변경한다.
+완료: [T25 실행 기록](docs/t25-verification.md). 사용자 선택으로 검색 결과 지도 범위를 확정했다. 공용 verify 종료0, Java361·프런트27파일/290건·Python32·개발E2E21·JAR브라우저3건과 현재 cmux 실제 지도 흐름을 확인했다. [PR #47](https://github.com/seungmin-park/PlugPass/pull/47), main `c129230`, [필수 CI 성공](https://github.com/seungmin-park/PlugPass/actions/runs/37333379023), [최종 커밋·원격 결과](docs/evidence/t25/ci-summary.json)를 확인한 뒤 아래 세 항목을 완료로 표시했다.
 
-- [ ] SDK 공식 조건·키/허용 도메인·출처 표시·지원 브라우저와 지도에 표시할 데이터 범위를 확인한다. 추천 응답의 좌표 부재를 고려한다.
-- [ ] 마커/목록 선택·조건 변경·SDK 실패 테스트를 먼저 작성하고 지도와 카드 선택을 연결한다. SDK 실패 시 목록은 유지한다.
-- [ ] 대상·전체 검증과 현재 cmux에서 실제 지도 흐름을 확인하고 관련 계획·검증 근거를 갱신한 PR을 반영한다.
+- [x] SDK 공식 조건·키/허용 도메인·출처 표시·지원 브라우저와 지도에 표시할 데이터 범위를 확인한다. 추천 응답의 좌표 부재를 고려한다.
+- [x] 마커/목록 선택·조건 변경·SDK 실패 테스트를 먼저 작성하고 지도와 카드 선택을 연결한다. SDK 실패 시 목록은 유지한다.
+- [x] 대상·전체 검증과 현재 cmux에서 실제 지도 흐름을 확인하고 관련 계획·검증 근거를 갱신한 PR을 반영한다.
 
 산출: 첫 목록 버전 이후의 지도 탐색. 주소 검색·경로 안내·유료 실행·공개 배포를 자동으로 포함하지 않는다.
 

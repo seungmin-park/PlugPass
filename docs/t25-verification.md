@@ -55,7 +55,7 @@ flowchart LR
 npm --prefix frontend run test:unit -- \
   src/features/search/views/StationMapSelection.spec.ts \
   src/features/search/views/StationMapAvailability.spec.ts \
-  src/features/search/components/StationMap.spec.ts
+  src/features/search/components/StationMap.spec.ts --reporter=default
 ```
 
 실제 Chromium trace에는 SDK 모듈 요청503이1회만 남고 재시도 클릭의 새 요청은 없었다. [Vite load error 안내](https://vite.dev/guide/build.html#load-error-handling)의 새로고침 방법을 참고했다. 자동 reload·전역 오류 무시·타입 설정 완화는 추가하지 않았다. 단위 테스트의 성공한 재호출만으로 브라우저 복구를 보장할 수 없었던 사례다.
@@ -82,7 +82,7 @@ headed 러너도 같은 surface:7에서 실행했다. 서버·명령·로그·�
 | 운영JAR HTTP | 웹앱/asset200·API/validation·RESTDocs 일치, 테스트용 클래스 미포함 |
 | 별도 JVM 재시작 | JVM3회·메모리 데이터 소실/준비 상태 초기화/재수집 복구 |
 
-최종 [로컬 요약](evidence/t25/local-summary.json)에 실제 runtime.json·XML/JSON 건수와 검증한 코드/테스트/필수 목록의 SHA256을 기록했다. 기준 HEAD는9ede7dd이며 T25 변경은 검증 당시 dirty 상태였다. 원격 CI가 아래 최종 commit을 다시 검증한다. 공용 로그 `/private/tmp/plugpass-t25-verify.log`, HTTP/서버 `build/verification/`, 단위 `frontend/test-results/unit.json`, 브라우저 JSON/trace `frontend/test-results/`, HTML `frontend/playwright-report/`를 확인했다. 기존 Gradle deprecation·npm의 optional fsevents install-script 안내는 남아 있고, Vue/브라우저 경고를 숨기는 설정은 추가하지 않았다.
+최종 [로컬 요약](evidence/t25/local-summary.json)에 실제 runtime.json·XML/JSON 건수와 검증한 코드/테스트/필수 목록의 SHA256을 기록했다. 기준 HEAD는9ede7dd이며 T25 변경은 검증 당시 dirty 상태였다. commit 후 동일 소스 snapshot을 대조했고, 원격 CI가 아래 최종 commit을 다시 검증해 통과했다. 공용 로그 `/private/tmp/plugpass-t25-verify.log`, HTTP/서버 `build/verification/`, 단위 `frontend/test-results/unit.json`, 브라우저 JSON/trace `frontend/test-results/`, HTML `frontend/playwright-report/`를 확인했다. 최종 대상17건은 `--reporter=default`로 실행해 공용 검증의 전체 단위 JSON을 유지했다. 기존 Gradle deprecation·npm의 optional fsevents install-script 안내는 남아 있고, Vue/브라우저 경고를 숨기는 설정은 추가하지 않았다.
 
 ## 이름·책임·공개 계약 검토
 
@@ -92,4 +92,11 @@ headed 러너도 같은 surface:7에서 실행했다. 서버·명령·로그·�
 
 ## 전달 상태
 
-GitHub API로 main 보호의 필수 PlugPass verify(GitHub Actions app15368)·strict 최신 main·관리자 적용·승인0명·강제 push/삭제 금지와 native auto-merge·squash 허용을 확인했다. PR·현재 head의 필수 CI·실제 merge 결과는 진행 중이며 관측 뒤 기록한다. 로컬 성공을 원격 CI 또는 main 반영으로 바꾸어 보고하지 않는다.
+GitHub API로 main 보호의 필수 PlugPass verify(GitHub Actions app15368)·strict 최신 main·관리자 적용·승인0명·강제 push/삭제 금지와 native auto-merge·squash 허용을 확인했다.
+
+- 서명 feature commit: `85b7e084c157b08edb61d3300b733f09e96f8500`. GitHub verification은 verified=true, reason=valid였다.
+- [PR #47](https://github.com/seungmin-park/PlugPass/pull/47)의 같은 head에서 [필수 CI 37333379023](https://github.com/seungmin-park/PlugPass/actions/runs/37333379023)이 success였다. 원본 로그에서 Java361·프런트27파일/290건·Python32·개발E2E21·JAR브라우저3건, 실패·오류·skip0과 HTTP/asset/문서 계약 결과를 확인했다. 로컬 cmux surface:7의 원격 watch도 `T25_FEATURE_CI_EXIT=0`이었다.
+- native auto-merge를 검증한 head와 `--match-head-commit`으로 신청했다. 실제 merged=true, 병합 시각 `2026-10-05T15:35:47Z`(한국 시각 2026-10-06 00:35:47), main squash commit `c129230dc898df0f12422c70736a11a6ebec7522`를 확인했다.
+- 읽기 전용 `pr_status.py --pr 47 --head 85b7e084c157b08edb61d3300b733f09e96f8500 --check 'PlugPass verify' --goal merged`는 종료0·verdict merged였다. [원격 요약](evidence/t25/ci-summary.json)에 실제 head·검사 출처·결과·병합 근거를 연결했다.
+
+이 실제 병합을 확인한 뒤 T25의 세 하위 항목을 체크하는 후속 문서 PR을 만들었다. 문서 링크·JSON·완료 상태 정합성 검사는 애플리케이션 테스트 재실행으로 보고하지 않으며, 후속 PR도 저장소의 필수 CI와 보호 규칙을 따른다.

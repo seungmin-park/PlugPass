@@ -55,5 +55,9 @@
     "skipped": 0,
     "failed": 0
   },
-  "remote_ci": "pending"
+  "remote_ci": {
+    "run_id": 37333379023,
+    "conclusion": "success",
+    "evidence": "ci-summary.json"
+  }
 }

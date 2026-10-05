@@ -1,0 +1,1 @@
+{"check":"수집 완료 후 NACS 빈 결과","passed":true,"url":"http://localhost:5173/app/index.html#/stations?latitude=37.5&longitude=127&radiusMeters=1000&connector=NACS&limit=20","diagnostics":[]}

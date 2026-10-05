@@ -8,5 +8,12 @@
   "src/features/search/api/stationApi.spec.ts",
   "src/features/station-detail/api/stationDetailApi.spec.ts",
   "src/features/recommendation/api/recommendationApi.spec.ts",
-  "tests/consoleDiagnostics.spec.ts"
+  "tests/consoleDiagnostics.spec.ts",
+  "src/shared/location/useCurrentLocation.spec.ts",
+  "src/shared/ui/RequestState.spec.ts",
+  "src/features/search/stores/stationSearchStore.spec.ts",
+  "src/features/search/views/StationSearchView.spec.ts",
+  "src/features/search/components/StationCard.spec.ts",
+  "src/features/charging-info/presentation.spec.ts",
+  "src/features/charging-info/components/ChargingBadges.spec.ts"
 ]

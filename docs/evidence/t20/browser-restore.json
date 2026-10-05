@@ -1,0 +1,1 @@
+{"check":"직접 링크 및 새로고침 1500m/limit1 복원","passed":true,"url":"http://localhost:5173/app/index.html#/stations?latitude=37.5&longitude=127&radiusMeters=1500&connector=DC_COMBO&limit=1","diagnostics":[]}

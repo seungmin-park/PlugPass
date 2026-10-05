@@ -1,22 +1,22 @@
 # 기능과 검증 범위
 
-## 프런트 경로 (2026-10-05, T18/T19 기반·API 계약 구현)
+## 프런트 경로 (2026-10-05, T18~T20 기반·API·실제 주변 검색 구현)
 
-사용자는 목록 중심 반응형 웹앱으로 검색·상세·대체 후보를 첫 버전으로 선택했다. [프런트 계획](frontend-plan.md)·[작업 목록](../tasks.md)의 T18~T24을 따른다. 아래 표의 T20 이후 사용자 흐름과 브라우저 E2E는 계획이다. T18/T19 구현·실행 근거는 별도로 구분한다. 지도는 T25 후속 단계다.
+사용자는 목록 중심 반응형 웹앱으로 검색·상세·대체 후보를 첫 버전으로 선택했다. [프런트 계획](frontend-plan.md)·[작업 목록](../tasks.md)의 T18~T24을 따른다. 위치→검색은 T20에서 구현하고 같은 cmux 브라우저에서 실제 API/DB 연결을 확인했다. 상세·추천과 Playwright 전체 흐름은 T21 이후 계획이다. 지도는 T25 후속 단계다.
 
-| 예정 사용자 경로 | 상태 소유자·경계 | 기대 결과·예정 검증 |
+| 사용자 경로 | 상태 소유자·경계 | 기대 결과·검증 범위 |
 | --- | --- | --- |
 | 타입·템플릿·실행 경고 검사 | tsconfig·package 명령·단위 setup·E2E fixture·공용 verify | 임시 타입/lint/Vue 경고/예외 거부·복원·테스트별 격리; [T18/T23/T24 계획](frontend-plan.md#101-엄격한-정적-검사와-vue-경고), 개발 모드와 JAR 검증 구분 |
-| 위치·반경·커넥터 선택→검색 | URL 확정 조건, SearchForm 입력, stationSearchStore 비동기 상태, stationApi HTTP | 준비 전/부분 결과/빈 결과/목록·권한 거부·400·응답 역전; T19/T20 unit·View 테스트 |
+| 위치·반경·커넥터 선택→검색 | URL 확정 조건, SearchForm 입력, stationSearchStore 비동기 상태, stationApi HTTP | 위치14·Store7·View14건, 준비 전/부분/빈 결과·권한 거부·400·응답 역전. [T20 실제 실행](t20-verification.md); cmux 실제 검색/뒤로 가기/직접 링크 |
 | 검색→상세·직접 링크 | route ID, stationDetailStore, 공용 charging-info 표시 | 상태/최신성·관측/수집 시각 구분·null·404·다른 ID 응답 역전; T21 |
 | 상세→현재 충전소 제외 추천→다른 상세 | URL 조건/제외 ID, recommendationStore, 서버 후보 그룹 | 같은 조건·제외 ID·우선/확인 필요/제외 사유·메타만 실패; T22 |
 | fixture 수집→실제 API→브라우저 클릭 | 테스트 외부 공급자/시간, 실제 Service/Repository/H2 | Playwright 실제 연결 assertion·같은 cmux workspace 실제 조작; T23 |
 | 모바일·키보드·필수 CI | 표현 컴포넌트, ESLint, 기존 공용 verify | 375×812/1440×900·focus·0개/skip/누락 거부·임시 금지 의존 실패; T24 |
 | 실제 JAR→웹앱 진입·직접 링크 | Vite base `/app/`, Gradle `static/app/`, 기존 Spring 정적 파일 제공 | `/app/index.html`·JS/CSS·직접 링크·같은 origin API·REST Docs HTTP; T24 |
 
-T18은 검색조건폼·hash이동·단위/타입/lint/build·기존verify/CI연결을 구현했다. 폼4건·Router2건·진단수집3건과 현재Codex브라우저의 실제조작 근거는 [프런트 기록](frontend-verification.md)에 있다. 아래 T20~T24흐름은 여전히 계획이며 실제API연결/전체E2E 완료와 혼동하지 않는다.
+T18은 검색조건폼·hash이동·단위/타입/lint/build·기존verify/CI연결을 구현했다. 폼4건·Router2건·진단수집3건과 현재Codex브라우저의 실제조작 근거는 [프런트 기록](frontend-verification.md)에 있다. T20 검색은 실제 API 연결까지 확인했고 T21~T24의 상세·추천/전체 E2E·JAR 웹앱은 계획이다.
 
-현재 검색 진입점의 Stitch 디자인 적용은 [디자인 대응 기록](frontend-design.md)을 따른다. Form의 native radio/submit과 App의 본문 focus를 실제 unit·Codex 클릭/키보드로 확인했다. 프런트147건/10파일이며 기존 T19 API133건은 유지한다. 검색 결과·상세·추천·위치 권한 시안의 실제 연결은 후속 범위다.
+현재 검색 진입점의 Stitch 디자인 적용은 [디자인 대응 기록](frontend-design.md)을 따른다. Form의 native radio/submit과 App의 본문 focus를 실제 unit·Codex 클릭/키보드로 확인했다. 해당 디자인 PR 당시147건/10파일이며 기존 T19 API133건을 유지했다. T20의 현재210건/17파일은 위치·검색 결과를 추가 검증한다. 상세·추천 시안의 연결은 후속 범위다.
 
 ## agent-engineering 적용 경로
 
@@ -163,8 +163,12 @@ SearchBounds → ChargerRepository.findSearchCandidates → 기존 정확한 거
 
 ## T19 프런트 계약 경로
 
-URL query→criteria(empty/valid/invalid)→기능 API→공통 Axios/오류 경계→unknown JSON 구조 검사→타입 응답. criteria36·ID20·apiError14·검색31·상세14·추천18건, 기존9건과 전체142건이다. `[Vue warn]`/console 진단·정리/격리 공용 setup을 그대로 사용한다. 필수9파일과0개/skip/누락은 기존runtime 검사가 확인한다. [Red/Green/책임·한계](frontend-verification.md). 화면의 위치→검색 연결은 T20 범위다.
+URL query→criteria(empty/valid/invalid)→기능 API→공통 Axios/오류 경계→unknown JSON 구조 검사→타입 응답. criteria36·ID20·apiError14·검색31·상세14·추천18건, 기존9건과 전체142건이다. `[Vue warn]`/console 진단·정리/격리 공용 setup을 그대로 사용한다. 필수9파일과0개/skip/누락은 기존runtime 검사가 확인한다. [Red/Green/책임·한계](frontend-verification.md). 화면의 위치→검색 연결은 T20에서 구현했다.
 
-T19 PR37/main3191b89·필수 CI37232622126 실제 성공. T18/T19 화면 근거와 개발 서버 재시작 전후 진단은 프런트 실행 기록을 따른다. T20 이후 실제 검색 화면 연결/전체 E2E는 계획으로 유지한다.
+T19 PR37/main3191b89·필수 CI37232622126 실제 성공. T18/T19 화면 근거와 개발 서버 재시작 전후 진단은 프런트 실행 기록을 따른다. 당시 검색 화면 연결은 후속 범위였으며 아래 T20에서 확인했다. 전체 E2E는 T23 계획이다.
 
 실행 진단 후속 회귀: console mock을 복원해도 교체/진단 이력을 잃지 않도록 테스트용 monitorConsole을 적용했다. 수명 단위2건·실제8probe 거부/복원, 최종 프런트144건/필수10파일. 제품/API 계약은 유지한다. 프런트 실행 기록의 후속 회귀를 따른다.
+
+## T20 위치·실제 주변 검색
+
+폼은 미제출 입력, URL은 확정 조건, Store는 요청 순번·조회 상태·결과, 위치 composable은10초/취소를 소유한다. 서버 판정을 재계산하지 않고 표시 모듈과 배지·카드로 표현한다. 기존필수 목록에 새7파일을 등록했다. 공용verify Java360·Python21·프런트210건·타입/lint/build·JAR 실제HTTP·메모리재시작3회 종료0. 현재 cmux의 실제 합성 공급자→H2→검색/빈 결과/권한 거부 복구·URL/뒤로 가기·375/320px를 assertion했다. [명령·실패·한계](t20-verification.md).

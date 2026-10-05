@@ -1,17 +1,23 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import type { Connector } from '../../charging-info/types'
 
-const radiusMeters = ref(1000)
-const connector = ref<Connector>('DC_COMBO')
+const props = withDefaults(defineProps<{ initialRadiusMeters?: number; initialConnector?: Connector }>(), {
+  initialRadiusMeters: 1000, initialConnector: 'DC_COMBO',
+})
+const radiusMeters = ref(props.initialRadiusMeters)
+const connector = ref<Connector>(props.initialConnector)
 const emit = defineEmits<{ submit: [conditions: { radiusMeters: number; connector: Connector }] }>()
-const radiusOptions = [
+const standardRadiusOptions = [
   { value: 500, label: '500m' },
   { value: 1000, label: '1km' },
   { value: 3000, label: '3km' },
   { value: 5000, label: '5km' },
   { value: 10000, label: '10km' },
 ]
+const radiusOptions = computed(() => standardRadiusOptions.some(option => option.value === props.initialRadiusMeters)
+  ? standardRadiusOptions : [...standardRadiusOptions, { value: props.initialRadiusMeters, label: `${props.initialRadiusMeters}m` }]
+    .sort((first, second) => first.value - second.value))
 const connectorOptions: ReadonlyArray<{ value: Connector; label: string }> = [
   { value: 'DC_COMBO', label: 'DC 콤보' },
   { value: 'DC_CHADEMO', label: 'CHAdeMO' },

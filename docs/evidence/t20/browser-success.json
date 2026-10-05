@@ -1,0 +1,1 @@
+{"check":"실제 수집 H2 검색 및 재시도 회복","passed":true,"url":"http://localhost:5173/app/index.html#/stations?latitude=37.5&longitude=127&radiusMeters=1000&connector=DC_COMBO&limit=20","cards":["검증용 가까운 충전소\n\n직선거리 0m\n\n호환 충전기 1대 · 이용 가능 보고 1대\n\n충전기 01\n이용 가능 보고\n최신성 확인 불가","검증용 대체 충전소\n\n직선거리 88m\n\n호환 충전기 1대 · 이용 가능 보고 0대\n\n충전기 01\n사용 중\n최신성 확인 불가"],"diagnostics":[]}

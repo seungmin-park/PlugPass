@@ -1,0 +1,1 @@
+{"check":"브라우저 뒤로 가기로 조건과 API 결과 복원","passed":true,"url":"http://localhost:5173/app/index.html#/stations?latitude=37.5&longitude=127&radiusMeters=1000&connector=DC_COMBO&limit=20","diagnostics":[]}

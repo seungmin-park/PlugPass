@@ -3,6 +3,12 @@ import { describe, it, expect, vi } from 'vitest'
 import SearchForm from './SearchForm.vue'
 
 describe('검색 조건 폼', () => {
+  it('URL에서 복원한 임의 반경과 커넥터를 선택하고 제출한다', async () => {
+    const wrapper = mount(SearchForm, { props: { initialRadiusMeters: 1500, initialConnector: 'NACS' } })
+    expect(wrapper.findAll<HTMLInputElement>('input:checked').map(input => input.element.value)).toEqual(['1500', 'NACS'])
+    await wrapper.get('form').trigger('submit')
+    expect(wrapper.emitted('submit')).toEqual([[{ radiusMeters: 1500, connector: 'NACS' }]])
+  })
   it('반경·커넥터 선택 그룹과 검색 버튼을 제공한다', () => {
     const wrapper = mount(SearchForm)
     expect(wrapper.findAll('legend').map(legend => legend.text())).toEqual(['검색 반경', '차량 커넥터'])

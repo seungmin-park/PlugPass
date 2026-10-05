@@ -1,0 +1,16 @@
+{
+  "base": "077cb268aa9df2cb9ca82e79774cc21a502f2e31",
+  "worktree": "/private/tmp/plugpass-t20-work",
+  "callerWorkspace": "workspace:5",
+  "callerSurface": "surface:6",
+  "workspaceId": "F5885C10-2F15-4A59-9B6B-5C12B3821DBB",
+  "verificationSurface": "surface:7",
+  "browserSurface": "surface:13",
+  "frontend": "http://localhost:5173/app/index.html",
+  "backend": "http://127.0.0.1:8080",
+  "data": "명시적으로 수집한 합성 provider.xml 2곳, 운영 seed 없음",
+  "node": "26.7.0",
+  "java": "25.0.4.1",
+  "vue": "3.5.43",
+  "pinia": "4.0.3"
+}

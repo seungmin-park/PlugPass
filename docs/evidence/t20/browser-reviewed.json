@@ -1,0 +1,15 @@
+{
+  "check": "최종 회귀 보완 후 실제 API 검색/새로고침",
+  "passed": true,
+  "url": "http://localhost:5173/app/index.html#/stations?latitude=37.5&longitude=127&radiusMeters=3000&connector=DC_COMBO&limit=20",
+  "cards": [
+    "검증용 가까운 충전소\n\n직선거리 0m\n\n호환 충전기 1대 · 이용 가능 보고 1대\n\n충전기 01\n이용 가능 보고\n최신성 확인 불가",
+    "검증용 대체 충전소\n\n직선거리 88m\n\n호환 충전기 1대 · 이용 가능 보고 0대\n\n충전기 01\n사용 중\n최신성 확인 불가"
+  ],
+  "diagnostics": [],
+  "source_sha256": {
+    "frontend/src/features/search/views/StationSearchView.vue": "09893bc6e2d1760744a35112930129de0e0b72740c739eabc215c70a8d50e466",
+    "frontend/src/shared/location/useCurrentLocation.ts": "4936cc24ee7b00599d55df482eba9a72fdb92277e8c86cc3238b5d63541a5458",
+    "frontend/src/features/search/stores/stationSearchStore.ts": "b8c985e8b3abf40643828e70e964e04f7dfa79d9830118c1412f403864b3ae16"
+  }
+}

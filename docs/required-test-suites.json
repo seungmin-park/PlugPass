@@ -33,5 +33,6 @@
   "com.plugpass.station.repository.StationPersistenceTests",
   "com.plugpass.ChargingJourneyTests",
   "performance.PerformanceDatasetTests",
-  "com.plugpass.search.service.StationQueryEfficiencyTests"
+  "com.plugpass.search.service.StationQueryEfficiencyTests",
+  "e2e.ChargingDemoApplicationTests"
 ]

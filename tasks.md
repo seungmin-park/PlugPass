@@ -1,6 +1,6 @@
 # PlugPass 작업 체크리스트
 
-**목표·설계:** [plan.md](plan.md). T01 문서 계약은 main 반영, 인증된 실연동은 키 없어 미확인. T02~T21는 구현·검증·main 반영 완료. T15 당시 p95 목표 미달은 T16 동일 조건 재측정75.04ms로 개선했다. T01 실응답 확인 두 항목은 키 없어 보류한다. 아래 하위 체크와 근거를 따른다.
+**목표·설계:** [plan.md](plan.md). T01 문서 계약은 main 반영, 인증된 실연동은 키 없어 미확인. T02~T22는 구현·검증·main 반영 완료. T15 당시 p95 목표 미달은 T16 동일 조건 재측정75.04ms로 개선했다. T01 실응답 확인 두 항목은 키 없어 보류한다. 아래 하위 체크와 근거를 따른다.
 
 **실행 방식:** 작업 하나씩 순서대로 진행한다. 구현 시 `superpowers:executing-plans`를 사용한다. 이 파일을 만들었다는 이유로 이후 작업 전체를 자동 실행하지 않는다.
 
@@ -338,14 +338,14 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 
 의존: T21. 파일: `src/features/recommendation/{stores/recommendationStore.ts,views/AlternativeStationsView.vue,components/CandidateGroup.vue}`와 각 `.spec.ts`. 수정: 상세의 대체 후보 이동·router.
 
-- [ ] 같은 검색 조건·현재 충전소 제외 ID, 세 후보 그룹·빈 결과·알 수 없는 사유·잘못된 직접 링크·독립 재시도·응답 역전 테스트를 먼저 작성한다.
-- [ ] `useRecommendationStore().loadAlternatives(criteria, excludeStationId)`를 구현하고 preferred/requiresConfirmation/excluded의 그룹·순서·사유를 그대로 표시한다.
-- [ ] 같은 조건의 검색 메타를 조회해 준비 상태를 알리되, 메타 조회만 실패해도 성공한 후보를 유지한다. 후보를 누르면 실제 상세를 조회한다.
-- [ ] `npm --prefix frontend run test:unit -- src/features/recommendation`에서 실패·통과와 전체 검증을 확인하고 PR을 반영한다.
+- [x] 같은 검색 조건·현재 충전소 제외 ID, 세 후보 그룹·빈 결과·알 수 없는 사유·잘못된 직접 링크·독립 재시도·응답 역전 테스트를 먼저 작성한다.
+- [x] `useRecommendationStore().loadAlternatives(criteria, excludeStationId)`를 구현하고 preferred/requiresConfirmation/excluded의 그룹·순서·사유를 그대로 표시한다.
+- [x] 같은 조건의 검색 메타를 조회해 준비 상태를 알리되, 메타 조회만 실패해도 성공한 후보를 유지한다. 후보를 누르면 실제 상세를 조회한다.
+- [x] `npm --prefix frontend run test:unit -- src/features/recommendation`에서 실패·통과와 전체 검증을 확인하고 PR을 반영한다.
 
 산출: 현재 충전소를 제외한 대체 후보와 확인/제외 이유. 응답에 없는 좌표·충전기 수·전체 건수를 추측하지 않는다.
 
-구현·로컬 검증: [T22 실행 기록](docs/t22-verification.md). 추천/진단기38건·전체프런트262건/24파일·기존Java360/Python21. 현재cmux 실제 검색→상세→제외ID후보→다른실제상세·375px 확인. 완료체크는 필수CI와 실제main 반영 뒤 기록한다.
+구현·로컬 검증: [T22 실행 기록](docs/t22-verification.md). 추천/진단기38건·전체프런트262건/24파일·기존Java360/Python21. 현재cmux 실제 검색→상세→제외ID후보→다른실제상세·375px 확인. 완료: [PR #43](https://github.com/seungmin-park/PlugPass/pull/43), main7ca266a, [필수CI성공](https://github.com/seungmin-park/PlugPass/actions/runs/37286517636).
 
 ### T23 — 브라우저와 실제 백엔드 연결 검증
 

@@ -83,3 +83,10 @@ tasks.register('performanceClasspath') {
         layout.buildDirectory.file('performance-classpath.txt').get().asFile.text = sourceSets.test.runtimeClasspath.asPath
     }
 }
+
+tasks.register('chargingDemoClasspath') {
+    dependsOn tasks.named('testClasses')
+    doLast {
+        layout.buildDirectory.file('charging-demo-classpath.txt').get().asFile.text = sourceSets.test.runtimeClasspath.asPath
+    }
+}

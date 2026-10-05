@@ -191,3 +191,7 @@ T20 화면 검증의 합성 입력은 docs/evidence/t20/provider.xml이며, 필�
 ## T22 대체 후보 화면
 
 `npm --prefix frontend run test:unit -- src/features/recommendation tests/vueAppDiagnostics.spec.ts` 38건. 전체프런트262건/24파일·Java360·Python21·공용verify를 확인한다. 후보/수집메타의 독립오류·재시도·응답순서, 잘못된 직접링크의HTTP전 거부, 서버그룹/순서·unknown사유·텍스트이름·새상세 이동을 검사한다. 진단기 handler 재대입의 재귀 오류2건도 유지한다. [T22 실행기록](../../../docs/t22-verification.md)의 현재cmux 실제 제외ID후보→다른상세를 따른다. T23Playwright/T24JAR제공을 이 결과로 대신하지 않는다.
+
+## T23 브라우저 실제 연결
+
+`bash scripts/frontend-e2e.sh`는 실제 합성 HTTP 공급자·고정시간·수집/DB/API와 Vue 개발 서버를 준비하고 Playwright를 실행한다. 로컬 기본headed·CI headless다. 현재cmux의 전용 pane에서 실행하고 같은 workspace 브라우저로 실제 클릭을 추가 확인한다. API/위치 오류 제어는 ui-failures.spec, 실제 DB journey는 charging-journey.spec다. 10건 assertion·HTML/trace·서버 로그·개발모드 진단 probe 3종을 [실행기록](../../../docs/t23-verification.md)과 대조한다. 전체 공용검증의 관측Java361·Python22·프런트262건을 확인하며 총건수만으로 통과시키지 않는다. e2e 테스트클래스의 운영JAR 포함을 거부한다. 웹앱 JAR/CI브라우저는 T24에서 연결한다.

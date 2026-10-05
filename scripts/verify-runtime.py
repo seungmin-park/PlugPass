@@ -32,7 +32,7 @@ def check_frontend_tests(report, required_files):
 
 def check_packaged_test_fixtures(names):
     require(not any('PersistenceProbe' in name or name.startswith(('BOOT-INF/classes/performance/',
-                        'BOOT-INF/classes/reliability/')) for name in names), 'Test fixture packaged')
+                        'BOOT-INF/classes/reliability/', 'BOOT-INF/classes/e2e/')) for name in names), 'Test fixture packaged')
 
 
 def check_journey_evidence(directory):

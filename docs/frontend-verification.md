@@ -114,3 +114,7 @@ Green: 테스트용 `monitorConsole`이 Proxy로 warn/error 호출과 속성 교
 ## T20 위치와 실제 검색 화면
 
 [별도 실행 기록](t20-verification.md)에 Red/Green·Refactor·성공/실패·객체 책임·cmux 사용자 조작·실행 로그를 연결했다. 현재 프런트210건/17파일·Java360·Python21과 기존 공용verify가 통과했다. 검색 화면은 실제 수집/H2/API까지 연결했으며 상세·추천과 Playwright 전체 E2E·JAR 웹앱은 T21~T24 범위다.
+
+## T23 실제 API 연결 브라우저 검증
+
+[T23 실행 기록](t23-verification.md)을 따른다. 실제 합성 공급자 HTTP→수집→H2→검색/상세/제외 후보 journey와 외부 경계만 제어한 UI 실패 spec을 분리했다. 개발 모드의 최초 이동 전 진단·정리 후 assertion을 공용 fixture가 소유한다. 운영JAR 웹앱과 필수 CI 브라우저 연결은 T24 범위다.

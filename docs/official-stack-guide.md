@@ -219,3 +219,8 @@ Vue3.5.43·Pinia4.0.3·Router4.6.4·Axios1.20.0을 유지했다. [Vue watch/clea
 ## T22 후보와 개발모드 진단
 
 기존Vue3.5.43·Pinia4.0.3·Axios1.20.0을 유지한다. [Vue 앱 API](https://vuejs.org/api/application.html)의 errorHandler와 개발모드 warnHandler를 재확인했다. 같은handler의 재대입을 무시하는 것은 테스트수명 정책이며 실제 재귀실패2건을 회귀검증했다. 후보/메타의 독립순번·독립재시도·사유 문자열 표시·공용query변환은 프로젝트 판단이다. [실제 실행과 한계](t22-verification.md)를 따른다.
+
+## T23 브라우저 검증
+
+실제 lockfile의 Playwright1.63.0/Chromium153(revision1243)을 사용한다. [공용 fixture](https://playwright.dev/docs/test-fixtures)와 [page 이벤트](https://playwright.dev/docs/api/class-page), [보고서](https://playwright.dev/docs/test-reporters)를 확인했다. ESM JSON fixture는 Node26의 `with { type: 'json' }`로 읽는다.
+공식 API는 page·context 격리와 console/pageerror를 제공한다. 최초 이동 전 등록·페이지 정리 후 진단 assertion·정확한 HTTP 진단 허용은 프로젝트가 선택한 검증 정책이다. 개발 모드에서 실제 Vue 경고/비동기 예외를 발생시켜 확인하며 production의 경고 부재로 대체하지 않는다.

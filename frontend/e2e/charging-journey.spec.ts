@@ -1,0 +1,32 @@
+import { test, expect } from './fixtures'
+
+test('실제 수집·H2에서 검색→상세→제외 후보→다른 상세를 연결한다', async ({ page }) => {
+  await page.goto('/app/index.html#/stations')
+  await page.getByRole('button', { name: '검증용 예시 위치 사용' }).click()
+  await page.getByRole('button', { name: '주변 충전소 검색' }).click()
+  await expect(page.getByRole('link', { name: '데모 가까운 충전소 상세 보기' })).toBeVisible()
+  await expect(page.getByRole('link', { name: '데모 대체 충전소 상세 보기' })).toBeVisible()
+  await expect(page.getByText('2개 표시 · 최대 20개 표시')).toBeVisible()
+  await page.getByRole('link', { name: '데모 가까운 충전소 상세 보기' }).click()
+  await expect(page.getByRole('heading', { name: '데모 가까운 충전소', exact: true })).toBeVisible()
+  await expect(page.getByText('관측 시각: 확인 불가', { exact: true })).toBeVisible()
+  await expect(page.getByText('최신성 확인 불가', { exact: true })).toBeVisible()
+  const firstId = new URL(page.url()).hash.match(/\/stations\/(\d+)/)?.[1]
+  if (!firstId) throw new Error('첫 충전소 ID가 URL에 없습니다')
+  await page.getByRole('link', { name: '다른 충전소 찾기' }).click()
+  await expect(page.getByRole('heading', { name: '대체 충전소 후보' })).toBeVisible()
+  await expect(page).toHaveURL(new RegExp(`excludeStationId=${firstId}(?:&|$)`))
+  const confirmation = page.getByRole('region', { name: '이용 전 확인 필요', exact: true })
+  await expect(confirmation.getByRole('heading', { level: 3 })).toHaveText(['데모 대체 충전소'])
+  await expect(page.getByRole('link', { name: '데모 가까운 충전소 상세 보기' })).toHaveCount(0)
+  await expect(confirmation.getByText('관측 시각이 제공되지 않았습니다')).toBeVisible()
+  await confirmation.getByRole('link', { name: '데모 대체 충전소 상세 보기' }).click()
+  await expect(page.getByRole('heading', { name: '데모 대체 충전소', exact: true })).toBeVisible()
+  await expect(page.getByText(/공급자 충전소 ID: browser_second/)).toBeVisible()
+  const secondId = new URL(page.url()).hash.match(/\/stations\/(\d+)/)?.[1]
+  expect(secondId).toBeDefined()
+  expect(secondId).not.toBe(firstId)
+  await expect(page).toHaveURL(/latitude=37.5&longitude=127&radiusMeters=1000&connector=DC_COMBO&limit=20$/)
+  await page.getByRole('link', { name: '검색 목록으로 돌아가기' }).click()
+  await expect(page.getByRole('link', { name: '데모 가까운 충전소 상세 보기' })).toBeVisible()
+})

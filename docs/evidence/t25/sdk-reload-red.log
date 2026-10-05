@@ -1,0 +1,41 @@
+
+> plugpass-web@0.1.0 test:unit
+> vitest run src/features/search/views/StationMapAvailability.spec.ts
+
+
+ RUN  v5.0.3 /Users/seungmin/Desktop/repo/PlugPass/frontend
+
+ ❯ src/features/search/views/StationMapAvailability.spec.ts (3 tests | 1 failed) 176ms
+   ❯ 지도 실패와 목록의 독립성 (3)
+     × SDK 로딩이 실패해도 목록·상세 링크를 유지하고 화면 새로고침을 제공한다 75ms
+     ✓ SDK가 10초 동안 응답하지 않으면 목록을 유지하고 늦게 완료돼도 실패 화면을 덮지 않는다 36ms
+     ✓ 타일 요청 실패는 안내하고 목록 선택·상세 이동을 유지한다 63ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/search/views/StationMapAvailability.spec.ts > 지도 실패와 목록의 독립성 > SDK 로딩이 실패해도 목록·상세 링크를 유지하고 화면 새로고침을 제공한다
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/features/search/views/StationMapAvailability.spec.ts:32:50
+     30|     expect(wrapper.find('[role="alert"]').exists()).toBe(true)
+     31|     expect(wrapper.findAll('article a').map(link => link.text())).toEq…
+     32|     expect(wrapper.find('#reload-map').exists()).toBe(true)
+       |                                                  ^
+     33|     expect(router.currentRoute.value.query).toEqual(query)
+     34|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 passed (3)
+   Start at  00:14:28
+   Duration  1.19s (environment 47%, transform 27%, tests 16%, import 7%, setup 3%)
+
+JSON report written to /Users/seungmin/Desktop/repo/PlugPass/frontend/test-results/unit.json

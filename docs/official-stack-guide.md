@@ -1,5 +1,13 @@
 # PlugPass 기술 스택과 개발 기준
 
+## 검색 결과 지도 (2026-10-06, T25)
+
+사용자 선택으로 Leaflet1.9.4 + OpenStreetMap 공용 타일을 채택했다. [공식 안정판](https://leafletjs.com/download.html)과 [1.9.4 API reference](https://leafletjs.com/reference.html)를 확인하고 npm registry·lockfile의 Leaflet1.9.4/BSD-2-Clause와 @types/leaflet1.9.22를 대조했다. map/setView/fitBounds, marker의 keyboard/title, divIcon의 HTMLElement, tileerror/load, Map.remove를 설치 소스와 함께 확인했다. SDK의 keyboard 옵션은 탭 포커스를 제공하며 현재 선택 callback의 Enter/Space 연결은 프로젝트 adapter가 소유한다.
+
+[OSM 타일 정책](https://operations.osmfoundation.org/policies/tiles/)의 정확한 HTTPS URL·지도 위 출처·Referer·기본 캐시·벌크/오프라인 다운로드 금지를 따른다. 키/도메인 등록이 없는 공용 타일은 best effort이며 SLA가 없다. 브라우저의 기본 HTTP 캐시를 유지하고 tileLayer의 updateWhenIdle와 keepBuffer0으로 표시 영역 중심의 요청을 사용한다. SDK의 공식 레거시 브라우저 지원 목록을 Vue 앱 전체의 지원 보장으로 바꾸지 않는다.
+
+SDK는 동적 import로 지도 요청 시 로딩하여 목록 진입과 분리한다. 실제 Chromium에서 import 실패 후 같은 URL 재시도는 요청을 새로 보내지 않는 것을 trace로 관찰했다. [Vite load error 안내](https://vite.dev/guide/build.html#load-error-handling)의 새로고침 방법을 참고하여 SDK 실패에는 사용자가 선택하는 화면 새로고침을 제공한다. 자동 reload나 전역 오류 무시는 추가하지 않는다. 타일 실패는 별도의 지도 인스턴스 재생성으로 복구한다. UI·상태 책임은 프로젝트 설계 판단이며 [T25 기록](t25-verification.md)의 Red/Green·단위·개발 브라우저·실제 타일·JAR 검증 범위를 따른다.
+
 ## CI 구조 검사 (2026-10-05)
 
 기존 Java 25·Boot 4.1.1을 유지하며 test scope에 ArchUnit core 1.5.1을 도입했다. 실제 `testRuntimeClasspath`는 ArchUnit 1.5.1·JUnit Jupiter 6.0.3·Spring transaction 7.0.9로 해석됐다. 별도 ArchUnit JUnit 엔진을 추가하지 않고 기존 JUnit의 일반 `@Test` 안에서 bytecode 규칙을 실행한다.

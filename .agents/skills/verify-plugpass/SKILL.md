@@ -196,8 +196,18 @@ T20 화면 검증의 합성 입력은 docs/evidence/t20/provider.xml이며, 필�
 
 `bash scripts/frontend-e2e.sh`는 실제 합성 HTTP 공급자·고정시간·수집/DB/API와 Vue 개발 서버를 준비하고 Playwright를 실행한다. 로컬 기본headed·CI headless다. 현재cmux의 전용 pane에서 실행하고 같은 workspace 브라우저로 실제 클릭을 추가 확인한다. API/위치 오류 제어는 ui-failures.spec, 실제 DB journey는 charging-journey.spec다. 10건 assertion·HTML/trace·서버 로그·개발모드 진단 probe 3종을 [실행기록](../../../docs/t23-verification.md)과 대조한다. 전체 공용검증의 관측Java361·Python22·프런트262건을 확인하며 총건수만으로 통과시키지 않는다. e2e 테스트클래스의 운영JAR 포함을 거부한다. 웹앱 JAR/CI브라우저는 T24에서 연결한다.
 
-## T24 현재 공용 검증
+## T24 공용 검증 도입 당시
 
 현재 `bash scripts/verify.sh`는 Gradle frontendInstall→unit/type/lint→clean build(타입검사 후 웹앱 build·JAR 포함)→개발모드 E2E→필수 브라우저 JSON 검사→실제 운영JAR HTTP/브라우저→별도JVM 재시작을 실행한다. 로컬은 현재cmux의 확인한 전용pane에서 headed, CI는 Chromium 설치 후 headless다.
 관측Java361·프런트273(24파일)·Python32·개발E2E17(3필수spec)·JAR브라우저2건과 종료0을 실제보고서에서 확인한다. [필수 브라우저 목록](../../../docs/required-browser-tests.json), runtime.json의 웹앱/asset HTTP와 실제 assertion을 검사한다. HTML/trace는 frontend/playwright-report와 frontend/test-results, 서버로그는 build/verification에 남는다. 누락/0개/skip/실패/오류/예상실패/재시도는 기존runtime검사기가 거부한다.
 [T24 실행기록](../../../docs/t24-verification.md)의 실제Vue경고·실행예외·필수E2E누락/0개/skip 공용verify 실패와 원본복원을 대조한다. Vue→Axios/httpClient·API→Store/View/Component·공용fixture우회는 기존ESLint를 사용한다. 문서/정적검사만으로 모든 객체 책임을 증명하지 않으므로 호출부/공개계약을 리뷰한다. 실공공 API인증·배포·메모리H2보존은 별도범위다.
+
+## T25 검색 지도와 목록 선택
+
+Leaflet1.9.4 + OpenStreetMap 공용 타일을 사용한다. 키/허용 도메인 등록 없이 검색 결과에서 ‘지도 보기’를 요청한다. 추천 응답은 좌표가 없어 추천 지도는 포함하지 않는다. SDK·타일 실패가 검색 응답·상세 링크를 지우지 않아야 한다. SDK 다운로드 실패/10초 무응답은 화면 새로고침으로 URL 조건을 유지해 복구하며, 타일 실패는 지도만 재생성한다.
+
+대상 `npm --prefix frontend run test:unit -- src/features/search/views/StationMapSelection.spec.ts src/features/search/views/StationMapAvailability.spec.ts src/features/search/components/StationMap.spec.ts` →17건. 전체 프런트27파일·290건과 타입/lint/build를 확인한다. 최초 Red·실제 복구 결함·Green·책임/이름 검토는 [T25 기록](../../../docs/t25-verification.md)을 따른다. 단일/빈/동일좌표·Enter/Space·HTML이름·화면이탈·늦은SDK/조건변경을 확인한다.
+
+현재cmux의 확인한 전용pane에서 `bash scripts/frontend-e2e.sh station-map.spec.ts`를 headed로 실행한다. 실제수집/H2/API에 Leaflet을 연결하며 자동테스트의 타일은 제어한다. SDK503→화면새로고침→지도다시표시, 타일503→지도재시도, 선택/초기화·375/1440px4건을 확인한다. 실제 외부 타일은 같은workspace의 cmux브라우저에서 따로 클릭·로딩·출처·진단을 확인한다. 타일fixture를 실제지리정보로 표현하지 않는다.
+
+공용verify는 개발브라우저의 필수 `station-map.spec.ts`와 운영JAR의 지연로딩 지도JS/CSS·빈검색·출처 검사를 포함한다. 실제전체건수·종료코드·실패/skip·보고서와 원격CI는 실행 뒤 [T25 기록](../../../docs/t25-verification.md)에 남긴다. 기존검사기의 필수파일 비교·진단감시를 유지하고 소스문서만으로 모든 SDK/브라우저경로를 검증했다고 보고하지 않는다.

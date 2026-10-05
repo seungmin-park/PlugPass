@@ -22,5 +22,8 @@
   "src/features/recommendation/stores/recommendationStore.spec.ts",
   "src/features/recommendation/views/AlternativeStationsView.spec.ts",
   "src/features/recommendation/components/CandidateGroup.spec.ts",
-  "tests/vueAppDiagnostics.spec.ts"
+  "tests/vueAppDiagnostics.spec.ts",
+  "src/features/search/views/StationMapSelection.spec.ts",
+  "src/features/search/views/StationMapAvailability.spec.ts",
+  "src/features/search/components/StationMap.spec.ts"
 ]

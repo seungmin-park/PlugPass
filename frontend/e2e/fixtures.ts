@@ -43,3 +43,4 @@ export const test = base.extend<{ diagnostics: BrowserDiagnostics }>({
   },
 })
 export { expect }
+export type { Page } from '@playwright/test'

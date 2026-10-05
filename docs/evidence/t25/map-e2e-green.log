@@ -1,0 +1,99 @@
+> Task :compileJava UP-TO-DATE
+> Task :processResources UP-TO-DATE
+> Task :classes UP-TO-DATE
+> Task :compileTestJava UP-TO-DATE
+> Task :processTestResources UP-TO-DATE
+> Task :testClasses UP-TO-DATE
+> Task :chargingDemoClasspath
+
+[Incubating] Problems report is available at: file:///Users/seungmin/Desktop/repo/PlugPass/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.7.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 745ms
+5 actionable tasks: 1 executed, 4 up-to-date
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.7.1/userguide/configuration_cache_enabling.html
+
+==> /Users/seungmin/Desktop/repo/PlugPass/build/verification/frontend-e2e/backend.log <==
+
+==> /Users/seungmin/Desktop/repo/PlugPass/build/verification/frontend-e2e/frontend.log <==
+
+==> /Users/seungmin/Desktop/repo/PlugPass/build/verification/frontend-e2e/backend.log <==
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+
+==> /Users/seungmin/Desktop/repo/PlugPass/build/verification/frontend-e2e/frontend.log <==
+
+  VITE v8.3.2  ready in 309 ms
+
+  ➜  Local:   http://127.0.0.1:5183/app/
+
+==> /Users/seungmin/Desktop/repo/PlugPass/build/verification/frontend-e2e/backend.log <==
+2026-10-06T00:15:46.447+09:00  INFO 35231 --- [plugpass] [           main] e2e.ChargingDemoApplication              : Starting ChargingDemoApplication using Java 25.0.4.1 with PID 35231 (/Users/seungmin/Desktop/repo/PlugPass/build/classes/java/test started by seungmin in /Users/seungmin/Desktop/repo/PlugPass)
+2026-10-06T00:15:46.450+09:00  INFO 35231 --- [plugpass] [           main] e2e.ChargingDemoApplication              : No active profile set, falling back to 1 default profile: "default"
+2026-10-06T00:15:46.946+09:00  INFO 35231 --- [plugpass] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-06T00:15:46.994+09:00  INFO 35231 --- [plugpass] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 43 ms. Found 4 JPA repository interfaces.
+2026-10-06T00:15:47.288+09:00  INFO 35231 --- [plugpass] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 18180 (http)
+2026-10-06T00:15:47.296+09:00  INFO 35231 --- [plugpass] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-06T00:15:47.296+09:00  INFO 35231 --- [plugpass] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-06T00:15:47.321+09:00  INFO 35231 --- [plugpass] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 844 ms
+2026-10-06T00:15:47.452+09:00  INFO 35231 --- [plugpass] [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-10-06T00:15:47.492+09:00  INFO 35231 --- [plugpass] [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.5.Final
+2026-10-06T00:15:47.689+09:00  INFO 35231 --- [plugpass] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-06T00:15:47.706+09:00  INFO 35231 --- [plugpass] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-10-06T00:15:47.786+09:00  INFO 35231 --- [plugpass] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:02dfcf6c-6f35-40c0-a1a4-250d679de39b user=SA
+2026-10-06T00:15:47.786+09:00  INFO 35231 --- [plugpass] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-10-06T00:15:47.814+09:00  INFO 35231 --- [plugpass] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:h2:mem:02dfcf6c-6f35-40c0-a1a4-250d679de39b]
+	Database driver: H2 JDBC Driver
+	Database dialect: H2Dialect
+	Database version: 2.4.240
+	Default catalog/schema: 02DFCF6C-6F35-40C0-A1A4-250D679DE39B/PUBLIC
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: 100
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-10-06T00:15:48.238+09:00  INFO 35231 --- [plugpass] [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-06T00:15:48.260+09:00  INFO 35231 --- [plugpass] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-06T00:15:48.303+09:00  INFO 35231 --- [plugpass] [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-10-06T00:15:49.212+09:00  INFO 35231 --- [plugpass] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-06T00:15:49.242+09:00  INFO 35231 --- [plugpass] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 18180 (http) with context path '/'
+2026-10-06T00:15:49.248+09:00  INFO 35231 --- [plugpass] [           main] e2e.ChargingDemoApplication              : Started ChargingDemoApplication in 3.045 seconds (process running for 3.336)
+2026-10-06T00:15:49.339+09:00  INFO 35231 --- [plugpass] [.1-18180-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-10-06T00:15:49.340+09:00  INFO 35231 --- [plugpass] [.1-18180-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-10-06T00:15:49.340+09:00  INFO 35231 --- [plugpass] [.1-18180-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms
+2026-10-06T00:15:49.443+09:00  INFO 35231 --- [plugpass] [           main] c.p.ingestion.metrics.IngestionMetrics   : ingestion runId=1 outcome=SUCCESS processed=2 failedPage=null failure=NONE requests=1 retries=0
+CHARGING_DEMO_READY
+E2E 준비 완료: 실제 HTTP 수집·H2 2곳, Vue 개발 모드
+
+> plugpass-web@0.1.0 test:e2e
+> playwright test station-map.spec.ts
+
+
+Running 4 tests using 1 worker
+
+  ✓  1 [chromium] › e2e/station-map.spec.ts:10:1 › 실제 검색 결과의 마커↔카드 선택과 조건 변경 초기화를 연결한다 (1.2s)
+  ✓  2 [chromium] › e2e/station-map.spec.ts:44:1 › SDK 다운로드 실패에도 목록·상세 링크를 유지하고 복구한다 (688ms)
+  ✓  3 [chromium] › e2e/station-map.spec.ts:62:1 › 타일 실패는 목록을 유지하고 지도 재시도로 복구한다 (552ms)
+  ✓  4 [chromium] › e2e/station-map.spec.ts:83:1 › 모바일·데스크톱의 지도는 가로 넘침 없이 키보드로 마커를 선택한다 (557ms)
+
+  4 passed (4.0s)
+
+To open last HTML report run:
+[36m[39m
+[36m  npx playwright show-report[39m
+[36m[39m

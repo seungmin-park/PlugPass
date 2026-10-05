@@ -378,7 +378,9 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 
 ### T25 — 지도와 목록 선택 연결
 
-의존: T24, 지도 범위 결정. 파일·SDK는 [후속 지도 계획](docs/frontend-plan.md)의 범위를 확정할 때 정한다.
+의존: T24. SDK: Leaflet1.9.4 + OpenStreetMap 공용 타일(사용자 선택). 파일: `frontend/src/features/search/map/{stationMap.ts,loadStationMap.ts,leafletStationMap.ts}`, `components/StationMap.vue`, 검색 View·Card와 관련 테스트, `frontend/e2e/station-map.spec.ts`. [확정 지도 범위](docs/frontend-plan.md#11-완료-기준과-후속-지도)를 따른다.
+
+진행: [T25 진행 기록](docs/t25-verification.md). 사용자 선택으로 검색 결과 지도 범위를 확정했다. 공용verify 종료0, Java361·프런트27파일/290건·Python32·개발E2E21·JAR브라우저3건과 현재cmux 실제지도 흐름을 확인했다. PR·필수CI·main 반영은 진행 중이며 아래 완료 체크는 실제 반영 후 변경한다.
 
 - [ ] SDK 공식 조건·키/허용 도메인·출처 표시·지원 브라우저와 지도에 표시할 데이터 범위를 확인한다. 추천 응답의 좌표 부재를 고려한다.
 - [ ] 마커/목록 선택·조건 변경·SDK 실패 테스트를 먼저 작성하고 지도와 카드 선택을 연결한다. SDK 실패 시 목록은 유지한다.

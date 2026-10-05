@@ -3,6 +3,7 @@ import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import SearchForm from '../components/SearchForm.vue'
 import StationCard from '../components/StationCard.vue'
+import StationMap from '../components/StationMap.vue'
 import { parseSearchCriteria, toSearchQuery } from '../criteria'
 import type { SearchCriteria } from '../types'
 import type { Connector } from '../../charging-info/types'
@@ -16,6 +17,12 @@ import { useErrorFocus } from '../../../shared/ui/useErrorFocus'
 const route = useRoute()
 const router = useRouter()
 const store = useStationSearchStore()
+const mapVisible = ref(false)
+const selectedStationId = ref<number | null>(null)
+const selectedStation = computed(() => store.response?.stations.find(station => station.id === selectedStationId.value))
+watch(() => store.status, status => {
+  if (status === 'loading' || status === 'idle') selectedStationId.value = null
+}, { flush: 'sync' })
 const { status: locationStatus, error: locationError, requestLocation, cancel: cancelLocation } = useCurrentLocation()
 const selectedLocation = ref<LocationCoordinates | null>(null)
 const locationLabel = ref('검색 위치')
@@ -69,6 +76,13 @@ async function submitSearch(conditions: { radiusMeters: number; connector: Conne
 }
 function refreshSearch(): void {
   if (confirmedCriteria.value) void store.search(confirmedCriteria.value)
+}
+function toggleMap(): void {
+  mapVisible.value = !mapVisible.value
+  selectedStationId.value = null
+}
+function selectStation(stationId: number): void {
+  if (store.response?.stations.some(station => station.id === stationId)) selectedStationId.value = stationId
 }
 function detailHref(stationId: number): string {
   const criteria = confirmedCriteria.value
@@ -146,8 +160,13 @@ function openDetail(stationId: number): void {
           <p class="results-caution">직선거리 기준입니다. 이용 가능 보고는 도착 시점의 빈자리를 보장하지 않습니다.</p>
           <p class="result-time">조회 시각: {{ formatTimestamp(store.fetchedAt) }}</p>
           <p class="result-time">전체 수집 성공 시각: {{ formatTimestamp(store.response.lastSuccessfulRunAt) }}</p>
+          <button type="button" id="show-map" class="secondary-button" :aria-expanded="mapVisible" aria-controls="station-map-panel" @click="toggleMap">{{ mapVisible ? '지도 접기' : '지도 보기' }}</button>
+          <StationMap v-if="mapVisible" :stations="store.response.stations" :center="confirmedCriteria"
+            :selected-station-id="selectedStationId" @select="selectStation" />
+          <p v-if="selectedStation" role="status">선택한 충전소: {{ selectedStation.name }}</p>
           <div class="station-list"><StationCard v-for="station in store.response.stations" :key="station.id" :station="station"
-            :detail-href="detailHref(station.id)" @open-detail="openDetail(station.id)" /></div>
+            :detail-href="detailHref(station.id)" :map-selectable="mapVisible" :selected="selectedStationId === station.id"
+            @select="selectStation(station.id)" @open-detail="openDetail(station.id)" /></div>
         </template>
       </div>
     </div>

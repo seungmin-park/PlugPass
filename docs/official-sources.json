@@ -636,5 +636,23 @@
     "url": "https://playwright.dev/docs/test-reporters#json-reporter",
     "accessed": "2026-10-05",
     "coverage": "JSON·HTML·trace 보고서와 실제 assertion 상태"
+  },
+  {
+    "id": "t24-boot-static",
+    "url": "https://docs.spring.io/spring-boot/reference/web/servlet.html#web.servlet.spring-mvc.static-content",
+    "accessed": "2026-10-05",
+    "coverage": "공식 Boot4.1.1 static classpath 제공; 실제 운영JAR HTML/asset/API/RESTDocs 비교"
+  },
+  {
+    "id": "t24-eslint-imports",
+    "url": "https://eslint.org/docs/latest/rules/no-restricted-imports",
+    "accessed": "2026-10-05",
+    "coverage": "실제 ESLint10.12.0 paths/patterns로 Vue/API/spec 경계 임시위반 거부"
+  },
+  {
+    "id": "t24-vue-link-events",
+    "url": "https://vuejs.org/guide/essentials/event-handling.html",
+    "accessed": "2026-10-05",
+    "coverage": "Vue3.5.43 설치 소스와 exact/left/prevent 순서를 대조; modifier 클릭의 기본 링크 동작을 회귀 검증"
   }
 ]

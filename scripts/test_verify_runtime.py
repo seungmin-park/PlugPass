@@ -140,5 +140,57 @@ class FrontendEvidenceTests(unittest.TestCase):
             verify_runtime.check_frontend_tests(report, ['src/SearchForm.spec.ts'])
 
 
+class BrowserEvidenceTests(unittest.TestCase):
+    def report(self, status='passed', expected_status='passed'):
+        return {'errors': [], 'suites': [{'specs': [{'file': 'journey.spec.ts', 'ok': True,
+            'tests': [{'expectedStatus': expected_status, 'status': 'expected',
+                       'results': [{'status': status, 'errors': [], 'retry': 0}]}]}]}]}
+
+    def test_accepts_real_passed_browser_result(self):
+        self.assertEqual(verify_runtime.check_browser_tests(self.report(), ['journey.spec.ts']), 1)
+
+    def test_rejects_zero_browser_tests(self):
+        with self.assertRaisesRegex(RuntimeError, 'Zero browser tests'):
+            verify_runtime.check_browser_tests({'suites': []}, [])
+
+    def test_rejects_missing_required_browser_spec(self):
+        with self.assertRaisesRegex(RuntimeError, 'Missing required browser'):
+            verify_runtime.check_browser_tests(self.report(), ['journey.spec.ts', 'missing.spec.ts'])
+
+    def test_rejects_skipped_browser_test(self):
+        with self.assertRaisesRegex(RuntimeError, 'Browser result not passed'):
+            verify_runtime.check_browser_tests(self.report('skipped'), ['journey.spec.ts'])
+
+    def test_rejects_failed_browser_test_despite_ok_summary(self):
+        with self.assertRaisesRegex(RuntimeError, 'Browser result not passed'):
+            verify_runtime.check_browser_tests(self.report('failed'), ['journey.spec.ts'])
+
+    def test_rejects_browser_execution_error(self):
+        report = self.report()
+        report['errors'] = [{'message': 'worker failed'}]
+        with self.assertRaisesRegex(RuntimeError, 'Browser runner errors'):
+            verify_runtime.check_browser_tests(report, ['journey.spec.ts'])
+
+    def test_rejects_expected_failure_as_success(self):
+        with self.assertRaisesRegex(RuntimeError, 'Browser expected status not passed'):
+            verify_runtime.check_browser_tests(self.report('failed', 'failed'), ['journey.spec.ts'])
+
+    def test_rejects_collected_but_unexecuted_test(self):
+        report = self.report()
+        report['suites'][0]['specs'][0]['tests'][0]['results'] = []
+        with self.assertRaisesRegex(RuntimeError, 'Browser test not executed'):
+            verify_runtime.check_browser_tests(report, ['journey.spec.ts'])
+
+    def test_checks_nested_describe_suites(self):
+        report = {'suites': [{'suites': self.report()['suites']}]}
+        self.assertEqual(verify_runtime.check_browser_tests(report, ['journey.spec.ts']), 1)
+
+    def test_rejects_retry_that_masks_first_failure(self):
+        report = self.report()
+        report['suites'][0]['specs'][0]['tests'][0]['results'].insert(0, {'status': 'failed', 'errors': [], 'retry': 0})
+        with self.assertRaisesRegex(RuntimeError, 'Browser test repeated'):
+            verify_runtime.check_browser_tests(report, ['journey.spec.ts'])
+
+
 if __name__ == '__main__':
     unittest.main()

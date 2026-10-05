@@ -1,0 +1,58 @@
+{
+  "base": "5c31b58",
+  "local_headed": true,
+  "quality_red": {
+    "failed": 4,
+    "passed": 3,
+    "exit": 1
+  },
+  "quality_green": {
+    "passed": 7,
+    "exit": 0
+  },
+  "jar_missing_red": 1,
+  "probes": {
+    "vue-warning": 1,
+    "exception": 1,
+    "missing": 1,
+    "zero": 1,
+    "skip": 1
+  },
+  "restored_verify_exit": 0,
+  "runtime": {
+    "tests": 361,
+    "frontend_tests": 262,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "health": "UP",
+    "env_http": 404,
+    "station_search_http": 200,
+    "station_validation_http": 400,
+    "station_detail_missing_http": 404,
+    "docs_match": true,
+    "recommendations_http": 200,
+    "default_metrics_http": 404,
+    "test_fixtures_packaged": false,
+    "browser_tests": 17,
+    "packaged_browser_tests": 2,
+    "webapp_http": 200,
+    "webapp_assets_http": 3,
+    "webapp_match": true
+  },
+  "cmux": {
+    "workspace": "workspace:5",
+    "terminal": "surface:18",
+    "browser": "surface:19",
+    "jar_port": 18181,
+    "mobile_width": 375,
+    "desktop_width": 1440,
+    "no_overflow": true,
+    "detail_error_focus": "alert",
+    "direct_hash_reload": true,
+    "return_radius": 1000,
+    "return_connector": "DC_COMBO",
+    "tab_command_active_tag": "BODY",
+    "keyboard_assertions": "headed Chromium passed; cmux Tab is not counted as passed"
+  }
+}

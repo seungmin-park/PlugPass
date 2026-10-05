@@ -11,6 +11,7 @@ import { useStationSearchStore } from '../stores/stationSearchStore'
 import { useCurrentLocation, type LocationCoordinates } from '../../../shared/location/useCurrentLocation'
 import { ApiError } from '../../../shared/api/apiError'
 import RequestState from '../../../shared/ui/RequestState.vue'
+import { useErrorFocus } from '../../../shared/ui/useErrorFocus'
 
 const route = useRoute()
 const router = useRouter()
@@ -23,6 +24,9 @@ const parsedCriteria = computed(() => parseSearchCriteria(route.query))
 const confirmedCriteria = computed(() => parsedCriteria.value.kind === 'valid' ? parsedCriteria.value.criteria : null)
 const inputError = computed(() => parsedCriteria.value.kind === 'invalid'
   ? new ApiError('validation', '검색 조건을 확인해 주세요', null, 'INVALID_SEARCH_CRITERIA', parsedCriteria.value.fields) : null)
+const fieldErrors = computed(() => (inputError.value ?? store.error)?.fields ?? {})
+const locationNotice = ref<HTMLElement | null>(null)
+useErrorFocus(() => locationError.value !== null, locationNotice)
 
 watch(() => route.query, () => {
   cancelLocation()
@@ -96,10 +100,10 @@ function openDetail(stationId: number): void {
           <p>예시 위치 37.5 / 127은 합성 데모 지역입니다. 해당 지역의 데이터가 없으면 결과가 없을 수 있습니다.</p>
           <p v-if="selectedLocation" class="selected-location">{{ locationLabel }}: {{ selectedLocation.latitude }} / {{ selectedLocation.longitude }}</p>
           <p v-if="locationStatus === 'loading'" role="status">현재 위치를 확인하고 있습니다. 최대 10초 기다려 주세요.</p>
-          <p v-if="locationError" role="alert">{{ locationError }}</p>
+          <p v-if="locationError" ref="locationNotice" tabindex="-1" role="alert">{{ locationError }}</p>
         </div>
         <SearchForm :key="route.fullPath" :initial-radius-meters="confirmedCriteria?.radiusMeters ?? 1000"
-          :initial-connector="confirmedCriteria?.connector ?? 'DC_COMBO'" @submit="submitSearch" />
+          :initial-connector="confirmedCriteria?.connector ?? 'DC_COMBO'" :field-errors="fieldErrors" @submit="submitSearch" />
         <div class="location-guidance">
           <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7" /><circle cx="12" cy="12" r="2.5" /><path d="M12 2v3m0 14v3M2 12h3m14 0h3" /></svg>
           <div><h3>위치 선택 안내</h3><p class="initial-guidance" role="status">{{ guidance }}</p></div>
@@ -131,7 +135,8 @@ function openDetail(stationId: number): void {
           <h2 id="results-heading">주변 충전소</h2>
           <button v-if="confirmedCriteria" type="button" class="secondary-button" id="refresh" :disabled="store.status === 'loading'" @click="refreshSearch">새로고침</button>
         </div>
-        <RequestState :status="inputError ? 'error' : store.status" :error="inputError ?? store.error" :retryable="!!confirmedCriteria" @retry="refreshSearch" />
+        <RequestState :status="inputError ? 'error' : store.status" :error="inputError ?? store.error" :retryable="!!confirmedCriteria"
+          :focus-error="!fieldErrors.radiusMeters && !fieldErrors.connector" @retry="refreshSearch" />
         <template v-if="store.response && confirmedCriteria">
           <p v-if="!store.response.dataReady" class="request-notice" role="status">
             {{ store.response.stations.length ? '전체 수집 완료 전 정보입니다. 일부 충전소만 표시될 수 있습니다.' : '아직 전체 수집이 완료되지 않았습니다. 수집 후 다시 조회해 주세요.' }}

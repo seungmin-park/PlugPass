@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { useErrorFocus } from '../../../shared/ui/useErrorFocus'
 import { useRoute, useRouter } from 'vue-router'
 import { parseSearchCriteria, toSearchQuery } from '../../search/criteria'
 import { parseStationId } from '../../../shared/api/stationId'
@@ -13,6 +14,12 @@ const store = useRecommendationStore()
 const parsedCriteria = computed(() => parseSearchCriteria(route.query))
 const excludeStationId = computed(() => parseStationId(route.query.excludeStationId))
 const validInput = computed(() => parsedCriteria.value.kind === 'valid' && excludeStationId.value !== null)
+const inputNotice = ref<HTMLElement | null>(null)
+const metadataNotice = ref<HTMLElement | null>(null)
+const candidateNotice = ref<HTMLElement | null>(null)
+useErrorFocus(() => !validInput.value, inputNotice)
+useErrorFocus(() => store.metadataError !== null, metadataNotice)
+useErrorFocus(() => store.candidateError !== null, candidateNotice)
 const searchQuery = computed(() => parsedCriteria.value.kind === 'valid' ? toSearchQuery(parsedCriteria.value.criteria) : {})
 watch(() => route.fullPath, () => {
   const parsed = parsedCriteria.value
@@ -26,13 +33,13 @@ function openDetail(stationId: number): void { void router.push({ path: `/statio
   <section aria-labelledby="alternative-heading" class="alternative-view">
     <div class="intro"><h1 id="alternative-heading">대체 충전소 후보</h1><p>같은 조건으로 찾은 후보와 확인·제외 이유입니다.</p></div>
     <nav class="journey-links" aria-label="충전소 탐색"><RouterLink :to="{ path: '/stations', query: searchQuery }">검색 목록으로 돌아가기</RouterLink></nav>
-    <p v-if="!validInput" class="request-notice request-error" role="alert">검색 조건과 제외 충전소 ID를 확인해 주세요.</p>
+    <p v-if="!validInput" ref="inputNotice" tabindex="-1" class="request-notice request-error" role="alert">검색 조건과 제외 충전소 ID를 확인해 주세요.</p>
     <template v-else>
       <p>제외 충전소 ID: {{ excludeStationId }} · 최대 {{ parsedCriteria.kind === 'valid' ? parsedCriteria.criteria.limit : '' }}개씩 표시</p>
       <p class="results-caution">직선거리 기준입니다. 후보는 도착 시점의 빈자리를 보장하지 않습니다.</p>
       <div class="metadata-state" :aria-busy="store.metadataStatus === 'loading'">
         <p v-if="store.metadataStatus === 'loading'" role="status">수집 상태를 조회하고 있습니다.</p>
-        <div v-if="store.metadataError" class="request-notice request-error" role="alert">
+        <div v-if="store.metadataError" ref="metadataNotice" tabindex="-1" class="request-notice request-error" role="alert">
           <p>수집 상태 확인 실패: {{ store.metadataError.message }}</p>
           <button id="retry-metadata" type="button" class="secondary-button" @click="store.retryMetadata">수집 상태 다시 조회</button>
         </div>
@@ -44,7 +51,7 @@ function openDetail(stationId: number): void { void router.push({ path: `/statio
       </div>
       <div :aria-busy="store.candidateStatus === 'loading'">
         <p v-if="store.candidateStatus === 'loading'" role="status">대체 후보를 조회하고 있습니다.</p>
-        <div v-if="store.candidateError" class="request-notice request-error" role="alert">
+        <div v-if="store.candidateError" ref="candidateNotice" tabindex="-1" class="request-notice request-error" role="alert">
           <p>{{ store.candidateError.message }}</p><button id="retry-candidates" type="button" class="secondary-button" @click="store.retryCandidates">후보 다시 조회</button>
         </div>
         <template v-if="store.candidates">

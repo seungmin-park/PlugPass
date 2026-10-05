@@ -71,9 +71,30 @@ tasks.named('asciidoctor') {
 
 tasks.named('bootJar') {
     dependsOn tasks.named('asciidoctor')
+    dependsOn 'frontendBuild'
     from(tasks.named('asciidoctor').map { it.outputDir }) {
         into 'BOOT-INF/classes/static/docs'
     }
+    from('frontend/dist') {
+        into 'BOOT-INF/classes/static/app'
+    }
+}
+
+tasks.register('frontendInstall', Exec) {
+    workingDir 'frontend'
+    commandLine 'npm', 'ci'
+    inputs.files('frontend/package.json', 'frontend/package-lock.json', '.node-version')
+    outputs.file('frontend/node_modules/.package-lock.json')
+}
+
+tasks.register('frontendBuild', Exec) {
+    dependsOn 'frontendInstall'
+    workingDir 'frontend'
+    commandLine 'npm', 'run', 'build'
+    inputs.files(fileTree('frontend') {
+        exclude 'node_modules/**', 'dist/**', 'test-results/**', 'playwright-report/**', '*.tsbuildinfo'
+    })
+    outputs.dir('frontend/dist')
 }
 
 // The performance harness lives on the test classpath, outside the shipped JAR.

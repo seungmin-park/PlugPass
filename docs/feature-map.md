@@ -1,8 +1,8 @@
 # 기능과 검증 범위
 
-## 프런트 경로 (2026-10-05, T18~T23 기반·API·검색·상세·후보·브라우저)
+## 프런트 경로 (2026-10-05, T18~T24 웹앱·실제 연결·JAR·품질 검사)
 
-사용자는 목록 중심 반응형 웹앱으로 검색·상세·대체 후보를 첫 버전으로 선택했다. [프런트 계획](frontend-plan.md)·[작업 목록](../tasks.md)의 T18~T24을 따른다. 위치→검색→상세→후보→다른 상세는 같은 cmux 브라우저에서 실제 API/DB 연결을 확인했다. Playwright 실제 연결·실패 화면 10건과 진단 거부는 T23에서 확인했다. JAR웹앱은 T24다. 지도는 T25 후속 단계다.
+사용자는 목록 중심 반응형 웹앱으로 검색·상세·대체 후보를 첫 버전으로 선택했다. [프런트 계획](frontend-plan.md)·[작업 목록](../tasks.md)의 T18~T24을 따른다. 위치→검색→상세→후보→다른 상세는 같은 cmux 브라우저에서 실제 API/DB 연결을 확인했다. Playwright 실제 연결·실패 화면 10건과 진단 거부는 T23에서 확인했다. T24에서 JAR웹앱과 공용verify/CI 브라우저를 연결했다. 지도는 T25 후속 단계다.
 
 | 사용자 경로 | 상태 소유자·경계 | 기대 결과·검증 범위 |
 | --- | --- | --- |
@@ -11,10 +11,11 @@
 | 검색→상세·직접 링크 | route ID, stationDetailStore, 공용 charging-info 표시 | Store6·View10·충전기3건; null·404·unknown·텍스트 비고·응답 역전. [T21 실제 실행](t21-verification.md) |
 | 상세→현재 충전소 제외 추천→다른 상세 | URL 조건/제외 ID, recommendationStore, 서버 후보 그룹 | Store6·View10·그룹2건, 독립재시도·성공/실패 응답역전. [T22 실제 실행](t22-verification.md) |
 | fixture 수집→실제 API→브라우저 클릭 | 테스트 외부 공급자/시간, 실제 Service/Repository/H2 | Playwright 실제 연결 1·UI 실패9건, 개발모드 진단3종 거부·복원; [T23 실행](t23-verification.md) |
-| 모바일·키보드·필수 CI | 표현 컴포넌트, ESLint, 기존 공용 verify | 375×812/1440×900·focus·0개/skip/누락 거부·임시 금지 의존 실패; T24 |
-| 실제 JAR→웹앱 진입·직접 링크 | Vite base `/app/`, Gradle `static/app/`, 기존 Spring 정적 파일 제공 | `/app/index.html`·JS/CSS·직접 링크·같은 origin API·REST Docs HTTP; T24 |
+| 모바일·키보드·필수 CI | 표현 컴포넌트, ESLint, 기존 공용 verify | 화면7건·개발E2E17건·JAR2건, 0개/skip/누락 거부·임시 금지 의존 실패; [T24 실행](t24-verification.md) |
+| 실제 JAR→웹앱 진입·직접 링크 | Vite base `/app/`, Gradle `static/app/`, 기존 Spring 정적 파일 제공 | `/app/index.html`·JS/CSS·직접 hash 링크·같은 origin API·REST Docs 실제HTTP/브라우저2건; [T24 실행](t24-verification.md) |
+| 상세 링크의 일반·modifier 클릭 | StationCard·CandidateGroup의 props/event와 실제 href | 일반 좌클릭만 현재 화면 이동; Ctrl/Cmd/Shift/Alt·가운데 클릭 기본 동작 유지, Red10→대상15통과; [최종 검토](t21-t24-final-review.md) |
 
-T18은 검색조건폼·hash이동·단위/타입/lint/build·기존verify/CI연결을 구현했다. 폼4건·Router2건·진단수집3건과 현재Codex브라우저의 실제조작 근거는 [프런트 기록](frontend-verification.md)에 있다. T23에서 실제 연결 E2E·실패 화면을 확인했다. JAR 웹앱은 T24다.
+T18은 검색조건폼·hash이동·단위/타입/lint/build·기존verify/CI연결을 구현했다. 폼4건·Router2건·진단수집3건과 현재Codex브라우저의 실제조작 근거는 [프런트 기록](frontend-verification.md)에 있다. T23에서 실제 연결 E2E·실패 화면을 확인했다. T24에서 JAR 제공과 품질 검사를 확인했다.
 
 현재 검색 진입점의 Stitch 디자인 적용은 [디자인 대응 기록](frontend-design.md)을 따른다. Form의 native radio/submit과 App의 본문 focus를 실제 unit·Codex 클릭/키보드로 확인했다. 해당 디자인 PR 당시147건/10파일이며 기존 T19 API133건을 유지했다. T20의 현재210건/17파일은 위치·검색 결과를 추가 검증한다. 상세·추천 시안의 연결은 후속 범위다.
 

@@ -224,3 +224,10 @@ Vue3.5.43·Pinia4.0.3·Router4.6.4·Axios1.20.0을 유지했다. [Vue watch/clea
 
 실제 lockfile의 Playwright1.63.0/Chromium153(revision1243)을 사용한다. [공용 fixture](https://playwright.dev/docs/test-fixtures)와 [page 이벤트](https://playwright.dev/docs/api/class-page), [보고서](https://playwright.dev/docs/test-reporters)를 확인했다. ESM JSON fixture는 Node26의 `with { type: 'json' }`로 읽는다.
 공식 API는 page·context 격리와 console/pageerror를 제공한다. 최초 이동 전 등록·페이지 정리 후 진단 assertion·정확한 HTTP 진단 허용은 프로젝트가 선택한 검증 정책이다. 개발 모드에서 실제 Vue 경고/비동기 예외를 발생시켜 확인하며 production의 경고 부재로 대체하지 않는다.
+
+## T24 JAR 웹앱과 품질 경계
+
+실제 Boot4.1.1의 [정적파일 제공](https://docs.spring.io/spring-boot/reference/web/servlet.html#web.servlet.spring-mvc.static-content), 설치 Gradle9.7.1의 Exec/input/output API와 기존bootJar DSL, ESLint10.12.0의 [import제한](https://eslint.org/docs/latest/rules/no-restricted-imports)을 확인했다. Gradle rolling 문서 fetch 실패는 공식 동작 확인으로 세지 않았고 설치API·기존태스크·실제빌드로 검증했다.
+Spring의 classpath static 제공을 사용한다. Gradle이 Node/npm으로 프런트를 설치·타입검사/빌드하고 dist를 static/app에 포함하는 것, hash라우팅과 같은origin API, import경계/브라우저보고서 강제는 프로젝트 설계다. frontendInstall 입력은 lockfile/Node고정값, frontendBuild 입력은 생성물 제외 프런트소스/설정/테스트이며 산출물은 dist다.
+
+최종 검토에서 상세 링크의 modifier 클릭을 확인했다. [Vue 공식 이벤트 문서](https://vuejs.org/guide/essentials/event-handling.html)의 `.exact`, 마우스 버튼 필터, modifier 실행 순서를 설치된 Vue3.5.43의 `modifierGuards`와 대조했다. `exact → left → prevent`는 modifier 없는 주 버튼 클릭만 현재 화면 이동 event로 전달한다. 나머지는 실제 href의 브라우저 기본 동작을 유지한다. 별도 객체나 라우터 의존성을 추가하지 않는 것은 프로젝트 설계 판단이다.

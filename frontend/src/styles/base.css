@@ -147,3 +147,4 @@ h1 { font-size: 36px; font-weight: 700; letter-spacing: -0.025em; margin-bottom:
 .candidate-list { display: grid; gap: 14px; list-style: none; padding: 0; margin: 16px 0; }
 .candidate-reasons { padding-left: 20px; margin: 12px 0; color: var(--color-muted); }
 .alternative-view { overflow-wrap: anywhere; }
+.field-error { color: #8a2828; margin-top: 8px; font-size: 13px; }

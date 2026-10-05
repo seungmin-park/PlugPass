@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { useErrorFocus } from '../../../shared/ui/useErrorFocus'
 import { useRoute } from 'vue-router'
 import { parseStationId } from '../../../shared/api/stationId'
 import { ApiError } from '../../../shared/api/apiError'
@@ -15,6 +16,8 @@ const parsedCriteria = computed(() => parseSearchCriteria(route.query))
 const searchQuery = computed(() => parsedCriteria.value.kind === 'valid' ? toSearchQuery(parsedCriteria.value.criteria) : {})
 const inputError = computed(() => stationId.value === null
   ? new ApiError('validation', '충전소 ID를 확인해 주세요', null, 'INVALID_STATION_ID') : null)
+const errorNotice = ref<HTMLElement | null>(null)
+useErrorFocus(() => inputError.value !== null || store.error !== null, errorNotice)
 watch(stationId, id => { if (id !== null) void store.loadStation(id); else store.reset() }, { immediate: true })
 onBeforeUnmount(() => store.reset())
 function refresh(): void { if (stationId.value !== null) void store.loadStation(stationId.value) }
@@ -29,7 +32,7 @@ function refresh(): void { if (stationId.value !== null) void store.loadStation(
     </nav>
     <p v-if="parsedCriteria.kind !== 'valid'" role="status">대체 후보를 찾으려면 검색 조건을 먼저 선택해 주세요.</p>
     <p v-if="store.status === 'loading'" role="status">충전소 상세를 조회하고 있습니다.</p>
-    <div v-else-if="inputError || store.error" role="alert" class="request-notice request-error">
+    <div v-else-if="inputError || store.error" ref="errorNotice" tabindex="-1" role="alert" class="request-notice request-error">
       <p>{{ (inputError ?? store.error)?.message }}</p>
       <button v-if="!inputError" id="retry" type="button" class="secondary-button" @click="refresh">다시 조회</button>
     </div>

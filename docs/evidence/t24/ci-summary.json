@@ -1,0 +1,49 @@
+{
+  "pr": {
+    "headRefOid": "28d049b6b2c72c2ff9b4d85e3eefbe3096dacf87",
+    "mergeCommit": {
+      "oid": "87171110f13f6ea62d085c260336a6000d1db732"
+    },
+    "mergedAt": "2026-10-05T10:10:29Z",
+    "state": "MERGED",
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-05T10:10:16Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/seungmin-park/PlugPass/actions/runs/37294411567/job/111712136031",
+        "name": "PlugPass verify",
+        "startedAt": "2026-10-05T10:06:30Z",
+        "status": "COMPLETED",
+        "workflowName": "PlugPass CI"
+      }
+    ],
+    "url": "https://github.com/seungmin-park/PlugPass/pull/45"
+  },
+  "ci_run": 37294411567,
+  "local_head": "28d049b6b2c72c2ff9b4d85e3eefbe3096dacf87",
+  "local_exit": 0,
+  "runtime": {
+    "tests": 361,
+    "frontend_tests": 273,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "health": "UP",
+    "env_http": 404,
+    "station_search_http": 200,
+    "station_validation_http": 400,
+    "station_detail_missing_http": 404,
+    "docs_match": true,
+    "recommendations_http": 200,
+    "default_metrics_http": 404,
+    "test_fixtures_packaged": false,
+    "browser_tests": 17,
+    "packaged_browser_tests": 2,
+    "webapp_http": 200,
+    "webapp_assets_http": 3,
+    "webapp_match": true
+  },
+  "python_tests": 32,
+  "separate_jvms": 3
+}

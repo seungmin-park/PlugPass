@@ -40,3 +40,9 @@
 ## 수정 후 전체 실행 결과
 
 현재 cmux workspace:5의 전용 surface:18에서 `bash scripts/verify.sh`를 실행해 종료0을 확인했다. Java361·프런트273/24파일·Python32·개발 E2E17·운영 JAR 브라우저2건, 실패/오류/skip0이다. 엄격한 타입/lint/build, 실제 웹앱 자산 HTTP와 REST Docs 일치, 테스트 클래스 부재, 별도 JVM3회 재시작의 소실·초기화·재수집을 확인했다. [전체 실행 로그](evidence/t24/review-verify.log.gz)·[실제 HTTP와 건수](evidence/t24/review-runtime.json)를 따른다.
+
+## 전달 완료
+
+[PR #45](https://github.com/seungmin-park/PlugPass/pull/45)의 최종 서명 head `28d049b6b2c72c2ff9b4d85e3eefbe3096dacf87`를 로컬에서 공용 검증해 종료0을 확인했다. GitHub 서명은 valid이고, [필수 Linux CI 37294411567](https://github.com/seungmin-park/PlugPass/actions/runs/37294411567)는 SUCCESS다. 보호 규칙 아래 실제 main `87171110f13f6ea62d085c260336a6000d1db732` 병합을 2026-10-05T10:10:29Z에 확인했다. 로컬·원격 모두 Java361·프런트273·Python32·개발E2E17·JAR브라우저2건과 별도JVM3회, 실패/오류/skip0이다. [원격 결과](evidence/t24/ci-summary.json)·[CI 원본 로그](evidence/t24/ci.log.gz)·[최종 head 로컬 로그](evidence/t24/head-verify.log.gz)를 따른다.
+
+T02~T24의 구현·검증·main 반영을 완료했다. T01의 실공공 API 두 항목은 인증키가 없어 미완료로 유지하고 T25는 후속 계획이다. 완료 체크 기록 PR은 문서와 실행 근거만 변경한다.

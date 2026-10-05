@@ -1,6 +1,6 @@
 # PlugPass 작업 체크리스트
 
-**목표·설계:** [plan.md](plan.md). T01 문서 계약은 main 반영, 인증된 실연동은 키 없어 미확인. T02~T22는 구현·검증·main 반영 완료. T15 당시 p95 목표 미달은 T16 동일 조건 재측정75.04ms로 개선했다. T01 실응답 확인 두 항목은 키 없어 보류한다. 아래 하위 체크와 근거를 따른다.
+**목표·설계:** [plan.md](plan.md). T01 문서 계약은 main 반영, 인증된 실연동은 키 없어 미확인. T02~T23은 구현·검증·main 반영 완료. T15 당시 p95 목표 미달은 T16 동일 조건 재측정75.04ms로 개선했다. T01 실응답 확인 두 항목은 키 없어 보류한다. 아래 하위 체크와 근거를 따른다.
 
 **실행 방식:** 작업 하나씩 순서대로 진행한다. 구현 시 `superpowers:executing-plans`를 사용한다. 이 파일을 만들었다는 이유로 이후 작업 전체를 자동 실행하지 않는다.
 
@@ -351,13 +351,15 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 
 의존: T22. 파일: `src/test/java/e2e/{ChargingDemoApplication.java,DemoProvider.java,ChargingDemoApplicationTests.java}`, `src/test/resources/publicdata/browser-demo.xml`, `frontend/playwright.config.ts`, `frontend/e2e/{fixtures.ts,charging-journey.spec.ts,ui-failures.spec.ts}`, `scripts/frontend-e2e.sh`, `docs/frontend-verification.md`. 수정: build.gradle의 test-classpath 실행 경로·프런트 명령·공용 JAR 검사·필수 Java suite 목록.
 
-- [ ] 합성 충전소 2곳의 fixture HTTP→실제 수집→H2→검색/상세/제외 추천을 테스트한다. 공급자·시간만 제어하고 실제 Controller/Service/Repository를 사용한다.
-- [ ] 브라우저에서 예시 위치→검색→첫 상세→대체 후보→다른 상세의 텍스트·ID·제외 조건을 assertion한다. 권한 거부·빈 결과·HTTP 오류·timeout·응답 역전은 별도 UI 실패 spec으로 검증한다.
-- [ ] 개발 모드에서 공용 E2E fixture의 최초 이동 전 console/pageerror 감시를 모든 spec에 적용한다. 초기 mount Vue 경고·클릭 후 비동기 경고·처리되지 않은 예외를 각각 임시 probe로 발생시켜 Playwright 실패를 확인하고 복원한다. HTTP 실패의 예상 진단은 해당 테스트에서 종류·메시지/URL·횟수로 검증하고 Vue 경고의 전역 허용을 금지한다.
-- [ ] 현재 cmux의 확인한 workspace·보조 pane에 서버/러너 로그를 표시하고 headed/UI assertion과 같은 workspace의 실제 브라우저 클릭을 진행한다. mock UI 범위와 실제 DB 연결 범위를 구분한다.
-- [ ] 종료 코드·assertion·HTML/trace·서버 로그, 운영 JAR의 e2e 클래스 부재를 확인하고 공용 검증·PR을 반영한다. 직접 시작한 서버만 종료하고 검증 pane은 유지한다.
+- [x] 합성 충전소 2곳의 fixture HTTP→실제 수집→H2→검색/상세/제외 추천을 테스트한다. 공급자·시간만 제어하고 실제 Controller/Service/Repository를 사용한다.
+- [x] 브라우저에서 예시 위치→검색→첫 상세→대체 후보→다른 상세의 텍스트·ID·제외 조건을 assertion한다. 권한 거부·빈 결과·HTTP 오류·timeout·응답 역전은 별도 UI 실패 spec으로 검증한다.
+- [x] 개발 모드에서 공용 E2E fixture의 최초 이동 전 console/pageerror 감시를 모든 spec에 적용한다. 초기 mount Vue 경고·클릭 후 비동기 경고·처리되지 않은 예외를 각각 임시 probe로 발생시켜 Playwright 실패를 확인하고 복원한다. HTTP 실패의 예상 진단은 해당 테스트에서 종류·메시지/URL·횟수로 검증하고 Vue 경고의 전역 허용을 금지한다.
+- [x] 현재 cmux의 확인한 workspace·보조 pane에 서버/러너 로그를 표시하고 headed/UI assertion과 같은 workspace의 실제 브라우저 클릭을 진행한다. mock UI 범위와 실제 DB 연결 범위를 구분한다.
+- [x] 종료 코드·assertion·HTML/trace·서버 로그, 운영 JAR의 e2e 클래스 부재를 확인하고 공용 검증·PR을 반영한다. 직접 시작한 서버만 종료하고 검증 pane은 유지한다.
 
 산출: 실제 검색→상세→대체 후보 연결과 실패 화면의 실행 근거. 기존 흐름의 첫 통과는 기존 동작 확인이며 기능 Red로 바꾸어 보고하지 않는다. cmux 불가·실공공 API 미확인은 별도로 기록한다.
+
+완료: [T23 실행기록](docs/t23-verification.md), [PR #44](https://github.com/seungmin-park/PlugPass/pull/44), main5c31b58, [필수CI성공](https://github.com/seungmin-park/PlugPass/actions/runs/37289909177).
 
 ### T24 — 웹앱 패키징과 품질 검사
 
@@ -369,6 +371,8 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 - [ ] T18의 필수 타입·lint·단위 테스트를 유지하며 개발 모드 경고 E2E와 배포용 JAR 웹앱 검증까지 기존 공용 verify·필수 `PlugPass verify`에 연결한다. 임시 Vue 경고·실행 예외·필수 E2E 누락/0개/skip이 실제 실패로 전파되는지 확인하고 복원 후 전체 검증한다. 실제 결과·책임/이름·공개 계약을 리뷰하고 사용법·기능 지도·검증 기록을 해당 PR에서 갱신한다.
 
 산출: Spring JAR에서 제공되는 웹앱과 필수 품질 검사. 개발 서버 검증·JAR HTTP·원격 CI·화면 E2E의 결과를 구분한다.
+
+구현·로컬 검증: [T24 실행기록](docs/t24-verification.md). Java361·프런트262·Python32·개발E2E17·JAR브라우저2건. 실제main 반영·필수CI 확인 뒤 완료체크를 기록한다.
 
 ## 후속 — 지도와 목록 연결
 

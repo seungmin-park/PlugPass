@@ -35,6 +35,29 @@ def check_packaged_test_fixtures(names):
                         'BOOT-INF/classes/reliability/', 'BOOT-INF/classes/e2e/')) for name in names), 'Test fixture packaged')
 
 
+def check_browser_tests(report, required_files):
+    require(not report.get('errors'), 'Browser runner errors')
+    def specs_in(suites):
+        for suite in suites:
+            yield from suite.get('specs', [])
+            yield from specs_in(suite.get('suites', []))
+    specs = list(specs_in(report.get('suites', [])))
+    tests = [test for spec in specs for test in spec.get('tests', [])]
+    require(tests, 'Zero browser tests')
+    for test in tests:
+        require(test.get('expectedStatus') == 'passed', 'Browser expected status not passed')
+        results = test.get('results', [])
+        require(results, 'Browser test not executed')
+        require(len(results) == 1, 'Browser test repeated')
+        require(results[0].get('status') == 'passed' and not results[0].get('errors')
+                and results[0].get('retry') == 0 and test.get('status') == 'expected', 'Browser result not passed')
+    require(all(spec.get('ok') is True for spec in specs), 'Browser spec failed')
+    executed = {spec.get('file') for spec in specs if spec.get('tests')}
+    missing = sorted(set(required_files) - executed)
+    require(not missing, 'Missing required browser test files: ' + ', '.join(missing))
+    return len(tests)
+
+
 def check_journey_evidence(directory):
     fields = {'search': 'stations', 'detail': 'chargers', 'alternative': 'requiresConfirmation',
               'stale': 'excluded', 'failure': 'chargers', 'recovered': 'preferred', 'empty': 'preferred'}
@@ -113,6 +136,8 @@ def main():
     frontend_count = check_frontend_tests(
         json.loads((root / 'frontend/test-results/unit.json').read_text()),
         json.loads((root / 'docs/required-frontend-tests.json').read_text()))
+    browser_count = check_browser_tests(json.loads((root / 'frontend/test-results/e2e.json').read_text()),
+                                       json.loads((root / 'docs/required-browser-tests.json').read_text()))
     count = check_tests(root / 'build/test-results/test', required_suites)
     check_journey_evidence(evidence / 'charging-journey')
     jars = [jar for jar in (root / 'build/libs').glob('*.jar') if not jar.name.endswith('-plain.jar')]
@@ -122,6 +147,14 @@ def main():
     with ZipFile(jars[0]) as archive:
         require(archive.read('BOOT-INF/classes/static/docs/index.html') == expected, 'Packaged docs mismatch')
         check_packaged_test_fixtures(archive.namelist())
+        webapp_html = (root / 'frontend/dist/index.html').read_bytes()
+        require(archive.read('BOOT-INF/classes/static/app/index.html') == webapp_html, 'Packaged webapp mismatch')
+        assets = re.findall(rb'(?:src|href)="(/app/assets/[^"\s]+)"', webapp_html)
+        require(any(asset.endswith(b'.js') for asset in assets) and any(asset.endswith(b'.css') for asset in assets), 'Missing webapp JS/CSS')
+        require(b'/@vite/client' not in webapp_html and b'/src/main.ts' not in webapp_html, 'Development webapp packaged')
+        for path in (root / 'frontend/dist').rglob('*'):
+            if path.is_file():
+                require(archive.read('BOOT-INF/classes/static/app/' + path.relative_to(root / 'frontend/dist').as_posix()) == path.read_bytes(), 'Packaged asset mismatch')
     java = str(Path(os.environ['JAVA_HOME']) / 'bin/java') if os.environ.get('JAVA_HOME') else 'java'
     log_file = evidence / 'server.log'
     with log_file.open('w') as log:
@@ -140,10 +173,23 @@ def main():
                     break
                 time.sleep(0.2)
             require(port is not None, f'Server startup timeout; see {log_file}')
-            check_http(f'http://127.0.0.1:{port}', expected)
+            base = f'http://127.0.0.1:{port}'
+            check_http(base, expected)
+            with urllib.request.urlopen(base + '/app/index.html', timeout=5) as response:
+                require(response.status == 200 and response.read() == webapp_html, 'Served webapp mismatch')
+            for asset in assets:
+                path = asset.decode()
+                with urllib.request.urlopen(base + path, timeout=5) as response:
+                    require(response.status == 200 and response.read() == (root / 'frontend/dist' / path.removeprefix('/app/')).read_bytes(), 'Served asset mismatch')
+            environment = dict(os.environ, PLUGPASS_E2E_BASE_URL=base)
+            subprocess.run(['npm', '--prefix', 'frontend', 'run', 'test:e2e', '--', '--config', 'playwright.packaged.config.ts'],
+                           cwd=root, env=environment, check=True)
+            packaged_count = check_browser_tests(json.loads((root / 'frontend/test-results/packaged.json').read_text()), ['packaged-webapp.spec.ts'])
             result = {'tests': count, 'frontend_tests': frontend_count, 'failures': 0, 'errors': 0, 'skipped': 0,
                       'health': 'UP', 'env_http': 404, 'station_search_http': 200, 'station_validation_http': 400, 'station_detail_missing_http': 404, 'docs_match': True,
-                      'recommendations_http': 200, 'default_metrics_http': 404, 'test_fixtures_packaged': False}
+                      'recommendations_http': 200, 'default_metrics_http': 404, 'test_fixtures_packaged': False,
+                      'browser_tests': browser_count, 'packaged_browser_tests': packaged_count, 'webapp_http': 200,
+                      'webapp_assets_http': len(assets), 'webapp_match': True}
             result_file.write_text(json.dumps(result, indent=2) + '\n')
             print(json.dumps(result), flush=True)
         finally:

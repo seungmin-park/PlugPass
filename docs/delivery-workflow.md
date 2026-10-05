@@ -66,7 +66,7 @@ python3 ~/.agents/skills/agent-engineering/scripts/pr_status.py \
 bash scripts/verify.sh
 ```
 
-JDK 25와 Python 3이 필요하다. clean build → JUnit XML 검사 → JAR 내용 검사 → 실제 HTTP 검사를 순서대로 실행한다. 실패·오류·skip·테스트 0개는 모두 실패다. 직접 띄운 서버만 종료한다. `build/verification/`에 서버 로그·HTTP 결과, `build/test-results/test/`에 테스트 결과를 남긴다.
+JDK25·Node26.7.0·Python3와 Chromium이 필요하다. 프런트 단위/타입/lint → clean build와 웹앱 포함 → 개발모드 E2E → JUnit/브라우저 결과 검사 → 실제JAR HTTP/브라우저 → 재시작 검사를 순서대로 실행한다. 실패·오류·skip·테스트 0개는 모두 실패다. 직접 띄운 서버만 종료한다. `build/verification/`에 서버 로그·HTTP 결과, `build/test-results/test/`에 테스트 결과를 남긴다.
 
 CI는 PR마다 실행하고 main push도 검사한다. 경로 필터나 성공으로 바꾸는 오류 무시 옵션을 두지 않는다. read-only token으로 검사하며 소스 코드의 실행 권한과 merge 권한을 같은 CI job에 넣지 않는다. GitHub Actions 실패 로그와 보고서는 7일 보관한다.
 

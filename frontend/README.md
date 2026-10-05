@@ -8,7 +8,7 @@ Node26.7.0을 사용한다. `npm ci` 후 `npm run dev`로 실행하고 `/app/ind
 - `npm run lint`: ESLint, 경고0
 - `npm run build`: 타입 검사 성공 후 `/app/` base의 dist 산출물
 
-저장소 공용 명령은 `bash scripts/verify.sh`다. 검색→상세→같은 조건의 대체 후보→다른 상세를 사용할 수 있다. 상세 직접 링크는 조건 없이도 조회하며, 대체 후보로 이동하기 전 검색 조건을 선택한다. 후보와 수집 상태는 독립적으로 재시도한다. 운영JAR 웹앱 패키징은 T24에서 검증한다.
+저장소 공용 명령은 `bash scripts/verify.sh`다. 검색→상세→같은 조건의 대체 후보→다른 상세를 사용할 수 있다. 상세 직접 링크는 조건 없이도 조회하며, 대체 후보로 이동하기 전 검색 조건을 선택한다. 후보와 수집 상태는 독립적으로 재시도한다. Gradle build가 타입 검사·Vite build 후 static/app에 포함하며 JAR에서 웹앱·API를 같은 origin으로 제공한다.
 
 의존성 재설치나 프런트 설정이 다른 브랜치로 전환한 뒤에는 켜 둔 개발 서버를 종료하고 `npm run dev`로 다시 시작한다. 최종 검증은 새 서버의 실제 화면으로 확인한다.
 
@@ -19,3 +19,6 @@ Playwright1.63.0의 Chromium이 필요하며 최초 설치는 `cd frontend && np
 `--serve`는 실제 cmux 클릭 검증용으로 서버를 유지한다. `npm run test:e2e` 단독 실행은 준비된 서버가 필요하다.
 서버 로그는 `build/verification/frontend-e2e/`, JSON/trace는 `frontend/test-results/`, HTML은 `frontend/playwright-report/`다.
 실패 화면 spec의 HTTP/위치 응답 제어와 실제 DB 연결 journey를 구분한다. 실공공 API 인증 검증을 대신하지 않는다.
+
+공용verify는 개발모드17건과 운영JAR2건을 각각 실행하고 모든 필수spec의 실제 결과를 검사한다. 배포 설정은 playwright.packaged.config.ts다.
+Vue의 Axios/httpClient 직접 의존, API의 Store/View/Component 역의존, spec의 공용 진단fixture 우회를 ESLint에서 거부한다. HTTP 400의 반경/커넥터 오류는 해당 라디오의 설명·포커스로 연결하고 다른 오류는 요약에 포커스를 준다.

@@ -16,7 +16,7 @@ description: Verify PlugPass behavior and architecture checks, fixture ingestion
 ## 빌드와 테스트
 
 1. `bash scripts/verify.sh`를 실행한다. clean build와 아래 JAR·실제 HTTP 검사를 같은 명령으로 수행한다. JDK 25와 Python 3이 필요하다. CI도 이 명령을 사용한다.
-2. 종료 0과 `build/test-results/test/TEST-*.xml`의 테스트 360개(T16 3개 포함), 실패·오류·skip 0을 확인한다. Python 검사기·성능 집계 테스트 21개도 실행되어야 한다. 기능을 추가했다면 실행 기록의 관측 건수를 갱신한다. 고정 총건수를 CI의 요구값으로 사용하지 않는다.
+2. 종료 0과 `build/test-results/test/TEST-*.xml`의 테스트361개, 실패·오류·skip0을 확인한다. Python 검사기·성능 집계 테스트32개도 실행되어야 한다. 기능을 추가했다면 실행 기록의 관측 건수를 갱신한다. 고정 총건수를 CI의 요구값으로 사용하지 않는다.
 3. [테스트 경계](../../../AGENTS.md)를 따른다. Repository는 기본 save 후 조회하고 매핑 복원이 검증 대상일 때만 이유를 명시해 flush/clear한다. 참조 차이 자체를 assertion하지 않는다. Service는 테스트 트랜잭션 없이 production commit 후 별도 조회하고 AfterEach로 정리한다. 테스트 전용 엔티티가 실행 JAR에 들어가지 않아야 한다.
 4. `build/generated-snippets/health/`와 `build/docs/asciidoc/index.html`이 생성돼야 한다.
 5. JAR의 `BOOT-INF/classes/static/docs/index.html`이 생성한 HTML과 같아야 한다.
@@ -159,9 +159,9 @@ IngestionRecoveryTests14 + IngestionHttpBudgetTests6 + IngestionConfigurationTes
 현재 필수 suite34개·Java357건·Python14건. `python3 scripts/performance/load.py --output <새폴더>`로 실제10,000/50,000 생성 데이터·동시20명·warmup30초·측정180초를 별도로 실행한다. 공용 verify만으로 성능 완료를 주장하지 않는다. 작은 데이터 매핑 테스트1건과 집계3건도 유지한다. 부하 전후 정확성·SQL/엔티티 수·p50/p95·unexpected error·대상 SHA/dirty·샘플 원본을 [성능 기록](../../../docs/performance.md)과 비교한다. smoke 설정은 기준선이 아니다. 운영 JAR에서 performance test 패키지가 제외되는지도 공용 검증이 확인한다.
 
 
-## T17~T20 최신 검증 범위
+## T17~T20 당시 검증 범위
 
-현재 공용verify는 Java360건·Python21건·프런트210건(17파일)을 실행한다. 과거 T번호의 건수는 당시 기록이다. 실제 실행 뒤 XML/JSON의 현재 수를 읽고 고정 총건수를 CI요구값으로 만들지 않는다.
+T20 완료 당시 공용verify는 Java360건·Python21건·프런트210건(17파일)이었다. 과거 T번호의 건수는 당시 기록이다. 실제 실행 뒤 XML/JSON의 현재 수를 읽고 고정 총건수를 CI요구값으로 만들지 않는다.
 
 - T17: 기존 recovery/sync/scheduler/journey35건과 `scripts/verify-memory-restart.py`의 별도JVM3회 실제HTTP로 수집완료→메모리H2소실/준비전→재수집완료를 확인한다. `build/verification/memory-restart/`를 확인한다. reliability 테스트클래스의 운영JAR 포함을 거부한다.
 - T18: Node26.7.0, lockfile을 사용한다. 공용verify가 npm ci→test:unit→type-check→lint(경고0)→build를 실행한다. `frontend/test-results/unit.json`의 실제assertion과 `docs/required-frontend-tests.json`의 필수파일을 기존runtime검사로 확인한다. 0개/실패/skip/누락을 거부한다.
@@ -195,3 +195,9 @@ T20 화면 검증의 합성 입력은 docs/evidence/t20/provider.xml이며, 필�
 ## T23 브라우저 실제 연결
 
 `bash scripts/frontend-e2e.sh`는 실제 합성 HTTP 공급자·고정시간·수집/DB/API와 Vue 개발 서버를 준비하고 Playwright를 실행한다. 로컬 기본headed·CI headless다. 현재cmux의 전용 pane에서 실행하고 같은 workspace 브라우저로 실제 클릭을 추가 확인한다. API/위치 오류 제어는 ui-failures.spec, 실제 DB journey는 charging-journey.spec다. 10건 assertion·HTML/trace·서버 로그·개발모드 진단 probe 3종을 [실행기록](../../../docs/t23-verification.md)과 대조한다. 전체 공용검증의 관측Java361·Python22·프런트262건을 확인하며 총건수만으로 통과시키지 않는다. e2e 테스트클래스의 운영JAR 포함을 거부한다. 웹앱 JAR/CI브라우저는 T24에서 연결한다.
+
+## T24 현재 공용 검증
+
+현재 `bash scripts/verify.sh`는 Gradle frontendInstall→unit/type/lint→clean build(타입검사 후 웹앱 build·JAR 포함)→개발모드 E2E→필수 브라우저 JSON 검사→실제 운영JAR HTTP/브라우저→별도JVM 재시작을 실행한다. 로컬은 현재cmux의 확인한 전용pane에서 headed, CI는 Chromium 설치 후 headless다.
+관측Java361·프런트262(24파일)·Python32·개발E2E17(3필수spec)·JAR브라우저2건과 종료0을 실제보고서에서 확인한다. [필수 브라우저 목록](../../../docs/required-browser-tests.json), runtime.json의 웹앱/asset HTTP와 실제 assertion을 검사한다. HTML/trace는 frontend/playwright-report와 frontend/test-results, 서버로그는 build/verification에 남는다. 누락/0개/skip/실패/오류/예상실패/재시도는 기존runtime검사기가 거부한다.
+[T24 실행기록](../../../docs/t24-verification.md)의 실제Vue경고·실행예외·필수E2E누락/0개/skip 공용verify 실패와 원본복원을 대조한다. Vue→Axios/httpClient·API→Store/View/Component·공용fixture우회는 기존ESLint를 사용한다. 문서/정적검사만으로 모든 객체 책임을 증명하지 않으므로 호출부/공개계약을 리뷰한다. 실공공 API인증·배포·메모리H2보존은 별도범위다.

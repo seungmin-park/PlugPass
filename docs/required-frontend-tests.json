@@ -18,5 +18,9 @@
   "src/features/charging-info/components/ChargingBadges.spec.ts",
   "src/features/station-detail/stores/stationDetailStore.spec.ts",
   "src/features/station-detail/views/StationDetailView.spec.ts",
-  "src/features/station-detail/components/ChargerList.spec.ts"
+  "src/features/station-detail/components/ChargerList.spec.ts",
+  "src/features/recommendation/stores/recommendationStore.spec.ts",
+  "src/features/recommendation/views/AlternativeStationsView.spec.ts",
+  "src/features/recommendation/components/CandidateGroup.spec.ts",
+  "tests/vueAppDiagnostics.spec.ts"
 ]

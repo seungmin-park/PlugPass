@@ -187,3 +187,7 @@ T20 화면 검증의 합성 입력은 docs/evidence/t20/provider.xml이며, 필�
 ## T21 상세 화면
 
 대상 `npm --prefix frontend run test:unit -- src/features/station-detail src/features/charging-info` 55건. 전체프런트229건/20필수파일·Java360·Python21·공용verify종료0. Store6·View10·충전기목록3건을 확인한다. 관측/수집시각·상태/최신성을 구분하고 null/빈운영정보·404·unknown·텍스트비고·취소를 무시한 성공/실패응답 역전을 검사한다. [T21 실행기록](../../../docs/t21-verification.md)의 현재cmux 검색→상세→조건유지 복귀·실제404·375px를 따른다. 추천UI/T23전체E2E/T24JAR웹앱은 별도 후속검증이다. 재실행 시 surface ID와 실행소스/포트 소유자를 다시 확인한다.
+
+## T22 대체 후보 화면
+
+`npm --prefix frontend run test:unit -- src/features/recommendation tests/vueAppDiagnostics.spec.ts` 38건. 전체프런트262건/24파일·Java360·Python21·공용verify를 확인한다. 후보/수집메타의 독립오류·재시도·응답순서, 잘못된 직접링크의HTTP전 거부, 서버그룹/순서·unknown사유·텍스트이름·새상세 이동을 검사한다. 진단기 handler 재대입의 재귀 오류2건도 유지한다. [T22 실행기록](../../../docs/t22-verification.md)의 현재cmux 실제 제외ID후보→다른상세를 따른다. T23Playwright/T24JAR제공을 이 결과로 대신하지 않는다.

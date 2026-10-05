@@ -606,5 +606,17 @@
     "url": "https://www.w3.org/TR/geolocation/#getcurrentposition-method",
     "accessed": "2026-10-05",
     "coverage": "one-shot callback·권한/획득 오류·timeout; 별도10초 제한·늦은 callback 무시는 앱 정책"
+  },
+  {
+    "id": "t21-router-params",
+    "url": "https://router.vuejs.org/guide/essentials/dynamic-matching.html",
+    "accessed": "2026-10-05",
+    "coverage": "설치Router4.6.4 params변경 객체재사용·watch; 상세ID변경 실제 assertion"
+  },
+  {
+    "id": "t22-vue-app-diagnostics",
+    "url": "https://vuejs.org/api/application.html",
+    "accessed": "2026-10-05",
+    "coverage": "설치Vue3.5.43 errorHandler·개발모드warnHandler; 진단수명·재대입은 프로젝트정책"
   }
 ]

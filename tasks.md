@@ -1,6 +1,6 @@
 # PlugPass 작업 체크리스트
 
-**목표·설계:** [plan.md](plan.md). T01 문서 계약은 main 반영, 인증된 실연동은 키 없어 미확인. T02~T19는 구현·검증·main 반영 완료. T15 당시 p95 목표 미달은 T16 동일 조건 재측정75.04ms로 개선했다. T01 실응답 확인 두 항목은 키 없어 보류한다. 아래 하위 체크와 근거를 따른다.
+**목표·설계:** [plan.md](plan.md). T01 문서 계약은 main 반영, 인증된 실연동은 키 없어 미확인. T02~T21는 구현·검증·main 반영 완료. T15 당시 p95 목표 미달은 T16 동일 조건 재측정75.04ms로 개선했다. T01 실응답 확인 두 항목은 키 없어 보류한다. 아래 하위 체크와 근거를 따른다.
 
 **실행 방식:** 작업 하나씩 순서대로 진행한다. 구현 시 `superpowers:executing-plans`를 사용한다. 이 파일을 만들었다는 이유로 이후 작업 전체를 자동 실행하지 않는다.
 
@@ -325,14 +325,14 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 
 의존: T20. 파일: `src/features/station-detail/{stores/stationDetailStore.ts,views/StationDetailView.vue,components/ChargerList.vue}`와 각 `.spec.ts`. 수정: 공용 charging-info 표시/테스트, router·검색 카드 이동.
 
-- [ ] 상세 목록·빈 충전기·없는 ID·관측 시각 null·이용 조건 누락·알 수 없는 상태/사유·시각 변환·빠른 ID 변경의 응답 역전 테스트를 먼저 작성한다.
-- [ ] `useStationDetailStore().loadStation(stationId)`와 상태·최신성·사유·시각 표시를 구현한다. 관측 시각·수집 시각을 구분하고 AVAILABLE+UNVERIFIED를 확정 이용 가능으로 표시하지 않는다.
-- [ ] 검색 조건을 보존해 목록/대체 후보로 이동한다. 조건 없는 상세 직접 링크는 상세를 조회하되 대체 후보 조회 전에 조건을 선택하게 한다. 원본 비고는 텍스트로 표시한다.
-- [ ] `npm --prefix frontend run test:unit -- src/features/station-detail src/features/charging-info`에서 실패·통과와 전체 검증을 확인하고 PR을 반영한다.
+- [x] 상세 목록·빈 충전기·없는 ID·관측 시각 null·이용 조건 누락·알 수 없는 상태/사유·시각 변환·빠른 ID 변경의 응답 역전 테스트를 먼저 작성한다.
+- [x] `useStationDetailStore().loadStation(stationId)`와 상태·최신성·사유·시각 표시를 구현한다. 관측 시각·수집 시각을 구분하고 AVAILABLE+UNVERIFIED를 확정 이용 가능으로 표시하지 않는다.
+- [x] 검색 조건을 보존해 목록/대체 후보로 이동한다. 조건 없는 상세 직접 링크는 상세를 조회하되 대체 후보 조회 전에 조건을 선택하게 한다. 원본 비고는 텍스트로 표시한다.
+- [x] `npm --prefix frontend run test:unit -- src/features/station-detail src/features/charging-info`에서 실패·통과와 전체 검증을 확인하고 PR을 반영한다.
 
 산출: 충전기 상태와 정보의 근거를 확인하는 상세 화면. 관측 시각 누락을 수집 시각으로 대체하거나 추천 규칙을 프런트에서 재계산하지 않는다.
 
-구현·로컬 검증 근거: [T21 실행 기록](docs/t21-verification.md). 상세/표시55건·프런트229건/20파일·Java360·Python21·공용verify종료0. 현재cmux 실제 검색→상세→목록조건 유지·실제404·375px를 확인했다. 체크 완료는 필수CI와 실제main 반영 뒤 기록한다.
+구현·로컬 검증 근거: [T21 실행 기록](docs/t21-verification.md). 상세/표시55건·프런트229건/20파일·Java360·Python21·공용verify종료0. 현재cmux 실제 검색→상세→목록조건 유지·실제404·375px를 확인했다. 완료: [PR #42](https://github.com/seungmin-park/PlugPass/pull/42), main27c0f79, [필수CI성공](https://github.com/seungmin-park/PlugPass/actions/runs/37284364588).
 
 ### T22 — 같은 조건의 대체 후보 화면
 
@@ -344,6 +344,8 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 - [ ] `npm --prefix frontend run test:unit -- src/features/recommendation`에서 실패·통과와 전체 검증을 확인하고 PR을 반영한다.
 
 산출: 현재 충전소를 제외한 대체 후보와 확인/제외 이유. 응답에 없는 좌표·충전기 수·전체 건수를 추측하지 않는다.
+
+구현·로컬 검증: [T22 실행 기록](docs/t22-verification.md). 추천/진단기38건·전체프런트262건/24파일·기존Java360/Python21. 현재cmux 실제 검색→상세→제외ID후보→다른실제상세·375px 확인. 완료체크는 필수CI와 실제main 반영 뒤 기록한다.
 
 ### T23 — 브라우저와 실제 백엔드 연결 검증
 

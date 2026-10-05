@@ -3,7 +3,7 @@ import { computed, onBeforeUnmount, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { parseStationId } from '../../../shared/api/stationId'
 import { ApiError } from '../../../shared/api/apiError'
-import { parseSearchCriteria } from '../../search/criteria'
+import { parseSearchCriteria, toSearchQuery } from '../../search/criteria'
 import { formatTimestamp } from '../../charging-info/presentation'
 import { useStationDetailStore } from '../stores/stationDetailStore'
 import ChargerList from '../components/ChargerList.vue'
@@ -12,11 +12,7 @@ const route = useRoute()
 const store = useStationDetailStore()
 const stationId = computed(() => parseStationId(route.params.stationId))
 const parsedCriteria = computed(() => parseSearchCriteria(route.query))
-const searchQuery = computed(() => parsedCriteria.value.kind === 'valid' ? {
-  latitude: String(parsedCriteria.value.criteria.latitude), longitude: String(parsedCriteria.value.criteria.longitude),
-  radiusMeters: String(parsedCriteria.value.criteria.radiusMeters), connector: parsedCriteria.value.criteria.connector,
-  limit: String(parsedCriteria.value.criteria.limit),
-} : {})
+const searchQuery = computed(() => parsedCriteria.value.kind === 'valid' ? toSearchQuery(parsedCriteria.value.criteria) : {})
 const inputError = computed(() => stationId.value === null
   ? new ApiError('validation', '충전소 ID를 확인해 주세요', null, 'INVALID_STATION_ID') : null)
 watch(stationId, id => { if (id !== null) void store.loadStation(id); else store.reset() }, { immediate: true })

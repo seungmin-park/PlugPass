@@ -1,5 +1,11 @@
 # PlugPass 기술 스택과 개발 기준
 
+## T01 실응답 계약 대조 (2026-10-06)
+
+[공식 API 등록 페이지](https://www.data.go.kr/data/15076352/openapi.do)와 활용 가이드 v1.25 원본을 다시 확인했다. 가이드 SHA-256은 기존 확인 기록과 같다. 실제 인증된 인천 표본은 요청 용량10에 대해 마지막/빈 응답 `numOfRows`가6/0임을 보여 준다. 가이드의 한 페이지 결과 수 표기와 실응답을 함께 지원하되 요청 용량으로 범위·다음 페이지를 계산하는 것은 프로젝트의 변환 정책이다. 내부 응답 DTO의 `reportedRowCount`와 업무 `StationPage.pageSize`를 구분하고 공개 HTTP DTO·DB·의존성 버전을 바꾸지 않았다.
+
+공식 가이드의 상태 변경/충전 시작·종료 시각 설명과 실응답의 offset 없는14자리/빈 값을 대조했다. 시간대와 sourceObservedAt을 만들어 내지 않는다. 기술 스택은 Java25·Boot4.1.1을 유지하며 [실행 기록](t01-live-verification.md)의 실제 테스트·공공 API·cmux·전달 범위를 따른다. 아래의 이전 작업별 미확인 설명은 당시 기록이다.
+
 ## 검색 결과 지도 (2026-10-06, T25)
 
 사용자 선택으로 Leaflet1.9.4 + OpenStreetMap 공용 타일을 채택했다. [공식 안정판](https://leafletjs.com/download.html)과 [1.9.4 API reference](https://leafletjs.com/reference.html)를 확인하고 npm registry·lockfile의 Leaflet1.9.4/BSD-2-Clause와 @types/leaflet1.9.22를 대조했다. map/setView/fitBounds, marker의 keyboard/title, divIcon의 HTMLElement, tileerror/load, Map.remove를 설치 소스와 함께 확인했다. SDK의 keyboard 옵션은 탭 포커스를 제공하며 현재 선택 callback의 Enter/Space 연결은 프로젝트 adapter가 소유한다.

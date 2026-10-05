@@ -1,0 +1,146 @@
+<?xml version='1.0' encoding='utf-8'?>
+<response>
+  <header>
+    <resultCode>00</resultCode>
+    <resultMsg>NORMAL SERVICE.</resultMsg>
+    <totalCount>33506</totalCount>
+    <pageNo>3351</pageNo>
+    <numOfRows>6</numOfRows>
+  </header>
+  <body>
+    <items>
+      <item>
+        <busiId>ZP</busiId>
+        <statId>ZPZPIT01</statId>
+        <chgerId>01</chgerId>
+        <statNm>인천교통공사01</statNm>
+        <lat>37.30</lat>
+        <lng>126.37</lng>
+        <chgerType>04</chgerType>
+        <useTime>24시간 이용가능</useTime>
+        <limitYn>Y</limitYn>
+        <limitDetail>시설 상황에 따라 이용이 제한될 수 있음</limitDetail>
+        <note />
+        <stat>9</stat>
+        <statUpdDt />
+        <lastTsdt />
+        <lastTedt />
+        <nowTsdt />
+        <delYn>N</delYn>
+        <delDetail />
+        <zcode>28</zcode>
+        <zscode>28275</zscode>
+      </item>
+      <item>
+        <busiId>ZP</busiId>
+        <statId>ZPZPIT01</statId>
+        <chgerId>02</chgerId>
+        <statNm>인천교통공사01</statNm>
+        <lat>37.30</lat>
+        <lng>126.37</lng>
+        <chgerType>04</chgerType>
+        <useTime>24시간 이용가능</useTime>
+        <limitYn>Y</limitYn>
+        <limitDetail>시설 상황에 따라 이용이 제한될 수 있음</limitDetail>
+        <note />
+        <stat>9</stat>
+        <statUpdDt />
+        <lastTsdt />
+        <lastTedt />
+        <nowTsdt />
+        <delYn>N</delYn>
+        <delDetail />
+        <zcode>28</zcode>
+        <zscode>28275</zscode>
+      </item>
+      <item>
+        <busiId>ZP</busiId>
+        <statId>ZPZPIT01</statId>
+        <chgerId>03</chgerId>
+        <statNm>인천교통공사01</statNm>
+        <lat>37.30</lat>
+        <lng>126.37</lng>
+        <chgerType>04</chgerType>
+        <useTime>24시간 이용가능</useTime>
+        <limitYn>N</limitYn>
+        <limitDetail>시설 상황에 따라 이용이 제한될 수 있음</limitDetail>
+        <note />
+        <stat>9</stat>
+        <statUpdDt />
+        <lastTsdt />
+        <lastTedt />
+        <nowTsdt />
+        <delYn>N</delYn>
+        <delDetail />
+        <zcode>28</zcode>
+        <zscode>28275</zscode>
+      </item>
+      <item>
+        <busiId>ZP</busiId>
+        <statId>ZPZPIT01</statId>
+        <chgerId>04</chgerId>
+        <statNm>인천교통공사01</statNm>
+        <lat>37.30</lat>
+        <lng>126.37</lng>
+        <chgerType>04</chgerType>
+        <useTime>24시간 이용가능</useTime>
+        <limitYn>N</limitYn>
+        <limitDetail>시설 상황에 따라 이용이 제한될 수 있음</limitDetail>
+        <note />
+        <stat>9</stat>
+        <statUpdDt />
+        <lastTsdt />
+        <lastTedt />
+        <nowTsdt />
+        <delYn>N</delYn>
+        <delDetail />
+        <zcode>28</zcode>
+        <zscode>28275</zscode>
+      </item>
+      <item>
+        <busiId>ZP</busiId>
+        <statId>ZPZPIT01</statId>
+        <chgerId>05</chgerId>
+        <statNm>인천교통공사01</statNm>
+        <lat>37.30</lat>
+        <lng>126.37</lng>
+        <chgerType>04</chgerType>
+        <useTime>24시간 이용가능</useTime>
+        <limitYn>N</limitYn>
+        <limitDetail>시설 상황에 따라 이용이 제한될 수 있음</limitDetail>
+        <note />
+        <stat>9</stat>
+        <statUpdDt />
+        <lastTsdt />
+        <lastTedt />
+        <nowTsdt />
+        <delYn>N</delYn>
+        <delDetail />
+        <zcode>28</zcode>
+        <zscode>28275</zscode>
+      </item>
+      <item>
+        <busiId>ZP</busiId>
+        <statId>ZPZPIT01</statId>
+        <chgerId>06</chgerId>
+        <statNm>인천교통공사01</statNm>
+        <lat>37.30</lat>
+        <lng>126.37</lng>
+        <chgerType>04</chgerType>
+        <useTime>24시간 이용가능</useTime>
+        <limitYn>N</limitYn>
+        <limitDetail>시설 상황에 따라 이용이 제한될 수 있음</limitDetail>
+        <note />
+        <stat>9</stat>
+        <statUpdDt />
+        <lastTsdt />
+        <lastTedt />
+        <nowTsdt />
+        <delYn>N</delYn>
+        <delDetail />
+        <zcode>28</zcode>
+        <zscode>28275</zscode>
+      </item>
+    </items>
+  </body>
+</response>

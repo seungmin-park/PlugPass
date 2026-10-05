@@ -187,6 +187,114 @@ class PublicDataClientTests {
         assertThat(page.hasNext()).isFalse();
     }
     @Test
+    @DisplayName("인천 실응답의 첫 페이지에서 식별자·시각·커넥터를 보존한다")
+    void convertsLiveIncheonFirstPage() throws IOException {
+        String body = readFixture("live-incheon-first.xml");
+        server.createContext("/getChargerInfo", exchange -> respond(exchange, 200, body));
+        client = new DefaultPublicDataClient(properties(SERVICE_KEY, Duration.ofSeconds(2)), Clock.fixed(COLLECTED_AT, ZoneOffset.UTC));
+
+        StationPage page = client.fetchPage(1);
+
+        assertThat(page.pageNumber()).isEqualTo(1);
+        assertThat(page.pageSize()).isEqualTo(10);
+        assertThat(page.totalCount()).isEqualTo(33506);
+        assertThat(page.hasNext()).isTrue();
+        assertThat(page.snapshots()).extracting(snapshot -> snapshot.chargerId()).containsExactly(
+                new ChargerId("ME", "ME174119", "01"), new ChargerId("ME", "ME174120", "01"),
+                new ChargerId("ME", "ME174125", "01"), new ChargerId("ME", "ME174128", "01"),
+                new ChargerId("ME", "ME181106", "01"), new ChargerId("ME", "ME181106", "02"),
+                new ChargerId("ME", "ME183080", "01"), new ChargerId("ME", "ME184082", "01"),
+                new ChargerId("ME", "ME184083", "01"), new ChargerId("ME", "ME18B188", "01"));
+        assertThat(page.snapshots().getFirst()).satisfies(snapshot -> {
+            assertThat(snapshot.stationName()).isEqualTo("강화풍물시장 공영주차장");
+            assertThat(snapshot.location()).isEqualTo(new GeoPoint(37.7404676, 126.4919478));
+            assertThat(snapshot.details().connectorCode()).isEqualTo("06");
+            assertThat(snapshot.details().useTime()).isEqualTo("24시간 이용가능");
+            assertThat(snapshot.details().limitYn()).isEqualTo("N");
+            assertThat(snapshot.details().sourceStatusChangedAtRaw()).hasSize(14).containsOnlyDigits();
+            assertThat(snapshot.sourceObservedAt()).isNull();
+            assertThat(snapshot.collectedAt()).isEqualTo(COLLECTED_AT);
+        });
+    }
+    @Test
+    @DisplayName("마지막 실응답이 실제 건수를 보고해도 요청 크기로 페이지 종료를 판단한다")
+    void acceptsLiveLastPageWithActualRowCount() throws IOException {
+        String body = readFixture("live-incheon-last.xml");
+        server.createContext("/getChargerInfo", exchange -> respond(exchange, 200, body));
+        client = new DefaultPublicDataClient(properties(SERVICE_KEY, Duration.ofSeconds(2)), Clock.fixed(COLLECTED_AT, ZoneOffset.UTC));
+        AtomicReference<StationPage> result = new AtomicReference<>();
+
+        assertThatCode(() -> result.set(client.fetchPage(3351))).doesNotThrowAnyException();
+
+        StationPage page = result.get();
+        assertThat(page.pageNumber()).isEqualTo(3351);
+        assertThat(page.pageSize()).isEqualTo(10);
+        assertThat(page.totalCount()).isEqualTo(33506);
+        assertThat(page.hasNext()).isFalse();
+        assertThat(page.snapshots()).extracting(snapshot -> snapshot.chargerId()).containsExactly(
+                new ChargerId("ZP", "ZPZPIT01", "01"), new ChargerId("ZP", "ZPZPIT01", "02"),
+                new ChargerId("ZP", "ZPZPIT01", "03"), new ChargerId("ZP", "ZPZPIT01", "04"),
+                new ChargerId("ZP", "ZPZPIT01", "05"), new ChargerId("ZP", "ZPZPIT01", "06"));
+        assertThat(page.snapshots()).extracting(snapshot -> snapshot.details().limitYn()).containsExactly("Y", "Y", "N", "N", "N", "N");
+        assertThat(page.snapshots()).allSatisfy(snapshot -> {
+            assertThat(snapshot.status()).isEqualTo(ChargerStatus.UNKNOWN);
+            assertThat(snapshot.rawStatus()).isEqualTo("9");
+            assertThat(snapshot.details().limitDetail()).isEqualTo("시설 상황에 따라 이용이 제한될 수 있음");
+            assertThat(snapshot.details().sourceStatusChangedAtRaw()).isEmpty();
+            assertThat(snapshot.sourceObservedAt()).isNull();
+            assertThat(snapshot.collectedAt()).isEqualTo(COLLECTED_AT);
+        });
+    }
+    @Test
+    @DisplayName("마지막 범위를 지난 실응답의 0건 보고를 빈 종료 페이지로 받는다")
+    void acceptsLiveEmptyPageReportingZeroRows() throws IOException {
+        String body = readFixture("live-incheon-empty.xml");
+        server.createContext("/getChargerInfo", exchange -> respond(exchange, 200, body));
+        client = new DefaultPublicDataClient(properties(SERVICE_KEY, Duration.ofSeconds(2)), Clock.fixed(COLLECTED_AT, ZoneOffset.UTC));
+        AtomicReference<StationPage> result = new AtomicReference<>();
+
+        assertThatCode(() -> result.set(client.fetchPage(3352))).doesNotThrowAnyException();
+
+        StationPage page = result.get();
+        assertThat(page.pageNumber()).isEqualTo(3352);
+        assertThat(page.pageSize()).isEqualTo(10);
+        assertThat(page.totalCount()).isEqualTo(33506);
+        assertThat(page.snapshots()).isEmpty();
+        assertThat(page.hasNext()).isFalse();
+    }
+    @ParameterizedTest
+    @DisplayName("요청 크기와 실제 목록 건수에 모두 맞지 않는 보고 건수는 거부한다")
+    @ValueSource(ints = {-1, 0, 5, 7, 11})
+    void rejectsInconsistentReportedRowCount(int reportedRowCount) throws IOException {
+        String body = readFixture("live-incheon-last.xml").replace("<numOfRows>6</numOfRows>", "<numOfRows>" + reportedRowCount + "</numOfRows>");
+        server.createContext("/getChargerInfo", exchange -> respond(exchange, 200, body));
+        client = new DefaultPublicDataClient(properties(SERVICE_KEY, Duration.ofSeconds(2)), Clock.fixed(COLLECTED_AT, ZoneOffset.UTC));
+
+        assertThatThrownBy(() -> client.fetchPage(3351)).isInstanceOf(PublicDataException.class)
+                .hasMessage("Public data request failed: CONTRACT").hasNoCause();
+    }
+    @Test
+    @DisplayName("실제 건수를 보고해도 요청 크기로 계산한 전체 범위를 넘으면 거부한다")
+    void rejectsRowsBeyondTotalUsingRequestedCapacity() throws IOException {
+        String body = readFixture("live-incheon-last.xml").replace("<pageNo>3351</pageNo>", "<pageNo>2</pageNo>")
+                .replace("<totalCount>33506</totalCount>", "<totalCount>11</totalCount>");
+        server.createContext("/getChargerInfo", exchange -> respond(exchange, 200, body));
+        client = new DefaultPublicDataClient(properties(SERVICE_KEY, Duration.ofSeconds(2)), Clock.fixed(COLLECTED_AT, ZoneOffset.UTC));
+
+        assertThatThrownBy(() -> client.fetchPage(2)).isInstanceOf(PublicDataException.class)
+                .hasMessage("Public data request failed: CONTRACT").hasNoCause();
+    }
+    @Test
+    @DisplayName("데이터가 남은 페이지에서 0건을 보고하면 조기 종료로 받아들이지 않는다")
+    void rejectsPrematureEmptyPageReportingZeroRows() throws IOException {
+        String body = readFixture("live-incheon-empty.xml").replace("<pageNo>3352</pageNo>", "<pageNo>3351</pageNo>");
+        server.createContext("/getChargerInfo", exchange -> respond(exchange, 200, body));
+        client = new DefaultPublicDataClient(properties(SERVICE_KEY, Duration.ofSeconds(2)), Clock.fixed(COLLECTED_AT, ZoneOffset.UTC));
+
+        assertThatThrownBy(() -> client.fetchPage(3351)).isInstanceOf(PublicDataException.class)
+                .hasMessage("Public data request failed: CONTRACT").hasNoCause();
+    }
+    @Test
     @DisplayName("미지원 상태는 UNKNOWN으로 변환하고 원본 코드를 보존한다")
     void preservesUnknownStatus() throws IOException {
         String body = readFixture("unknown-status.xml");

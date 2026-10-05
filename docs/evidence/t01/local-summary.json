@@ -1,0 +1,81 @@
+{
+  "date": "2026-10-06",
+  "recorded_at_utc": "2026-10-05T17:26:14.575437+00:00",
+  "source_base_commit": "8e13adb253efc78ee179389bdfc5ede1be1921d5",
+  "source_state": "working tree; implementation/tests/fixtures unchanged since successful public verify; documentation finalized afterward",
+  "source_sha256": {
+    "src/main/java/com/plugpass/ingestion/client/DefaultPublicDataClient.java": "9f0be3241de063ae98995ab36302773e61e2a79726bebf09058db0713f2aafc7",
+    "src/main/java/com/plugpass/ingestion/client/PublicDataXmlParser.java": "16809b15b62818e8813ea80630b3bcdaa414b0b7cc6058b474453a7e4133a308",
+    "src/main/java/com/plugpass/ingestion/dto/response/PublicDataResponse.java": "2fb6375a2dce0a5de6471ad79d0dbaea1b59060235d26e484562e7e29b886f81",
+    "src/test/java/com/plugpass/ingestion/client/PublicDataClientTests.java": "d775e66b5dc3ca7c919d9f152f1484e785cd4247bc28647778223fb5b59ee155",
+    "src/test/resources/publicdata/live-incheon-first.xml": "6271cf763d53f1a4bddca7d3a6cb29976b112f1f65920bad25a684a664b3f3b8",
+    "src/test/resources/publicdata/live-incheon-last.xml": "049d775cb3480f964a55c7c2403a9015c66e34fe736c8014da8f25e001e162ac",
+    "src/test/resources/publicdata/live-incheon-empty.xml": "6b5dcc2a5d9e221bd58428fcf74345f95f3ff758540d43f9c667134015d39f4c"
+  },
+  "tdd": {
+    "red_tests": 74,
+    "red_assertion_failures": 2,
+    "target_green_tests": 74,
+    "all_green_tests": 371
+  },
+  "command": "bash scripts/verify.sh",
+  "exit_code": 0,
+  "exit_observation": "cmux surface:12 terminal footer: T01 public verify exit=0",
+  "python_tests": 32,
+  "runtime": {
+    "tests": 371,
+    "frontend_tests": 290,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "health": "UP",
+    "env_http": 404,
+    "station_search_http": 200,
+    "station_validation_http": 400,
+    "station_detail_missing_http": 404,
+    "docs_match": true,
+    "recommendations_http": 200,
+    "default_metrics_http": 404,
+    "test_fixtures_packaged": false,
+    "browser_tests": 21,
+    "packaged_browser_tests": 3,
+    "webapp_http": 200,
+    "webapp_assets_http": 3,
+    "webapp_match": true
+  },
+  "restart": {
+    "separate_jvms": 3,
+    "memory_data_lost": true,
+    "readiness_reset": true,
+    "recollection_ready": true
+  },
+  "log_sha256": {
+    "pagination-red.log": "4671e9146ae0e247384ce496667bfbc40cf292db1f18b0583387f95cb3ab4fd7",
+    "/private/tmp/plugpass-t01-verify.log": "95a0d9469018926d38e1443c473e6b36da1ed45c9c92baf5eb6f2a69ff9d44bd"
+  },
+  "visible_cmux": {
+    "workspace": "workspace:4",
+    "caller_surface": "surface:4",
+    "helper_pane": "pane:11",
+    "runner_surface": "surface:12",
+    "browser_surface": "surface:13",
+    "runner_mode": "headed development and packaged Chromium",
+    "manual_journey": [
+      "example location",
+      "search",
+      "detail ID1",
+      "alternative excludes ID1",
+      "detail ID2"
+    ],
+    "manual_backend": "synthetic provider over actual HTTP; H2 two stations",
+    "manual_freshness": "source observation missing; UNVERIFIED shown",
+    "manual_console": "Vite debug connection only; no browser errors",
+    "manual_initial_navigation": "connection refused before readiness; navigation retried after server ready",
+    "manual_does_not_replace_runner_assertions": true
+  },
+  "limitations": [
+    "not full live region ingestion/storage/scheduling",
+    "no inferred provider timezone or observation timestamp",
+    "no proof of account quota or field coordinate accuracy"
+  ]
+}

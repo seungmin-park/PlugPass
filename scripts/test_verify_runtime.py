@@ -99,6 +99,10 @@ class JourneyEvidenceTests(unittest.TestCase):
 
 
 class PackagedFixtureTests(unittest.TestCase):
+    def test_rejects_browser_demo_in_production_jar(self):
+        with self.assertRaisesRegex(RuntimeError, 'Test fixture packaged'):
+            verify_runtime.check_packaged_test_fixtures(['BOOT-INF/classes/e2e/ChargingDemoApplication.class'])
+
     def test_rejects_reliability_probe_in_production_jar(self):
         with self.assertRaisesRegex(RuntimeError, 'Test fixture packaged'):
             verify_runtime.check_packaged_test_fixtures(['BOOT-INF/classes/reliability/RestartProbeApplication.class'])

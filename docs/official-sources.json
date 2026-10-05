@@ -618,5 +618,23 @@
     "url": "https://vuejs.org/api/application.html",
     "accessed": "2026-10-05",
     "coverage": "설치Vue3.5.43 errorHandler·개발모드warnHandler; 진단수명·재대입은 프로젝트정책"
+  },
+  {
+    "id": "t23-playwright-fixtures",
+    "url": "https://playwright.dev/docs/test-fixtures",
+    "accessed": "2026-10-05",
+    "coverage": "Playwright1.63.0 공용page fixture·테스트별 격리·teardown assertion; 실제 headed 실행"
+  },
+  {
+    "id": "t23-playwright-pageerror",
+    "url": "https://playwright.dev/docs/api/class-page#page-event-page-error",
+    "accessed": "2026-10-05",
+    "coverage": "최초 goto 전 console/pageerror 감시; 실제 개발모드 진단 probe"
+  },
+  {
+    "id": "t23-playwright-reporters",
+    "url": "https://playwright.dev/docs/test-reporters#json-reporter",
+    "accessed": "2026-10-05",
+    "coverage": "JSON·HTML·trace 보고서와 실제 assertion 상태"
   }
 ]

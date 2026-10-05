@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<response>
+  <header><resultCode>00</resultCode><pageNo>1</pageNo><numOfRows>10</numOfRows><totalCount>2</totalCount></header>
+  <body><items>
+    <item><busiId>ME</busiId><statId>browser_first</statId><chgerId>01</chgerId><statNm>데모 가까운 충전소</statNm><lat>37.5</lat><lng>127</lng><stat>2</stat><chgerType>04</chgerType><useTime>24시간</useTime><limitYn>N</limitYn><delYn>N</delYn><note>합성 브라우저 검증 데이터</note></item>
+    <item><busiId>ME</busiId><statId>browser_second</statId><chgerId>01</chgerId><statNm>데모 대체 충전소</statNm><lat>37.5</lat><lng>127.001</lng><stat>2</stat><chgerType>04</chgerType><useTime>24시간</useTime><limitYn>N</limitYn><delYn>N</delYn></item>
+  </items></body>
+</response>

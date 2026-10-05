@@ -286,8 +286,8 @@
   {
     "id": "publicdata-evcharger",
     "url": "https://www.data.go.kr/data/15076352/openapi.do",
-    "accessed": "2026-10-01",
-    "coverage": "등록정보·상태 조회 표·가이드 v1.25; 실응답 미확인"
+    "accessed": "2026-10-06",
+    "coverage": "등록 페이지·가이드 v1.25 해시 재확인·인증된 인천 첫/마지막/빈 페이지와 필드/시간대 부재 대조; docs/evidence/t01/live-contract.json"
   },
   {
     "id": "lombok-gradle",

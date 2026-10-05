@@ -1,0 +1,234 @@
+<?xml version='1.0' encoding='utf-8'?>
+<response>
+  <header>
+    <resultCode>00</resultCode>
+    <resultMsg>NORMAL SERVICE.</resultMsg>
+    <totalCount>33506</totalCount>
+    <pageNo>1</pageNo>
+    <numOfRows>10</numOfRows>
+  </header>
+  <body>
+    <items>
+      <item>
+        <busiId>ME</busiId>
+        <statId>ME174119</statId>
+        <chgerId>01</chgerId>
+        <statNm>강화풍물시장 공영주차장</statNm>
+        <lat>37.7404676</lat>
+        <lng>126.4919478</lng>
+        <chgerType>06</chgerType>
+        <useTime>24시간 이용가능</useTime>
+        <limitYn>N</limitYn>
+        <limitDetail />
+        <note />
+        <stat>2</stat>
+        <statUpdDt>20261006013124</statUpdDt>
+        <lastTsdt>20261004143505</lastTsdt>
+        <lastTedt>20261004151705</lastTedt>
+        <nowTsdt />
+        <delYn>N</delYn>
+        <delDetail />
+        <zcode>28</zcode>
+        <zscode>28710</zscode>
+      </item>
+      <item>
+        <busiId>ME</busiId>
+        <statId>ME174120</statId>
+        <chgerId>01</chgerId>
+        <statNm>계산1택지 공영주차장</statNm>
+        <lat>37.540182019</lat>
+        <lng>126.73630068</lng>
+        <chgerType>06</chgerType>
+        <useTime>24시간 이용가능</useTime>
+        <limitYn>N</limitYn>
+        <limitDetail />
+        <note />
+        <stat>2</stat>
+        <statUpdDt>20261006013106</statUpdDt>
+        <lastTsdt>20261004170750</lastTsdt>
+        <lastTedt>20261004174617</lastTedt>
+        <nowTsdt />
+        <delYn>N</delYn>
+        <delDetail />
+        <zcode>28</zcode>
+        <zscode>28245</zscode>
+      </item>
+      <item>
+        <busiId>ME</busiId>
+        <statId>ME174125</statId>
+        <chgerId>01</chgerId>
+        <statNm>㈜현대자동차 블루핸즈 서인천 서비스 주차장 입구</statNm>
+        <lat>37.509973287</lat>
+        <lng>126.64197627</lng>
+        <chgerType>06</chgerType>
+        <useTime>평일08:30~18:00</useTime>
+        <limitYn>N</limitYn>
+        <limitDetail />
+        <note />
+        <stat>2</stat>
+        <statUpdDt>20261006013113</statUpdDt>
+        <lastTsdt>20261002120330</lastTsdt>
+        <lastTedt>20261002124955</lastTedt>
+        <nowTsdt />
+        <delYn>N</delYn>
+        <delDetail />
+        <zcode>28</zcode>
+        <zscode>28275</zscode>
+      </item>
+      <item>
+        <busiId>ME</busiId>
+        <statId>ME174128</statId>
+        <chgerId>01</chgerId>
+        <statNm>도원역 부근 공영주차장</statNm>
+        <lat>37.467239217</lat>
+        <lng>126.64140301</lng>
+        <chgerType>06</chgerType>
+        <useTime>24시간 이용가능</useTime>
+        <limitYn>N</limitYn>
+        <limitDetail />
+        <note />
+        <stat>2</stat>
+        <statUpdDt>20261006013118</statUpdDt>
+        <lastTsdt>20261005173739</lastTsdt>
+        <lastTedt>20261005181329</lastTedt>
+        <nowTsdt />
+        <delYn>N</delYn>
+        <delDetail />
+        <zcode>28</zcode>
+        <zscode>28125</zscode>
+      </item>
+      <item>
+        <busiId>ME</busiId>
+        <statId>ME181106</statId>
+        <chgerId>01</chgerId>
+        <statNm>송도골프</statNm>
+        <lat>37.414739803</lat>
+        <lng>126.65126359</lng>
+        <chgerType>06</chgerType>
+        <useTime>24시간 이용가능</useTime>
+        <limitYn>N</limitYn>
+        <limitDetail />
+        <note />
+        <stat>2</stat>
+        <statUpdDt>20261006013138</statUpdDt>
+        <lastTsdt>20261005163840</lastTsdt>
+        <lastTedt>20261005172238</lastTedt>
+        <nowTsdt />
+        <delYn>N</delYn>
+        <delDetail />
+        <zcode>28</zcode>
+        <zscode>28185</zscode>
+      </item>
+      <item>
+        <busiId>ME</busiId>
+        <statId>ME181106</statId>
+        <chgerId>02</chgerId>
+        <statNm>송도골프</statNm>
+        <lat>37.414739803</lat>
+        <lng>126.65126359</lng>
+        <chgerType>06</chgerType>
+        <useTime>24시간 이용가능</useTime>
+        <limitYn>N</limitYn>
+        <limitDetail />
+        <note />
+        <stat>2</stat>
+        <statUpdDt>20261006013125</statUpdDt>
+        <lastTsdt>20261001190413</lastTsdt>
+        <lastTedt>20261001194533</lastTedt>
+        <nowTsdt />
+        <delYn>N</delYn>
+        <delDetail />
+        <zcode>28</zcode>
+        <zscode>28185</zscode>
+      </item>
+      <item>
+        <busiId>ME</busiId>
+        <statId>ME183080</statId>
+        <chgerId>01</chgerId>
+        <statNm>덕산국민여가캠핑장</statNm>
+        <lat>37.7175253</lat>
+        <lng>126.3808179</lng>
+        <chgerType>06</chgerType>
+        <useTime>24시간 이용가능</useTime>
+        <limitYn>N</limitYn>
+        <limitDetail />
+        <note />
+        <stat>2</stat>
+        <statUpdDt>20261006013130</statUpdDt>
+        <lastTsdt>20261001095600</lastTsdt>
+        <lastTedt>20261001103907</lastTedt>
+        <nowTsdt />
+        <delYn>N</delYn>
+        <delDetail />
+        <zcode>28</zcode>
+        <zscode>28710</zscode>
+      </item>
+      <item>
+        <busiId>ME</busiId>
+        <statId>ME184082</statId>
+        <chgerId>01</chgerId>
+        <statNm>인천시청</statNm>
+        <lat>37.455605</lat>
+        <lng>126.704138</lng>
+        <chgerType>06</chgerType>
+        <useTime>24시간 이용가능</useTime>
+        <limitYn>N</limitYn>
+        <limitDetail />
+        <note />
+        <stat>2</stat>
+        <statUpdDt>20261006013134</statUpdDt>
+        <lastTsdt>20261005164140</lastTsdt>
+        <lastTedt>20261005171100</lastTedt>
+        <nowTsdt />
+        <delYn>N</delYn>
+        <delDetail />
+        <zcode>28</zcode>
+        <zscode>28200</zscode>
+      </item>
+      <item>
+        <busiId>ME</busiId>
+        <statId>ME184083</statId>
+        <chgerId>01</chgerId>
+        <statNm>송도컨벤시아</statNm>
+        <lat>37.3891519</lat>
+        <lng>126.6465433</lng>
+        <chgerType>06</chgerType>
+        <useTime>06:00~20:00</useTime>
+        <limitYn>N</limitYn>
+        <limitDetail />
+        <note />
+        <stat>2</stat>
+        <statUpdDt>20261006013137</statUpdDt>
+        <lastTsdt>20261003120458</lastTsdt>
+        <lastTedt>20261003182602</lastTedt>
+        <nowTsdt />
+        <delYn>N</delYn>
+        <delDetail />
+        <zcode>28</zcode>
+        <zscode>28185</zscode>
+      </item>
+      <item>
+        <busiId>ME</busiId>
+        <statId>ME18B188</statId>
+        <chgerId>01</chgerId>
+        <statNm>온수리 공영 주차장</statNm>
+        <lat>37.63936</lat>
+        <lng>126.49185</lng>
+        <chgerType>06</chgerType>
+        <useTime>24시간 이용가능</useTime>
+        <limitYn>N</limitYn>
+        <limitDetail />
+        <note />
+        <stat>2</stat>
+        <statUpdDt>20261006013145</statUpdDt>
+        <lastTsdt>20261005231233</lastTsdt>
+        <lastTedt>20261005235309</lastTedt>
+        <nowTsdt />
+        <delYn>N</delYn>
+        <delDetail />
+        <zcode>28</zcode>
+        <zscode>28710</zscode>
+      </item>
+    </items>
+  </body>
+</response>

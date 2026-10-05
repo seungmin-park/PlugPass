@@ -21,7 +21,7 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
 final class PublicDataXmlParser {
-    PublicDataResponse parse(byte[] xml) {
+    PublicDataResponse parse(byte[] xml, int requestedPageCapacity) {
         try {
             Element response = parseDocument(xml).getDocumentElement();
             if (!"response".equals(response.getTagName())) {
@@ -30,19 +30,19 @@ final class PublicDataXmlParser {
             Element header = requiredChild(response, "header");
             requireProviderSuccess(requiredText(header, "resultCode"));
             int pageNumber = Integer.parseInt(requiredText(header, "pageNo").strip());
-            int pageSize = Integer.parseInt(requiredText(header, "numOfRows").strip());
+            int reportedRowCount = Integer.parseInt(requiredText(header, "numOfRows").strip());
             long totalCount = Long.parseLong(requiredText(header, "totalCount").strip());
-            if (pageNumber < 1 || pageSize < 10 || pageSize > 9999 || totalCount < 0) {
+            if (pageNumber < 1 || reportedRowCount < 0 || reportedRowCount > 9999 || totalCount < 0) {
                 throw contractFailure();
             }
             Element items = requiredChild(requiredChild(response, "body"), "items");
             List<PublicDataItem> result = children(items, "item").stream().map(this::readItem).toList();
-            long firstIndex = ((long) pageNumber - 1) * pageSize;
-            if (result.size() > pageSize || (result.isEmpty() && firstIndex < totalCount)
+            long firstIndex = ((long) pageNumber - 1) * requestedPageCapacity;
+            if (result.size() > reportedRowCount || result.size() > requestedPageCapacity || (result.isEmpty() && firstIndex < totalCount)
                     || (!result.isEmpty() && firstIndex + result.size() > totalCount)) {
                 throw contractFailure();
             }
-            return new PublicDataResponse(pageNumber, pageSize, totalCount, result);
+            return new PublicDataResponse(pageNumber, reportedRowCount, totalCount, result);
         } catch (IllegalArgumentException exception) {
             throw contractFailure();
         }

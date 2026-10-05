@@ -55,13 +55,14 @@ public final class DefaultPublicDataClient implements PublicDataClient {
         HttpResponse<byte[]> response = sendRequest(request,timeout);
         Instant collectedAt = clock.instant();
         requireHttpSuccess(response);
-        PublicDataResponse data = xmlParser.parse(response.body());
-        if (data.pageNumber() != page || data.pageSize() != properties.pageSize()) {
+        PublicDataResponse providerResponse = xmlParser.parse(response.body(), properties.pageSize());
+        if (providerResponse.pageNumber() != page || (providerResponse.reportedRowCount() != properties.pageSize()
+                && providerResponse.reportedRowCount() != providerResponse.items().size())) {
             throw new PublicDataException(PublicDataFailure.CONTRACT);
         }
         try {
-            List<StationSnapshot> snapshots = data.items().stream().map(item -> item.toSnapshot(statusMapper.map(item.rawStatus()), collectedAt)).toList();
-            return new StationPage(page, data.pageSize(), data.totalCount(), snapshots);
+            List<StationSnapshot> snapshots = providerResponse.items().stream().map(item -> item.toSnapshot(statusMapper.map(item.rawStatus()), collectedAt)).toList();
+            return new StationPage(page, properties.pageSize(), providerResponse.totalCount(), snapshots);
         } catch (IllegalArgumentException exception) {
             throw new PublicDataException(PublicDataFailure.CONTRACT);
         }

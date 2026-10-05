@@ -215,3 +215,7 @@ Vue3.5.43·Pinia4.0.3·Router4.6.4·Axios1.20.0을 유지했다. [Vue watch/clea
 ## T21 상세 ID 변경
 
 기존 설치 버전을 유지한다. [Router 동적 경로](https://router.vuejs.org/guide/essentials/dynamic-matching.html)의 같은 컴포넌트 객체 재사용·params 감시와 Vue watch를 확인했다. 최초 진입만 처리하면 ID변경이 누락되므로 View가 ID변화를 Store에 연결한다. 취소와 별개의 요청순번, null관측/빈운영정보의 보수적 표시·텍스트비고·조건유지는 프로젝트 판단이다. [55건 대상검증과 실제cmux](t21-verification.md)를 따른다.
+
+## T22 후보와 개발모드 진단
+
+기존Vue3.5.43·Pinia4.0.3·Axios1.20.0을 유지한다. [Vue 앱 API](https://vuejs.org/api/application.html)의 errorHandler와 개발모드 warnHandler를 재확인했다. 같은handler의 재대입을 무시하는 것은 테스트수명 정책이며 실제 재귀실패2건을 회귀검증했다. 후보/메타의 독립순번·독립재시도·사유 문자열 표시·공용query변환은 프로젝트 판단이다. [실제 실행과 한계](t22-verification.md)를 따른다.

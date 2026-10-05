@@ -3,7 +3,7 @@ import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import SearchForm from '../components/SearchForm.vue'
 import StationCard from '../components/StationCard.vue'
-import { parseSearchCriteria } from '../criteria'
+import { parseSearchCriteria, toSearchQuery } from '../criteria'
 import type { SearchCriteria } from '../types'
 import type { Connector } from '../../charging-info/types'
 import { formatTimestamp } from '../../charging-info/presentation'
@@ -61,10 +61,7 @@ async function submitSearch(conditions: { radiusMeters: number; connector: Conne
     await store.search(criteria)
     return
   }
-  await router.push({ path: '/stations', query: {
-    latitude: String(criteria.latitude), longitude: String(criteria.longitude), radiusMeters: String(criteria.radiusMeters),
-    connector: criteria.connector, limit: String(criteria.limit),
-  } })
+  await router.push({ path: '/stations', query: toSearchQuery(criteria) })
 }
 function refreshSearch(): void {
   if (confirmedCriteria.value) void store.search(confirmedCriteria.value)
@@ -72,8 +69,7 @@ function refreshSearch(): void {
 function detailHref(stationId: number): string {
   const criteria = confirmedCriteria.value
   if (!criteria) return `#/stations/${stationId}`
-  const query = new URLSearchParams({ latitude: String(criteria.latitude), longitude: String(criteria.longitude),
-    radiusMeters: String(criteria.radiusMeters), connector: criteria.connector, limit: String(criteria.limit) })
+  const query = new URLSearchParams(toSearchQuery(criteria))
   return `#/stations/${stationId}?${query.toString()}`
 }
 function openDetail(stationId: number): void {

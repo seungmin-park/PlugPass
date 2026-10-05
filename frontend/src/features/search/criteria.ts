@@ -7,6 +7,11 @@ const decimal = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?$/i
 const integer = /^[+-]?\d+$/
 const numericLabels = { latitude: '위도', longitude: '경도', radiusMeters: '반경', limit: '검색 개수' } as const
 
+export function toSearchQuery(criteria: SearchCriteria): Record<string, string> {
+  return { latitude: String(criteria.latitude), longitude: String(criteria.longitude),
+    radiusMeters: String(criteria.radiusMeters), connector: criteria.connector, limit: String(criteria.limit) }
+}
+
 export function parseSearchCriteria(query: Record<string, unknown>): SearchCriteriaResult {
   if (!queryFields.some(field => Object.prototype.hasOwnProperty.call(query, field))) return { kind: 'empty' }
   const fields: Record<string, string> = {}

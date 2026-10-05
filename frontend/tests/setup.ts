@@ -1,6 +1,7 @@
 import { config, enableAutoUnmount, flushPromises } from '@vue/test-utils'
 import { afterEach, beforeEach, vi } from 'vitest'
-import type { App, Plugin } from 'vue'
+import type { Plugin } from 'vue'
+import { monitorVueApp } from './vueAppDiagnostics'
 import { TestDiagnostics } from './vueWarnings'
 import { monitorConsole } from './consoleDiagnostics'
 
@@ -14,31 +15,6 @@ let originalConsole: Console
 let monitoredConsole: Console
 let originalPlugins: typeof config.global.plugins
 
-function monitorVue(app: App): void {
-  let warnHandler = app.config.warnHandler
-  let errorHandler = app.config.errorHandler
-  const monitoredVueWarn: NonNullable<App['config']['warnHandler']> = (message, instance, trace) => {
-    diagnostics.record('Vue warn', message + trace)
-    if (warnHandler) warnHandler(message, instance, trace)
-    else originalWarn(`[Vue warn] ${message}${trace}`)
-  }
-  const monitoredVueError: NonNullable<App['config']['errorHandler']> = (error, instance, info) => {
-    diagnostics.record('Vue error', `${String(error)} (${info})`)
-    if (errorHandler) errorHandler(error, instance, info)
-    else originalError(error)
-  }
-  // A later custom handler can forward diagnostics but cannot replace monitoring.
-  Object.defineProperty(app.config, 'warnHandler', {
-    configurable: true,
-    get: () => monitoredVueWarn,
-    set: (handler: App['config']['warnHandler']) => { warnHandler = handler },
-  })
-  Object.defineProperty(app.config, 'errorHandler', {
-    configurable: true,
-    get: () => monitoredVueError,
-    set: (handler: App['config']['errorHandler']) => { errorHandler = handler },
-  })
-}
 
 beforeEach(() => {
   diagnostics = new TestDiagnostics()
@@ -48,7 +24,7 @@ beforeEach(() => {
   monitoredConsole = monitorConsole(originalConsole, diagnostics)
   globalThis.console = monitoredConsole
   originalPlugins = config.global.plugins
-  const diagnosticsPlugin: Plugin = { install: monitorVue }
+  const diagnosticsPlugin: Plugin = { install: app => monitorVueApp(app, diagnostics, originalWarn, originalError) }
   config.global.plugins = [...originalPlugins, diagnosticsPlugin]
 })
 

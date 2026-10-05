@@ -1,6 +1,6 @@
 # PlugPass 작업 체크리스트
 
-**목표·설계:** [plan.md](plan.md). T01 문서 계약은 main 반영, 인증된 실연동은 키 없어 미확인. T02~T23은 구현·검증·main 반영 완료. T15 당시 p95 목표 미달은 T16 동일 조건 재측정75.04ms로 개선했다. T01 실응답 확인 두 항목은 키 없어 보류한다. 아래 하위 체크와 근거를 따른다.
+**목표·설계:** [plan.md](plan.md). T01 문서 계약은 main 반영, 인증된 실연동은 키 없어 미확인. T02~T24는 구현·검증·main 반영 완료. T15 당시 p95 목표 미달은 T16 동일 조건 재측정75.04ms로 개선했다. T01 실응답 확인 두 항목은 키 없어 보류한다. 아래 하위 체크와 근거를 따른다.
 
 **실행 방식:** 작업 하나씩 순서대로 진행한다. 구현 시 `superpowers:executing-plans`를 사용한다. 이 파일을 만들었다는 이유로 이후 작업 전체를 자동 실행하지 않는다.
 
@@ -365,14 +365,14 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 
 의존: T23. 수정: `build.gradle`, `frontend/src/styles/base.css`, View/Component·관련 테스트, `frontend/eslint.config.js`, `scripts/verify.sh`, `scripts/verify-runtime.py`·검사기 회귀 테스트, `.github/workflows/verify.yml`, 기능 지도·검증 스킬·실행 기록.
 
-- [ ] 모바일 375×812·데스크톱 1440×900, 키보드 조작·라벨·오류 focus·상태 알림의 테스트를 먼저 작성하고 필요한 화면을 수정한다.
-- [ ] 실제 JAR의 `/app/index.html`·JS/CSS·직접 링크·같은 origin API·기존 REST Docs를 검증한다. 누락 assertion의 실패를 확인한 뒤 프런트 build→bootJar의 `static/app/` 포함을 구현한다.
-- [ ] Vue→Axios 직접 의존과 API→Store/View 역의존, 필수 suite 누락·0개·skip·failure·error를 기존 lint/검사기로 거부한다. 검사기 회귀 테스트와 실제 임시 위반의 거부·복원을 확인한다.
-- [ ] T18의 필수 타입·lint·단위 테스트를 유지하며 개발 모드 경고 E2E와 배포용 JAR 웹앱 검증까지 기존 공용 verify·필수 `PlugPass verify`에 연결한다. 임시 Vue 경고·실행 예외·필수 E2E 누락/0개/skip이 실제 실패로 전파되는지 확인하고 복원 후 전체 검증한다. 실제 결과·책임/이름·공개 계약을 리뷰하고 사용법·기능 지도·검증 기록을 해당 PR에서 갱신한다.
+- [x] 모바일 375×812·데스크톱 1440×900, 키보드 조작·라벨·오류 focus·상태 알림의 테스트를 먼저 작성하고 필요한 화면을 수정한다.
+- [x] 실제 JAR의 `/app/index.html`·JS/CSS·직접 링크·같은 origin API·기존 REST Docs를 검증한다. 누락 assertion의 실패를 확인한 뒤 프런트 build→bootJar의 `static/app/` 포함을 구현한다.
+- [x] Vue→Axios 직접 의존과 API→Store/View 역의존, 필수 suite 누락·0개·skip·failure·error를 기존 lint/검사기로 거부한다. 검사기 회귀 테스트와 실제 임시 위반의 거부·복원을 확인한다.
+- [x] T18의 필수 타입·lint·단위 테스트를 유지하며 개발 모드 경고 E2E와 배포용 JAR 웹앱 검증까지 기존 공용 verify·필수 `PlugPass verify`에 연결한다. 임시 Vue 경고·실행 예외·필수 E2E 누락/0개/skip이 실제 실패로 전파되는지 확인하고 복원 후 전체 검증한다. 실제 결과·책임/이름·공개 계약을 리뷰하고 사용법·기능 지도·검증 기록을 해당 PR에서 갱신한다.
 
 산출: Spring JAR에서 제공되는 웹앱과 필수 품질 검사. 개발 서버 검증·JAR HTTP·원격 CI·화면 E2E의 결과를 구분한다.
 
-구현·로컬 검증: [T24 실행기록](docs/t24-verification.md), [최종 검토와 링크 회귀 수정](docs/t21-t24-final-review.md). Java361·프런트273·Python32·개발E2E17·JAR브라우저2건. 실제main 반영·필수CI 확인 뒤 완료체크를 기록한다.
+구현·로컬 검증: [T24 실행기록](docs/t24-verification.md), [최종 검토와 링크 회귀 수정](docs/t21-t24-final-review.md). Java361·프런트273·Python32·개발E2E17·JAR브라우저2건. 완료: [PR #45](https://github.com/seungmin-park/PlugPass/pull/45), main `8717111`, [필수 CI 성공](https://github.com/seungmin-park/PlugPass/actions/runs/37294411567), [최종 커밋·원격 결과](docs/evidence/t24/ci-summary.json).
 
 ## 후속 — 지도와 목록 연결
 

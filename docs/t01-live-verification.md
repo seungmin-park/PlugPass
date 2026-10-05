@@ -46,4 +46,6 @@ XML parser는 외부 구조·건수·요청 범위를, 클라이언트는 요청
 
 ## 전달
 
-필수 CI와 실제 main 병합 근거는 전달 후 이 기록과 tasks.md에 연결한다. 자동 머지 신청 자체를 병합 완료로 취급하지 않는다.
+[PR #49](https://github.com/seungmin-park/PlugPass/pull/49)의 서명된 head `68a62d1d04afc65a8928ca17477178d0debb7b50`를 GitHub가 valid로 확인했다. 해당 head의 [필수 CI](https://github.com/seungmin-park/PlugPass/actions/runs/37348746456)는 SUCCESS이며 GitHub Actions 앱15368에서 발생한 `PlugPass verify`다. 내려받은 원본 JUnit·프런트·브라우저 보고서를 기존 guard로 재검사해 Java371·프런트290·개발21·배포3, 실패/오류/skip0을 확인했고 원본 로그의 Python32건도 대조했다. 검증한 소스·표본 해시는 로컬 요약과 같다. [CI/병합 근거](evidence/t01/ci-summary.json)를 보존한다.
+
+strict 최신 base·관리자 적용·필수 검사·강제 push/삭제 금지 설정을 조회한 뒤 exact head match로 native squash auto-merge를 신청했다. 2026-10-05T17:34:43Z에 실제 main `a81e449807b48e0102bcdae77ed818fd0b15d8b0`로 병합된 것을 확인했으며 읽기 전용 `pr_status.py --goal merged`도 종료0·merged다. 로컬 main은 fast-forward로 반영했다. 이 근거를 연결한 문서 기록에서 T01 두 체크를 완료로 표시한다.

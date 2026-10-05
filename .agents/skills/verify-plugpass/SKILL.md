@@ -159,17 +159,27 @@ IngestionRecoveryTests14 + IngestionHttpBudgetTests6 + IngestionConfigurationTes
 현재 필수 suite34개·Java357건·Python14건. `python3 scripts/performance/load.py --output <새폴더>`로 실제10,000/50,000 생성 데이터·동시20명·warmup30초·측정180초를 별도로 실행한다. 공용 verify만으로 성능 완료를 주장하지 않는다. 작은 데이터 매핑 테스트1건과 집계3건도 유지한다. 부하 전후 정확성·SQL/엔티티 수·p50/p95·unexpected error·대상 SHA/dirty·샘플 원본을 [성능 기록](../../../docs/performance.md)과 비교한다. smoke 설정은 기준선이 아니다. 운영 JAR에서 performance test 패키지가 제외되는지도 공용 검증이 확인한다.
 
 
-## T17~T19 최신 검증 범위
+## T17~T20 최신 검증 범위
 
-현재 공용verify는 Java360건·Python21건·프런트147건(10파일)을 실행한다. 과거 T번호의 건수는 당시 기록이다. 실제 실행 뒤 XML/JSON의 현재 수를 읽고 고정 총건수를 CI요구값으로 만들지 않는다.
+현재 공용verify는 Java360건·Python21건·프런트210건(17파일)을 실행한다. 과거 T번호의 건수는 당시 기록이다. 실제 실행 뒤 XML/JSON의 현재 수를 읽고 고정 총건수를 CI요구값으로 만들지 않는다.
 
 - T17: 기존 recovery/sync/scheduler/journey35건과 `scripts/verify-memory-restart.py`의 별도JVM3회 실제HTTP로 수집완료→메모리H2소실/준비전→재수집완료를 확인한다. `build/verification/memory-restart/`를 확인한다. reliability 테스트클래스의 운영JAR 포함을 거부한다.
 - T18: Node26.7.0, lockfile을 사용한다. 공용verify가 npm ci→test:unit→type-check→lint(경고0)→build를 실행한다. `frontend/test-results/unit.json`의 실제assertion과 `docs/required-frontend-tests.json`의 필수파일을 기존runtime검사로 확인한다. 0개/실패/skip/누락을 거부한다.
 - 현재 프런트명령은 `npm --prefix frontend run test:unit`, `type-check`, `lint`, `build`다. 실행은 개발서버 `/app/index.html`·Vite base `/app/`·hashRouter다. JAR웹앱 포함은 T24에 남아 있다.
-- 이번 세션은 사용자가 cmux 대신 현재Codex세션을 허용했다. 실제Codex브라우저의 조건선택/클릭/새로고침/없는화면복귀는 `docs/frontend-verification.md`를 따른다. 이것을 T23의 실제API전체E2E·Playwright러너로 바꾸어 보고하지 않는다.
+- T18/T19 당시 세션은 사용자가 cmux 대신 현재Codex세션을 허용했다. 실제Codex브라우저의 조건선택/클릭/새로고침/없는화면복귀는 `docs/frontend-verification.md`를 따른다. 이것을 T23의 실제API전체E2E·Playwright러너로 바꾸어 보고하지 않는다.
 
 - T19: URL 입력36·ID20·오류14·검색31·상세14·추천18건, 합133건. `npm --prefix frontend run test:unit -- src/features/search/criteria.spec.ts src/shared/api/apiError.spec.ts src/features/search/api/stationApi.spec.ts src/features/station-detail/api/stationDetailApi.spec.ts src/features/recommendation/api/recommendationApi.spec.ts src/shared/api/stationId.spec.ts`로 대상 검증한다. 실제 Axios JSON/취소/직렬화는 유지하고 adapter만 제어한다. UI 검색·JAR 포함 E2E로 표현하지 않는다.
 
 ## Stitch 디자인의 현재 화면 검증
 
 사용자가 T19 범위의 현재 화면 적용을 확정했다. SearchForm6건·Router3건과 전체147건/10파일, 기존 T19 API133건을 유지한다. `docs/frontend-design.md`의 원본 시안 대응·native radio/submit·본문 focus 책임·Codex 실제 조작/375·320·1440px 화면을 확인한다. 스타일 assertion으로 구현을 복제하지 않는다. 실제 위치/API 검색·상세·추천·Playwright 전체 흐름은 T20 이후다. 이번 시안의 가짜 건수·신뢰도·남은 시간·계정/알림을 실제 데이터로 표시하지 않는다.
+
+## T20 위치·실제 주변 검색
+
+대상: `npm --prefix frontend run test:unit -- src/features/search src/shared/location src/features/charging-info src/shared/ui/RequestState.spec.ts` →136건. 전체210건/17파일·Java360·Python21과 타입/lint/build·기존 공용verify를 확인한다. 필수 목록에 새7파일을 등록했으며 고정 건수 자체를 gate로 쓰지 않는다.
+
+위치14건(권한/지원/10초/좌표/이탈/늦은 callback), Store7건(로딩/실패/재시도/성공·실패 응답 역전/reset), View14건(URL/뒤로 가기/준비 전·부분·빈 결과/400·503/재시도)을 확인한다. 배지/카드는 서버 status/freshness를 재계산하지 않는다. unknown prototype 이름 회귀3건을 포함한다. [실행 기록](../../../docs/t20-verification.md)을 따른다.
+
+현재 cmux workspace:5의 호출surface:6·검증surface:7·브라우저surface:13을 확인하고 실제 클릭/입력/이동으로 합성 공급자→실제 수집/H2→검색·빈 결과·권한 거부/예시 위치 회복·직접 링크/뒤로 가기·375/320px를 assertion했다. 재실행 때는 이 ID를 복사하지 말고 현재 호출 정보를 다시 확인한다. 서버 재시작 중 proxy 연결 실패와 명시적 재시도 회복을 함께 기록했다.
+
+T20 화면 검증의 합성 입력은 docs/evidence/t20/provider.xml이며, 필요하면 공용verify 후 같은 기록의 demo-server.py로 existing RestartProbeApplication을 실행한다. 기본8080/5173의 포트 소유자를 확인한다. 운영 seed·공공 API 인증·native 위치 성공·상세/추천 UI·T23 Playwright 전체E2E·T24 JAR웹앱은 이 검증의 범위가 아니다.

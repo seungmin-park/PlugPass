@@ -6,7 +6,7 @@
 
 **공통 제약:** Java 25·Spring Boot 4.1.1·JPA/H2·Spring REST Docs, 단일 인스턴스·공급자 1곳·검증 지역 1곳. 공식 계약을 먼저 확인한다. 현재 H2는 메모리 모드다. 작은 PR·필수 CI·자동 머지와 cmux 검증 정책을 유지한다.
 
-**프런트 추가 (2026-10-05):** 사용자는 목록 중심 반응형 웹앱으로 검색·상세·대체 후보를 먼저 완성하고 지도를 후속 단계로 선택했다. [프런트 계획](docs/frontend-plan.md)에 따라 T16→T17→T18~T24 순으로 진행한다. T18 기반과 T19 URL/API 계약은 main 반영했고 실제 화면 연결은 T20부터다. 각 항목의 전달/검증 근거를 따른다.
+**프런트 추가 (2026-10-05):** 사용자는 목록 중심 반응형 웹앱으로 검색·상세·대체 후보를 먼저 완성하고 지도를 후속 단계로 선택했다. [프런트 계획](docs/frontend-plan.md)에 따라 T16→T17→T18~T24 순으로 진행한다. T18 기반·T19 URL/API 계약·T20 실제 주변 검색 화면을 구현했다. 전달 완료는 각 항목의 PR 상태와 검증 근거를 따른다.
 
 ## 남은 작업 실행 순서
 
@@ -269,7 +269,7 @@ T16 조회 개선 → T17 장애·복구 검증
 
 ## 프런트 — 목록 중심 웹앱
 
-범위·화면·API·실패 조건은 [프런트 계획](docs/frontend-plan.md)을 따른다. 아래 프런트의 `src/...`·설정 파일은 `frontend/` 기준이며, `frontend/`·`src/test/`·`scripts/`로 표시한 경로는 저장소 기준이다. T18/T19의 실제 구현·검증은 체크와 근거를 따르며 T20 이후는 계획이다.
+범위·화면·API·실패 조건은 [프런트 계획](docs/frontend-plan.md)을 따른다. 아래 프런트의 `src/...`·설정 파일은 `frontend/` 기준이며, `frontend/`·`src/test/`·`scripts/`로 표시한 경로는 저장소 기준이다. T18~T20의 실제 구현·검증은 체크와 근거를 따르며 T21 이후는 계획이다.
 
 ### T18 — 프런트 실행과 검증 기반
 
@@ -312,12 +312,14 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 
 의존: T19. 파일: `src/shared/location/useCurrentLocation.ts`, `src/shared/ui/RequestState.vue`, `src/features/search/{stores/stationSearchStore.ts,components/StationCard.vue}`, `src/features/charging-info/{presentation.ts,components/StatusBadge.vue,components/FreshnessBadge.vue}`와 각 `.spec.ts`. 수정: SearchForm·StationSearchView·router.
 
-- [ ] 위치 성공·권한 거부·10초 제한·늦은 위치 응답, URL 조건 복원·뒤로 가기, 데이터 준비 전/부분 결과/빈 결과, 400·서버 오류·응답 역전의 테스트를 먼저 작성한다.
-- [ ] `useCurrentLocation().requestLocation()`과 `useStationSearchStore().search(criteria)`를 구현한다. 폼은 입력, URL은 확정 조건, Store는 조회 상태·결과·요청 순번을 소유한다.
-- [ ] 위치 버튼 또는 명시적인 검증용 예시 위치 37.5/127에서 검색한다. 직선거리·이용 가능 보고 수·상태/최신성 배지·표시 상한을 보여 주고 이전 조건의 결과가 새 조건을 덮지 않게 한다.
-- [ ] `npm --prefix frontend run test:unit -- src/features/search src/shared/location src/features/charging-info`에서 실패·통과와 전체 검증을 확인하고 PR을 반영한다.
+- [x] 위치 성공·권한 거부·10초 제한·늦은 위치 응답, URL 조건 복원·뒤로 가기, 데이터 준비 전/부분 결과/빈 결과, 400·서버 오류·응답 역전의 테스트를 먼저 작성한다.
+- [x] `useCurrentLocation().requestLocation()`과 `useStationSearchStore().search(criteria)`를 구현한다. 폼은 입력, URL은 확정 조건, Store는 조회 상태·결과·요청 순번을 소유한다.
+- [x] 위치 버튼 또는 명시적인 검증용 예시 위치 37.5/127에서 검색한다. 직선거리·이용 가능 보고 수·상태/최신성 배지·표시 상한을 보여 주고 이전 조건의 결과가 새 조건을 덮지 않게 한다.
+- [x] `npm --prefix frontend run test:unit -- src/features/search src/shared/location src/features/charging-info`에서 실패·통과와 전체 검증을 확인하고 PR을 반영한다.
 
 산출: 실제 API로 주변 충전소를 검색하는 화면. 데이터 준비 전·빈 결과·통신 오류를 구분하며 최신성 판정은 서버에 둔다.
+
+구현·로컬 검증 근거: [T20 실행 기록](docs/t20-verification.md). 프런트210건/17파일·Java360건·Python21건·타입/lint/build·실제HTTP·재시작3회 통과. 현재 cmux의 실제 위치 권한 거부→예시 위치→H2 검색·빈 결과·뒤로 가기·직접 링크·375/320px를 확인했다. 전달 완료는 이 변경 PR의 필수 CI와 실제 머지 상태를 따른다.
 
 ### T21 — 충전소 상세와 정보 근거
 

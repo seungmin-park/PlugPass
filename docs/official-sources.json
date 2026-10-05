@@ -582,5 +582,29 @@
     "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/radio",
     "accessed": "2026-10-05",
     "coverage": "native name 그룹·label; 방향키·포커스는 실제 Codex 브라우저 검증"
+  },
+  {
+    "id": "t20-vue-watch",
+    "url": "https://vuejs.org/guide/essentials/watchers.html#side-effect-cleanup",
+    "accessed": "2026-10-05",
+    "coverage": "설치 Vue3.5.43: URL query watch와 scope cleanup; 요청 순번은 프로젝트 정책"
+  },
+  {
+    "id": "t20-vue-scope",
+    "url": "https://vuejs.org/api/reactivity-advanced.html#onscopedispose",
+    "accessed": "2026-10-05",
+    "coverage": "위치/Store scope 종료 시 timer와 요청 정리; 실제 unit 확인"
+  },
+  {
+    "id": "t20-pinia-setup",
+    "url": "https://pinia.vuejs.org/core-concepts/#setup-stores",
+    "accessed": "2026-10-05",
+    "coverage": "Pinia4.0.3 setup store 상태·action; 실제 createPinia 격리 검증"
+  },
+  {
+    "id": "t20-geolocation",
+    "url": "https://www.w3.org/TR/geolocation/#getcurrentposition-method",
+    "accessed": "2026-10-05",
+    "coverage": "one-shot callback·권한/획득 오류·timeout; 별도10초 제한·늦은 callback 무시는 앱 정책"
   }
 ]

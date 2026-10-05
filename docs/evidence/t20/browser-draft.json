@@ -1,0 +1,1 @@
+{"check":"미제출 입력은 URL/API 결과를 변경하지 않음","passed":true,"url":"http://localhost:5173/app/index.html#/stations?latitude=37.5&longitude=127&radiusMeters=1000&connector=DC_COMBO&limit=20"}

@@ -1,0 +1,1 @@
+{"check":"권한 거부 회복/native 방향키/미제출 조건 격리","passed":true,"url":"http://localhost:5173/app/index.html#/stations?latitude=37.5&longitude=127&radiusMeters=1000&connector=DC_COMBO&limit=20","diagnostics":[]}

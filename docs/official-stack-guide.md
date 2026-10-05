@@ -205,3 +205,9 @@ VueRouter4.6.4의 실제 LocationQuery 타입은 string/null 또는 그 배열�
 ## T19 현재 화면의 Stitch 디자인 적용
 
 설치된 Vue3.5.43의 radio `v-model` checked/change와 bound value를 [Vue 공식 폼 문서](https://vuejs.org/guide/essentials/forms.html#radio)와 확인했다. [HTML radio 문서](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/radio)의 같은 name 그룹과 label을 유지한다. 인터페이스의 pill 모양은 CSS이며 실제 입력은 native radio다. 라벨·기본값·숫자 반경 submit·방향키/포커스는 현재 코드에서 실행했다. 의존성·버전 변경이 없으며 Inter는 시스템 fallback 선언으로만 사용한다. [시안 대응과 공식 동작/설계 구분](frontend-design.md)을 따른다.
+
+## T20 위치와 비동기 조회 소유권
+
+Vue3.5.43·Pinia4.0.3·Router4.6.4·Axios1.20.0을 유지했다. [Vue watch/cleanup](https://vuejs.org/guide/essentials/watchers.html#side-effect-cleanup), [scope cleanup](https://vuejs.org/api/reactivity-advanced.html#onscopedispose), [Pinia setup store](https://pinia.vuejs.org/core-concepts/#setup-stores), [W3C Geolocation](https://www.w3.org/TR/geolocation/#getcurrentposition-method)을 설치 소스/타입·실제 테스트와 대조했다. rolling Vue 문서는3.5에서 사용할 수 있는 API만 사용하고 Router의v5 전용 API는 도입하지 않았다.
+
+공식 API는 one-shot 위치 callback과 권한/오류·획득 timeout을 제공한다. 요청 시작부터10초인 별도 타이머, 예시 위치/이탈 후 callback 무시, AbortController와 별개의 요청 순번 방어는 프로젝트 판단이다. getCurrentPosition의 native 요청을 중단했다고 표현하지 않는다. Store는 마지막 요청만 결과를 반영하고 View가 URL 변경/이탈을 연결한다. 서버 freshness를 표시 문자열로 옮기는 책임은 표시 모듈에 두었다. [실행 검증](t20-verification.md).

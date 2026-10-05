@@ -110,3 +110,7 @@ Green: 테스트용 `monitorConsole`이 Proxy로 warn/error 호출과 속성 교
 현재 Codex의 실제 3km/NACS 선택·검색 버튼·방향키 반경 변경·Tab/Enter 본문 이동·잘못된 경로/복귀를 assertion했다. 1440/375/320px 배치·가로 넘침 없음·필터/검색 버튼44px 이상·개발 브라우저 경고/오류0건도 확인했다. [브라우저 기록](evidence/stitch-design/browser-checks.json)·[모바일](evidence/stitch-design/mobile.jpg)·[데스크톱](evidence/stitch-design/desktop.jpg). 브라우저/API/DB 전체 E2E·위치 권한·상세·추천은 T20 이후로 유지한다.
 
 공용검증 중 의존성 교체와 서버 상태가 섞이지 않도록 직접 시작한 이전 dev 세션만 종료130했다. 서버 재실행의 첫 시도는 제한된 실행 환경의 `listen EPERM`으로 종료1했다. 코드나 포트를 바꾸지 않고 허용된 실행 환경에서 동일127.0.0.1:5173을 열자 정상 렌더링·브라우저 진단0건을 확인했다. [첫 로그](evidence/stitch-design/frontend-dev-denied.log.gz)·[현재 서버 로그](evidence/stitch-design/frontend-dev.log.gz)를 구분한다. 현재 서버와 브라우저는 유지한다.
+
+## T20 위치와 실제 검색 화면
+
+[별도 실행 기록](t20-verification.md)에 Red/Green·Refactor·성공/실패·객체 책임·cmux 사용자 조작·실행 로그를 연결했다. 현재 프런트210건/17파일·Java360·Python21과 기존 공용verify가 통과했다. 검색 화면은 실제 수집/H2/API까지 연결했으며 상세·추천과 Playwright 전체 E2E·JAR 웹앱은 T21~T24 범위다.

@@ -183,3 +183,7 @@ IngestionRecoveryTests14 + IngestionHttpBudgetTests6 + IngestionConfigurationTes
 현재 cmux workspace:5의 호출surface:6·검증surface:7·브라우저surface:13을 확인하고 실제 클릭/입력/이동으로 합성 공급자→실제 수집/H2→검색·빈 결과·권한 거부/예시 위치 회복·직접 링크/뒤로 가기·375/320px를 assertion했다. 재실행 때는 이 ID를 복사하지 말고 현재 호출 정보를 다시 확인한다. 서버 재시작 중 proxy 연결 실패와 명시적 재시도 회복을 함께 기록했다.
 
 T20 화면 검증의 합성 입력은 docs/evidence/t20/provider.xml이며, 필요하면 공용verify 후 같은 기록의 demo-server.py로 existing RestartProbeApplication을 실행한다. 기본8080/5173의 포트 소유자를 확인한다. 운영 seed·공공 API 인증·native 위치 성공·상세/추천 UI·T23 Playwright 전체E2E·T24 JAR웹앱은 이 검증의 범위가 아니다.
+
+## T21 상세 화면
+
+대상 `npm --prefix frontend run test:unit -- src/features/station-detail src/features/charging-info` 55건. 전체프런트229건/20필수파일·Java360·Python21·공용verify종료0. Store6·View10·충전기목록3건을 확인한다. 관측/수집시각·상태/최신성을 구분하고 null/빈운영정보·404·unknown·텍스트비고·취소를 무시한 성공/실패응답 역전을 검사한다. [T21 실행기록](../../../docs/t21-verification.md)의 현재cmux 검색→상세→조건유지 복귀·실제404·375px를 따른다. 추천UI/T23전체E2E/T24JAR웹앱은 별도 후속검증이다. 재실행 시 surface ID와 실행소스/포트 소유자를 다시 확인한다.

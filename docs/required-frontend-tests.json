@@ -15,5 +15,8 @@
   "src/features/search/views/StationSearchView.spec.ts",
   "src/features/search/components/StationCard.spec.ts",
   "src/features/charging-info/presentation.spec.ts",
-  "src/features/charging-info/components/ChargingBadges.spec.ts"
+  "src/features/charging-info/components/ChargingBadges.spec.ts",
+  "src/features/station-detail/stores/stationDetailStore.spec.ts",
+  "src/features/station-detail/views/StationDetailView.spec.ts",
+  "src/features/station-detail/components/ChargerList.spec.ts"
 ]

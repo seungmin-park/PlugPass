@@ -69,6 +69,16 @@ async function submitSearch(conditions: { radiusMeters: number; connector: Conne
 function refreshSearch(): void {
   if (confirmedCriteria.value) void store.search(confirmedCriteria.value)
 }
+function detailHref(stationId: number): string {
+  const criteria = confirmedCriteria.value
+  if (!criteria) return `#/stations/${stationId}`
+  const query = new URLSearchParams({ latitude: String(criteria.latitude), longitude: String(criteria.longitude),
+    radiusMeters: String(criteria.radiusMeters), connector: criteria.connector, limit: String(criteria.limit) })
+  return `#/stations/${stationId}?${query.toString()}`
+}
+function openDetail(stationId: number): void {
+  void router.push({ path: `/stations/${stationId}`, query: route.query })
+}
 </script>
 
 <template>
@@ -135,7 +145,8 @@ function refreshSearch(): void {
           <p class="results-caution">직선거리 기준입니다. 이용 가능 보고는 도착 시점의 빈자리를 보장하지 않습니다.</p>
           <p class="result-time">조회 시각: {{ formatTimestamp(store.fetchedAt) }}</p>
           <p class="result-time">전체 수집 성공 시각: {{ formatTimestamp(store.response.lastSuccessfulRunAt) }}</p>
-          <div class="station-list"><StationCard v-for="station in store.response.stations" :key="station.id" :station="station" /></div>
+          <div class="station-list"><StationCard v-for="station in store.response.stations" :key="station.id" :station="station"
+            :detail-href="detailHref(station.id)" @open-detail="openDetail(station.id)" /></div>
         </template>
       </div>
     </div>

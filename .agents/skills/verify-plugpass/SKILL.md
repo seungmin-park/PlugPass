@@ -199,5 +199,5 @@ T20 화면 검증의 합성 입력은 docs/evidence/t20/provider.xml이며, 필�
 ## T24 현재 공용 검증
 
 현재 `bash scripts/verify.sh`는 Gradle frontendInstall→unit/type/lint→clean build(타입검사 후 웹앱 build·JAR 포함)→개발모드 E2E→필수 브라우저 JSON 검사→실제 운영JAR HTTP/브라우저→별도JVM 재시작을 실행한다. 로컬은 현재cmux의 확인한 전용pane에서 headed, CI는 Chromium 설치 후 headless다.
-관측Java361·프런트262(24파일)·Python32·개발E2E17(3필수spec)·JAR브라우저2건과 종료0을 실제보고서에서 확인한다. [필수 브라우저 목록](../../../docs/required-browser-tests.json), runtime.json의 웹앱/asset HTTP와 실제 assertion을 검사한다. HTML/trace는 frontend/playwright-report와 frontend/test-results, 서버로그는 build/verification에 남는다. 누락/0개/skip/실패/오류/예상실패/재시도는 기존runtime검사기가 거부한다.
+관측Java361·프런트273(24파일)·Python32·개발E2E17(3필수spec)·JAR브라우저2건과 종료0을 실제보고서에서 확인한다. [필수 브라우저 목록](../../../docs/required-browser-tests.json), runtime.json의 웹앱/asset HTTP와 실제 assertion을 검사한다. HTML/trace는 frontend/playwright-report와 frontend/test-results, 서버로그는 build/verification에 남는다. 누락/0개/skip/실패/오류/예상실패/재시도는 기존runtime검사기가 거부한다.
 [T24 실행기록](../../../docs/t24-verification.md)의 실제Vue경고·실행예외·필수E2E누락/0개/skip 공용verify 실패와 원본복원을 대조한다. Vue→Axios/httpClient·API→Store/View/Component·공용fixture우회는 기존ESLint를 사용한다. 문서/정적검사만으로 모든 객체 책임을 증명하지 않으므로 호출부/공개계약을 리뷰한다. 실공공 API인증·배포·메모리H2보존은 별도범위다.

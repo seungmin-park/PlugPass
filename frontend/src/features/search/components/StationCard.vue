@@ -21,6 +21,6 @@ defineEmits<{ openDetail: [] }>()
       </li>
     </ul>
     <p v-else>충전기 정보 확인 필요</p>
-    <a v-if="detailHref" :href="detailHref" @click.prevent="$emit('openDetail')">{{ station.name }} 상세 보기</a>
+    <a v-if="detailHref" :href="detailHref" @click.exact.left.prevent="$emit('openDetail')">{{ station.name }} 상세 보기</a>
   </article>
 </template>

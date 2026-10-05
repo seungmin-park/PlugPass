@@ -52,3 +52,9 @@ Vue의 Axios/httpClient 직접 import, API의 Store/View/Component import, E2E s
 로컬은 호출workspace:5/surface:6,전용surface:18에서 명령·서버·headedChromium 로그를 표시했다. 자동 테스트의 응답제어와 cmux WKWebView의 실제 화면을 구분한다. CI는 같은 공용verify를 headless로 실행하고 lockfile의 Chromium 및 Linux 의존성을 설치한다. 보고서 위치는 frontend/test-results/{unit,e2e,packaged}.json·trace, frontend/playwright-report/와 그 packaged하위, build/verification의 서버/HTTP 결과다.
 
 현재cmux surface:19에서 실제JAR18181을375×812/1440×900으로 열었다. 준비전 안내·0개·가로넘침없음,상세999999의실제404/alert포커스,hash새로고침,목록복귀의반경1000/DC_COMBO 조건유지를 assertion했다. [모바일](evidence/t24/jar-mobile.png)·[데스크톱](evidence/t24/jar-desktop.png). 직접 시작한 JAR만 종료했고 pane을 유지했다. cmux Tab명령뒤 activeElement=BODY가 관찰돼 키보드통과로세지 않았다. 현재포커스를 빼앗아 보정하지 않았고, 키보드 전체assertion은 실제headedChromium 결과로 구분한다.
+
+## 최종 검토 후 링크 회귀 수정
+
+[T21~T24 최종 검토 기록](t21-t24-final-review.md)에 상세 링크의 modifier 클릭 결함과 판단을 남겼다. 두 컴포넌트의 기본 이동 취소 assertion 10건이 실제 실패한 뒤 `exact → left → prevent`로 수정했다. 대상 15건과 전체 프런트273건이 통과했다. 초기262건은 앞의 실행 시점 기록이며, 최종 검증은273건을 따른다. 검색 조건과 props/event·라우트·API 계약을 유지한다.
+
+수정 후 공용 검증 종료0: Java361·프런트273/24파일·Python32·개발E2E17·JAR브라우저2건, 실패/오류/skip0. 타입/lint/build·실제HTTP·별도JVM3회도 통과했다. [최종 실행 로그](evidence/t24/review-verify.log.gz)·[최종 runtime](evidence/t24/review-runtime.json).

@@ -22,4 +22,25 @@ describe('후보 그룹 표현과 선택', () => {
     expect(wrapper.get('[role="status"]').text()).toBe('해당 그룹의 후보가 없습니다.')
     expect(wrapper.findAll('a')).toHaveLength(0)
   })
+  it.each([
+    { label: 'Ctrl', input: { ctrlKey: true } },
+    { label: 'Cmd', input: { metaKey: true } },
+    { label: 'Shift', input: { shiftKey: true } },
+    { label: 'Alt', input: { altKey: true } },
+    { label: '가운데 버튼', input: { button: 1 } },
+  ])('$label 클릭은 후보 링크의 기본 동작과 검색 조건을 유지한다', ({ input }) => {
+    const wrapper = mount(CandidateGroup, { props: { title: '우선 후보', searchQuery, candidates: [
+      { id: 8, name: '첫 후보', distanceMeters: 1000, reasonCodes: ['RECENT_AVAILABLE'] },
+    ] } })
+    const observedDefaultPrevention: boolean[] = []
+    const link = wrapper.get('#candidate-8')
+    link.element.addEventListener('click', event => {
+      observedDefaultPrevention.push(event.defaultPrevented)
+      event.preventDefault()
+    }, { once: true })
+    link.element.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, ...input }))
+    expect(observedDefaultPrevention).toEqual([false])
+    expect(wrapper.emitted('openDetail')).toBeUndefined()
+    expect(link.attributes('href')).toBe('#/stations/8?latitude=37.5&longitude=127&radiusMeters=1000&connector=DC_COMBO&limit=20')
+  })
 })

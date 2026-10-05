@@ -372,7 +372,7 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 
 산출: Spring JAR에서 제공되는 웹앱과 필수 품질 검사. 개발 서버 검증·JAR HTTP·원격 CI·화면 E2E의 결과를 구분한다.
 
-구현·로컬 검증: [T24 실행기록](docs/t24-verification.md). Java361·프런트262·Python32·개발E2E17·JAR브라우저2건. 실제main 반영·필수CI 확인 뒤 완료체크를 기록한다.
+구현·로컬 검증: [T24 실행기록](docs/t24-verification.md), [최종 검토와 링크 회귀 수정](docs/t21-t24-final-review.md). Java361·프런트273·Python32·개발E2E17·JAR브라우저2건. 실제main 반영·필수CI 확인 뒤 완료체크를 기록한다.
 
 ## 후속 — 지도와 목록 연결
 

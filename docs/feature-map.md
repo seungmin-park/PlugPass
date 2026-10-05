@@ -13,6 +13,7 @@
 | fixture 수집→실제 API→브라우저 클릭 | 테스트 외부 공급자/시간, 실제 Service/Repository/H2 | Playwright 실제 연결 1·UI 실패9건, 개발모드 진단3종 거부·복원; [T23 실행](t23-verification.md) |
 | 모바일·키보드·필수 CI | 표현 컴포넌트, ESLint, 기존 공용 verify | 화면7건·개발E2E17건·JAR2건, 0개/skip/누락 거부·임시 금지 의존 실패; [T24 실행](t24-verification.md) |
 | 실제 JAR→웹앱 진입·직접 링크 | Vite base `/app/`, Gradle `static/app/`, 기존 Spring 정적 파일 제공 | `/app/index.html`·JS/CSS·직접 hash 링크·같은 origin API·REST Docs 실제HTTP/브라우저2건; [T24 실행](t24-verification.md) |
+| 상세 링크의 일반·modifier 클릭 | StationCard·CandidateGroup의 props/event와 실제 href | 일반 좌클릭만 현재 화면 이동; Ctrl/Cmd/Shift/Alt·가운데 클릭 기본 동작 유지, Red10→대상15통과; [최종 검토](t21-t24-final-review.md) |
 
 T18은 검색조건폼·hash이동·단위/타입/lint/build·기존verify/CI연결을 구현했다. 폼4건·Router2건·진단수집3건과 현재Codex브라우저의 실제조작 근거는 [프런트 기록](frontend-verification.md)에 있다. T23에서 실제 연결 E2E·실패 화면을 확인했다. T24에서 JAR 제공과 품질 검사를 확인했다.
 

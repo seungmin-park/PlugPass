@@ -122,3 +122,5 @@ Green: 테스트용 `monitorConsole`이 Proxy로 warn/error 호출과 속성 교
 ## T24 웹앱 JAR·접근성·필수 검사
 
 [T24 실행기록](t24-verification.md)의 화면7건 Red4→Green7, JAR index 누락 assertion→실제 정적파일/같은origin API, 기존 검사기의 브라우저 결과 거부와 임시위반 복원을 따른다. 개발모드17건과 배포JAR2건은 별도 실행이다. 공용verify와 필수CI는 같은 명령을 사용한다. 과거 T18~T23의 미구현 표시는 당시 범위의 기록이다.
+
+최종 검토의 상세 링크 modifier 클릭 결함은 기본 동작 assertion Red10건으로 재현했다. 일반 클릭만 현재 화면으로 전달하도록 수정한 뒤 대상15건·전체프런트273건을 확인했다. [수정·책임·판단 범위](t21-t24-final-review.md)를 따른다.

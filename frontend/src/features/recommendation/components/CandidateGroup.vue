@@ -16,7 +16,7 @@ function detailHref(stationId: number): string {
         <h3>{{ candidate.name }}</h3><p>직선거리 {{ formatDistance(candidate.distanceMeters) }}</p>
         <ul class="candidate-reasons"><li v-for="(reason, index) in candidate.reasonCodes" :key="index">{{ reasonLabel(reason) }}</li></ul>
         <a :href="detailHref(candidate.id)" :id="`candidate-${candidate.id}`"
-          @click.prevent="$emit('openDetail', candidate.id)">{{ candidate.name }} 상세 보기</a>
+          @click.exact.left.prevent="$emit('openDetail', candidate.id)">{{ candidate.name }} 상세 보기</a>
       </li>
     </ul>
   </section>

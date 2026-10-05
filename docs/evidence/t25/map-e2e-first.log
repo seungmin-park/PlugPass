@@ -1,0 +1,198 @@
+> Task :compileJava UP-TO-DATE
+> Task :processResources UP-TO-DATE
+> Task :classes UP-TO-DATE
+> Task :compileTestJava UP-TO-DATE
+> Task :processTestResources UP-TO-DATE
+> Task :testClasses UP-TO-DATE
+> Task :chargingDemoClasspath
+
+[Incubating] Problems report is available at: file:///Users/seungmin/Desktop/repo/PlugPass/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.7.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 775ms
+5 actionable tasks: 1 executed, 4 up-to-date
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.7.1/userguide/configuration_cache_enabling.html
+
+==> /Users/seungmin/Desktop/repo/PlugPass/build/verification/frontend-e2e/backend.log <==
+
+==> /Users/seungmin/Desktop/repo/PlugPass/build/verification/frontend-e2e/frontend.log <==
+
+  VITE v8.3.2  ready in 145 ms
+
+  ➜  Local:   http://127.0.0.1:5183/app/
+
+==> /Users/seungmin/Desktop/repo/PlugPass/build/verification/frontend-e2e/backend.log <==
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+2026-10-06T00:12:02.729+09:00  INFO 30974 --- [plugpass] [           main] e2e.ChargingDemoApplication              : Starting ChargingDemoApplication using Java 25.0.4.1 with PID 30974 (/Users/seungmin/Desktop/repo/PlugPass/build/classes/java/test started by seungmin in /Users/seungmin/Desktop/repo/PlugPass)
+2026-10-06T00:12:02.731+09:00  INFO 30974 --- [plugpass] [           main] e2e.ChargingDemoApplication              : No active profile set, falling back to 1 default profile: "default"
+2026-10-06T00:12:03.213+09:00  INFO 30974 --- [plugpass] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-06T00:12:03.261+09:00  INFO 30974 --- [plugpass] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 43 ms. Found 4 JPA repository interfaces.
+2026-10-06T00:12:03.592+09:00  INFO 30974 --- [plugpass] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 18180 (http)
+2026-10-06T00:12:03.603+09:00  INFO 30974 --- [plugpass] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-06T00:12:03.603+09:00  INFO 30974 --- [plugpass] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-06T00:12:03.639+09:00  INFO 30974 --- [plugpass] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 882 ms
+
+==> /Users/seungmin/Desktop/repo/PlugPass/build/verification/frontend-e2e/frontend.log <==
+오전 12:12:03 [vite] http proxy error: /api/v1/stations?latitude=37.5&longitude=127&radiusMeters=3000&connector=DC_COMBO&limit=20
+Error: connect ECONNREFUSED 127.0.0.1:18180
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:2017:16)
+
+==> /Users/seungmin/Desktop/repo/PlugPass/build/verification/frontend-e2e/backend.log <==
+2026-10-06T00:12:03.855+09:00  INFO 30974 --- [plugpass] [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-10-06T00:12:03.890+09:00  INFO 30974 --- [plugpass] [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.5.Final
+2026-10-06T00:12:04.085+09:00  INFO 30974 --- [plugpass] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-06T00:12:04.099+09:00  INFO 30974 --- [plugpass] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-10-06T00:12:04.168+09:00  INFO 30974 --- [plugpass] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:c4793a0d-5117-41d8-ad97-73fc50249bc1 user=SA
+2026-10-06T00:12:04.169+09:00  INFO 30974 --- [plugpass] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-10-06T00:12:04.194+09:00  INFO 30974 --- [plugpass] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:h2:mem:c4793a0d-5117-41d8-ad97-73fc50249bc1]
+	Database driver: H2 JDBC Driver
+	Database dialect: H2Dialect
+	Database version: 2.4.240
+	Default catalog/schema: C4793A0D-5117-41D8-AD97-73FC50249BC1/PUBLIC
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: 100
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-10-06T00:12:04.614+09:00  INFO 30974 --- [plugpass] [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-06T00:12:04.636+09:00  INFO 30974 --- [plugpass] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-06T00:12:04.683+09:00  INFO 30974 --- [plugpass] [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-10-06T00:12:05.603+09:00  INFO 30974 --- [plugpass] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-06T00:12:05.632+09:00  INFO 30974 --- [plugpass] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 18180 (http) with context path '/'
+2026-10-06T00:12:05.638+09:00  INFO 30974 --- [plugpass] [           main] e2e.ChargingDemoApplication              : Started ChargingDemoApplication in 3.091 seconds (process running for 3.279)
+2026-10-06T00:12:05.782+09:00  INFO 30974 --- [plugpass] [.1-18180-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-10-06T00:12:05.782+09:00  INFO 30974 --- [plugpass] [.1-18180-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-10-06T00:12:05.783+09:00  INFO 30974 --- [plugpass] [.1-18180-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-10-06T00:12:05.832+09:00  INFO 30974 --- [plugpass] [           main] c.p.ingestion.metrics.IngestionMetrics   : ingestion runId=1 outcome=SUCCESS processed=2 failedPage=null failure=NONE requests=1 retries=0
+CHARGING_DEMO_READY
+E2E 준비 완료: 실제 HTTP 수집·H2 2곳, Vue 개발 모드
+
+> plugpass-web@0.1.0 test:e2e
+> playwright test station-map.spec.ts
+
+
+Running 4 tests using 1 worker
+
+  ✘  1 [chromium] › e2e/station-map.spec.ts:10:1 › 실제 검색 결과의 마커↔카드 선택과 조건 변경 초기화를 연결한다 (30.4s)
+  ✘  2 [chromium] › e2e/station-map.spec.ts:43:1 › SDK 다운로드 실패에도 목록·상세 링크를 유지하고 복구한다 (5.8s)
+  ✓  3 [chromium] › e2e/station-map.spec.ts:59:1 › 타일 실패는 목록을 유지하고 지도 재시도로 복구한다 (768ms)
+  ✓  4 [chromium] › e2e/station-map.spec.ts:80:1 › 모바일·데스크톱의 지도는 가로 넘침 없이 키보드로 마커를 선택한다 (583ms)
+
+
+  1) [chromium] › e2e/station-map.spec.ts:10:1 › 실제 검색 결과의 마커↔카드 선택과 조건 변경 초기화를 연결한다 ───────────────
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.check: Target page, context or browser has been closed
+    Call log:
+      - waiting for getByRole('radio', { name: '3km', exact: true })
+        - locator resolved to <input type="radio" value="3000" name="radiusMeters" aria-invalid="false"/>
+      - attempting click action
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <fieldset class="form-field">…</fieldset> intercepts pointer events
+        - retrying click action
+        - waiting 20ms
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <fieldset class="form-field">…</fieldset> intercepts pointer events
+        - retrying click action
+          - waiting 100ms
+        55 × waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <fieldset class="form-field">…</fieldset> intercepts pointer events
+         - retrying click action
+           - waiting 500ms
+
+
+      29 |   await expect(secondMarker).toHaveAttribute('aria-pressed', 'false')
+      30 |   await expect(page.getByRole('link', { name: 'OpenStreetMap', exact: true })).toHaveAttribute('href', 'https://www.openstreetmap.org/copyright')
+    > 31 |   await page.getByRole('radio', { name: '3km', exact: true }).check()
+         |                                                               ^
+      32 |   await page.getByRole('button', { name: '주변 충전소 검색' }).click()
+      33 |   await expect(page).toHaveURL(/radiusMeters=3000/)
+      34 |   await expect(secondMarker).toBeVisible()
+        at /Users/seungmin/Desktop/repo/PlugPass/frontend/e2e/station-map.spec.ts:31:63
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/e2e/station-map-실제-검색-결과의-마커↔카드-선택과-조건-변경-초기화를-연결한다-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/e2e/station-map-실제-검색-결과의-마커↔카드-선택과-조건-변경-초기화를-연결한다-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/e2e/station-map-실제-검색-결과의-마커↔카드-선택과-조건-변경-초기화를-연결한다-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/e2e/station-map-실제-검색-결과의-마커↔카드-선택과-조건-변경-초기화를-연결한다-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › e2e/station-map.spec.ts:43:1 › SDK 다운로드 실패에도 목록·상세 링크를 유지하고 복구한다 ─────────────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('button', { name: '데모 가까운 충전소 지도 마커', exact: true })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('button', { name: '데모 가까운 충전소 지도 마커', exact: true }) with timeout 5000ms
+      - waiting for getByRole('button', { name: '데모 가까운 충전소 지도 마커', exact: true })
+
+
+      53 |   await expect(page.getByRole('link', { name: '데모 가까운 충전소 상세 보기' })).toBeVisible()
+      54 |   await page.getByRole('button', { name: '지도 다시 시도' }).click()
+    > 55 |   await expect(page.getByRole('button', { name: '데모 가까운 충전소 지도 마커', exact: true })).toBeVisible()
+         |                                                                                     ^
+      56 |   await expect(page.getByRole('alert')).toHaveCount(0)
+      57 | })
+      58 |
+        at /Users/seungmin/Desktop/repo/PlugPass/frontend/e2e/station-map.spec.ts:55:85
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/e2e/station-map-SDK-다운로드-실패에도-목록·상세-링크를-유지하고-복구한다-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/e2e/station-map-SDK-다운로드-실패에도-목록·상세-링크를-유지하고-복구한다-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/e2e/station-map-SDK-다운로드-실패에도-목록·상세-링크를-유지하고-복구한다-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/e2e/station-map-SDK-다운로드-실패에도-목록·상세-링크를-유지하고-복구한다-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [chromium] › e2e/station-map.spec.ts:10:1 › 실제 검색 결과의 마커↔카드 선택과 조건 변경 초기화를 연결한다 ────────────────
+    [chromium] › e2e/station-map.spec.ts:43:1 › SDK 다운로드 실패에도 목록·상세 링크를 유지하고 복구한다 ──────────────────
+  2 passed (39.7s)
+
+To open last HTML report run:
+[36m[39m
+[36m  npx playwright show-report[39m
+[36m[39m

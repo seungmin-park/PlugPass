@@ -30,3 +30,22 @@ test('배포 JAR의 상세 hash 직접 링크와 새로고침은 같은 API 404�
   await expect(page.getByRole('heading', { name: '주변 충전소 찾기', exact: true })).toBeVisible()
   await expect(page).toHaveURL(/latitude=37.5&longitude=127&radiusMeters=1000&connector=DC_COMBO&limit=20$/)
 })
+
+test('배포 JAR의 지도 JS·CSS를 불러와 빈 검색 결과의 지도와 출처를 표시한다', async ({ page }) => {
+  await page.route('https://tile.openstreetmap.org/**', route => route.fulfill({ contentType: 'image/svg+xml',
+    body: '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect width="256" height="256" fill="#eff4ff"/></svg>' }))
+  const loadedAssets: string[] = []
+  page.on('response', response => {
+    if (response.status() === 200 && response.url().includes('/app/assets/')) loadedAssets.push(response.url())
+  })
+  await page.goto(`/app/index.html#/stations?${criteria}`)
+  await expect(page.getByText('0개 표시 · 최대 20개 표시')).toBeVisible()
+  loadedAssets.length = 0
+  await page.getByRole('button', { name: '지도 보기', exact: true }).click()
+  await expect(page.getByRole('region', { name: '검색 결과 지도' })).toHaveAttribute('aria-busy', 'false')
+  await expect(page.getByRole('link', { name: 'OpenStreetMap', exact: true })).toBeVisible()
+  await expect(page.locator('.leaflet-marker-icon')).toHaveCount(0)
+  expect(loadedAssets.some(url => new URL(url).pathname.endsWith('.js'))).toBe(true)
+  expect(loadedAssets.some(url => new URL(url).pathname.endsWith('.css'))).toBe(true)
+  await expect(page.getByRole('alert')).toHaveCount(0)
+})

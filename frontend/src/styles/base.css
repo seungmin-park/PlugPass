@@ -143,6 +143,17 @@ h1 { font-size: 36px; font-weight: 700; letter-spacing: -0.025em; margin-bottom:
 .charger-detail .charger-badges { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
 .charger-detail p + p { margin-top: 6px; }
 .station-card > a { display: inline-block; margin-top: 16px; }
+
+.station-card-selected { border: 2px solid var(--color-primary); background: var(--color-field); }
+.station-card > button { display: block; margin-top: 16px; }
+.station-map-panel { margin: 16px 0; min-width: 0; }
+.station-map-panel > p { margin-bottom: 10px; font-size: 14px; }
+.station-map-canvas { height: 320px; width: 100%; isolation: isolate; border: 1px solid var(--color-line); border-radius: 12px; }
+.station-map-marker { display: grid; place-items: center; background: #ffffff; color: var(--color-primary); border: 3px solid var(--color-primary); border-radius: 50% 50% 50% 0; transform-origin: center; font-size: 20px; }
+.station-map-marker-selected { background: var(--color-primary); color: #ffffff; border-color: var(--color-ink); }
+.station-map-marker:focus-visible { outline: 3px solid var(--color-ink); outline-offset: 4px; }
+.station-map-canvas .leaflet-control-attribution { max-width: 100%; white-space: normal; }
+@media (max-width: 767px) { .station-map-canvas { height: 280px; } }
 .candidate-group { margin-top: 28px; }
 .candidate-list { display: grid; gap: 14px; list-style: none; padding: 0; margin: 16px 0; }
 .candidate-reasons { padding-left: 20px; margin: 12px 0; color: var(--color-muted); }

@@ -55,6 +55,8 @@ Node26.7.0에서 `npm --prefix frontend ci`, `npm --prefix frontend run dev` 후
 
 프런트 단위 테스트·타입·lint·build는 [frontend 사용법](frontend/README.md), 실제 Red/Green·브라우저·제한은 [실행 기록](docs/frontend-verification.md)을 따른다. 공용 `bash scripts/verify.sh`는 Node와 Java/Python 환경을 함께 사용한다.
 
+검색 결과에서 **지도 보기**를 누르면 지도 마커와 목록 카드의 선택이 연결된다. 지도 접기·검색 조건 변경·새로고침은 이전 선택을 지운다. Leaflet + OpenStreetMap을 사용하며 키가 필요 없다. SDK 실패는 화면 새로고침, 배경 지도 실패는 지도 다시 시도로 복구하고 목록·상세 링크를 유지한다. 공용 타일의 이용 조건·지원 브라우저·가용성 한계와 실제 검증 범위는 [T25 기록](docs/t25-verification.md)을 따른다. 추천 지도·주소 검색·경로 안내는 제공하지 않는다.
+
 `bash scripts/frontend-e2e.sh`는 합성 공급자 HTTP→실제 수집/H2/API와 개발 모드의 브라우저 흐름을 재현한다. `--serve`는 cmux 직접 클릭 검증용으로 서버를 유지한다.
-공용verify는 개발모드 E2E17건과 배포JAR 브라우저2건을 모두 실행한다. 로컬은 현재cmux에서 headed로, CI는 headless로 실행한다. 최초 로컬 Chromium 설치는 `cd frontend && npx playwright install chromium`이다.
+공용verify는 개발모드 E2E와 배포JAR 브라우저를 모두 실행한다. T25의 실제 관측은 개발21건·JAR3건이며 [실행 기록](docs/t25-verification.md)을 따른다. 로컬은 현재cmux에서 headed로, CI는 headless로 실행한다. 최초 로컬 Chromium 설치는 `cd frontend && npx playwright install chromium`이다.
 375×812·1440×900, 키보드·오류입력 연결/포커스와 필수 suite 누락·0개·skip 거부의 근거는 [T24 실행기록](docs/t24-verification.md)을 따른다.

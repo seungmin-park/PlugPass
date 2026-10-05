@@ -3,7 +3,8 @@ import type { StationSummary } from '../types'
 import { formatDistance } from '../../charging-info/presentation'
 import StatusBadge from '../../charging-info/components/StatusBadge.vue'
 import FreshnessBadge from '../../charging-info/components/FreshnessBadge.vue'
-defineProps<{ station: StationSummary }>()
+defineProps<{ station: StationSummary; detailHref?: string }>()
+defineEmits<{ openDetail: [] }>()
 </script>
 <template>
   <article class="station-card" :aria-labelledby="`station-${station.id}`">
@@ -20,5 +21,6 @@ defineProps<{ station: StationSummary }>()
       </li>
     </ul>
     <p v-else>충전기 정보 확인 필요</p>
+    <a v-if="detailHref" :href="detailHref" @click.prevent="$emit('openDetail')">{{ station.name }} 상세 보기</a>
   </article>
 </template>

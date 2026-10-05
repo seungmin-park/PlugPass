@@ -332,6 +332,8 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 
 산출: 충전기 상태와 정보의 근거를 확인하는 상세 화면. 관측 시각 누락을 수집 시각으로 대체하거나 추천 규칙을 프런트에서 재계산하지 않는다.
 
+구현·로컬 검증 근거: [T21 실행 기록](docs/t21-verification.md). 상세/표시55건·프런트229건/20파일·Java360·Python21·공용verify종료0. 현재cmux 실제 검색→상세→목록조건 유지·실제404·375px를 확인했다. 체크 완료는 필수CI와 실제main 반영 뒤 기록한다.
+
 ### T22 — 같은 조건의 대체 후보 화면
 
 의존: T21. 파일: `src/features/recommendation/{stores/recommendationStore.ts,views/AlternativeStationsView.vue,components/CandidateGroup.vue}`와 각 `.spec.ts`. 수정: 상세의 대체 후보 이동·router.

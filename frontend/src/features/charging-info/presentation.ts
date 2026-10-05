@@ -6,6 +6,13 @@ const freshnessLabels = new Map<string, string>([
 ])
 export function statusLabel(status: string): string { return statusLabels.get(status) ?? '상태 확인 불가' }
 export function freshnessLabel(freshness: string): string { return freshnessLabels.get(freshness) ?? '최신성 확인 불가' }
+const reasonLabels = new Map<string, string>([
+  ['SOURCE_OBSERVED_AT_MISSING', '관측 시각이 제공되지 않았습니다'],
+  ['SOURCE_OBSERVED_AT_IN_FUTURE', '관측 시각이 미래여서 확인이 필요합니다'],
+  ['WITHIN_MAX_AGE', '서버의 최신성 기준 이내에 관측되었습니다'],
+  ['MAX_AGE_EXCEEDED', '서버의 최신성 기준을 지난 정보입니다'],
+])
+export function reasonLabel(reason: string): string { return reasonLabels.get(reason) ?? '상세 확인이 필요한 사유' }
 export function formatDistance(meters: number): string {
   if (meters < 1000) return `${Math.round(meters)}m`
   return `${new Intl.NumberFormat('ko-KR', { maximumFractionDigits: 1 }).format(meters / 1000)}km`

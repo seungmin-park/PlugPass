@@ -211,3 +211,7 @@ VueRouter4.6.4의 실제 LocationQuery 타입은 string/null 또는 그 배열�
 Vue3.5.43·Pinia4.0.3·Router4.6.4·Axios1.20.0을 유지했다. [Vue watch/cleanup](https://vuejs.org/guide/essentials/watchers.html#side-effect-cleanup), [scope cleanup](https://vuejs.org/api/reactivity-advanced.html#onscopedispose), [Pinia setup store](https://pinia.vuejs.org/core-concepts/#setup-stores), [W3C Geolocation](https://www.w3.org/TR/geolocation/#getcurrentposition-method)을 설치 소스/타입·실제 테스트와 대조했다. rolling Vue 문서는3.5에서 사용할 수 있는 API만 사용하고 Router의v5 전용 API는 도입하지 않았다.
 
 공식 API는 one-shot 위치 callback과 권한/오류·획득 timeout을 제공한다. 요청 시작부터10초인 별도 타이머, 예시 위치/이탈 후 callback 무시, AbortController와 별개의 요청 순번 방어는 프로젝트 판단이다. getCurrentPosition의 native 요청을 중단했다고 표현하지 않는다. Store는 마지막 요청만 결과를 반영하고 View가 URL 변경/이탈을 연결한다. 서버 freshness를 표시 문자열로 옮기는 책임은 표시 모듈에 두었다. [실행 검증](t20-verification.md).
+
+## T21 상세 ID 변경
+
+기존 설치 버전을 유지한다. [Router 동적 경로](https://router.vuejs.org/guide/essentials/dynamic-matching.html)의 같은 컴포넌트 객체 재사용·params 감시와 Vue watch를 확인했다. 최초 진입만 처리하면 ID변경이 누락되므로 View가 ID변화를 Store에 연결한다. 취소와 별개의 요청순번, null관측/빈운영정보의 보수적 표시·텍스트비고·조건유지는 프로젝트 판단이다. [55건 대상검증과 실제cmux](t21-verification.md)를 따른다.

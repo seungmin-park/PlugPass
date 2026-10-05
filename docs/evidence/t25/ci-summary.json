@@ -1,0 +1,64 @@
+{
+  "feature_pr": {
+    "number": 47,
+    "url": "https://github.com/seungmin-park/PlugPass/pull/47",
+    "head_sha": "85b7e084c157b08edb61d3300b733f09e96f8500"
+  },
+  "signature": {
+    "verified": true,
+    "reason": "valid"
+  },
+  "ci": {
+    "run_id": 37333379023,
+    "url": "https://github.com/seungmin-park/PlugPass/actions/runs/37333379023",
+    "head_sha": "85b7e084c157b08edb61d3300b733f09e96f8500",
+    "event": "pull_request",
+    "status": "completed",
+    "conclusion": "success",
+    "required_check": "PlugPass verify",
+    "check_app_id": 15368,
+    "frontend_files": 27,
+    "python_tests": 32,
+    "runtime": {
+      "tests": 361,
+      "frontend_tests": 290,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "health": "UP",
+      "env_http": 404,
+      "station_search_http": 200,
+      "station_validation_http": 400,
+      "station_detail_missing_http": 404,
+      "docs_match": true,
+      "recommendations_http": 200,
+      "default_metrics_http": 404,
+      "test_fixtures_packaged": false,
+      "browser_tests": 21,
+      "packaged_browser_tests": 3,
+      "webapp_http": 200,
+      "webapp_assets_http": 3,
+      "webapp_match": true
+    },
+    "original_log": "/private/tmp/plugpass-t25-ci-feature.log"
+  },
+  "merge": {
+    "merged": true,
+    "merged_at": "2026-10-05T15:35:47Z",
+    "main_squash_sha": "c129230dc898df0f12422c70736a11a6ebec7522",
+    "method": "native auto-merge, squash, exact head match"
+  },
+  "protection": {
+    "strict": true,
+    "enforce_admins": true,
+    "required_approving_reviews": 0,
+    "allow_force_pushes": false,
+    "allow_deletions": false
+  },
+  "pr_status": {
+    "goal": "merged",
+    "verdict": "merged",
+    "exit_code": 0
+  },
+  "local_source_snapshot_sha256": "c31a386926fe1f3a4ad2af372fe717609153d3d31f9495b5d5395bb1f27919fe"
+}

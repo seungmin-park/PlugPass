@@ -3,7 +3,7 @@
 ## 적용 범위와 프로젝트 기준
 
 - 기능 추가·버그 수정·동작 변경에 이 지침을 적용한다. 기존 코드의 관례나 과거 계획과 충돌하면 최신 사용자 지시와 이 지침을 기준으로 관련 계획을 갱신한다.
-- 기술 스택은 Java, Spring Boot, JPA·H2, Spring REST Docs의 큰 줄기로 설명한다. 전이 라이브러리·빌드 도구를 스택 표에 늘어놓지 않으며 실행 명령은 안내한다.
+- 기술 스택은 Java, Spring Boot, JPA·MySQL(운영)/H2(개발·기존 테스트), Spring REST Docs의 큰 줄기로 설명한다. 전이 라이브러리·빌드 도구를 스택 표에 늘어놓지 않으며 실행 명령은 안내한다.
 - [프로젝트 계획](plan.md), [작업 체크리스트](tasks.md), [기능 지도](docs/feature-map.md), [verify-plugpass](.agents/skills/verify-plugpass/SKILL.md)를 재사용한다.
 - agent-engineering 적용 시 [검증 계획](.agents/verification.json)으로 기존 공용 verify를 실행하고 현재 소스와 로그를 연결할 수 있다. 사용법과 실제 적용 범위는 [적용 기록](docs/agent-engineering-application.md)을 따른다. CI는 저장소의 `scripts/verify.sh`를 사용한다.
 - T18부터 `frontend/`의 Vue·TypeScript 코드에 프런트 규칙을 적용한다. 구현 완료 범위와 실제 검증은 tasks.md·기능 지도의 최신 근거로 판단한다.
@@ -97,6 +97,7 @@ View/Component ── 사용자 이벤트 ──► Store/상태 관리 ──�
 - 전체 테스트: `./gradlew test`
 - 빠른 반복: `./gradlew test --tests '패키지.클래스명'`
 - 패키징·실제 HTTP까지 필요한 공용 검증: `bash scripts/verify.sh`
+- 실제 MySQL 저장 계약: `python3 scripts/verify-mysql.py --tests-only`; 패키징 후 재시작/JAR/브라우저까지: `python3 scripts/verify-mysql.py`. Docker가 필요하며 공용 verify/CI에서도 필수다.
 
 | 대상 | 기본 검증 방식 | 경계 |
 | --- | --- | --- |

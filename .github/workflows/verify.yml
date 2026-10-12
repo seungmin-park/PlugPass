@@ -55,8 +55,8 @@ jobs:
           retention-days: 7
           if-no-files-found: error
           path: |
-            build/test-results/test/
-            build/reports/tests/test/
+            build/test-results/
+            build/reports/tests/
             build/verification/
             build/docs/asciidoc/
             frontend/test-results/

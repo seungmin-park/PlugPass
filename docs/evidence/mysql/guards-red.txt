@@ -1,0 +1,13 @@
+JAR fixture guard
+Command: python3 -m unittest discover -s scripts -p test_verify_runtime.py -v
+Observed: 30 tests, failure1: test_rejects_mysql_test_configuration_in_jar
+AssertionError: RuntimeError not raised
+Green: extend existing packaged-fixture guard to BOOT-INF/classes/mysql/; complete Python suite passed.
+
+Environment boundary guard
+Command: python3 -m unittest discover -s scripts -p test_mysql_environment.py -v
+Observed: 1 test, failure1: test_verification_cannot_inherit_external_database_or_provider_settings
+Assertion: inherited Spring datasource/Flyway/JSON, provider key and JVM override settings were present.
+Green: remove inherited application/secret/JVM settings, preserve PATH/CI without mutating parent.
+Command: python3 -m unittest discover -s scripts -p 'test_*.py' -v
+Observed: 34 tests, failures0.

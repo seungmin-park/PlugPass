@@ -1,11 +1,19 @@
 ---
 name: verify-plugpass
-description: Verify PlugPass behavior and architecture checks, fixture ingestion through H2 to search/detail/recommendation HTTP, packaged REST Docs, current-source evidence, and PR delivery state.
+description: Verify PlugPass behavior and architecture checks, H2 regression and real MySQL deployment persistence, ingestion/search/detail/recommendation HTTP, packaged web/REST Docs, source evidence, and PR delivery.
 ---
 
 # PlugPass 검증
 
 ## 환경 확인
+
+2026-10-12부터 운영 DB는 MySQL8.4 LTS이며 기본 개발/기존 회귀는 H2를 유지한다. 아래 과거 T항목의 건수·제약은 당시 기록이다. MySQL 전환의 실제 결과는 `docs/mysql-verification.md`를 따른다.
+
+- 공용 `bash scripts/verify.sh`에는 Docker가 필요하다. 기본 Java/H2·프런트·headed 개발/JAR 브라우저·메모리 재시작을 유지하고 실제 MySQL 검증도 필수 실행한다. Docker 불가·0건·실패·skip은 통과가 아니다.
+- 빠른 MySQL 계약: `python3 scripts/verify-mysql.py --tests-only`. 배포 JAR을 빌드한 뒤 전체 흐름: `python3 scripts/verify-mysql.py`.
+- MySQL 테스트는 production transaction commit·별도 재조회·FK 역순 cleanup을 검증한다. `build/test-results/mysqlTest/`와 `build/reports/tests/mysqlTest/`에서 실제 assertion을 확인한다.
+- 합성 공급자 HTTP 수집→MySQL→검색/상세/추천→앱 종료·DB 재시작→재수집 없는 운영 JAR 조회·실제 브라우저 흐름을 확인한다. `build/verification/mysql/`와 `frontend/test-results/mysql.json`을 확인한다.
+- `python3 scripts/verify-mysql.py --serve`는 같은 cmux workspace에서 직접 조작할 운영 JAR URL을 출력한다. 별도 `mysql-manual/`에 로그를 남기고 Ctrl+C로 자신이 만든 앱/DB만 정리한다. pane은 유지한다.
 
 - 프로젝트 루트에서 `java -version`으로 JDK 25를 확인한다.
 - 일반 verify는 Python 3을 사용한다. 전역 증거 도구를 사용할 때는 해당 Python이 3.10 이상인지 확인한다. JAVA_HOME을 설정하면 그 Java도 25여야 한다.

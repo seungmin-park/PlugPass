@@ -1,5 +1,17 @@
 # PlugPass 기술 스택과 개발 기준
 
+## MySQL 배포 DB (2026-10-12)
+
+사용자가 MySQL을 확정했다. 업무 객체·Service 트랜잭션·Repository·HTTP 계약은 유지하고 배포 datasource와 스키마 소유자만 바꾼다. 실제 Gradle `runtimeClasspath`에서 Boot4.1.1·Hibernate7.4.5.Final·MySQL Connector/J9.7.0·Flyway core/mysql12.4.0·H2 2.4.240을 확인했다. DB 검증은 MySQL8.4 공식 이미지의 digest를 고정하며 실제 서버 버전/실행 결과를 기록한다.
+
+[Boot4.1 초기화](https://docs.spring.io/spring-boot/4.1/how-to/data-initialization.html)의 Flyway starter + DB별 `flyway-mysql` 모듈, 버전 SQL, 기동 시 migrate→JPA 초기화 순서를 확인했다. 표시 링크는 현재 Boot4.1.1/Flyway12.4.0과 일치한다. Flyway만 스키마를 만들고 Hibernate는 `validate`를 사용한다. H2 기본 프로필에서는 Flyway를 끈다. 이는 서로 다른 DB에 같은 DDL을 억지로 적용하지 않기 위한 프로젝트 판단이다.
+
+[MySQL8.4 InnoDB](https://dev.mysql.com/doc/refman/8.4/en/innodb-introduction.html)의 트랜잭션·FK·unique, [binary collation](https://dev.mysql.com/doc/refman/8.4/en/charset-binary-collations.html)의 대소문자·NO PAD 비교를 확인했다. `utf8mb4_0900_bin` 선택은 기존 Java String/ChargerId 비교와 DB identity를 맞추기 위한 결정이다. 실제 대소문자/공백/선행0·재수집·저장 실패 rollback으로 검증한다.
+
+[Connector/J 시각 옵션](https://dev.mysql.com/doc/connector-j/en/connector-j-connp-props-datetime-types-processing.html)의 connectionTimeZone·forceConnectionTimeZoneToSession·preserveInstants 역할을 확인했다. JVM Asia/Seoul 환경에서 UTC `Instant`의 마이크로초 복원을 실제 MySQL로 검사한다. [버전 문서](https://dev.mysql.com/doc/connector-j/en/connector-j-versions.html)는 rolling26.7을 표시하므로 설치9.7.0과 동일한 문서라고 추정하지 않았다. 해당 연결 옵션은 실제 해석9.7.0·MySQL8.4 기동/저장/복원으로 확인한다.
+
+기존 H2 성능 수치를 MySQL 성능으로 옮겨 말하지 않는다. 실제 공공 API의 offset 없는 원문 시각은 이 DB 변경 후에도 신뢰 가능한 관측 시각으로 만들어 내지 않는다. 구현·검증 범위는 [전환 계획](mysql-deployment-plan.md)·[운영 설정](operations.md#mysql-배포-프로필)을 따른다.
+
 ## T01 실응답 계약 대조 (2026-10-06)
 
 [공식 API 등록 페이지](https://www.data.go.kr/data/15076352/openapi.do)와 활용 가이드 v1.25 원본을 다시 확인했다. 가이드 SHA-256은 기존 확인 기록과 같다. 실제 인증된 인천 표본은 요청 용량10에 대해 마지막/빈 응답 `numOfRows`가6/0임을 보여 준다. 가이드의 한 페이지 결과 수 표기와 실응답을 함께 지원하되 요청 용량으로 범위·다음 페이지를 계산하는 것은 프로젝트의 변환 정책이다. 내부 응답 DTO의 `reportedRowCount`와 업무 `StationPage.pageSize`를 구분하고 공개 HTTP DTO·DB·의존성 버전을 바꾸지 않았다.

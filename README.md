@@ -6,7 +6,7 @@
 
 - Java 25 LTS
 - Spring Boot 4.1.1
-- JPA · H2
+- JPA · MySQL(운영) / H2(개발·기존 테스트)
 - Spring REST Docs
 
 ## 실행
@@ -26,9 +26,9 @@ API 문서는 테스트를 통과한 요청·응답으로 생성해 JAR에 포�
 생성 파일은 `build/docs/asciidoc/index.html`에서도 볼 수 있다.
 개발 중 서버만 실행하려면 `./gradlew bootRun`을 사용한다. `/docs/index.html`은 패키징한 JAR에서 제공한다.
 
-H2는 메모리 DB이므로 서버 종료 시 데이터가 사라진다.
+기본 개발 프로필의 H2는 메모리 DB이므로 서버 종료 시 데이터가 사라진다. 운영 DB는 MySQL 8.4 LTS로 확정했다. `deployment` 프로필은 외부 MySQL과 Flyway를 사용하며 테이블 자동 생성/삭제 대신 매핑을 검사한다. [MySQL 설정·검증·전환 한계](docs/operations.md#mysql-배포-프로필)를 따른다.
 T02~T15의 충전소 수집·저장·검색/상세·추천·반복 수집·장애 제한·운영 관측·종합 HTTP 데모·성능 기준선을 구현·검증했다.
-공공 API 키 없이 재현하는 검증은 합성 공급자 HTTP → 실제 H2 → 업무 HTTP 범위다. 실제 공공 API 인증은 아직 확인하지 못했다.
+공공 API 키 없이 재현하는 검증은 합성 공급자 HTTP → 실제 DB → 업무 HTTP 범위다. [T01 실연동 기록](docs/t01-live-verification.md)에서 인증된 첫/마지막/빈 페이지를 확인했다. 전체 실공공 데이터 수집과 운영 배포는 별도다.
 기본 설정은 수집 비활성화이므로 데이터 없는 조회가 가능하다. 설정과 운영 확인은 [운영 안내](docs/operations.md)를 따른다.
 
 ## 4주차 결과와 재현
@@ -46,7 +46,7 @@ T02~T15의 충전소 수집·저장·검색/상세·추천·반복 수집·장�
 - [작업 지침](AGENTS.md)
 - [agent-engineering 적용과 실행 근거](docs/agent-engineering-application.md)
 
-빠른 반복은 `./gradlew test`, 공용 검증은 `bash scripts/verify.sh`다. 공용 검증은 동작·구조·필수 suite 실행과 JAR의 실제 HTTP를 확인하며 CI도 같은 명령을 사용한다. 테스트 보고서는 `build/reports/tests/test/index.html`에 생성된다.
+빠른 반복은 `./gradlew test`, 공용 검증은 `bash scripts/verify.sh`다. 공용 검증에는 Docker가 필요하며 실제 MySQL 저장·재시작·JAR 사용자 흐름도 실행한다. CI도 같은 명령을 사용한다. 테스트 보고서는 `build/reports/tests/test/index.html`과 `build/reports/tests/mysqlTest/index.html`에 생성된다. MySQL만 확인하려면 패키징 후 `python3 scripts/verify-mysql.py`, 저장 계약만 반복하려면 `python3 scripts/verify-mysql.py --tests-only`를 실행한다.
 현재 소스와 검증 로그를 묶는 [검증 계획](.agents/verification.json)은 전역 agent-engineering의 기존 증거 도구로 실행한다. [verify-plugpass](.agents/skills/verify-plugpass/SKILL.md)의 절차를 따른다.
 
 ## 웹앱 개발

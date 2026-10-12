@@ -404,6 +404,13 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 
 자동 검사의 정확한 선택 범위·리뷰 한계·명령·결과는 [CI 보강 기록](docs/ci-boundaries-verification.md)에 남긴다. 원격 CI와 머지 상태는 이 변경 PR에서 별도로 확인한다.
 
+### 배포 후속: MySQL 확정 (2026-10-12)
+
+사용자가 운영 DB를 MySQL로 확정하고 구현을 요청했다. [전환 계획](docs/mysql-deployment-plan.md)을 순차 실행한다. T01~T25 완료와 별개로 운영 DB 전환을 추가한다.
+
+- [x] **T26** 실제 MySQL 연결·Flyway 스키마·저장/롤백/식별자/시각 계약 검증
+- [ ] **T27** MySQL·앱 재시작 보존·실제 웹 흐름·공용 verify/CI·문서·PR 전달
+
 ### 공통 완료 템플릿
 
 전역 agent-engineering의 현재 프로젝트 적용 범위와 실제 결과는 [적용 기록](docs/agent-engineering-application.md)에 연결한다. 기능별 진행 상태는 바꾸지 않으며, 도구 테스트·지침 검토·에이전트 행동 평가를 구분한다.

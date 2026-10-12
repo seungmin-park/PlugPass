@@ -1,5 +1,40 @@
 # 수집과 데이터 품질 확인
 
+## MySQL 배포 프로필
+
+운영 DB는 MySQL 8.4 LTS다. 기본 프로필은 개발·기존 회귀용 메모리 H2를 유지한다. 배포 프로필은 DB 주소·암호가 빠지거나 스키마가 맞지 않으면 기동에 실패해야 한다. H2 파일 주소로 대신 실행하지 않는다.
+
+```text
+외부 API → 수집 서비스 → 페이지별 transaction → MySQL
+웹 요청 → 조회 서비스 → Repository/JPA ──────────┘
+
+기동: Flyway V1… 적용 → Hibernate validate → HTTP 제공
+```
+
+DB 관리자가 빈 `plugpass` 스키마와 전용 계정을 먼저 준비한다. 애플리케이션은 DB 서버/계정 자체를 생성하지 않는다. 현재는 같은 datasource 계정으로 Flyway를 실행하므로 업무 DML과 테이블 생성·마이그레이션에 필요한 권한이 있어야 한다. 운영의 계정 분리·백업 정책은 배포 환경에서 정한다.
+
+`.env.example`의 값은 예시이며 Spring이 자동으로 읽지 않는다. 비밀 관리 도구/실행 환경으로 아래 변수를 주입한다. 암호·공공 API 키는 CLI 인자나 Git에 넣지 않는다.
+
+| 변수 | 용도 |
+| --- | --- |
+| `SPRING_PROFILES_ACTIVE=deployment` | MySQL·Flyway·스키마 검사 활성화 |
+| `PLUGPASS_DATABASE_URL` | `jdbc:mysql://<host>:3306/plugpass?sslMode=VERIFY_IDENTITY` |
+| `PLUGPASS_DATABASE_USERNAME` | DB 계정, 기본 `plugpass` |
+| `PLUGPASS_DATABASE_PASSWORD` | 필수 DB 암호 |
+| `MANAGEMENT_SERVER_PORT` | 기본8081, 외부에 공개하지 않는 관리 포트 |
+
+서버 인증서의 CA·호스트명에 맞는 TLS 구성을 사용한다. `scripts/mysql_environment.py`의 `sslMode=DISABLED`·`allowPublicKeyRetrieval=true`는 임의 인증정보를 사용하는 **loopback 전용 테스트 컨테이너** 설정이다. 운영 URL 예시에는 적용하지 않는다.
+
+환경 주입 후 `java -jar build/libs/plugpass-0.0.1-SNAPSHOT.jar`로 실행한다. Connector/J는 UTC 세션을 사용하고 Hibernate의 JDBC 시각도 UTC로 고정한다. 스키마의 `DATETIME(6)`은 마이크로초까지 보존한다. 공급자 원문 시각의 시간대 추정과는 다른 문제다.
+
+Flyway `db/migration/mysql/V1__initial_schema.sql`이 station·charger·sync_run과 unique/FK를 만든다. utf8mb4로 한글·이모지를 저장하고 `utf8mb4_0900_bin`으로 식별자의 대소문자·끝 공백을 구분한다. Hibernate는 `validate`만 수행한다. 배포된 V1을 고쳐 쓰지 말고 후속 `V2__...sql`을 추가한다. 기존 데이터가 있는 비관리 스키마를 자동 baseline하거나 H2 데이터를 자동 이관하지 않는다. 이관 대상이 있으면 별도 export/import·대조 계획이 필요하다.
+
+공용 `bash scripts/verify.sh`는 Docker를 요구한다. `python3 scripts/verify-mysql.py --tests-only`는 격리된 MySQL에 저장 계약을 검증한다. 패키징 후 `python3 scripts/verify-mysql.py`는 합성 공급자 수집→MySQL→검색/상세/추천→앱 종료·DB 재시작→재수집 없는 운영 JAR 조회와 실제 브라우저 흐름까지 확인한다. 실행할 때마다 임의 컨테이너·인증정보·포트를 사용하고 종료 시 자기 컨테이너/임시 데이터만 삭제한다. 기존 DB와 연결하지 않는다.
+
+화면을 직접 조작하려면 현재 cmux 보조 pane에서 `python3 scripts/verify-mysql.py --serve`를 실행한다. 출력되는 `MYSQL_BROWSER_READY` URL을 같은 workspace의 브라우저에 연다. 종료는 해당 pane의 Ctrl+C이며 pane은 유지한다. `build/verification/mysql/`의 JSON/서버 로그, `build/test-results/mysqlTest/`, `frontend/test-results/mysql.json`을 확인한다. 수집 완료·최신성·서버 health는 아래 설명처럼 서로 다른 지표다.
+
+현재 전환 계획과 실제 실행 근거는 [MySQL 계획](mysql-deployment-plan.md)·[작업 목록](../tasks.md)을 따른다. 실제 운영 DB 생성·백업 복원·전체 실공공 데이터 수집·공개 배포 완료를 로컬 검증으로 대신하지 않는다.
+
 `GET /actuator/health`의 `UP`은 서버와 기본 구성의 상태다. 충전소 관측 시각의 최신성이나 전체 수집 성공을 뜻하지 않는다.
 수집은 기본 비활성화다. 실제 계정 한도·검증 지역·페이지 수를 확인한 뒤 인증키와 `PLUGPASS_INGESTION_ENABLED=true`를 외부 환경에 설정한다. 키를 명령 인자·로그·저장소에 쓰지 않는다.
 

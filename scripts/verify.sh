@@ -15,3 +15,4 @@ python3 scripts/verify-browser.py
 python3 scripts/verify-runtime.py
 ./gradlew performanceClasspath --console=plain
 python3 scripts/verify-memory-restart.py
+python3 scripts/verify-mysql.py

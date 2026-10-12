@@ -678,5 +678,45 @@
     "url": "https://vite.dev/guide/build.html#load-error-handling",
     "accessed": "2026-10-06",
     "coverage": "Vite8.3.2 동적 import 실패·Chromium trace 관찰과 명시적 화면 새로고침 설계"
+  },
+  {
+    "id": "mysql-boot-flyway",
+    "url": "https://docs.spring.io/spring-boot/4.1/how-to/data-initialization.html",
+    "accessed": "2026-10-12",
+    "cache": ".firecrawl/boot41-flyway-20261012.md",
+    "coverage": "Boot4.1.1/Flyway12.4.0 링크·starter/mysql 모듈·버전 SQL·JPA 초기화 순서",
+    "sha256": "ab914203581002f801b57c8efeb8991429a19e39d9cd2854b57c0d481ae23420"
+  },
+  {
+    "id": "mysql84-innodb",
+    "url": "https://dev.mysql.com/doc/refman/8.4/en/innodb-introduction.html",
+    "accessed": "2026-10-12",
+    "cache": ".firecrawl/mysql84-innodb-20261012.md",
+    "coverage": "InnoDB 트랜잭션·FK·unique; 실제 MySQL 검증과 구분",
+    "sha256": "d9d940126f1a75a9d74336c2fff4b8459d8ff00c306773adebcfd43cb5eaa017"
+  },
+  {
+    "id": "mysql84-collation",
+    "url": "https://dev.mysql.com/doc/refman/8.4/en/charset-binary-collations.html",
+    "accessed": "2026-10-12",
+    "cache": ".firecrawl/mysql-collation-20261012.md",
+    "coverage": "utf8mb4_0900_bin·NO PAD·대소문자/끝 공백 비교",
+    "sha256": "12a30cb13807fc953bd1d28120f272705dd1c3444ac920d6408a277c703bc430"
+  },
+  {
+    "id": "mysql-connector-time",
+    "url": "https://dev.mysql.com/doc/connector-j/en/connector-j-connp-props-datetime-types-processing.html",
+    "accessed": "2026-10-12",
+    "cache": ".firecrawl/mysql-connector-time-20261012.md",
+    "coverage": "connectionTimeZone·forceConnectionTimeZoneToSession·preserveInstants 관련 절",
+    "sha256": "d4e7db3bf28044d60b880091a44123c6321834da24b9518db9aaa463d953fa07"
+  },
+  {
+    "id": "mysql-connector-version",
+    "url": "https://dev.mysql.com/doc/connector-j/en/connector-j-versions.html",
+    "accessed": "2026-10-12",
+    "cache": ".firecrawl/mysql-connector-versions-20261012.md",
+    "coverage": "rolling26.7 표시와 실제 Boot관리9.7.0 차이 확인; 동일 버전 문서로 추정하지 않음",
+    "sha256": "006a6e8c1c7e6935cadfc4f42c9dbe3a7a928cf5a39235dda3fd9c4a23853ecc"
   }
 ]

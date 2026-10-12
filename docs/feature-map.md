@@ -1,5 +1,18 @@
 # 기능과 검증 범위
 
+## 운영 DB 전환 (2026-10-12, T26/T27)
+
+사용자 확정 DB는 MySQL8.4 LTS다. [계획](mysql-deployment-plan.md)·[설정](operations.md#mysql-배포-프로필)을 따른다.
+
+| 경로 | 책임·기대 결과 | 실행 가능한 검증 |
+| --- | --- | --- |
+| deployment 기동→스키마 준비 | Flyway V1 생성/이력, Hibernate validate, DB 주소·암호 외부 주입 | `python3 scripts/verify-mysql.py --tests-only`; 실제 MySQL·업무 엔티티/Repository |
+| 수집→저장·재수집 | 기존 StationUpsertService transaction과 도메인 identity 유지 | MySqlDeploymentTests: unicode/UTC/대소문자/공백/선행0·중복 갱신·child 실패 rollback·unique/FK·schema drift 거부 |
+| 앱 종료·DB 재시작→배포 JAR 조회 | station/charger/sync_run 보존, 재수집 없이 dataReady와 마지막 완료 시각 유지 | `python3 scripts/verify-mysql.py`; `build/verification/mysql/{before,after,result}.json`·서버 로그 |
+| 재시작 JAR 웹앱→검색·상세·대체 후보 | 같은 origin API, 첫 ID 제외, UNVERIFIED 유지 | 기존 charging-journey Playwright를 MySQL JAR에 실행; `frontend/test-results/mysql.json`; cmux 직접 조작은 작업 기록 |
+
+기본 프로필과 기존 회귀는 H2를 유지한다. MySQL 검증은 공용 verify·필수 CI에 연결하며 Docker 미사용·0건·실패·skip을 성공으로 취급하지 않는다. 실제 운영 인프라 생성/데이터 이관/백업 복원/전체 실공공 수집·MySQL 부하 성능은 이 로컬 저장 계약과 구분한다.
+
 ## T01 인증된 공급자 계약 (2026-10-06)
 
 인천 실공공 API의 첫/마지막/빈 페이지를 실제 `DefaultPublicDataClient`로 확인했다. XML parser는 보고 건수·목록·요청 범위를 검증하고, `StationPage`는 요청 용량을 보존해 `hasNext`와 `SyncProgress`의 일관성 검사를 유지한다. 마지막6건·빈0건을 요청 용량10으로 계산하는 회귀, 잘못된 보고값·전체 범위 초과·조기 빈 페이지를 포함해 `PublicDataClientTests` 현재74건이다. [계약](data-contract.md)·[실표본과 TDD/실행 근거](t01-live-verification.md)를 따른다. 인증키가 없는 fixture 기반 회귀와 실제 공급자 호출을 구분하며 전체 실데이터 수집·시간대·현장 좌표 정확성은 보장하지 않는다.

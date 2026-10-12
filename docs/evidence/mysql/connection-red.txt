@@ -1,0 +1,4 @@
+Command: python3 scripts/verify-mysql.py --tests *MySqlDeploymentTests.migratesAndPreservesDataAcrossApplicationRestart --tests-only
+Exit: 1; MySQL container ready; tests=1 failures=1 errors=0 skipped=0
+java.lang.AssertionError: [배포 설정으로 실제 MySQL에 연결하고 관리 스키마로 기동해야 한다] 
+Cause: pre-change deployment profile uses H2 driver with external MySQL JDBC URL; Hibernate could not obtain JDBC metadata.

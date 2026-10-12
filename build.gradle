@@ -28,6 +28,9 @@ dependencies {
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-flyway'
+	runtimeOnly 'org.flywaydb:flyway-mysql'
+	runtimeOnly 'com.mysql:mysql-connector-j'
 	runtimeOnly 'com.h2database:h2'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
@@ -46,6 +49,17 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	exclude 'mysql/**'
+}
+
+// Real MySQL has its own required verification task; default tests stay fast on H2.
+tasks.register('mysqlTest', Test) {
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    useJUnitPlatform()
+    include 'mysql/**'
+    maxParallelForks = 1
+    systemProperty 'user.timezone', 'Asia/Seoul'
 }
 
 // API documentation is generated only after its contract tests pass.

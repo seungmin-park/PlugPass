@@ -107,6 +107,10 @@ class PackagedFixtureTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, 'Test fixture packaged'):
             verify_runtime.check_packaged_test_fixtures(['BOOT-INF/classes/reliability/RestartProbeApplication.class'])
 
+    def test_rejects_mysql_test_configuration_in_jar(self):
+        with self.assertRaisesRegex(RuntimeError, 'Test fixture packaged'):
+            verify_runtime.check_packaged_test_fixtures(['BOOT-INF/classes/mysql/MySqlIngestionApplication.class'])
+
     def test_accepts_production_classes(self):
         verify_runtime.check_packaged_test_fixtures(['BOOT-INF/classes/com/plugpass/PlugPassApplication.class'])
 

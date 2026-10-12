@@ -35,7 +35,7 @@
 - [x] MySQL 테스트 XML의 0개·실패·오류·skip을 거부한다. MySQL 검증을 기존 공용 verify와 필수 CI에 연결한다.
 - [x] 같은 cmux workspace의 브라우저에서 실제 위치/조건 입력→검색→상세→대체 후보를 조작한다. 기존 headed 개발/JAR E2E도 유지한다.
 - [x] `bash scripts/verify.sh` 종료0, 실제 XML/JSON·HTTP 결과를 확인하고 소스/환경/명령/한계를 기록한다.
-- [ ] 문서/환경변수 예시를 갱신하고 서명 commit/push→PR→보호 규칙/필수 CI→native auto-merge→실제 main 머지를 확인한다.
+- [x] 문서/환경변수 예시를 갱신하고 서명 commit/push→PR→보호 규칙/필수 CI→native auto-merge→실제 main 머지를 확인한다.
 
 ## 계획 검토
 

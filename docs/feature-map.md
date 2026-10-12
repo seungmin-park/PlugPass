@@ -191,3 +191,21 @@ T19 PR37/main3191b89·필수 CI37232622126 실제 성공. T18/T19 화면 근거�
 ## T20 위치·실제 주변 검색
 
 폼은 미제출 입력, URL은 확정 조건, Store는 요청 순번·조회 상태·결과, 위치 composable은10초/취소를 소유한다. 서버 판정을 재계산하지 않고 표시 모듈과 배지·카드로 표현한다. 기존필수 목록에 새7파일을 등록했다. 공용verify Java360·Python21·프런트210건·타입/lint/build·JAR 실제HTTP·메모리재시작3회 종료0. 현재 cmux의 실제 합성 공급자→H2→검색/빈 결과/권한 거부 복구·URL/뒤로 가기·375/320px를 assertion했다. [명령·실패·한계](t20-verification.md).
+
+## 운영 CI/CD 경계 (2026-10-12)
+
+```text
+main push → 기존 CI 전체 gate → 성공한 CI artifact
+          → Production CD → 출처·해시·현재 main 확인
+          → 앱 전용 WIF/IAP·forced SSH → VM blue/green 조정자
+          → 준비 상태·공개 경로 확인 → 기존 요청 종료 → 이전 슬롯 정지
+```
+
+- 진입: `.github/workflows/deploy.yml`. `CD_ENABLED=true`인 경우에만 자동 배포
+- 실행물: `scripts/cd_release.py`가 기존 CI artifact와 manifest를 검증. VM에서 재빌드하지 않음
+- 자격 증명: 앱별 WIF·SSH 계정 분리. DB·OpenAI 비밀은 VM의 root 전용 환경 파일에 유지
+- 실패: 준비 실패는 기존 슬롯 유지. 공개 경로 실패는 기존 경로 복구. drain 미완료는 양쪽 슬롯 보존·다음 배포 거부
+- 재시도: 현재 main의 성공한 push CI만 허용. VM의 실행 순서 기준으로 오래된 실행물 거부
+- 운영 롤백: VM의 `deploy-service.py --app plugpass rollback`; DB 파괴적 변경을 되돌리는 명령은 아님
+- DB 변경: 이전·새 앱이 함께 사용할 수 있는 변경만 먼저 적용. 삭제·타입 축소는 별도 배포 단계 필요
+- 활성화·실제 운영 결과: gcp-deployment 저장소의 운영 기록이 소유. workflow 파일 존재를 배포 완료로 간주하지 않음

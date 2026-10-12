@@ -409,7 +409,9 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 사용자가 운영 DB를 MySQL로 확정하고 구현을 요청했다. [전환 계획](docs/mysql-deployment-plan.md)을 순차 실행한다. T01~T25 완료와 별개로 운영 DB 전환을 추가한다.
 
 - [x] **T26** 실제 MySQL 연결·Flyway 스키마·저장/롤백/식별자/시각 계약 검증
-- [ ] **T27** MySQL·앱 재시작 보존·실제 웹 흐름·공용 verify/CI·문서·PR 전달
+- [x] **T27** MySQL·앱 재시작 보존·실제 웹 흐름·공용 verify/CI·문서·PR 전달
+
+완료: [MySQL 실행 기록](docs/mysql-verification.md), [PR #52](https://github.com/seungmin-park/PlugPass/pull/52), main `36f8f3a`, [필수 CI 성공](https://github.com/seungmin-park/PlugPass/actions/runs/38239046683), [원격 원본 보고서 요약](docs/evidence/mysql/ci-summary.json). 실제 운영 자원 생성·공개 배포는 별도다.
 
 ### 공통 완료 템플릿
 

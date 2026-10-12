@@ -64,3 +64,9 @@ CLI의 surface-bound browser 명령은 `--workspace`를 지원하지 않아 한 
 사용자의 병렬 에이전트 권한 제한에 따라 작성자가 별도 diff 리뷰를 수행했다. 독립 리뷰어의 검토는 아니다. 발견한 환경 격리 문제는 Red→Green과 전체 Python·실제 MySQL/JAR 재검증으로 수정했다. 외부 API timeout/인증/429/5xx와 도메인 경계는 기존 회귀를 유지한다. MySQL에서 모든 기존 H2 테스트를 다시 실행했다고 주장하지 않는다.
 
 기존 H2 파일 데이터의 자동 이관은 없다. 실제 운영 DB/계정·TLS·백업/복원·배포 대상과 네트워크 구성, 전체 실공공 데이터 수집·한도, MySQL 부하 성능은 별도 운영 준비다. 이번 결과는 코드와 로컬 MySQL 배포 프로필의 검증이며 공개 배포 완료가 아니다. 원격 필수 CI·실제 머지는 전달 근거에서 별도로 확인한다.
+
+## 원격 전달 완료
+
+서명 head `c2332c80a2284e316096fb29cf6e5f879bd02c5a`를 GitHub가 valid로 확인했다. [PR #52](https://github.com/seungmin-park/PlugPass/pull/52)의 [필수 CI](https://github.com/seungmin-park/PlugPass/actions/runs/38239046683)는 성공했고, 원본 artifact의 JUnit XML에서 기본372·MySQL7, 실패/오류/skip0을 직접 확인했다. runtime JSON은 프런트290·개발 브라우저21·기본 JAR3이며 MySQL 결과는 별도 JVM2·DB 재시작·데이터/준비 상태 보존·JAR journey1·DB 설정 누락 거부다. [원본 보고서 hash와 요약](evidence/mysql/ci-summary.json)에 연결한다.
+
+main의 strict 필수 검사 `PlugPass verify`(GitHub Actions 앱15368), 관리자 적용·강제 push/삭제 금지·PR 필수와 native auto-merge/squash를 조회했다. 보호 규칙 아래 `--auto --squash --match-head-commit`으로 전달했고, 실제 머지는 2026-10-12 10:58:51 UTC, main `36f8f3a093ecfc426052816c4f1a3dde2f5fdb56`이다. 로컬 main도 fast-forward로 동기화했다. T26/T27 완료 표시는 이 관찰에 근거하며 공개 배포 완료를 뜻하지 않는다.

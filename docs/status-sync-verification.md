@@ -39,3 +39,7 @@ V2 migration은 sync_run.kind를 기본 CATALOG로 추가하고 조회 인덱스
 `/private/tmp/plugpass-status-sync`에서 현재 cmux 보조 pane으로 `bash scripts/verify.sh`를 실행했다. 종료0, Java447·프런트350·Python32·개발 브라우저30·배포 JAR4·MySQL8·MySQL 재시작 JAR7건, 실패/오류/skip0. 로그 `/tmp/plugpass-production/status-feature-verify.log`, JAR SHA-256 `cb34dc073dd9861afc02e58245b4f96235bae4d9a7132d9c967e183094286825`. UI 기능을 제외한 현재 소스에서 다시 실행한 결과다.
 
 관련 선행 PR58 운영 수집은 2026-10-13T09:31:25Z에 전체527,178건·요청53회·재시도0·종료0으로 완료했다. 동일 cmux 브라우저에서 공개 서비스의 예시 좌표 검색→실제20개 충전소→첫 상세·길찾기 선택을 클릭했고 브라우저 오류0을 확인했다. 이는 PR58의 운영 데이터 준비 근거이며 이 PR의 상태 API 운영 실행은 배포 후 별도 확인한다.
+
+## 최종 전달·운영 확인
+
+PR59 head e143766의 CI38377444905 성공 → 자동 머지 dab999e → main CI38378536599·CD38379199727 성공. 사전 V2 migration 후 기존527178건을 유지했다. auto 전체 복구527178건과 실제5분 타이머 STATUS16687건 성공을 확인했다. 상세 근거와 한계는 [운영 실행 기록](production-data-verification.md)을 따른다.

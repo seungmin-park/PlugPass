@@ -5,6 +5,8 @@ import com.plugpass.search.dto.ChargerObservation;
 import com.plugpass.search.dto.StationMatch;
 import com.plugpass.search.dto.StationSearchResult;
 import com.plugpass.search.service.StationQueryService;
+import com.plugpass.ingestion.service.CollectionStatusService;
+import com.plugpass.ingestion.dto.CollectionStatus;
 import com.plugpass.station.domain.Connector;
 
 import java.time.Instant;
@@ -47,6 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class StationSearchHttpTests {
     @Autowired private MockMvc mockMvc;
     @MockitoBean private StationQueryService stationQueryService;
+    @MockitoBean private CollectionStatusService collectionStatusService;
 
     @Test
     @DisplayName("검색 응답의 값과 기본 limit 전달을 확인하고 REST Docs 계약을 만든다")
@@ -60,10 +63,13 @@ class StationSearchHttpTests {
         when(result.lastSuccessfulRunAt()).thenReturn(collectedAt);
         when(result.stations()).thenReturn(List.of(station));
         when(stationQueryService.search(any())).thenReturn(result);
+        when(collectionStatusService.current()).thenReturn(new CollectionStatus("DELAYED",collectedAt,null,collectedAt,"FAILURE",300));
         mockMvc.perform(get("/api/v1/stations").queryParam("latitude","37.5").queryParam("longitude","126.6")
                 .queryParam("radiusMeters","1000").queryParam("connector","DC_COMBO"))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.dataReady").value(true))
                 .andExpect(jsonPath("$.lastSuccessfulRunAt").value("2026-10-02T00:00:00Z"))
+                .andExpect(jsonPath("$.collection.state").value("DELAYED"))
+                .andExpect(jsonPath("$.collection.statusIntervalSeconds").value(300))
                 .andExpect(jsonPath("$.stations.length()").value(1)).andExpect(jsonPath("$.stations[0].id").value(7))
                 .andExpect(jsonPath("$.stations[0].distanceMeters").value(12.5))
                 .andExpect(jsonPath("$.stations[0].reportedAvailableCount").value(1))
@@ -78,7 +84,7 @@ class StationSearchHttpTests {
                         parameterWithName("radiusMeters").description("직선 검색 반경 100~10000m, 경계 포함"),
                         parameterWithName("connector").description("DC_CHADEMO, AC_SLOW, AC_THREE_PHASE, DC_COMBO, NACS"),
                         parameterWithName("limit").optional().description("1~50, 기본20")),
-                        responseFields(fieldWithPath("dataReady").description("전체 수집 성공 이력이 있는지"),
+                        responseFields(subsectionWithPath("collection").optional().description("수집 작업 상태 CURRENT/DELAYED/NOT_READY, 전체·상태 성공/최근 시도 시각과 300초 갱신 주기; 현장 관측 최신성 보장 아님"), fieldWithPath("dataReady").description("전체 수집 성공 이력이 있는지"),
                                 fieldWithPath("lastSuccessfulRunAt").optional().description("마지막 전체 성공 시각, 없으면 null"),
                                 fieldWithPath("stations").description("거리/내부ID순 충전소 목록"),
                                 fieldWithPath("stations[].id").description("내부 충전소 ID"),fieldWithPath("stations[].provider").description("공급자"),

@@ -23,7 +23,7 @@ export function useCurrentLocation() {
     status.value = 'loading'
     const sequence = requestSequence
     return new Promise(resolve => {
-      const timer = setTimeout(() => complete(null, '10초 안에 위치를 확인하지 못했습니다. 다시 시도하거나 검증용 예시 위치를 선택해 주세요.'), 10000)
+      const timer = setTimeout(() => complete(null, '10초 안에 위치를 확인하지 못했습니다. 다시 시도하거나 주소·장소를 검색해 주세요.'), 10000)
       cancelPending = () => { clearTimeout(timer); resolve(null) }
       let completed = false
       function complete(result: LocationCoordinates | null, message: string | null = null): void {
@@ -36,8 +36,12 @@ export function useCurrentLocation() {
         status.value = result ? 'success' : 'error'
         resolve(result)
       }
+      if (globalThis.isSecureContext === false) {
+        complete(null, '현재 위치는 보안 연결에서 사용할 수 있습니다. HTTPS 주소로 접속하거나 주소·장소를 검색해 주세요.')
+        return
+      }
       if (typeof navigator === 'undefined' || !navigator.geolocation) {
-        complete(null, '현재 위치를 지원하지 않는 브라우저입니다. 검증용 예시 위치를 선택해 주세요.')
+        complete(null, '현재 위치를 지원하지 않는 브라우저입니다. 주소·장소를 검색해 주세요.')
         return
       }
       try {
@@ -45,20 +49,20 @@ export function useCurrentLocation() {
           const { latitude, longitude } = position.coords
           if (!Number.isFinite(latitude) || latitude < -90 || latitude > 90
             || !Number.isFinite(longitude) || longitude < -180 || longitude > 180) {
-            complete(null, '현재 위치 좌표를 확인할 수 없습니다. 다시 시도하거나 검증용 예시 위치를 선택해 주세요.')
+            complete(null, '현재 위치 좌표를 확인할 수 없습니다. 다시 시도하거나 주소·장소를 검색해 주세요.')
             return
           }
           complete({ latitude, longitude })
         }, failure => {
           const messages: Readonly<Record<number, string>> = {
-            1: '위치 권한이 거부되었습니다. 브라우저 권한을 확인하거나 검증용 예시 위치를 선택해 주세요.',
-            2: '현재 위치를 확인할 수 없습니다. 다시 시도하거나 검증용 예시 위치를 선택해 주세요.',
-            3: '10초 안에 위치를 확인하지 못했습니다. 다시 시도하거나 검증용 예시 위치를 선택해 주세요.',
+            1: '위치 권한이 거부되었습니다. 기기의 위치 서비스와 브라우저의 이 사이트 위치 권한을 확인한 뒤 다시 시도해 주세요. 주소·장소로도 검색할 수 있습니다.',
+            2: '현재 위치를 확인할 수 없습니다. 다시 시도하거나 주소·장소를 검색해 주세요.',
+            3: '10초 안에 위치를 확인하지 못했습니다. 다시 시도하거나 주소·장소를 검색해 주세요.',
           }
           complete(null, messages[failure.code] ?? messages[2] ?? '현재 위치를 확인할 수 없습니다.')
         }, { timeout: 10000, maximumAge: 0, enableHighAccuracy: false })
       } catch {
-        complete(null, '현재 위치를 요청할 수 없습니다. 브라우저 권한을 확인하거나 검증용 예시 위치를 선택해 주세요.')
+        complete(null, '현재 위치를 요청할 수 없습니다. 기기의 위치 서비스와 브라우저의 이 사이트 위치 권한을 확인한 뒤 다시 시도해 주세요. 주소·장소로도 검색할 수 있습니다.')
       }
     })
   }

@@ -18,6 +18,8 @@ for (const viewport of [{ width: 375, height: 812 }, { width: 1440, height: 900 
 }
 
 test('키보드로 본문·위치·주소 입력·커넥터·검색을 조작한다', async ({ page }) => {
+  await page.context().grantPermissions(['geolocation'])
+  await page.context().setGeolocation({ latitude: 37.5, longitude: 127 })
   await page.goto('/app/index.html#/stations')
   await page.keyboard.press('Tab')
   await expect(page.getByRole('link', { name: '본문으로 건너뛰기' })).toBeFocused()
@@ -27,9 +29,8 @@ test('키보드로 본문·위치·주소 입력·커넥터·검색을 조작한
   await expect(page.getByRole('button', { name: '지도 보기', exact: true })).toBeFocused()
   await page.keyboard.press('Tab')
   await expect(page.getByRole('button', { name: '현재 위치 사용' })).toBeFocused()
-  await page.keyboard.press('Tab')
   await page.keyboard.press('Enter')
-  await expect(page.getByRole('status')).toContainText('예시 위치를 선택했습니다')
+  await expect(page.getByRole('status').filter({ hasText: '현재 위치를 선택했습니다' })).toBeVisible()
   await page.keyboard.press('Tab')
   await expect(page.getByRole('searchbox', { name: '주소·장소 검색' })).toBeFocused()
   await page.keyboard.press('Tab')

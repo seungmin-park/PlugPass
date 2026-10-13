@@ -33,7 +33,7 @@ it('주소를 검색하고 후보를 고른 뒤에만 그 위치의 충전소를
   expect(adapter).toHaveBeenCalledTimes(2)
   expect(router.currentRoute.value.query.latitude).toBe('37.5')
 })
-it('주소 검색 키가 없어도 안내 뒤 예시 위치로 충전소 검색을 계속한다', async () => {
+it('주소 검색 키가 없어도 안내 뒤 현재 위치로 충전소 검색을 계속한다', async () => {
   const adapter = vi.fn<AxiosAdapter>()
   adapter.mockImplementationOnce(async config => { throw new AxiosError('failed', 'ERR_BAD_RESPONSE', config, undefined,
     jsonResponse(config, { code: 'PLACE_SEARCH_NOT_CONFIGURED', message: '주소 검색 준비 중입니다. 지도나 현재 위치로 검색해 주세요', fields: {} }, 503)) })
@@ -47,7 +47,9 @@ it('주소 검색 키가 없어도 안내 뒤 예시 위치로 충전소 검색�
   await wrapper.get('.place-search-form').trigger('submit')
   await flushPromises()
   expect(wrapper.get('[role="alert"]').text()).toContain('주소 검색 준비 중')
-  await wrapper.get('#example-location').trigger('click')
+  vi.stubGlobal('navigator', { userAgent: navigator.userAgent, platform: navigator.platform, geolocation: { getCurrentPosition: (success: PositionCallback) => success({ coords: { latitude: 37.5, longitude: 127, accuracy: 1, altitude: null, altitudeAccuracy: null, heading: null, speed: null, toJSON: () => ({}) }, timestamp: 0, toJSON: () => ({}) }) } })
+    await wrapper.get('#current-location').trigger('click')
+    await flushPromises()
   await wrapper.get('.search-form').trigger('submit')
   await flushPromises()
   expect(wrapper.findAll('article')).toHaveLength(2)

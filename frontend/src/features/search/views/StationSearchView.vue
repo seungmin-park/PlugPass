@@ -73,12 +73,9 @@ function selectPlace(place: PlaceMatch): void {
   locationLabel.value = place.name
   guidance.value = '장소를 선택했습니다. 주변 충전소 검색 또는 이 지역 재검색을 눌러 주세요.'
 }
-function selectExampleLocation(): void {
+function focusPlaceSearch(): void {
   cancelLocation()
-  restoredArea.value = undefined
-  selectedLocation.value = { latitude: 37.5, longitude: 127 }
-  locationLabel.value = '검증용 예시 위치 · 합성 데모 지역'
-  guidance.value = '예시 위치를 선택했습니다. 실제 현재 위치가 아닙니다.'
+  document.getElementById('place-query')?.focus()
 }
 async function submitSearch(conditions: { connector: Connector }): Promise<void> {
   selectedConnector.value = conditions.connector
@@ -154,11 +151,13 @@ function openDetail(stationId: number): void {
         <p class="panel-description">내 차량에 맞는 커넥터를 선택하세요. 지도로 지역을 고르거나 선택 위치 주변을 검색할 수 있습니다.</p>
         <div class="location-picker" aria-label="검색 위치 선택">
           <button type="button" class="secondary-button" id="current-location" @click="selectCurrentLocation">현재 위치 사용</button>
-          <button type="button" class="secondary-button" id="example-location" @click="selectExampleLocation">검증용 예시 위치 사용</button>
-          <p>예시 위치 37.5 / 127은 합성 데모 지역입니다. 해당 지역의 데이터가 없으면 결과가 없을 수 있습니다.</p>
           <p v-if="selectedLocation" class="selected-location">{{ locationLabel }}: {{ selectedLocation.latitude }} / {{ selectedLocation.longitude }}</p>
           <LoadingIndicator v-if="locationStatus === 'loading'" message="현재 위치를 확인하고 있습니다. 최대 10초 기다려 주세요." />
-          <p v-if="locationError" ref="locationNotice" tabindex="-1" role="alert">{{ locationError }}</p>
+          <div v-if="locationError" ref="locationNotice" tabindex="-1" role="alert">
+            <p>{{ locationError }}</p>
+            <button type="button" class="secondary-button" id="retry-location" @click="selectCurrentLocation">현재 위치 다시 시도</button>
+            <button type="button" class="secondary-button" id="location-address" @click="focusPlaceSearch">주소로 검색하기</button>
+          </div>
         </div>
         <PlaceSearch @select="selectPlace" />
         <SearchForm :key="route.fullPath"

@@ -2,7 +2,10 @@ import { test, expect } from './fixtures'
 
 test('실제 수집·DB에서 검색→상세→제외 후보→다른 상세를 연결한다', async ({ page }) => {
   await page.goto('/app/index.html#/stations')
-  await page.getByRole('button', { name: '검증용 예시 위치 사용' }).click()
+  await page.context().grantPermissions(['geolocation'])
+  await page.context().setGeolocation({ latitude: 37.5, longitude: 127 })
+  await page.getByRole('button', { name: '현재 위치 사용', exact: true }).click()
+  await expect(page.getByText('현재 위치: 37.5 / 127', { exact: true })).toBeVisible()
   await page.getByRole('button', { name: '주변 충전소 검색' }).click()
   await expect(page.getByRole('link', { name: '데모 가까운 충전소 상세 보기' })).toBeVisible()
   await expect(page.getByRole('link', { name: '데모 대체 충전소 상세 보기' })).toBeVisible()

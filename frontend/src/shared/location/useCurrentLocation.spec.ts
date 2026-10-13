@@ -15,6 +15,41 @@ describe('명시적인 현재 위치 요청', () => {
     expect(location.status.value).toBe('idle')
     expect(getCurrentPosition).not.toHaveBeenCalled()
   })
+  it('비보안 접속은 권한 거부로 오인하지 않고 HTTPS 접속을 안내한다', async () => {
+    vi.stubGlobal('isSecureContext', false)
+    const getCurrentPosition = vi.fn<Geolocation['getCurrentPosition']>()
+    vi.stubGlobal('navigator', { geolocation: { getCurrentPosition } })
+    const location = useCurrentLocation()
+    const request = location.requestLocation()
+    const calls = getCurrentPosition.mock.calls.length
+    const message = location.error.value
+    const status = location.status.value
+    const coordinates = location.coordinates.value
+    location.cancel()
+    await expect(request).resolves.toBeNull()
+    expect(calls).toBe(0)
+    expect(status).toBe('error')
+    expect(coordinates).toBeNull()
+    expect(message).toContain('HTTPS')
+    expect(message).toContain('주소')
+    expect(getCurrentPosition).not.toHaveBeenCalled()
+  })
+  it('권한 거부 후 설정을 바꾸고 다시 요청하면 새 좌표를 받는다', async () => {
+    const getCurrentPosition = vi.fn<Geolocation['getCurrentPosition']>()
+    vi.stubGlobal('navigator', { geolocation: { getCurrentPosition } })
+    const location = useCurrentLocation()
+    const denied = location.requestLocation()
+    getCurrentPosition.mock.calls[0]?.[1]?.({ code: 1, message: 'denied', PERMISSION_DENIED: 1, POSITION_UNAVAILABLE: 2, TIMEOUT: 3 })
+    await expect(denied).resolves.toBeNull()
+    expect(location.error.value).toContain('기기')
+    expect(location.error.value).toContain('사이트')
+    expect(location.error.value).toContain('주소')
+    const retry = location.requestLocation()
+    getCurrentPosition.mock.calls[1]?.[0](position(38, 128))
+    await expect(retry).resolves.toEqual({ latitude: 38, longitude: 128 })
+    expect(location.status.value).toBe('success')
+    expect(location.error.value).toBeNull()
+  })
   it('클릭 요청 중 상태와 성공 좌표를 제공한다', async () => {
     const getCurrentPosition = vi.fn<Geolocation['getCurrentPosition']>()
     vi.stubGlobal('navigator', { geolocation: { getCurrentPosition } })
@@ -37,6 +72,7 @@ describe('명시적인 현재 위치 요청', () => {
     await expect(request).resolves.toBeNull()
     expect(location.status.value).toBe('error')
     expect(location.error.value).toContain(message)
+    expect(location.error.value).toContain('주소')
     expect(location.coordinates.value).toBeNull()
   })
   it('브라우저 callback이 없어도 정확히 10초에 종료하고 늦은 성공을 무시한다', async () => {
@@ -52,6 +88,7 @@ describe('명시적인 현재 위치 요청', () => {
     getCurrentPosition.mock.calls[0]?.[0](position())
     expect(location.status.value).toBe('error')
     expect(location.error.value).toContain('10초')
+    expect(location.error.value).toContain('주소')
     expect(location.coordinates.value).toBeNull()
   })
   it('취소 후 늦은 위치가 예시 위치 선택을 덮지 않는다', async () => {
@@ -96,7 +133,7 @@ describe('명시적인 현재 위치 요청', () => {
     const location = useCurrentLocation()
     await expect(location.requestLocation()).resolves.toBeNull()
     expect(location.status.value).toBe('error')
-    expect(location.error.value).toContain('검증용 예시 위치')
+    expect(location.error.value).toContain('주소')
   })
   it.each([[NaN, 127], [91, 127], [37.5, Infinity], [37.5, -181]])('잘못된 위치 좌표 %s/%s를 검색 입력으로 넘기지 않는다', async (latitude, longitude) => {
     const getCurrentPosition = vi.fn<Geolocation['getCurrentPosition']>()

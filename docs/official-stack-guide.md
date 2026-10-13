@@ -292,3 +292,7 @@ Java25·Boot4.1.1·MySQL8.4를 유지한다. [MySQL8.4 GET_LOCK](https://dev.mys
 ## T35 상태 API 및 저장 계약
 
 기존 Spring Boot4.1.1/Hibernate/JPA·MySQL8.4와 공식 공급자 가이드 v1.25 계약을 유지한다. getChargerStatus의 최근 변경 조회를 getChargerInfo 전체 스냅샷과 구분한다. period=10의 실운영 인증 HTTP200/code00 표본은 production-data-verification.md에 기록했다. 상태 변경 로컬 시각 비교·24시간 전체/5분 상태 실행·10분 누락 복구는 프로젝트 정책이며 공급자의 지연 SLA가 아니다. MySQL additive V2 migration과 실제 재시작 검증을 사용한다.
+
+## T38 위치 복구 (2026-10-13)
+
+[W3C Geolocation](https://www.w3.org/TR/geolocation/)의 secure context·권한/오류·getCurrentPosition을 재확인했다. 비보안 접속을 권한 거부와 구분하며 요청마다 API를 다시 호출한다. 기기/사이트 권한의 실제 허용은 브라우저/OS 책임이고 앱은 강제 변경하지 않는다. 주소 대안·전체10초 제한·늦은 callback 방어는 프로젝트 정책이다. 버전 변경 없음. [실행 근거](t38-verification.md).

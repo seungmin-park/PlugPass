@@ -34,7 +34,7 @@ describe('실제 조회 상태에 연결한 진행 표시', () => {
     expect(wrapper.find('.loading-spinner').exists()).toBe(false)
   })
 
-  it('위치 확인 중 원을 표시하고 예시 위치로 취소하면 제거한다', async () => {
+  it('위치 확인 중 원을 표시하고 실패하면 제거한다', async () => {
     const getCurrentPosition = vi.fn<Geolocation['getCurrentPosition']>()
     vi.stubGlobal('navigator', Object.create(navigator, { geolocation: { value: { getCurrentPosition } } }))
     await router.push('/stations')
@@ -42,8 +42,9 @@ describe('실제 조회 상태에 연결한 진행 표시', () => {
     await wrapper.get('#current-location').trigger('click')
     expect(wrapper.find('.loading-spinner').exists()).toBe(true)
     expect(wrapper.get('.loading-indicator').text()).toContain('현재 위치를 확인하고 있습니다')
-    await wrapper.get('#example-location').trigger('click')
+    getCurrentPosition.mock.calls[0]?.[1]?.({ code: 1, message: 'denied', PERMISSION_DENIED: 1, POSITION_UNAVAILABLE: 2, TIMEOUT: 3 })
+    await flushPromises()
     expect(wrapper.find('.loading-spinner').exists()).toBe(false)
-    expect(wrapper.text()).toContain('예시 위치를 선택했습니다')
+    expect(wrapper.get('[role="alert"]').text()).toContain('위치 권한이 거부되었습니다')
   })
 })

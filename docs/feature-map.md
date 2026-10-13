@@ -252,3 +252,7 @@ CLI `--plugpass.ingestion.command.mode=auto` → ScheduledSyncService/Collection
 ## T36 수집 상태 안내
 
 검색 API → CollectionStatusService/CollectionHealth → collection 필드 → StationSearchView의 준비·지연·성공 시각 안내. CollectionStatusTests, StationSearchHttpTests, StationSearchView.spec.ts, stationApi.spec.ts 및 ui-failures의 모바일 지연→새로고침 복구가 검증한다. [기록](collection-status-verification.md). 수집 정상과 충전기 관측 최신성을 구분한다.
+
+## 모바일 위치 복구 T38
+
+현재 위치 → 환경/권한별 안내 → 재시도 또는 주소 입력. 운영 합성 예시 입력은 제거한다. 소유자: useCurrentLocation composable(요청 수명/오류)·StationSearchView(사용자 행동/포커스). 기존 API/URL/도메인 정책 유지. 실제 Red/Green·전체 검증·실기기 한계: [T38 기록](t38-verification.md).

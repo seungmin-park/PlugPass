@@ -9,6 +9,11 @@ afterEach(() => {
 })
 
 describe('카카오 지도 SDK 로딩', () => {
+  it('키가 없는 환경에서는 이전 지도 구현을 불러오지 않는다', async () => {
+    vi.stubEnv('VITE_KAKAO_JS_KEY', '')
+    const { loadStationMap } = await import('./loadStationMap')
+    await expect(loadStationMap()).rejects.toThrow('카카오 지도 키')
+  })
   it('JavaScript 키로 SDK를 한 번만 요청하고 준비 완료까지 기다린다', async () => {
     vi.resetModules()
     const { loadKakaoMaps } = await import('./kakaoStationMap')

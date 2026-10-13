@@ -1,9 +1,12 @@
 import { mount, flushPromises } from '@vue/test-utils'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { installKakaoMapFake } from '../../../../tests/kakaoMapFake'
 import StationMap from './StationMap.vue'
 import * as mapLoader from '../map/loadStationMap'
 
 const originalLoader = mapLoader.loadStationMap
+beforeEach(installKakaoMapFake)
+afterEach(() => { vi.unstubAllEnvs(); Reflect.deleteProperty(window, 'kakao') })
 
 describe('지도 인스턴스의 수명과 표시 경계', () => {
   it('단일 충전소를 표시하고 해제한 컨테이너에 다시 지도를 만들 수 있다', async () => {
@@ -11,10 +14,10 @@ describe('지도 인스턴스의 수명과 표시 경계', () => {
       stations: [{ id: 1, name: '한 곳', latitude: 37.5, longitude: 127 }],
       center: { latitude: 37.5, longitude: 127 }, selectedStationId: null,
     } })
-    await vi.waitFor(() => expect(wrapper.findAll('.leaflet-marker-icon')).toHaveLength(1))
+    await vi.waitFor(() => expect(wrapper.findAll('.kakao-station-marker')).toHaveLength(1))
     const canvas = wrapper.get<HTMLDivElement>('.station-map-canvas').element
     wrapper.unmount()
-    expect(canvas.querySelectorAll('.leaflet-marker-icon')).toHaveLength(0)
+    expect(canvas.querySelectorAll('.kakao-station-marker')).toHaveLength(0)
     const createMap = await originalLoader()
     const session = createMap(canvas, [{ id: 2, name: '새 충전소', latitude: 37.5, longitude: 127 }],
       { latitude: 37.5, longitude: 127 }, { selectStation: () => {}, tilesLoaded: () => {}, tilesFailed: () => {} })
@@ -26,8 +29,8 @@ describe('지도 인스턴스의 수명과 표시 경계', () => {
     const wrapper = mount(StationMap, { props: {
       stations: [], center: { latitude: 37.5, longitude: 127 }, selectedStationId: null,
     } })
-    await vi.waitFor(() => expect(wrapper.find('.leaflet-control-attribution').exists()).toBe(true))
-    expect(wrapper.findAll('.leaflet-marker-icon')).toHaveLength(0)
+    await vi.waitFor(() => expect(wrapper.find('.kakao-test-map').exists()).toBe(true))
+    expect(wrapper.findAll('.kakao-station-marker')).toHaveLength(0)
     expect(wrapper.find('[role="alert"]').exists()).toBe(false)
   })
 
@@ -37,9 +40,9 @@ describe('지도 인스턴스의 수명과 표시 경계', () => {
         { id: 2, name: '동일 위치 다른 충전소', latitude: 37.5, longitude: 127 }],
       center: { latitude: 37.5, longitude: 127 }, selectedStationId: 1,
     } })
-    await vi.waitFor(() => expect(wrapper.findAll('.leaflet-marker-icon')).toHaveLength(2))
+    await vi.waitFor(() => expect(wrapper.findAll('.kakao-station-marker')).toHaveLength(2))
     expect(wrapper.get('[aria-label="동일 위치 첫 충전소 지도 마커"]').attributes('aria-pressed')).toBe('true')
-    await wrapper.get('[aria-label="동일 위치 다른 충전소 지도 마커"]').trigger('keydown', { key: 'Enter' })
+    await wrapper.get('[aria-label="동일 위치 다른 충전소 지도 마커"]').trigger('click')
     expect(wrapper.emitted('select')).toEqual([[2]])
     await wrapper.setProps({ selectedStationId: 2 })
     expect(wrapper.get('[aria-label="동일 위치 첫 충전소 지도 마커"]').attributes('aria-pressed')).toBe('false')
@@ -60,7 +63,7 @@ describe('지도 인스턴스의 수명과 표시 경계', () => {
     wrapper.unmount()
     finishLoading(createMap)
     await flushPromises()
-    expect(canvas.querySelectorAll('.leaflet-pane')).toHaveLength(0)
+    expect(canvas.querySelectorAll('.kakao-test-map')).toHaveLength(0)
   })
 
   it('SDK 대기 중 데이터가 바뀌어도 한 번 로딩한 지도에 최신 결과를 표시한다', async () => {
@@ -73,10 +76,10 @@ describe('지도 인스턴스의 수명과 표시 경계', () => {
       center: { latitude: 37.5, longitude: 127 }, selectedStationId: null,
     } })
     await wrapper.setProps({ stations: [{ id: 2, name: '새 충전소', latitude: 38, longitude: 128 }], center: { latitude: 38, longitude: 128 } })
-    expect(wrapper.findAll('.leaflet-marker-icon')).toHaveLength(0)
+    expect(wrapper.findAll('.kakao-station-marker')).toHaveLength(0)
     finishPrevious(createMap)
     await flushPromises()
-    expect(wrapper.findAll('.leaflet-marker-icon')).toHaveLength(1)
+    expect(wrapper.findAll('.kakao-station-marker')).toHaveLength(1)
     expect(wrapper.find('[aria-label="새 충전소 지도 마커"]').exists()).toBe(true)
     expect(wrapper.find('[aria-label="이전 충전소 지도 마커"]').exists()).toBe(false)
   })
@@ -86,8 +89,8 @@ describe('지도 인스턴스의 수명과 표시 경계', () => {
       stations: [{ id: 1, name: '<img src=x onerror=alert(1)>', latitude: 37.5, longitude: 127 }],
       center: { latitude: 37.5, longitude: 127 }, selectedStationId: null,
     } })
-    await vi.waitFor(() => expect(wrapper.find('.leaflet-marker-icon').exists()).toBe(true))
-    expect(wrapper.get('.leaflet-marker-icon').attributes('aria-label')).toBe('<img src=x onerror=alert(1)> 지도 마커')
-    expect(wrapper.findAll('.leaflet-marker-icon img')).toHaveLength(0)
+    await vi.waitFor(() => expect(wrapper.find('.kakao-station-marker').exists()).toBe(true))
+    expect(wrapper.get('.kakao-station-marker').attributes('aria-label')).toBe('<img src=x onerror=alert(1)> 지도 마커')
+    expect(wrapper.findAll('.kakao-station-marker img')).toHaveLength(0)
   })
 })

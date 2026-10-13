@@ -1,21 +1,11 @@
-import { test, expect, type Page } from './fixtures'
+import { test, expect } from './fixtures'
+import { mockKakaoSdk } from './kakaoSdkMock'
 
 const criteria = 'latitude=37.5&longitude=127&radiusMeters=1000&connector=DC_COMBO&limit=20'
-// 자동 반복 검증은 공용 타일 서버를 호출하지 않는다. 실제 외부 타일은 cmux에서 별도로 확인한다.
-const tileImage = '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect width="256" height="256" fill="#eff4ff"/><path d="M0 128H256M128 0V256" stroke="#dce9ff"/></svg>'
-async function serveControlledTiles(page: Page): Promise<void> {
-  await page.route('https://tile.openstreetmap.org/**', route => route.fulfill({ contentType: 'image/svg+xml', body: tileImage }))
-}
-
 test('실제 검색 결과의 마커↔카드 선택과 조건 변경 초기화를 연결한다', async ({ page }) => {
-  let tileRequests = 0
-  await page.route('https://tile.openstreetmap.org/**', route => {
-    tileRequests += 1
-    return route.fulfill({ contentType: 'image/svg+xml', body: tileImage })
-  })
   await page.goto(`/app/index.html#/stations?${criteria}`)
   await expect(page.getByRole('link', { name: '데모 가까운 충전소 상세 보기' })).toBeVisible()
-  expect(tileRequests).toBe(0)
+  await expect(page.locator('.kakao-test-map')).toHaveCount(0)
   await page.getByRole('button', { name: '지도 보기', exact: true }).click()
   const firstMarker = page.getByRole('button', { name: '데모 가까운 충전소 지도 마커', exact: true })
   const secondMarker = page.getByRole('button', { name: '데모 대체 충전소 지도 마커', exact: true })
@@ -29,7 +19,7 @@ test('실제 검색 결과의 마커↔카드 선택과 조건 변경 초기화�
   await firstCard.click()
   await expect(firstMarker).toHaveAttribute('aria-pressed', 'true')
   await expect(secondMarker).toHaveAttribute('aria-pressed', 'false')
-  await expect(page.getByRole('link', { name: 'OpenStreetMap', exact: true })).toHaveAttribute('href', 'https://www.openstreetmap.org/copyright')
+  await expect(page.locator('.kakao-test-map')).toBeAttached()
   await page.getByRole('button', { name: '이 지역 재검색' }).click()
   await expect(page).toHaveURL(/south=/)
   await expect(secondMarker).toBeVisible()
@@ -42,8 +32,7 @@ test('실제 검색 결과의 마커↔카드 선택과 조건 변경 초기화�
 })
 
 test('SDK 다운로드 실패에도 목록·상세 링크를 유지하고 복구한다', async ({ page, diagnostics }) => {
-  await serveControlledTiles(page)
-  await page.route('**/leafletStationMap.ts*', async route => {
+  await page.route('https://dapi.kakao.com/v2/maps/sdk.js?**', async route => {
     diagnostics.expectHttpError(new URL(route.request().url()).pathname, 503)
     await route.fulfill({ status: 503, body: 'SDK failure' })
   }, { times: 1 })
@@ -59,20 +48,11 @@ test('SDK 다운로드 실패에도 목록·상세 링크를 유지하고 복구
   await expect(page.getByRole('alert')).toHaveCount(0)
 })
 
-test('타일 실패는 목록을 유지하고 지도 재시도로 복구한다', async ({ page, diagnostics }) => {
-  let failNextTile = true
-  await page.route('https://tile.openstreetmap.org/**', async route => {
-    if (failNextTile) {
-      failNextTile = false
-      diagnostics.expectHttpError(new URL(route.request().url()).pathname, 503)
-      await route.fulfill({ status: 503, body: 'tile failure' })
-      return
-    }
-    await route.fulfill({ contentType: 'image/svg+xml', body: tileImage })
-  })
+test('지도 배경 준비가 늦어져도 목록을 유지하고 재시도로 복구한다', async ({ page }) => {
+  await mockKakaoSdk(page, { failFirstTiles: true })
   await page.goto(`/app/index.html#/stations?${criteria}`)
   await page.getByRole('button', { name: '지도 보기', exact: true }).click()
-  await expect(page.getByRole('alert')).toContainText('배경 지도를 불러오지 못했습니다')
+  await expect(page.getByRole('alert')).toContainText('배경 지도를 불러오지 못했습니다', { timeout: 15000 })
   await expect(page.getByRole('link', { name: '데모 대체 충전소 상세 보기' })).toBeVisible()
   await page.getByRole('button', { name: '지도 다시 시도' }).click()
   await expect(page.getByRole('button', { name: '데모 대체 충전소 지도 마커', exact: true })).toBeVisible()
@@ -81,7 +61,6 @@ test('타일 실패는 목록을 유지하고 지도 재시도로 복구한다',
 })
 
 test('모바일·데스크톱의 지도는 가로 넘침 없이 키보드로 마커를 선택한다', async ({ page }) => {
-  await serveControlledTiles(page)
   await page.setViewportSize({ width: 375, height: 812 })
   await page.goto(`/app/index.html#/stations?${criteria}`)
   const showMap = page.getByRole('button', { name: '지도 보기', exact: true })
@@ -104,7 +83,6 @@ test('모바일·데스크톱의 지도는 가로 넘침 없이 키보드로 마
 })
 
 test('지도 마커를 키보드로 선택하면 하단 패널을 열고 닫은 뒤 마커에 돌아온다', async ({ page }) => {
-  await serveControlledTiles(page)
   await page.goto(`/app/index.html#/stations?${criteria}`)
   await page.getByRole('button', { name: '지도 보기', exact: true }).click()
   const marker = page.getByRole('button', { name: '데모 가까운 충전소 지도 마커', exact: true })

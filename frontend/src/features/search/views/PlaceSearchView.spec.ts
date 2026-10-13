@@ -1,5 +1,5 @@
 import { mount, flushPromises } from '@vue/test-utils'
-import { afterEach, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { createRouter, createMemoryHistory } from 'vue-router'
 import { createPinia } from 'pinia'
 import { AxiosError, type AxiosAdapter } from 'axios'
@@ -11,7 +11,8 @@ import searchResponse from '../../../../tests/fixtures/search.json'
 import { readVehicleProfile, saveVehicleProfile } from '../../vehicle/vehicleProfile'
 const originalAdapter = httpClient.defaults.adapter
 if (originalAdapter === undefined) throw new Error('Axios adapter가 필요합니다')
-afterEach(() => { httpClient.defaults.adapter = originalAdapter; window.localStorage.clear() })
+beforeEach(() => vi.stubEnv('VITE_KAKAO_JS_KEY', ''))
+afterEach(() => { httpClient.defaults.adapter = originalAdapter; window.localStorage.clear(); vi.unstubAllEnvs() })
 
 it('주소를 검색하고 후보를 고른 뒤에만 그 위치의 충전소를 조회한다', async () => {
   const adapter = vi.fn<AxiosAdapter>(async config => jsonResponse(config, config.url === '/places'

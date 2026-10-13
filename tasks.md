@@ -523,10 +523,9 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 ## 위치·지도 후속 개선
 
 - [x] T43 `fix/location-feedback`: 실제 좌표를 검색·지도에 유지하면서 선택 안내에서 긴 숫자를 제거한다. iOS 첫 권한 거부의 원인은 기기 설정 확인 전까지 미확정으로 기록한다. 로컬 전체 verify 종료0, [실행 기록](docs/t43-location-feedback.md). 필수 CI와 병합은 PR에서 확인한다.
-- [ ] T44 지도·주소 검색: 국내 사용자에게 익숙한 지도와 주소 후보를 한 흐름으로 재설계한다. 카카오 지도 Web SDK의 무료 쿼터 적용 앱 여부, JavaScript 키와 운영 도메인 등록, 실제 사용량을 확인한 뒤 구현한다.
-- [x] T44a `feat/kakao-map-search`: 카카오 Web SDK 지도 어댑터와 운영 빌드 키 주입을 검증했다. [범위·검증](docs/t44-kakao-map-sdk.md), [PR70](https://github.com/seungmin-park/PlugPass/pull/70) 필수 CI 성공·main4bcfd748 실제 병합. 운영 도메인 실제 지도 타일은 배포 후 확인한다.
-- [ ] T44b 주소 후보·결과 우선 배치와 운영 REST 키 설정을 별도 기능으로 전달한다.
-- [ ] T44b `feat/kakao-place-search`: 운영 화면의 주소 후보를 카카오 SDK로 연결하고 검색창을 항상 보이게 배치한다. [설계·검증](docs/t44b-kakao-address-search.md). 서버 REST 키 미설정은 API 직접 호출의 운영 후속으로 남는다.
-- [ ] T44c 운영 카카오 지도·주소 후보를 실제 확인한 뒤 Leaflet/OpenStreetMap 후퇴 경로와 전용 CSS·의존성·테스트를 제거한다.
+- [x] T44 지도·주소 검색: 카카오 지도·주소 후보를 한 흐름으로 연결했다. 무료 쿼터 적용 앱과 JavaScript SDK 운영 도메인을 확인했고 운영 사이트의 지도와 실제 서울시청 후보 선택을 검증했다.
+- [x] T44a `feat/kakao-map-search`: 카카오 Web SDK 지도 어댑터와 운영 빌드 키 주입을 검증했다. [범위·검증](docs/t44-kakao-map-sdk.md), [PR70](https://github.com/seungmin-park/PlugPass/pull/70) 필수 CI 성공·main4bcfd748 실제 병합. 운영 지도 SDK·이미지 표시를 headless Chromium에서 확인했다.
+- [x] T44b `feat/kakao-place-search`: 운영 화면의 주소 후보를 카카오 SDK로 연결하고 검색창을 항상 보이게 배치했다. [설계·검증](docs/t44b-kakao-address-search.md), [PR71](https://github.com/seungmin-park/PlugPass/pull/71) 필수 CI 성공·main2653844 실제 병합. 운영의 서울시청 후보→검색 좌표 변경·지도 열림을 확인했다. 서버 REST 키 미설정은 API 직접 호출의 운영 후속으로 남는다.
+- [x] T44c `refactor/remove-leaflet-map`: 운영 카카오 지도·주소 후보 확인 후 이전 지도 구현·전용 CSS·의존성을 제거하고 테스트를 카카오 계약으로 옮겼다. 로컬 전체 verify 종료 코드 0; CI·병합은 PR에서 확인한다. [검증 기록](docs/t44c-remove-leaflet.md).
 
 실행 상세: [모바일 실사용 개선 실행 계획](docs/mobile-ux-implementation-plan.md). 직접 순차 실행, 계획 검토 후 T38부터 시작한다.

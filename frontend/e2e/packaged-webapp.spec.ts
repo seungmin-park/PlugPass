@@ -1,5 +1,4 @@
 import { test, expect } from './fixtures'
-import { mockKakaoSdk } from './kakaoSdkMock'
 
 const criteria = 'latitude=37.5&longitude=127&radiusMeters=1000&connector=DC_COMBO&limit=20'
 
@@ -35,10 +34,7 @@ test('배포 JAR의 상세 hash 직접 링크와 새로고침은 같은 API 404�
   await expect(page).toHaveURL(/latitude=37.5&longitude=127&radiusMeters=1000&connector=DC_COMBO&limit=20$/)
 })
 
-test('배포 JAR의 지도 JS·CSS를 불러와 빈 검색 결과의 지도와 출처를 표시한다', async ({ page }) => {
-  if (process.env.KAKAO_JS_KEY) await mockKakaoSdk(page)
-  await page.route('https://tile.openstreetmap.org/**', route => route.fulfill({ contentType: 'image/svg+xml',
-    body: '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect width="256" height="256" fill="#eff4ff"/></svg>' }))
+test('배포 JAR의 지도 JS·CSS를 불러와 빈 검색 결과의 카카오 지도를 표시한다', async ({ page }) => {
   const loadedAssets: string[] = []
   page.on('response', response => {
     if (response.status() === 200 && response.url().includes('/app/assets/')) loadedAssets.push(response.url())
@@ -47,13 +43,8 @@ test('배포 JAR의 지도 JS·CSS를 불러와 빈 검색 결과의 지도와 �
   await expect(page.getByText('0개 표시 · 최대 20개 표시')).toBeVisible()
   await page.getByRole('button', { name: '지도 보기', exact: true }).click()
   await expect(page.getByRole('region', { name: '검색 결과 지도' })).toHaveAttribute('aria-busy', 'false')
-  if (process.env.KAKAO_JS_KEY) {
-    await expect(page.locator('.kakao-test-map')).toBeAttached()
-    await expect(page.locator('.kakao-station-marker')).toHaveCount(0)
-  } else {
-    await expect(page.getByRole('link', { name: 'OpenStreetMap', exact: true })).toBeVisible()
-    await expect(page.locator('.leaflet-marker-icon')).toHaveCount(0)
-  }
+  await expect(page.locator('.kakao-test-map')).toBeAttached()
+  await expect(page.locator('.kakao-station-marker')).toHaveCount(0)
   expect(loadedAssets.some(url => new URL(url).pathname.endsWith('.js'))).toBe(true)
   expect(loadedAssets.some(url => new URL(url).pathname.endsWith('.css'))).toBe(true)
   await expect(page.getByRole('alert')).toHaveCount(0)
@@ -61,9 +52,6 @@ test('배포 JAR의 지도 JS·CSS를 불러와 빈 검색 결과의 지도와 �
 
 
 test('배포 JAR에서 지도 영역을 재검색하고 직접 링크로 복원한다', async ({ page }) => {
-  if (process.env.KAKAO_JS_KEY) await mockKakaoSdk(page)
-  await page.route('https://tile.openstreetmap.org/**', route => route.fulfill({ contentType: 'image/svg+xml',
-    body: '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"/>' }))
   await page.goto('/app/index.html#/stations')
   await page.getByLabel('내 차량').selectOption('manual')
   await page.getByRole('button', { name: '지도 보기', exact: true }).click()
@@ -81,8 +69,6 @@ test('배포 JAR에서 지도 영역을 재검색하고 직접 링크로 복원�
 })
 
 test('카카오 주소 후보를 고르면 지도와 충전소 검색 위치가 함께 바뀐다', async ({ page }) => {
-  test.skip(!process.env.KAKAO_JS_KEY, '운영 JavaScript 키로 빌드한 JAR에서 검증합니다')
-  await mockKakaoSdk(page)
   const placeApiRequests: string[] = []
   page.on('request', request => { if (request.url().includes('/api/v1/places')) placeApiRequests.push(request.url()) })
   await page.goto('/app/index.html#/stations')

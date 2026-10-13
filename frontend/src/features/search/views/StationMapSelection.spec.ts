@@ -1,5 +1,6 @@
 import { mount, flushPromises } from '@vue/test-utils'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { installKakaoMapFake } from '../../../../tests/kakaoMapFake'
 import { createRouter, createMemoryHistory } from 'vue-router'
 import { createPinia } from 'pinia'
 import StationSearchView from './StationSearchView.vue'
@@ -10,7 +11,8 @@ import searchResponse from '../../../../tests/fixtures/search.json'
 const originalAdapter = httpClient.defaults.adapter
 if (originalAdapter === undefined) throw new Error('Axios 기본 adapter가 필요합니다')
 const query = { latitude: '37.5', longitude: '127', radiusMeters: '1000', connector: 'DC_COMBO', limit: '20' }
-afterEach(() => { httpClient.defaults.adapter = originalAdapter })
+beforeEach(installKakaoMapFake)
+afterEach(() => { httpClient.defaults.adapter = originalAdapter; vi.unstubAllEnvs(); Reflect.deleteProperty(window, 'kakao') })
 function searchRouter() {
   return createRouter({ history: createMemoryHistory(), routes: [{ path: '/stations', component: StationSearchView }] })
 }
@@ -23,7 +25,7 @@ describe('검색 지도의 목록 선택', () => {
     const wrapper = mount(StationSearchView, { global: { plugins: [router, createPinia()] } })
     await flushPromises()
     await wrapper.get('#show-map').trigger('click')
-    await vi.waitFor(() => expect(wrapper.findAll('.leaflet-marker-icon')).toHaveLength(2))
+    await vi.waitFor(() => expect(wrapper.findAll('.kakao-station-marker')).toHaveLength(2))
     await wrapper.get('[aria-label="대체 충전소 지도 마커"]').trigger('click')
     expect(wrapper.get('button[aria-label="대체 충전소 지도에서 선택"]').attributes('aria-pressed')).toBe('true')
     expect(wrapper.get('[aria-label="대체 충전소 지도 마커"]').attributes('aria-pressed')).toBe('true')
@@ -43,7 +45,7 @@ describe('검색 지도의 목록 선택', () => {
     const wrapper = mount(StationSearchView, { global: { plugins: [router, createPinia()] } })
     await flushPromises()
     await wrapper.get('#show-map').trigger('click')
-    await vi.waitFor(() => expect(wrapper.findAll('.leaflet-marker-icon')).toHaveLength(2))
+    await vi.waitFor(() => expect(wrapper.findAll('.kakao-station-marker')).toHaveLength(2))
     await wrapper.get('[aria-label="대체 충전소 지도 마커"]').trigger('click')
     expect(wrapper.get('.station-action-sheet .access-summary').text()).toContain('이용 제한이 보고됐습니다. 방문 전 운영 주체에 확인해 주세요')
   })
@@ -56,7 +58,7 @@ describe('검색 지도의 목록 선택', () => {
     const wrapper = mount(StationSearchView, { global: { plugins: [router, createPinia()] } })
     await flushPromises()
     await wrapper.get('#show-map').trigger('click')
-    await vi.waitFor(() => expect(wrapper.findAll('.leaflet-marker-icon')).toHaveLength(2))
+    await vi.waitFor(() => expect(wrapper.findAll('.kakao-station-marker')).toHaveLength(2))
     await wrapper.get('button[aria-label="가까운 충전소 길찾기"]').trigger('click')
     expect(wrapper.get('.station-action-sheet h2').text()).toBe('가까운 충전소')
     await wrapper.get('[aria-label="대체 충전소 지도 마커"]').trigger('click')
@@ -71,7 +73,7 @@ describe('검색 지도의 목록 선택', () => {
     const wrapper = mount(StationSearchView, { global: { plugins: [router, createPinia()] } })
     await flushPromises()
     await wrapper.get('#show-map').trigger('click')
-    await vi.waitFor(() => expect(wrapper.findAll('.leaflet-marker-icon')).toHaveLength(2))
+    await vi.waitFor(() => expect(wrapper.findAll('.kakao-station-marker')).toHaveLength(2))
     await wrapper.get('[aria-label="대체 충전소 지도 마커"]').trigger('click')
     await wrapper.get('#navigation-web').trigger('keydown', { key: 'Escape' })
     expect(wrapper.find('.station-action-sheet').exists()).toBe(false)
@@ -101,20 +103,20 @@ describe('검색 지도의 목록 선택', () => {
     }
   })
 
-  it.each([{ label: 'Enter', key: 'Enter' }, { label: 'Space', key: ' ' }])('카드 선택을 실제 SDK 마커에 반영하고 $label 키로 다른 카드를 선택한다', async ({ key }) => {
+  it('카드 선택을 실제 SDK 마커에 반영하고 다른 마커를 선택한다', async () => {
     httpClient.defaults.adapter = async config => jsonResponse(config, searchResponse)
     const router = searchRouter()
     await router.push({ path: '/stations', query })
     const wrapper = mount(StationSearchView, { global: { plugins: [router, createPinia()] } })
     await flushPromises()
     await wrapper.get('#show-map').trigger('click')
-    await vi.waitFor(() => expect(wrapper.findAll('.leaflet-marker-icon')).toHaveLength(2))
+    await vi.waitFor(() => expect(wrapper.findAll('.kakao-station-marker')).toHaveLength(2))
     await wrapper.get('button[aria-label="가까운 충전소 지도에서 선택"]').trigger('click')
     expect(wrapper.get('[aria-label="가까운 충전소 지도 마커"]').attributes('aria-pressed')).toBe('true')
-    await wrapper.get('[aria-label="대체 충전소 지도 마커"]').trigger('keydown', { key })
+    await wrapper.get('[aria-label="대체 충전소 지도 마커"]').trigger('click')
     expect(wrapper.get('button[aria-label="대체 충전소 지도에서 선택"]').attributes('aria-pressed')).toBe('true')
-    expect(wrapper.get('[aria-label="대체 충전소 지도 마커"]').attributes('tabindex')).toBe('0')
-    expect(wrapper.find('.leaflet-control-attribution a[href="https://www.openstreetmap.org/copyright"]').exists()).toBe(true)
+    expect(wrapper.get('[aria-label="대체 충전소 지도 마커"]').element.tagName).toBe('BUTTON')
+    expect(wrapper.find('.kakao-test-map').exists()).toBe(true)
   })
   it('지도를 요청하기 전에는 목록을 유지하고 지도 보기 버튼을 제공한다', async () => {
     httpClient.defaults.adapter = async config => jsonResponse(config, searchResponse)

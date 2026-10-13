@@ -276,7 +276,7 @@ Spring의 classpath static 제공을 사용한다. Gradle이 Node/npm으로 프�
 
 ## T30/T31 지도 영역과 카카오 로컬 검색 (2026-10-13)
 
-설치 버전은 기존 Java25·Spring Boot4.1·Vue3·Leaflet1.9.4를 유지한다. 의존성 추가는 없다.
+당시 설치 버전은 Java25·Spring Boot4.1·Vue3·Leaflet1.9.4였다. T44c에서 운영 카카오 지도 확인 후 Leaflet 의존성을 제거했다.
 [Leaflet 1.9.4 Map 공식 태그 소스](https://raw.githubusercontent.com/Leaflet/Leaflet/v1.9.4/src/map/Map.js)의 `getBounds`, `moveend`, `setView`, `fitBounds`를 사용한다. rolling reference의 2.0 alpha와 혼동하지 않는다.
 지도 객체는 SDK 로딩/재시도/해제에만 생성·제거하고 결과 변경은 마커만 교체한다. 지도 열기는 검색 전에도 가능하지만 기본 접힘이며 외부 타일은 사용자 요청 후 로딩한다.
 

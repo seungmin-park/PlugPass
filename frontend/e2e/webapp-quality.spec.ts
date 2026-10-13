@@ -17,40 +17,42 @@ for (const viewport of [{ width: 375, height: 812 }, { width: 1440, height: 900 
   })
 }
 
-test('키보드로 본문·예시 위치·반경·커넥터·검색을 조작한다', async ({ page }) => {
+test('키보드로 본문·위치·주소 입력·커넥터·검색을 조작한다', async ({ page }) => {
   await page.goto('/app/index.html#/stations')
   await page.keyboard.press('Tab')
   await expect(page.getByRole('link', { name: '본문으로 건너뛰기' })).toBeFocused()
   await page.keyboard.press('Enter')
   await expect(page.getByRole('main')).toBeFocused()
   await page.keyboard.press('Tab')
+  await expect(page.getByRole('button', { name: '지도 보기', exact: true })).toBeFocused()
+  await page.keyboard.press('Tab')
   await expect(page.getByRole('button', { name: '현재 위치 사용' })).toBeFocused()
   await page.keyboard.press('Tab')
   await page.keyboard.press('Enter')
   await expect(page.getByRole('status')).toContainText('예시 위치를 선택했습니다')
   await page.keyboard.press('Tab')
-  await expect(page.getByRole('radio', { name: '1km', exact: true })).toBeFocused()
-  await page.keyboard.press('ArrowRight')
-  await expect(page.getByRole('radio', { name: '3km', exact: true })).toBeChecked()
+  await expect(page.getByRole('searchbox', { name: '주소·장소 검색' })).toBeFocused()
+  await page.keyboard.press('Tab')
+  await expect(page.getByRole('button', { name: '주소·장소 찾기' })).toBeFocused()
   await page.keyboard.press('Tab')
   await expect(page.getByRole('radio', { name: 'DC 콤보', exact: true })).toBeFocused()
   await page.keyboard.press('Tab')
   await expect(page.getByRole('button', { name: '주변 충전소 검색' })).toBeFocused()
   await page.keyboard.press('Enter')
   await expect(page.getByText('2개 표시 · 최대 20개 표시')).toBeVisible()
-  await expect(page).toHaveURL(/radiusMeters=3000/)
+  await expect(page).toHaveURL(/radiusMeters=1000/)
 })
 
-test('400 반경 오류는 해당 라디오의 설명과 포커스로 연결한다', async ({ page, diagnostics }) => {
+test('400 커넥터 오류는 해당 라디오의 설명과 포커스로 연결한다', async ({ page, diagnostics }) => {
   diagnostics.expectHttpError('/api/v1/stations', 400)
   await page.route('**/api/v1/stations?*', route => route.fulfill({ status: 400,
-    json: { code: 'INVALID_REQUEST', message: '검색 조건 오류', fields: { radiusMeters: '반경 오류' } } }))
+    json: { code: 'INVALID_REQUEST', message: '검색 조건 오류', fields: { connector: '커넥터 오류' } } }))
   await page.goto(`/app/index.html#/stations?${criteria}`)
-  await expect(page.getByRole('alert')).toContainText('반경 오류')
-  const radius = page.getByRole('radio', { name: '1km', exact: true })
-  await expect(radius).toBeFocused()
-  await expect(radius).toHaveAttribute('aria-invalid', 'true')
-  await expect(radius).toHaveAccessibleDescription('반경 오류')
+  await expect(page.getByRole('alert')).toContainText('커넥터 오류')
+  const connector = page.getByRole('radio', { name: 'DC 콤보', exact: true })
+  await expect(connector).toBeFocused()
+  await expect(connector).toHaveAttribute('aria-invalid', 'true')
+  await expect(connector).toHaveAccessibleDescription('커넥터 오류')
 })
 
 test('서버 오류 요약은 포커스를 받아 키보드로 재시도한다', async ({ page, diagnostics }) => {

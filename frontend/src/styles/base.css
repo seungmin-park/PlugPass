@@ -159,3 +159,13 @@ h1 { font-size: 36px; font-weight: 700; letter-spacing: -0.025em; margin-bottom:
 .candidate-reasons { padding-left: 20px; margin: 12px 0; color: var(--color-muted); }
 .alternative-view { overflow-wrap: anywhere; }
 .field-error { color: #8a2828; margin-top: 8px; font-size: 13px; }
+
+.search-map-explorer { margin-bottom: 1.5rem; }
+.search-map-explorer > p { color: var(--muted, #53617a); line-height: 1.6; }
+.place-search { margin: 1.25rem 0; }
+.place-search-form { display: grid; gap: .6rem; }
+.place-search-form label { font-weight: 700; }
+.place-search-form input { width: 100%; min-width: 0; box-sizing: border-box; padding: .8rem; border: 1px solid #cbd5e1; border-radius: .65rem; font: inherit; }
+.place-results { list-style: none; padding: 0; display: grid; gap: .5rem; }
+.place-result { width: 100%; text-align: left; display: grid; gap: .3rem; overflow-wrap: anywhere; }
+.place-result span { font-size: .9rem; }

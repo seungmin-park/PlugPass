@@ -63,7 +63,7 @@ describe('지도 인스턴스의 수명과 표시 경계', () => {
     expect(canvas.querySelectorAll('.leaflet-pane')).toHaveLength(0)
   })
 
-  it('SDK 대기 중 표시 데이터가 바뀌면 늦은 이전 로딩이 새 지도를 덮지 않는다', async () => {
+  it('SDK 대기 중 데이터가 바뀌어도 한 번 로딩한 지도에 최신 결과를 표시한다', async () => {
     const createMap = await originalLoader()
     let finishPrevious!: (factory: typeof createMap) => void
     vi.spyOn(mapLoader, 'loadStationMap').mockImplementationOnce(() => new Promise(resolve => { finishPrevious = resolve }))
@@ -73,10 +73,11 @@ describe('지도 인스턴스의 수명과 표시 경계', () => {
       center: { latitude: 37.5, longitude: 127 }, selectedStationId: null,
     } })
     await wrapper.setProps({ stations: [{ id: 2, name: '새 충전소', latitude: 38, longitude: 128 }], center: { latitude: 38, longitude: 128 } })
-    await vi.waitFor(() => expect(wrapper.find('[aria-label="새 충전소 지도 마커"]').exists()).toBe(true))
+    expect(wrapper.findAll('.leaflet-marker-icon')).toHaveLength(0)
     finishPrevious(createMap)
     await flushPromises()
     expect(wrapper.findAll('.leaflet-marker-icon')).toHaveLength(1)
+    expect(wrapper.find('[aria-label="새 충전소 지도 마커"]').exists()).toBe(true)
     expect(wrapper.find('[aria-label="이전 충전소 지도 마커"]').exists()).toBe(false)
   })
 

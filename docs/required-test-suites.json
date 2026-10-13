@@ -34,5 +34,11 @@
   "com.plugpass.ChargingJourneyTests",
   "performance.PerformanceDatasetTests",
   "com.plugpass.search.service.StationQueryEfficiencyTests",
-  "e2e.ChargingDemoApplicationTests"
+  "e2e.ChargingDemoApplicationTests",
+  "com.plugpass.search.integration.StationAreaFlowTests",
+  "com.plugpass.search.controller.StationAreaHttpTests",
+  "com.plugpass.places.integration.PlaceSearchFlowTests",
+  "com.plugpass.places.client.KakaoPlaceSearchClientTests",
+  "com.plugpass.places.controller.PlaceSearchHttpTests",
+  "com.plugpass.search.domain.MapSearchAreaTests"
 ]

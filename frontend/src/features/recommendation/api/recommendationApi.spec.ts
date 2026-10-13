@@ -52,3 +52,10 @@ describe('대체 후보 API', () => {
     await expect(getRecommendations(criteria, null)).rejects.toMatchObject({ kind: 'invalid_response' })
   })
 })
+
+it('지도 검색에서 넘어와도 추천 API에는 중심·반경 계약만 전달한다', async () => {
+  const adapter = vi.fn<AxiosAdapter>(async config => jsonResponse(config, recommendation))
+  httpClient.defaults.adapter = adapter
+  await getRecommendations({ ...criteria, area: { south: 37.499, north: 37.501, west: 126.999, east: 127.001 } }, 2)
+  expect(adapter).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ params: { ...criteria, excludeStationId: 2 } }))
+})

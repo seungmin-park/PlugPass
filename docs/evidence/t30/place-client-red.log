@@ -1,0 +1,72 @@
+> Task :compileJava
+> Task :processResources
+> Task :classes
+> Task :compileTestJava
+> Task :processTestResources UP-TO-DATE
+> Task :testClasses
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+2026-10-13T15:29:06.732+09:00  INFO 7806 --- [plugpass] [ionShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-10-13T15:29:06.738+09:00  INFO 7806 --- [plugpass] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-10-13T15:29:06.740+09:00  INFO 7806 --- [plugpass] [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-10-13T15:29:06.743+09:00  INFO 7806 --- [plugpass] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-10-13T15:29:06.743+09:00  INFO 7806 --- [plugpass] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+
+> Task :test FAILED
+
+KakaoPlaceSearchClientTests > 응답 기한을 넘긴 요청은 자동 재시도 없이 종료한다 FAILED
+    org.opentest4j.AssertionFailedError at KakaoPlaceSearchClientTests.java:87
+
+KakaoPlaceSearchClientTests > 주소와 장소를 실제 HTTP로 조회하여 좌표를 변환하고 중복을 합친다 FAILED
+    com.plugpass.exception.PlaceSearchException at KakaoPlaceSearchClientTests.java:52
+
+KakaoPlaceSearchClientTests > 외부 HTTP 실패를 구분하고 비밀값과 원문을 노출하지 않는다 > [1] status = "401", failure = "AUTHENTICATION" FAILED
+    org.opentest4j.AssertionFailedError at KakaoPlaceSearchClientTests.java:69
+
+KakaoPlaceSearchClientTests > 외부 HTTP 실패를 구분하고 비밀값과 원문을 노출하지 않는다 > [2] status = "403", failure = "AUTHENTICATION" FAILED
+    org.opentest4j.AssertionFailedError at KakaoPlaceSearchClientTests.java:69
+
+KakaoPlaceSearchClientTests > 외부 HTTP 실패를 구분하고 비밀값과 원문을 노출하지 않는다 > [3] status = "429", failure = "RATE_LIMIT" FAILED
+    org.opentest4j.AssertionFailedError at KakaoPlaceSearchClientTests.java:69
+
+KakaoPlaceSearchClientTests > 외부 HTTP 실패를 구분하고 비밀값과 원문을 노출하지 않는다 > [4] status = "500", failure = "UPSTREAM" FAILED
+    org.opentest4j.AssertionFailedError at KakaoPlaceSearchClientTests.java:69
+
+KakaoPlaceSearchClientTests > 외부 HTTP 실패를 구분하고 비밀값과 원문을 노출하지 않는다 > [5] status = "302", failure = "UPSTREAM" FAILED
+    org.opentest4j.AssertionFailedError at KakaoPlaceSearchClientTests.java:69
+
+KakaoPlaceSearchClientTests > 주소와 장소가 모두 비어 있으면 빈 결과를 반환한다 FAILED
+    com.plugpass.exception.PlaceSearchException at KakaoPlaceSearchClientTests.java:60
+
+KakaoPlaceSearchClientTests > 깨진 JSON과 누락되거나 잘못된 좌표를 빈 결과로 숨기지 않는다 > [1] body = "{broken" FAILED
+    org.opentest4j.AssertionFailedError at KakaoPlaceSearchClientTests.java:78
+
+KakaoPlaceSearchClientTests > 깨진 JSON과 누락되거나 잘못된 좌표를 빈 결과로 숨기지 않는다 > [2] body = "{}" FAILED
+    org.opentest4j.AssertionFailedError at KakaoPlaceSearchClientTests.java:78
+
+KakaoPlaceSearchClientTests > 깨진 JSON과 누락되거나 잘못된 좌표를 빈 결과로 숨기지 않는다 > [3] body = "{\"documents\":[{\"address_name\":\"서울\",\"x\":\"NaN\",\"y\":\"37\"}]}" FAILED
+    org.opentest4j.AssertionFailedError at KakaoPlaceSearchClientTests.java:78
+
+KakaoPlaceSearchClientTests > 깨진 JSON과 누락되거나 잘못된 좌표를 빈 결과로 숨기지 않는다 > [4] body = "{\"documents\":[{\"address_name\":\"서울\",\"x\":\"127\",\"y\":\"91\"}]}" FAILED
+    org.opentest4j.AssertionFailedError at KakaoPlaceSearchClientTests.java:78
+
+13 tests completed, 12 failed
+
+[Incubating] Problems report is available at: file:///Users/seungmin/Desktop/repo/PlugPass/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':test'.
+> There were failing tests. See the report at: file:///Users/seungmin/Desktop/repo/PlugPass/build/reports/tests/test/index.html
+
+* Try:
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.7.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 5s
+5 actionable tasks: 4 executed, 1 up-to-date

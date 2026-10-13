@@ -4,5 +4,6 @@
   "webapp-quality.spec.ts",
   "station-map.spec.ts",
   "navigation.spec.ts",
-  "loading.spec.ts"
+  "loading.spec.ts",
+  "map-place-search.spec.ts"
 ]

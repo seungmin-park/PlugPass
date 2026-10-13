@@ -1,0 +1,58 @@
+
+> plugpass-web@0.1.0 test:unit
+> vitest run src/features/search/views/PlaceSearchView.spec.ts
+
+
+ RUN  v5.0.3 /Users/seungmin/Desktop/repo/PlugPass/frontend
+
+ ❯ src/features/search/views/PlaceSearchView.spec.ts (2 tests | 2 failed) 31ms
+   × 주소를 검색하고 후보를 고른 뒤에만 그 위치의 충전소를 조회한다 26ms
+   × 주소 검색 키가 없어도 안내 뒤 예시 위치로 충전소 검색을 계속한다 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/search/views/PlaceSearchView.spec.ts > 주소를 검색하고 후보를 고른 뒤에만 그 위치의 충전소를 조회한다
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/features/search/views/PlaceSearchView.spec.ts:21:49
+     19|   await router.push('/stations')
+     20|   const wrapper = mount(StationSearchView, { global: { plugins: [route…
+     21|   expect(wrapper.find('#place-query').exists()).toBe(true)
+       |                                                 ^
+     22|   await wrapper.get('#place-query').setValue(' 서울 시청 ')
+     23|   expect(adapter).not.toHaveBeenCalled()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/features/search/views/PlaceSearchView.spec.ts > 주소 검색 키가 없어도 안내 뒤 예시 위치로 충전소 검색을 계속한다
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/features/search/views/PlaceSearchView.spec.ts:45:49
+     43|   await router.push('/stations')
+     44|   const wrapper = mount(StationSearchView, { global: { plugins: [route…
+     45|   expect(wrapper.find('#place-query').exists()).toBe(true)
+       |                                                 ^
+     46|   await wrapper.get('#place-query').setValue('서울')
+     47|   await wrapper.get('.place-search-form').trigger('submit')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  15:30:18
+   Duration  905ms (environment 59%, transform 25%, import 8%, tests 4%, setup 3%)
+
+JSON report written to /Users/seungmin/Desktop/repo/PlugPass/frontend/test-results/unit.json

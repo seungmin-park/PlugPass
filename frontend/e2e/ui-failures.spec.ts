@@ -68,8 +68,8 @@ test('이전 검색이 늦게 도착해도 현재 조건의 목록을 유지한�
   const firstReleased = new Promise<void>(resolve => { releaseFirst = resolve })
   const firstCompleted = new Promise<void>(resolve => { completeFirst = resolve })
   await page.route('**/api/v1/stations?*', async route => {
-    const radius = new URL(route.request().url()).searchParams.get('radiusMeters')
-    if (radius === '1000') {
+    const connector = new URL(route.request().url()).searchParams.get('connector')
+    if (connector === 'DC_COMBO') {
       await firstReleased
       await route.fulfill({ json: searchResponse })
       completeFirst?.()
@@ -80,14 +80,14 @@ test('이전 검색이 늦게 도착해도 현재 조건의 목록을 유지한�
   const initialRequest = page.waitForRequest(request => request.url().includes('radiusMeters=1000'))
   await page.goto(`/app/index.html#/stations?${criteria}`)
   await initialRequest
-  await page.getByText('3km', { exact: true }).click()
-  await expect(page.getByRole('radio', { name: '3km', exact: true })).toBeChecked()
+  await page.getByText('NACS', { exact: true }).click()
+  await expect(page.getByRole('radio', { name: 'NACS', exact: true })).toBeChecked()
   await page.getByRole('button', { name: '주변 충전소 검색' }).click()
   await expect(page.getByRole('link', { name: '대체 충전소 상세 보기' })).toBeVisible()
   releaseFirst?.()
   await firstCompleted
   await expect(page.getByRole('link', { name: '가까운 충전소 상세 보기', exact: true })).toHaveCount(0)
-  await expect(page).toHaveURL(/radiusMeters=3000/)
+  await expect(page).toHaveURL(/connector=NACS/)
 })
 
 test('수집 메타 오류와 재시도는 성공한 후보를 유지한다', async ({ page, diagnostics }) => {

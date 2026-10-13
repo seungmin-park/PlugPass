@@ -64,3 +64,10 @@ Node26.7.0에서 `npm --prefix frontend ci`, `npm --prefix frontend run dev` 후
 `bash scripts/frontend-e2e.sh`는 합성 공급자 HTTP→실제 수집/H2/API와 개발 모드의 브라우저 흐름을 재현한다. `--serve`는 cmux 직접 클릭 검증용으로 서버를 유지한다.
 공용verify는 개발모드 E2E와 배포JAR 브라우저를 모두 실행한다. T25의 실제 관측은 개발21건·JAR3건이며 [실행 기록](docs/t25-verification.md)을 따른다. 로컬은 현재cmux에서 headed로, CI는 headless로 실행한다. 최초 로컬 Chromium 설치는 `cd frontend && npx playwright install chromium`이다.
 375×812·1440×900, 키보드·오류입력 연결/포커스와 필수 suite 누락·0개·skip 거부의 근거는 [T24 실행기록](docs/t24-verification.md)을 따른다.
+
+### 지도 영역·주소 검색
+
+검색 화면에서 `지도 보기` → 이동/확대 → `이 지역 재검색`으로 화면 안의 충전소를 찾습니다. 기존 반경 링크와 API는 계속 지원합니다.
+주소·장소 후보를 선택한 뒤 `주변 충전소 검색`으로 확정할 수도 있습니다. 주소 검색에는 서버 환경변수 `KAKAO_LOCAL_REST_API_KEY`가 필요하며 프런트 `.env`에 넣지 않습니다. 키가 없으면 주소 검색만 준비 중으로 안내하고 지도·현재 위치 검색은 계속 동작합니다.
+
+[구현·검증 기록](docs/t30-verification.md)과 [개인 어댑터 커뮤니티 조사/후속 개선](docs/adapter-ownership-research.md)을 참고하세요. 실제 카카오 검색은 키 설정 후 확인해야 합니다.

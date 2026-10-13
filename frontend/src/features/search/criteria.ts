@@ -1,3 +1,4 @@
+import { areaFields, isSearchArea, type SearchArea } from './searchArea'
 import { connectors, type Connector } from '../charging-info/types'
 import type { SearchCriteria, SearchCriteriaResult } from './types'
 import { ApiError } from '../../shared/api/apiError'
@@ -9,20 +10,27 @@ const numericLabels = { latitude: '위도', longitude: '경도', radiusMeters: '
 
 export function toSearchQuery(criteria: SearchCriteria): Record<string, string> {
   return { latitude: String(criteria.latitude), longitude: String(criteria.longitude),
-    radiusMeters: String(criteria.radiusMeters), connector: criteria.connector, limit: String(criteria.limit) }
+    radiusMeters: String(criteria.radiusMeters), connector: criteria.connector, limit: String(criteria.limit),
+    ...(criteria.area ? Object.fromEntries(areaFields.map(field => [field, String(criteria.area?.[field])])) : {}), ...(criteria.area ? Object.fromEntries(areaFields.map(field => [field, String(criteria.area?.[field])])) : {}) }
 }
 
 export function parseSearchCriteria(query: Record<string, unknown>): SearchCriteriaResult {
-  if (!queryFields.some(field => Object.prototype.hasOwnProperty.call(query, field))) return { kind: 'empty' }
+  if (![...queryFields, ...areaFields].some(field => Object.prototype.hasOwnProperty.call(query, field))) return { kind: 'empty' }
   const fields: Record<string, string> = {}
   const latitude = parseNumericQueryField(query.latitude, 'latitude', -90, 90, decimal, fields)
   const longitude = parseNumericQueryField(query.longitude, 'longitude', -180, 180, decimal, fields)
   const radiusMeters = parseNumericQueryField(query.radiusMeters, 'radiusMeters', 100, 10000, integer, fields)
   const limit = query.limit === undefined ? 20 : parseNumericQueryField(query.limit, 'limit', 1, 50, integer, fields)
+  let area: SearchArea | undefined
+  if (areaFields.some(field => Object.prototype.hasOwnProperty.call(query, field))) {
+    const values = areaFields.map(field => typeof query[field] === 'string' && decimal.test(query[field].trim()) ? Number(query[field]) : NaN)
+    area = { south: values[0] ?? NaN, north: values[1] ?? NaN, west: values[2] ?? NaN, east: values[3] ?? NaN }
+    if (!isSearchArea(area)) fields.area = '검색 영역을 확인하고 지도를 확대해 주세요'
+  }
   const connector = query.connector
   if (!isConnector(connector)) fields.connector = '지원하는 차량 커넥터를 한 번 선택해 주세요'
   if (Object.keys(fields).length > 0 || !isConnector(connector)) return { kind: 'invalid', fields }
-  return { kind: 'valid', criteria: { latitude, longitude, radiusMeters, connector, limit } }
+  return { kind: 'valid', criteria: { latitude, longitude, radiusMeters, connector, limit, ...(area ? { area } : {}) } }
 }
 
 function parseNumericQueryField(value: unknown, field: keyof typeof numericLabels, minimum: number, maximum: number,
@@ -46,6 +54,7 @@ export function requireSearchCriteria(criteria: SearchCriteria): SearchCriteria 
   const result = parseSearchCriteria({
     latitude: String(criteria.latitude), longitude: String(criteria.longitude),
     radiusMeters: String(criteria.radiusMeters), connector: criteria.connector, limit: String(criteria.limit),
+    ...(criteria.area ? Object.fromEntries(areaFields.map(field => [field, String(criteria.area?.[field])])) : {}),
   })
   if (result.kind !== 'valid') {
     throw new ApiError('validation', '검색 조건을 확인해 주세요', null, 'INVALID_SEARCH_CRITERIA',

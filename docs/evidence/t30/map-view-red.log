@@ -1,0 +1,58 @@
+
+> plugpass-web@0.1.0 test:unit
+> vitest run src/features/search/views/MapSearchView.spec.ts
+
+
+ RUN  v5.0.3 /Users/seungmin/Desktop/repo/PlugPass/frontend
+
+ ❯ src/features/search/views/MapSearchView.spec.ts (2 tests | 2 failed) 32ms
+   × 검색 전 지도를 열고 이동한 영역으로 검색하며 응답 뒤에도 지도를 유지한다 25ms
+   × 지나치게 축소한 지도는 확대 안내를 보여 주고 검색하지 않는다 6ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/search/views/MapSearchView.spec.ts > 검색 전 지도를 열고 이동한 영역으로 검색하며 응답 뒤에도 지도를 유지한다
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/features/search/views/MapSearchView.spec.ts:23:46
+     21|   await router.push('/stations')
+     22|   const wrapper = mount(StationSearchView, { global: { plugins: [route…
+     23|   expect(wrapper.find('#show-map').exists()).toBe(true)
+       |                                              ^
+     24|   await wrapper.get('#example-location').trigger('click')
+     25|   await wrapper.get('#show-map').trigger('click')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/features/search/views/MapSearchView.spec.ts > 지나치게 축소한 지도는 확대 안내를 보여 주고 검색하지 않는다
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/features/search/views/MapSearchView.spec.ts:46:46
+     44|   await router.push('/stations')
+     45|   const wrapper = mount(StationSearchView, { global: { plugins: [route…
+     46|   expect(wrapper.find('#show-map').exists()).toBe(true)
+       |                                              ^
+     47|   await wrapper.get('#show-map').trigger('click')
+     48|   await vi.waitFor(() => expect(wrapper.find('.leaflet-control-zoom-ou…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  15:20:16
+   Duration  589ms (environment 42%, transform 38%, import 8%, tests 6%, setup 5%)
+
+JSON report written to /Users/seungmin/Desktop/repo/PlugPass/frontend/test-results/unit.json

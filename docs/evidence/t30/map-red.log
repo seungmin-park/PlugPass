@@ -1,0 +1,292 @@
+
+> plugpass-web@0.1.0 test:unit
+> vitest run src/features/search/components/MapAreaSearch.spec.ts src/features/search/api/stationAreaApi.spec.ts
+
+
+ RUN  v5.0.3 /Users/seungmin/Desktop/repo/PlugPass/frontend
+
+ ❯ src/features/search/api/stationAreaApi.spec.ts (4 tests | 4 failed) 11ms
+   ❯ 화면 영역 검색의 HTTP·URL 계약 (4)
+     × 영역이 있으면 서버 영역 endpoint에 경계와 커넥터만 전달한다 7ms
+     × 확정한 영역은 URL 왕복 후에도 보존된다 1ms
+     × 부분 경계 URL을 반경 검색으로 조용히 처리하지 않는다 1ms
+     × 너무 넓은 영역은 HTTP 요청 전에 거부한다 1ms
+ ❯ src/features/search/components/MapAreaSearch.spec.ts (3 tests | 3 failed) 1142ms
+   ❯ 지도 영역으로 검색 범위를 선택한다 (3)
+     × 반경을 묻지 않고 차량 커넥터만 제출한다 21ms
+     × 실제 지도 확대가 끝나면 새 화면의 경계를 전달한다 1008ms
+     × 결과 교체는 지도 DOM과 사용자가 선택한 영역을 유지한다 112ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/search/api/stationAreaApi.spec.ts > 화면 영역 검색의 HTTP·URL 계약 > 영역이 있으면 서버 영역 endpoint에 경계와 커넥터만 전달한다
+AssertionError: expected "vi.fn()" to be called once with arguments: [ ObjectContaining{…} ]
+
+Received:
+
+  1st vi.fn() call:
+
+  [
+-   ObjectContaining {
++   {
++     "adapter": [Function Mock],
++     "allowAbsoluteUrls": true,
++     "baseURL": "/api/v1",
++     "data": undefined,
++     "env": {
++       "Blob": [Function Blob],
++       "FormData": [Function FormData],
++     },
++     "headers": {
++       "Accept": "application/json, text/plain, */*",
++     },
++     "maxBodyLength": -1,
++     "maxContentLength": -1,
++     "method": "get",
+      "params": {
+        "connector": "DC_COMBO",
+-       "east": 127.001,
++       "latitude": 37.5,
+        "limit": 20,
+-       "north": 37.501,
+-       "south": 37.499,
+-       "west": 126.999,
++       "longitude": 127,
++       "radiusMeters": 143,
+      },
+-     "url": "/stations/area",
++     "responseType": "json",
++     "timeout": 10000,
++     "transformRequest": [
++       [Function transformRequest],
++     ],
++     "transformResponse": [
++       [Function transformResponse],
++     ],
++     "transitional": {
++       "advertiseZstdAcceptEncoding": false,
++       "clarifyTimeoutError": false,
++       "forcedJSONParsing": true,
++       "legacyInterceptorReqResOrdering": true,
++       "silentJSONParsing": false,
++       "validateStatusUndefinedResolves": true,
++     },
++     "url": "/stations",
++     "validateStatus": [Function validateStatus],
++     "xsrfCookieName": "XSRF-TOKEN",
++     "xsrfHeaderName": "X-XSRF-TOKEN",
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ src/features/search/api/stationAreaApi.spec.ts:19:21
+     17|     httpClient.defaults.adapter = adapter
+     18|     await expect(getStations(criteria)).resolves.toEqual(searchRespons…
+     19|     expect(adapter).toHaveBeenCalledExactlyOnceWith(expect.objectConta…
+       |                     ^
+     20|   })
+     21|   it('확정한 영역은 URL 왕복 후에도 보존된다', () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  src/features/search/api/stationAreaApi.spec.ts > 화면 영역 검색의 HTTP·URL 계약 > 확정한 영역은 URL 왕복 후에도 보존된다
+AssertionError: expected { kind: 'valid', criteria: { …(5) } } to deeply equal { kind: 'valid', criteria: { …(6) } }
+
+- Expected
++ Received
+
+@@ -1,13 +1,7 @@
+  {
+    "criteria": {
+-     "area": {
+-       "east": 127.001,
+-       "north": 37.501,
+-       "south": 37.499,
+-       "west": 126.999,
+-     },
+      "connector": "DC_COMBO",
+      "latitude": 37.5,
+      "limit": 20,
+      "longitude": 127,
+      "radiusMeters": 143,
+
+ ❯ src/features/search/api/stationAreaApi.spec.ts:22:58
+     20|   })
+     21|   it('확정한 영역은 URL 왕복 후에도 보존된다', () => {
+     22|     expect(parseSearchCriteria(toSearchQuery(criteria))).toEqual({ kin…
+       |                                                          ^
+     23|   })
+     24|   it('부분 경계 URL을 반경 검색으로 조용히 처리하지 않는다', () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  src/features/search/api/stationAreaApi.spec.ts > 화면 영역 검색의 HTTP·URL 계약 > 부분 경계 URL을 반경 검색으로 조용히 처리하지 않는다
+AssertionError: expected 'valid' to be 'invalid' // Object.is equality
+
+Expected: "invalid"
+Received: "valid"
+
+ ❯ src/features/search/api/stationAreaApi.spec.ts:25:88
+     23|   })
+     24|   it('부분 경계 URL을 반경 검색으로 조용히 처리하지 않는다', () => {
+     25|     expect(parseSearchCriteria({ ...toSearchQuery(criteria), north: un…
+       |                                                                                        ^
+     26|   })
+     27|   it('너무 넓은 영역은 HTTP 요청 전에 거부한다', async () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  src/features/search/api/stationAreaApi.spec.ts > 화면 영역 검색의 HTTP·URL 계약 > 너무 넓은 영역은 HTTP 요청 전에 거부한다
+AssertionError: promise resolved "{ dataReady: true, …(2) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "dataReady": true,
++   "lastSuccessfulRunAt": "2026-10-05T00:00:00Z",
++   "stations": [
++     {
++       "chargers": [
++         {
++           "chargerId": "01",
++           "chargingStartedAtRaw": null,
++           "collectedAt": "2026-10-05T00:00:00Z",
++           "connectorCode": "04",
++           "delDetail": null,
++           "delYn": "N",
++           "freshness": "UNVERIFIED",
++           "lastChargingEndedAtRaw": null,
++           "lastChargingStartedAtRaw": null,
++           "limitDetail": null,
++           "limitYn": "N",
++           "note": null,
++           "rawStatus": "2",
++           "reasonCode": "SOURCE_OBSERVED_AT_MISSING",
++           "sourceObservedAt": null,
++           "sourceStatusChangedAtRaw": null,
++           "status": "AVAILABLE",
++           "useTime": "24시간",
++         },
++       ],
++       "compatibleChargerCount": 1,
++       "distanceMeters": 0,
++       "id": 2,
++       "latitude": 37.5,
++       "longitude": 127,
++       "name": "가까운 충전소",
++       "provider": "ME",
++       "providerStationId": "first",
++       "reportedAvailableCount": 1,
++     },
++     {
++       "chargers": [
++         {
++           "chargerId": "01",
++           "chargingStartedAtRaw": null,
++           "collectedAt": "2026-10-05T00:00:00Z",
++           "connectorCode": "04",
++           "delDetail": null,
++           "delYn": "N",
++           "freshness": "UNVERIFIED",
++           "lastChargingEndedAtRaw": null,
++           "lastChargingStartedAtRaw": null,
++           "limitDetail": null,
++           "limitYn": "N",
++           "note": null,
++           "rawStatus": "2",
++           "reasonCode": "SOURCE_OBSERVED_AT_MISSING",
++           "sourceObservedAt": null,
++           "sourceStatusChangedAtRaw": null,
++           "status": "AVAILABLE",
++           "useTime": "24시간",
++         },
++       ],
++       "compatibleChargerCount": 1,
++       "distanceMeters": 88.2169883272315,
++       "id": 3,
++       "latitude": 37.5,
++       "longitude": 127.001,
++       "name": "대체 충전소",
++       "provider": "ME",
++       "providerStationId": "second",
++       "reportedAvailableCount": 1,
++     },
++   ],
+  }
+
+ ❯ src/features/search/api/stationAreaApi.spec.ts:30:79
+     28|     const adapter = vi.fn<AxiosAdapter>(async config => jsonResponse(c…
+     29|     httpClient.defaults.adapter = adapter
+     30|     await expect(getStations({ ...criteria, area: { ...area, north: 38…
+       |                                                                               ^
+     31|     expect(adapter).not.toHaveBeenCalled()
+     32|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  src/features/search/components/MapAreaSearch.spec.ts > 지도 영역으로 검색 범위를 선택한다 > 반경을 묻지 않고 차량 커넥터만 제출한다
+AssertionError: expected [ '검색 반경', '차량 커넥터' ] to deeply equal [ '차량 커넥터' ]
+
+- Expected
++ Received
+
+  [
++   "검색 반경",
+    "차량 커넥터",
+  ]
+
+ ❯ src/features/search/components/MapAreaSearch.spec.ts:9:68
+      7|   it('반경을 묻지 않고 차량 커넥터만 제출한다', async () => {
+      8|     const wrapper = mount(SearchForm)
+      9|     expect(wrapper.findAll('legend').map(legend => legend.text())).toE…
+       |                                                                    ^
+     10|     await wrapper.get('input[value="NACS"]').setValue()
+     11|     await wrapper.get('form').trigger('submit')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  src/features/search/components/MapAreaSearch.spec.ts > 지도 영역으로 검색 범위를 선택한다 > 실제 지도 확대가 끝나면 새 화면의 경계를 전달한다
+AssertionError: Target cannot be null or undefined.
+ ❯ src/features/search/components/MapAreaSearch.spec.ts:18:67
+     16|     vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnV…
+     17|     const wrapper = mount(StationMap, { props: { stations: [], center:…
+     18|     await vi.waitFor(() => expect(wrapper.emitted('area-change')).toHa…
+       |                                                                   ^
+     19|     const initialArea = wrapper.emitted('area-change')?.[0]?.[0]
+     20|     await wrapper.get('.leaflet-control-zoom-in').trigger('click')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  src/features/search/components/MapAreaSearch.spec.ts > 지도 영역으로 검색 범위를 선택한다 > 결과 교체는 지도 DOM과 사용자가 선택한 영역을 유지한다
+AssertionError: expected <a …(6)><span …(1)></span></a> to be <a …(6)><span …(1)></span></a> // Object.is equality
+
+If it should pass with deep equality, replace "toBe" with "toStrictEqual"
+
+Expected: <a …(6)><span …(1)></span></a>
+Received: serializes to the same string
+
+
+Compared values have no visual difference.
+
+ ❯ src/features/search/components/MapAreaSearch.spec.ts:34:61
+     32|     await wrapper.setProps({ stations: [{ id: 1, name: '새 충전소', latitu…
+     33|     await vi.waitFor(() => expect(wrapper.findAll('.leaflet-marker-ico…
+     34|     expect(wrapper.get('.leaflet-control-zoom-in').element).toBe(zoomC…
+       |                                                             ^
+     35|     expect(wrapper.emitted('area-change')?.length).toBe(areas)
+     36|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  7 failed (7)
+   Start at  15:17:56
+   Duration  1.92s (tests 44%, environment 39%, transform 12%, import 2%, setup 2%)
+
+JSON report written to /Users/seungmin/Desktop/repo/PlugPass/frontend/test-results/unit.json

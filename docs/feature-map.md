@@ -221,3 +221,22 @@ main push → 기존 CI 전체 gate → 성공한 CI artifact
 - 운영 롤백: VM의 `deploy-service.py --app plugpass rollback`; DB 파괴적 변경을 되돌리는 명령은 아님
 - DB 변경: 이전·새 앱이 함께 사용할 수 있는 변경만 먼저 적용. 삭제·타입 축소는 별도 배포 단계 필요
 - 활성화·실제 운영 결과: gcp-deployment 저장소의 운영 기록이 소유. workflow 파일 존재를 배포 완료로 간주하지 않음
+
+## T30/T31 지도 영역·주소 검색
+
+```text
+지도 moveend → StationSearchView의 미확정 영역 → 이 지역 재검색 → URL
+  → stationSearchStore → stationApi → StationController
+  → StationQueryService → MapSearchArea·Repository 경계/호환 필터 → 거리·ID순 limit
+
+주소 입력 → placeSearchStore → placeApi → PlaceSearchController
+  → PlaceSearchService → KakaoPlaceSearchClient (서버 키, DB 트랜잭션 없음)
+  → 최대10개 후보 → 선택 위치 변경 → 사용자 검색 확정
+```
+
+- 검색 전에도 지도 열기 가능. 반경 선택 UI는 제거하되 기존 radius API/URL·추천 계약은 유지한다.
+- 결과 교체는 지도와 영역을 보존한다. 상세/뒤로가기/새로고침은 URL의 경계를 복원한다.
+- 유한 좌표·순서·축1도·중심~모서리10km 상한, 경계 포함·필터 후 limit. 너무 넓으면 확대를 안내한다.
+- 주소 Store는 요청 세대/취소와 로딩·성공·빈 결과·오류를 소유한다. 입력 변경/화면 이탈 후 늦은 응답은 버린다.
+- 키 없음503, 인증503, 제한429, timeout504, 외부/계약 오류502. 키/공급자 원문 오류는 공개하지 않는다.
+- [실행 기록](t30-verification.md), [주소·영역 REST Docs](../src/docs/asciidoc/index.adoc), [다음 어댑터 개선 조사](adapter-ownership-research.md).

@@ -2,9 +2,12 @@
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import SearchForm from '../components/SearchForm.vue'
+import PlaceSearch from '../components/PlaceSearch.vue'
+import type { PlaceMatch } from '../api/placeApi'
 import StationCard from '../components/StationCard.vue'
 import StationMap from '../components/StationMap.vue'
 import { parseSearchCriteria, toSearchQuery } from '../criteria'
+import { isSearchArea, searchCriteriaForArea, type SearchArea } from '../searchArea'
 import type { SearchCriteria } from '../types'
 import type { Connector } from '../../charging-info/types'
 import { formatTimestamp } from '../../charging-info/presentation'
@@ -18,7 +21,10 @@ import { useErrorFocus } from '../../../shared/ui/useErrorFocus'
 const route = useRoute()
 const router = useRouter()
 const store = useStationSearchStore()
-const mapVisible = ref(false)
+const mapVisible = ref(route.query.south !== undefined)
+const pendingArea = ref<SearchArea | null>(null)
+const restoredArea = ref<SearchArea | undefined>(undefined)
+const selectedConnector = ref<Connector>('DC_COMBO')
 const selectedStationId = ref<number | null>(null)
 const selectedStation = computed(() => store.response?.stations.find(station => station.id === selectedStationId.value))
 watch(() => store.status, status => {
@@ -30,6 +36,8 @@ const locationLabel = ref('검색 위치')
 const guidance = ref('검색할 위치와 조건을 선택해 주세요.')
 const parsedCriteria = computed(() => parseSearchCriteria(route.query))
 const confirmedCriteria = computed(() => parsedCriteria.value.kind === 'valid' ? parsedCriteria.value.criteria : null)
+const mapCenter = computed(() => selectedLocation.value ?? confirmedCriteria.value ?? { latitude: 37.5665, longitude: 126.978 })
+const validMapArea = computed(() => pendingArea.value !== null && isSearchArea(pendingArea.value))
 const inputError = computed(() => parsedCriteria.value.kind === 'invalid'
   ? new ApiError('validation', '검색 조건을 확인해 주세요', null, 'INVALID_SEARCH_CRITERIA', parsedCriteria.value.fields) : null)
 const fieldErrors = computed(() => (inputError.value ?? store.error)?.fields ?? {})
@@ -40,6 +48,8 @@ watch(() => route.query, () => {
   cancelLocation()
   const criteria = confirmedCriteria.value
   selectedLocation.value = criteria ? { latitude: criteria.latitude, longitude: criteria.longitude } : null
+  restoredArea.value = criteria?.area
+  selectedConnector.value = criteria?.connector ?? 'DC_COMBO'
   locationLabel.value = '검색 위치'
   guidance.value = '검색할 위치와 조건을 선택해 주세요.'
   if (criteria) void store.search(criteria)
@@ -51,25 +61,44 @@ async function selectCurrentLocation(): Promise<void> {
   selectedLocation.value = null
   const coordinates = await requestLocation()
   if (!coordinates || locationStatus.value !== 'success') return
+  restoredArea.value = undefined
   selectedLocation.value = coordinates
   locationLabel.value = '현재 위치'
   guidance.value = '현재 위치를 선택했습니다. 검색 버튼을 눌러 주세요.'
 }
+function selectPlace(place: PlaceMatch): void {
+  cancelLocation()
+  restoredArea.value = undefined
+  selectedLocation.value = { latitude: place.latitude, longitude: place.longitude }
+  locationLabel.value = place.name
+  guidance.value = '장소를 선택했습니다. 주변 충전소 검색 또는 이 지역 재검색을 눌러 주세요.'
+}
 function selectExampleLocation(): void {
   cancelLocation()
+  restoredArea.value = undefined
   selectedLocation.value = { latitude: 37.5, longitude: 127 }
   locationLabel.value = '검증용 예시 위치 · 합성 데모 지역'
   guidance.value = '예시 위치를 선택했습니다. 실제 현재 위치가 아닙니다.'
 }
-async function submitSearch(conditions: { radiusMeters: number; connector: Connector }): Promise<void> {
+async function submitSearch(conditions: { connector: Connector }): Promise<void> {
+  selectedConnector.value = conditions.connector
+  if (mapVisible.value) {
+    if (!pendingArea.value || !validMapArea.value) {
+      guidance.value = '지도가 준비되고 이동이 끝난 후 검색해 주세요. 지도를 사용할 수 없다면 접고 선택 위치 주변을 검색할 수 있습니다.'
+      return
+    }
+    await confirmSearch(searchCriteriaForArea(pendingArea.value, conditions.connector, confirmedCriteria.value?.limit ?? 20))
+    return
+  }
   if (!selectedLocation.value) {
     guidance.value = '검색할 위치를 먼저 선택해 주세요.'
     return
   }
-  const criteria: SearchCriteria = { ...selectedLocation.value, ...conditions, limit: confirmedCriteria.value?.limit ?? 20 }
+  await confirmSearch({ ...selectedLocation.value, ...conditions, radiusMeters: confirmedCriteria.value?.radiusMeters ?? 1000, limit: confirmedCriteria.value?.limit ?? 20 })
+}
+async function confirmSearch(criteria: SearchCriteria): Promise<void> {
   const current = confirmedCriteria.value
-  const keys = ['latitude', 'longitude', 'radiusMeters', 'connector', 'limit'] as const
-  if (current && keys.every(key => current[key] === criteria[key])) {
+  if (current && JSON.stringify(toSearchQuery(current)) === JSON.stringify(toSearchQuery(criteria))) {
     await store.search(criteria)
     return
   }
@@ -78,7 +107,10 @@ async function submitSearch(conditions: { radiusMeters: number; connector: Conne
 function refreshSearch(): void {
   if (confirmedCriteria.value) void store.search(confirmedCriteria.value)
 }
+function receiveMapArea(area: SearchArea | null): void { pendingArea.value = area }
+function searchMapArea(): void { void submitSearch({ connector: selectedConnector.value }) }
 function toggleMap(): void {
+  pendingArea.value = null
   mapVisible.value = !mapVisible.value
   selectedStationId.value = null
 }
@@ -102,13 +134,24 @@ function openDetail(stationId: number): void {
       <h1 id="search-heading">주변 충전소 찾기</h1>
       <p>차량에 맞는 충전소와 정보의 최신성을 함께 확인하세요.</p>
     </div>
+    <div class="search-map-explorer">
+      <button type="button" id="show-map" class="secondary-button" :aria-expanded="mapVisible" aria-controls="station-map-panel" @click="toggleMap">{{ mapVisible ? '지도 접기' : '지도 보기' }}</button>
+      <template v-if="mapVisible">
+        <p>지도를 움직여 찾을 지역을 고른 뒤 ‘이 지역 재검색’을 눌러 주세요. 위치를 선택하지 않았다면 서울 시청 주변에서 시작합니다.</p>
+        <StationMap :stations="store.response?.stations ?? []" :center="mapCenter" :area="restoredArea"
+          :selected-station-id="selectedStationId" @select="selectStation" @area-change="receiveMapArea" />
+        <p v-if="pendingArea && !validMapArea" role="status">검색 영역이 너무 넓거나 지원 범위를 벗어났습니다. 지도를 확대해 주세요.</p>
+        <button id="search-map-area" type="button" class="search-button" :disabled="!validMapArea || store.status === 'loading'" @click="searchMapArea">이 지역 재검색</button>
+        <p>지도 이동만으로 결과는 바뀌지 않습니다. 목록은 마지막으로 조회한 조건의 결과입니다.</p>
+      </template>
+    </div>
     <div class="search-layout">
       <div class="search-panel">
         <div class="panel-heading">
           <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16M8 3v6m8 0v6M8 15v6" /></svg>
           <h2>검색 조건</h2>
         </div>
-        <p class="panel-description">내 차량에 맞는 커넥터와 검색 범위를 선택하세요.</p>
+        <p class="panel-description">내 차량에 맞는 커넥터를 선택하세요. 지도로 지역을 고르거나 선택 위치 주변을 검색할 수 있습니다.</p>
         <div class="location-picker" aria-label="검색 위치 선택">
           <button type="button" class="secondary-button" id="current-location" @click="selectCurrentLocation">현재 위치 사용</button>
           <button type="button" class="secondary-button" id="example-location" @click="selectExampleLocation">검증용 예시 위치 사용</button>
@@ -117,8 +160,9 @@ function openDetail(stationId: number): void {
           <LoadingIndicator v-if="locationStatus === 'loading'" message="현재 위치를 확인하고 있습니다. 최대 10초 기다려 주세요." />
           <p v-if="locationError" ref="locationNotice" tabindex="-1" role="alert">{{ locationError }}</p>
         </div>
-        <SearchForm :key="route.fullPath" :initial-radius-meters="confirmedCriteria?.radiusMeters ?? 1000"
-          :initial-connector="confirmedCriteria?.connector ?? 'DC_COMBO'" :field-errors="fieldErrors" @submit="submitSearch" />
+        <PlaceSearch @select="selectPlace" />
+        <SearchForm :key="route.fullPath"
+          :initial-connector="confirmedCriteria?.connector ?? 'DC_COMBO'" :field-errors="fieldErrors" @change="selectedConnector = $event" @submit="submitSearch" />
         <div class="location-guidance">
           <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7" /><circle cx="12" cy="12" r="2.5" /><path d="M12 2v3m0 14v3M2 12h3m14 0h3" /></svg>
           <div><h3>위치 선택 안내</h3><p class="initial-guidance" role="status">{{ guidance }}</p></div>
@@ -151,19 +195,16 @@ function openDetail(stationId: number): void {
           <button v-if="confirmedCriteria" type="button" class="secondary-button" id="refresh" :disabled="store.status === 'loading'" @click="refreshSearch">새로고침</button>
         </div>
         <RequestState :status="inputError ? 'error' : store.status" :error="inputError ?? store.error" :retryable="!!confirmedCriteria"
-          :focus-error="!fieldErrors.radiusMeters && !fieldErrors.connector" @retry="refreshSearch" />
+          :focus-error="!fieldErrors.connector" @retry="refreshSearch" />
         <template v-if="store.response && confirmedCriteria">
           <p v-if="!store.response.dataReady" class="request-notice" role="status">
             {{ store.response.stations.length ? '전체 수집 완료 전 정보입니다. 일부 충전소만 표시될 수 있습니다.' : '아직 전체 수집이 완료되지 않았습니다. 수집 후 다시 조회해 주세요.' }}
           </p>
-          <p v-else-if="!store.response.stations.length" class="request-notice" role="status">조건에 맞는 충전소가 없습니다. 반경이나 커넥터를 변경해 주세요.</p>
+          <p v-else-if="!store.response.stations.length" class="request-notice" role="status">조건에 맞는 충전소가 없습니다. 지도 위치나 커넥터를 변경해 주세요.</p>
           <p class="results-count">{{ store.response.stations.length }}개 표시 · 최대 {{ confirmedCriteria.limit }}개 표시</p>
-          <p class="results-caution">직선거리 기준입니다. 이용 가능 보고는 도착 시점의 빈자리를 보장하지 않습니다.</p>
+          <p class="results-caution">{{ confirmedCriteria.area ? '지도 중심에서의 직선거리 기준입니다.' : '선택 위치에서의 직선거리 기준입니다.' }} 이용 가능 보고는 도착 시점의 빈자리를 보장하지 않습니다.</p>
           <p class="result-time">조회 시각: {{ formatTimestamp(store.fetchedAt) }}</p>
           <p class="result-time">전체 수집 성공 시각: {{ formatTimestamp(store.response.lastSuccessfulRunAt) }}</p>
-          <button type="button" id="show-map" class="secondary-button" :aria-expanded="mapVisible" aria-controls="station-map-panel" @click="toggleMap">{{ mapVisible ? '지도 접기' : '지도 보기' }}</button>
-          <StationMap v-if="mapVisible" :stations="store.response.stations" :center="confirmedCriteria"
-            :selected-station-id="selectedStationId" @select="selectStation" />
           <p v-if="selectedStation" role="status">선택한 충전소: {{ selectedStation.name }}</p>
           <div class="station-list"><StationCard v-for="station in store.response.stations" :key="station.id" :station="station"
             :detail-href="detailHref(station.id)" :map-selectable="mapVisible" :selected="selectedStationId === station.id"

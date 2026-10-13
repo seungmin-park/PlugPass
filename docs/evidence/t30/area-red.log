@@ -1,0 +1,48 @@
+> Task :compileJava UP-TO-DATE
+> Task :processResources UP-TO-DATE
+> Task :classes UP-TO-DATE
+> Task :compileTestJava
+> Task :processTestResources UP-TO-DATE
+> Task :testClasses
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+
+> Task :test
+
+StationAreaFlowTests > 영역 검색의 빈 결과도 데이터 준비 여부와 함께 반환한다 FAILED
+    org.opentest4j.AssertionFailedError at StationAreaFlowTests.java:66
+
+StationAreaFlowTests > 지도 밖의 더 가까운 충전소를 제외한 뒤 개수 제한을 적용한다 FAILED
+    org.opentest4j.AssertionFailedError at StationAreaFlowTests.java:43
+
+StationAreaFlowTests > 지도 모서리는 포함하고 바로 밖은 제외한다 FAILED
+    org.opentest4j.AssertionFailedError at StationAreaFlowTests.java:56
+
+2026-10-13T15:09:10.236+09:00  INFO 51078 --- [plugpass] [ionShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-10-13T15:09:10.241+09:00  INFO 51078 --- [plugpass] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-10-13T15:09:10.244+09:00  INFO 51078 --- [plugpass] [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-10-13T15:09:10.246+09:00  INFO 51078 --- [plugpass] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-10-13T15:09:10.247+09:00  INFO 51078 --- [plugpass] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+
+> Task :test FAILED
+
+3 tests completed, 3 failed
+
+[Incubating] Problems report is available at: file:///Users/seungmin/Desktop/repo/PlugPass/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':test'.
+> There were failing tests. See the report at: file:///Users/seungmin/Desktop/repo/PlugPass/build/reports/tests/test/index.html
+
+* Try:
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.7.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 4s
+5 actionable tasks: 2 executed, 3 up-to-date

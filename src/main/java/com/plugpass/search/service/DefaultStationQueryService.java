@@ -1,6 +1,9 @@
 package com.plugpass.search.service;
 
 import com.plugpass.search.domain.StationSearchQuery;
+import com.plugpass.search.domain.StationAreaSearchQuery;
+import com.plugpass.search.domain.MapSearchArea;
+import com.plugpass.station.domain.GeoPoint;
 import com.plugpass.search.domain.SearchBounds;
 import com.plugpass.search.dto.ChargerObservation;
 import com.plugpass.search.dto.StationDetail;
@@ -71,17 +74,33 @@ public class DefaultStationQueryService implements StationQueryService {
                 query.connector().providerCodes()).stream()
                 .collect(Collectors.groupingBy(Charger::getStation));
         List<StationMatch> matches = byStation.entrySet().stream()
-                .map(entry -> match(entry.getKey(), entry.getValue(), query, now))
+                .map(entry -> match(entry.getKey(), entry.getValue(), query.location(), now))
                 .filter(station -> station.distanceMeters() <= query.radiusMeters())
                 .sorted(Comparator.comparingDouble(StationMatch::distanceMeters).thenComparing(StationMatch::id))
                 .toList();
         return new StationSearchResult(lastSuccessfulRunAt != null, lastSuccessfulRunAt, matches);
     }
-    private StationMatch match(Station station, List<Charger> chargers, StationSearchQuery query, Instant now) {
+    @Override
+    @Transactional(readOnly = true)
+    public StationSearchResult searchArea(StationAreaSearchQuery query) {
+        Instant now = clock.instant();
+        Instant lastSuccessfulRunAt = syncRunRepository.findFirstByStatusOrderByCompletedAtDesc(SyncStatus.SUCCESS)
+                .map(SyncRun::getCompletedAt).orElse(null);
+        MapSearchArea area = query.area();
+        Map<Station,List<Charger>> byStation = chargerRepository.findSearchCandidates(
+                area.south(), area.north(), area.west(), area.east(), query.connector().providerCodes()).stream()
+                .collect(Collectors.groupingBy(Charger::getStation));
+        List<StationMatch> matches = byStation.entrySet().stream()
+                .map(entry -> match(entry.getKey(), entry.getValue(), area.center(), now))
+                .sorted(Comparator.comparingDouble(StationMatch::distanceMeters).thenComparing(StationMatch::id))
+                .limit(query.limit()).toList();
+        return new StationSearchResult(lastSuccessfulRunAt != null, lastSuccessfulRunAt, matches);
+    }
+    private StationMatch match(Station station, List<Charger> chargers, GeoPoint center, Instant now) {
         List<ChargerObservation> observations = chargers.stream().sorted(Comparator.comparing(charger -> charger.getId().chargerId()))
                 .map(charger -> observation(charger, now)).toList();
         return new StationMatch(station.getDatabaseId(),station.getProvider(),station.getStationId(),station.getName(),
-                station.getLocation(),query.location().distanceMetersTo(station.getLocation()),observations);
+                station.getLocation(),center.distanceMetersTo(station.getLocation()),observations);
     }
     private ChargerObservation observation(Charger charger, Instant now) {
         return new ChargerObservation(charger.getId().chargerId(),charger.getStatus(),charger.getRawStatus(),

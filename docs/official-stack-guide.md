@@ -273,3 +273,13 @@ Vue3.5.43·Pinia4.0.3·Router4.6.4·Axios1.20.0을 유지했다. [Vue watch/clea
 Spring의 classpath static 제공을 사용한다. Gradle이 Node/npm으로 프런트를 설치·타입검사/빌드하고 dist를 static/app에 포함하는 것, hash라우팅과 같은origin API, import경계/브라우저보고서 강제는 프로젝트 설계다. frontendInstall 입력은 lockfile/Node고정값, frontendBuild 입력은 생성물 제외 프런트소스/설정/테스트이며 산출물은 dist다.
 
 최종 검토에서 상세 링크의 modifier 클릭을 확인했다. [Vue 공식 이벤트 문서](https://vuejs.org/guide/essentials/event-handling.html)의 `.exact`, 마우스 버튼 필터, modifier 실행 순서를 설치된 Vue3.5.43의 `modifierGuards`와 대조했다. `exact → left → prevent`는 modifier 없는 주 버튼 클릭만 현재 화면 이동 event로 전달한다. 나머지는 실제 href의 브라우저 기본 동작을 유지한다. 별도 객체나 라우터 의존성을 추가하지 않는 것은 프로젝트 설계 판단이다.
+
+## T30/T31 지도 영역과 카카오 로컬 검색 (2026-10-13)
+
+설치 버전은 기존 Java25·Spring Boot4.1·Vue3·Leaflet1.9.4를 유지한다. 의존성 추가는 없다.
+[Leaflet 1.9.4 Map 공식 태그 소스](https://raw.githubusercontent.com/Leaflet/Leaflet/v1.9.4/src/map/Map.js)의 `getBounds`, `moveend`, `setView`, `fitBounds`를 사용한다. rolling reference의 2.0 alpha와 혼동하지 않는다.
+지도 객체는 SDK 로딩/재시도/해제에만 생성·제거하고 결과 변경은 마커만 교체한다. 지도 열기는 검색 전에도 가능하지만 기본 접힘이며 외부 타일은 사용자 요청 후 로딩한다.
+
+[카카오 Local 공식 REST API](https://developers.kakao.com/docs/ko/local/dev-guide)는 `/v2/local/search/address.json`·`keyword.json`에 `Authorization: KakaoAK ...`, `query`, `size`를 받는다. `x`는 경도, `y`는 위도다.
+프로젝트 판단: 서버만 키를 갖고 버튼/Enter당 각 API1회, 요청당3초, 재시도 없음, 주소 후보 우선 최대10개, 같은 주소·좌표 중복 제거. 외부 대기에 DB 트랜잭션은 열지 않는다. 키 미설정503이어도 기동과 충전소 검색은 정상이다.
+실제 HTTP fixture로 인코딩/헤더·변환·중복·빈 결과·인증/429/5xx/timeout·깨진 응답을 검증한다. 실카카오 인증/계정 쿼터/실제 주소 검색 품질은 키 설정 뒤 별도 확인한다.

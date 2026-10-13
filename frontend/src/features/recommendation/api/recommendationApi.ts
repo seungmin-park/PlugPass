@@ -12,7 +12,8 @@ export async function getRecommendations(criteria: SearchCriteria, excludeStatio
     throw new ApiError('validation', '제외 충전소 ID를 확인해 주세요', null, 'INVALID_STATION_ID',
       { excludeStationId: '제외 충전소 ID는 양의 안전 정수여야 합니다' })
   }
-  const params = { ...requireSearchCriteria(criteria), ...(excludeStationId !== null ? { excludeStationId } : {}) }
+  const { latitude, longitude, radiusMeters, connector, limit } = requireSearchCriteria(criteria)
+  const params = { latitude, longitude, radiusMeters, connector, limit, ...(excludeStationId !== null ? { excludeStationId } : {}) }
   return getValidatedJson('/recommendations', isRecommendationResponse, { params, ...(signal ? { signal } : {}) })
 }
 

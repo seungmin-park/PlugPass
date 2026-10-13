@@ -41,5 +41,6 @@
   "com.plugpass.places.client.KakaoPlaceSearchClientTests",
   "com.plugpass.places.controller.PlaceSearchHttpTests",
   "com.plugpass.search.domain.MapSearchAreaTests",
-  "com.plugpass.ingestion.command.IngestionCommandTests"
+  "com.plugpass.ingestion.command.IngestionCommandTests",
+  "com.plugpass.ingestion.service.StationPageEfficiencyTests"
 ]

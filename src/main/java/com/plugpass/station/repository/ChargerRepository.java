@@ -33,6 +33,9 @@ public interface ChargerRepository extends JpaRepository<Charger, Long> {
             @Param("minLongitude") double minLongitude, @Param("maxLongitude") double maxLongitude,
             @Param("connectorCodes") Set<String> connectorCodes);
 
+    @Query("select charger from Charger charger where charger.id in :identities")
+    List<Charger> findByIdentities(@Param("identities") List<ChargerId> identities);
+
     @Query("select charger from Charger charger where charger.id = :id")
     Optional<Charger> findByIdentity(@Param("id") ChargerId id);
 }

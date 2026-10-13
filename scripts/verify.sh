@@ -9,7 +9,7 @@ fi
 npm --prefix frontend run test:unit
 npm --prefix frontend run type-check
 npm --prefix frontend run lint
-./gradlew clean build --console=plain
+VITE_KAKAO_JS_KEY="${KAKAO_JS_KEY:-}" ./gradlew clean build --console=plain
 bash scripts/frontend-e2e.sh
 python3 scripts/verify-browser.py
 python3 scripts/verify-runtime.py

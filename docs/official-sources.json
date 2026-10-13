@@ -798,5 +798,21 @@
     "cache": ".firecrawl/kakao-local-20261013.html",
     "coverage": "T31 주소·키워드 검색 경로, KakaoAK 인증, query/size, documents 좌표·주소 필드",
     "sha256": "6dc33d05fb95aaba88ba345912c8bb3e953f111899bf3761ded425dbf2abe30a"
+  },
+  {
+    "id": "kakao-map-web-guide",
+    "url": "https://apis.map.kakao.com/web/guide/",
+    "accessed": "2026-10-13",
+    "cache": ".firecrawl/kakao-map-web-guide-20261013.html",
+    "coverage": "T44 JavaScript 키·SDK 도메인 등록·autoload=false·지도 생성",
+    "sha256": "14ac0cb8e69cef8b64ea8d0d56e7829b1b296baadda52d461820eb086958174d"
+  },
+  {
+    "id": "kakao-map-web-docs",
+    "url": "https://apis.map.kakao.com/web/documentation/",
+    "accessed": "2026-10-13",
+    "cache": ".firecrawl/kakao-map-web-docs-20261013.html",
+    "coverage": "T44 Map/LatLng/LatLngBounds/CustomOverlay와 idle·tilesloaded 이벤트",
+    "sha256": "216addab11b44bb06bc357329994c94c822e0d2bb5d25765341574914091cf55"
   }
 ]

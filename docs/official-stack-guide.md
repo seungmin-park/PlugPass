@@ -284,6 +284,10 @@ Spring의 classpath static 제공을 사용한다. Gradle이 Node/npm으로 프�
 프로젝트 판단: 서버만 키를 갖고 버튼/Enter당 각 API1회, 요청당3초, 재시도 없음, 주소 후보 우선 최대10개, 같은 주소·좌표 중복 제거. 외부 대기에 DB 트랜잭션은 열지 않는다. 키 미설정503이어도 기동과 충전소 검색은 정상이다.
 실제 HTTP fixture로 인코딩/헤더·변환·중복·빈 결과·인증/429/5xx/timeout·깨진 응답을 검증한다. 실카카오 인증/계정 쿼터/실제 주소 검색 품질은 키 설정 뒤 별도 확인한다.
 
+## T44 카카오 지도 Web SDK (2026-10-13)
+
+설치된 Vue3.5.43·TypeScript6.0.3·Vite8.3.2에서 외부 npm 의존성 없이 공식 JavaScript SDK를 동적으로 읽는다. [카카오 Web 가이드](https://apis.map.kakao.com/web/guide/)는 JavaScript 키와 해당 키의 SDK 도메인 등록, `autoload=false` 뒤 `kakao.maps.load`를 요구한다. [API 문서](https://apis.map.kakao.com/web/documentation/)의 `Map`, `LatLng`, `LatLngBounds`, `CustomOverlay`와 `idle`·`tilesloaded` 이벤트를 `StationMapSession` 어댑터 뒤에 둔다. DOM 버튼을 CustomOverlay에 넣는 것은 키보드 선택과 사용자 이름의 HTML 삽입 방지를 위한 프로젝트 판단이다. SDK 성공 여부는 스크립트 요청만이 아니라 지도 타일 및 실제 운영 도메인에서 확인한다. CI의 SDK mock은 좌표/선택 계약을 검증하되 카카오 인증·타일 품질을 증명하지 않는다.
+
 ## T33 운영 수집 실행 (2026-10-13)
 
 Java25·Boot4.1.1·MySQL8.4를 유지한다. [MySQL8.4 GET_LOCK](https://dev.mysql.com/doc/refman/8.4/en/locking-functions.html)은 DB 세션이 소유하고 transaction commit과 무관하며 세션 종료 또는 RELEASE_LOCK으로 해제된다. timeout0으로 즉시 획득/거부한다. 풀 연결은 명시적으로 해제 후 반환하고 해제 실패는 연결 abort 후 오류로 보고한다. 단일 VM의 운영 실행 잠금과 함께 사용하며 다중 MySQL 서버 합의 락이라고 표현하지 않는다.

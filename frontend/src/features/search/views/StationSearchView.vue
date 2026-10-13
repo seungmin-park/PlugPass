@@ -199,7 +199,7 @@ function openDetail(stationId: number): void {
         <dl class="information-guide">
           <div>
             <dt><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>관측 시각</dt>
-            <dd>현장에서 상태를 확인한 시각입니다. 정보가 언제 관측됐는지 확인하세요.</dd>
+            <dd>현장에서 상태를 확인한 시각입니다. 공급자가 현장 관측 시각을 제공하지 않으면 확인 불가로 표시합니다.</dd>
           </div>
           <div>
             <dt><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20 8a8 8 0 0 0-14-3L3 8m0-5v5h5M4 16a8 8 0 0 0 14 3l3-3m0 5v-5h-5" /></svg>수집 시각</dt>

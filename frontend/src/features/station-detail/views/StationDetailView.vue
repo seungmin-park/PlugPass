@@ -40,12 +40,15 @@ function refresh(): void { if (stationId.value !== null) void store.loadStation(
     </div>
     <template v-if="store.station">
       <div class="results-heading"><h2>{{ store.station.name }}</h2><button class="secondary-button" type="button" @click="refresh">새로고침</button></div>
-      <p>충전소 ID: {{ store.station.id }} · 공급자: {{ store.station.provider }} · 공급자 충전소 ID: {{ store.station.providerStationId }}</p>
-      <p>위치: {{ store.station.latitude }} / {{ store.station.longitude }}</p>
       <StationDirections :key="store.station.id" :destination="store.station" />
-      <p>조회 시각: {{ formatTimestamp(store.fetchedAt) }}</p>
       <p class="results-caution">이용 가능 보고는 도착 시점의 빈자리를 보장하지 않습니다. 운영 시간과 출입 조건을 확인하세요.</p>
       <ChargerList :chargers="store.station.chargers" />
+      <details class="station-source">
+        <summary>충전소 정보 출처</summary>
+        <p>조회 시각: {{ formatTimestamp(store.fetchedAt) }} · 이 화면이 서버에서 정보를 받은 시각입니다. 현장 관측 시각과 다릅니다.</p>
+        <p>충전소 ID: {{ store.station.id }} · 공급자: {{ store.station.provider }} · 공급자 충전소 ID: {{ store.station.providerStationId }}</p>
+        <p>좌표: {{ store.station.latitude }} / {{ store.station.longitude }}</p>
+      </details>
     </template>
   </section>
 </template>

@@ -524,5 +524,7 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 
 - [x] T43 `fix/location-feedback`: 실제 좌표를 검색·지도에 유지하면서 선택 안내에서 긴 숫자를 제거한다. iOS 첫 권한 거부의 원인은 기기 설정 확인 전까지 미확정으로 기록한다. 로컬 전체 verify 종료0, [실행 기록](docs/t43-location-feedback.md). 필수 CI와 병합은 PR에서 확인한다.
 - [ ] T44 지도·주소 검색: 국내 사용자에게 익숙한 지도와 주소 후보를 한 흐름으로 재설계한다. 카카오 지도 Web SDK의 무료 쿼터 적용 앱 여부, JavaScript 키와 운영 도메인 등록, 실제 사용량을 확인한 뒤 구현한다.
+- [ ] T44a `feat/kakao-map-search`: 카카오 Web SDK 지도 어댑터와 운영 빌드 키 주입을 검증한다. [범위·검증](docs/t44-kakao-map-sdk.md). 운영 도메인 등록·실제 지도 타일은 배포 후 확인한다.
+- [ ] T44b 주소 후보·결과 우선 배치와 운영 REST 키 설정을 별도 기능으로 전달한다.
 
 실행 상세: [모바일 실사용 개선 실행 계획](docs/mobile-ux-implementation-plan.md). 직접 순차 실행, 계획 검토 후 T38부터 시작한다.

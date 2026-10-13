@@ -35,6 +35,7 @@ jobs:
       - name: Verify guardrails, frontend, build, required tests and packaged HTTP endpoints
         env:
           CI: 'true'
+          KAKAO_JS_KEY: ${{ secrets.KAKAO_JS_KEY }}
         run: bash scripts/verify.sh
       - name: Package the verified deployment JAR with web assets
         env:

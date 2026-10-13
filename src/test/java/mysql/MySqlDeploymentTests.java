@@ -227,6 +227,10 @@ class MySqlDeploymentTests {
             assertThat(skipped.status()).isEqualTo(SyncStatus.SKIPPED);
             assertThat(skipped.requestCount()).isZero();
             assertThat(context.getBean(SyncRunRepository.class).count()).isZero();
+            try (ResultSet result = statement.executeQuery("select RELEASE_LOCK('plugpass.ingestion')")) {
+                assertThat(result.next()).isTrue();
+                assertThat(result.getInt(1)).isEqualTo(1);
+            }
         }
         SyncResult resumed = context.getBean(StationSyncService.class).synchronize();
         assertThat(resumed.status()).isEqualTo(SyncStatus.FAILURE);

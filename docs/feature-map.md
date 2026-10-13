@@ -247,7 +247,7 @@ main push → 기존 CI 전체 gate → 성공한 CI artifact
 
 ## T35 상태 변경분 수집
 
-CLI `--plugpass.ingestion.command.mode=auto` → ScheduledSyncService/CollectionSchedule → 기본정보 또는 StatusSyncService → DB 잠금/공공 상태 API → StatusUpsertService/Charger. 검증: CollectionScheduleTests, IngestionCommandTests, StatusSyncTests, StatusUpsertTests, ChargerStatusChangeTests, CollectionReadinessTests 및 실제 MySQL 배포 계약. [실행·한계](status-sync-verification.md). 수집 상태 화면과 운영 타이머는 후속이다.
+CLI `--plugpass.ingestion.command.mode=auto` → ScheduledSyncService/CollectionSchedule → 기본정보 또는 StatusSyncService → DB 잠금/공공 상태 API → StatusUpsertService/Charger. 검증: CollectionScheduleTests, IngestionCommandTests, StatusSyncTests, StatusUpsertTests, ChargerStatusChangeTests, CollectionReadinessTests 및 실제 MySQL 배포 계약. [실행·한계](status-sync-verification.md). 수집 상태 화면은 T36, 운영 타이머·백업은 별도 운영 PR4로 전달했다. [운영 실행·머지 기록](production-data-verification.md)을 따른다.
 
 ## T36 수집 상태 안내
 

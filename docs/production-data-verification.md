@@ -36,7 +36,7 @@ Red: 20개 기존 충전기를 같은 페이지로 다시 저장할 때 Hibernat
 | 전국 페이지 저장 병목 | [#58](https://github.com/seungmin-park/PlugPass/pull/58) | 필수 CI·머지·배포 후 전체527178건 수집 성공 |
 | 상태 변경분·누락 복구 | [#59](https://github.com/seungmin-park/PlugPass/pull/59) | head e143766 CI38377444905 성공, native auto-merge dab999e, main CI38378536599·CD38379199727 성공 |
 | 수집 상태 API·화면 | [#60](https://github.com/seungmin-park/PlugPass/pull/60) | head12449e7 CI38379069778 성공, native auto-merge13e9bee, main CI38379835959·CD38380315850 성공 |
-| 운영 타이머·백업 | [운영 #4](https://github.com/seungmin-park/gcp-deployment/pull/4) | 대상13/최종 전체167 테스트 성공, 운영 systemd 구문 검증·타이머 활성화. 저장소 보호 규칙 조회는 요금제 제한403 |
+| 운영 타이머·백업 | [운영 #4](https://github.com/seungmin-park/gcp-deployment/pull/4) | 대상13/최종 전체167 테스트 성공, 운영 systemd 구문 검증·타이머 활성화. CI38381542725/38381543506 성공, 후속 continue에 따라 일반 squash 머지a13aead |
 
 ### 실제 최초 수집과 보존
 
@@ -61,8 +61,18 @@ Red: 20개 기존 충전기를 같은 페이지로 다시 저장할 때 Hibernat
 - run3 CATALOG: 09:53:04Z→10:02:07Z, 전체527178건·53요청·재시도0·종료0. 마지막 성공 공백을 감지한 auto 모드의 실제 전체 복구이며 기존 충전기를 중복 생성하지 않았다.
 - 10:05 타이머의 run4 STATUS: 10:05:44Z→10:06:17Z, 상태 변경16687건 성공. systemd Result=success/ExecMainStatus=0, DB 전체527178건 유지. 다음 타이머10:10Z, 백업17:30Z(다음 날02:30 KST) 예약을 확인했다.
 - PR60 배포 release `plugpass-51e6772446b0`/green. 기존 SPA는 hash 이동만으로 새 번들을 읽지 않아 full reload 후 검증했다. 같은 cmux browser surface1000050013의375×812 화면에서 새로고침을 실제 클릭하고 수집 정상·성공 시각2026-10-13 19:06:17 KST·충전소18개를 확인했다. browser errors0/console entries0. 관측 시각이 없는 충전기의 최신성 확인 불가 안내는 유지된다.
-- 운영 PR4 CI38379596532는 외부 DEMP main의 fixture 테이블 수 변경(15→17)으로 실패했다. 기존 전환 assertion을 유지하고 검증 기록의 DEMP 소스7981f365dd086745b76993f08b108d46635a044b로 checkout을 고정했다. 고정 계약 Red1→Green2, 전체167건 통과. 최종 head6574de3의 원격 결과는 PR4 체크에서 추적한다. 실제 DEMP 서비스는 변경하지 않았다.
+- 운영 PR4 CI38379596532는 외부 DEMP main의 fixture 테이블 수 변경(15→17)으로 실패했다. 기존 전환 assertion을 유지하고 검증 기록의 DEMP 소스7981f365dd086745b76993f08b108d46635a044b로 checkout을 고정했다. 고정 계약 Red1→Green2, 전체167건 통과. 최종 head6574de3의 CI38381542725/38381543506 모두 성공했다. 실제 DEMP 서비스는 변경하지 않았다.
 
 ### 남은 운영 한계
 
-자동 원격 백업·외부 알림 수신자는 아직 설정하지 않았다. 현 상태는 systemd 실패/재시도·journal 로그와 API/화면 지연 안내까지다. 백업 타이머 설치와 실제 수동 백업/복원은 확인했지만 다음02:30 예약 실행은 아직 관측 전이다. 성공 검증본은7일 보관하며 실패한 부분 백업의 자동 정리는 없다. 중단 run1의 RUNNING 이력 자동 정리와 저장 이력 보존 기간은 후속 정책이 필요하다. 운영 저장소의 보호 API403 때문에 PR4의 보호된 자동 머지는 실행하지 않는다.
+자동 원격 백업·외부 알림 수신자는 아직 설정하지 않았다. 현 상태는 systemd 실패/재시도·journal 로그와 API/화면 지연 안내까지다. 백업 타이머 설치와 실제 수동 백업/복원은 확인했지만 다음02:30 예약 실행은 아직 관측 전이다. 성공 검증본은7일 보관하며 실패한 부분 백업의 자동 정리는 없다. 중단 run1의 RUNNING 이력 자동 정리와 저장 이력 보존 기간은 후속 정책이 필요하다. 운영 저장소의 보호 API403과 native auto-merge 비활성화는 유지된다. PR4는 후속 사용자 지시에 따라 아래와 같이 일반 머지했다.
+
+### 운영 저장소 머지 제한 설명과 후속 전달
+
+사용자가 기존 머지와 차이를 질문해 재조회했다. gcp-deployment는 private/allow_auto_merge=false이며 protection/rulesets 조회는 요금제403이지만 일반 머지 자체는 가능했다. 과거 PR1/2도 실제 머지 이력이 있다. PlugPass 저장소의 보호된 자동 머지와 다른 조건이다. 이를 설명한 뒤 사용자 continue에 따라 이 PR의 일반 머지를 진행했다. 일반 전달 규칙을 저장소 전체에서 완화한 것으로 해석하지 않는다.
+
+- PR4 head6574de314a7cd5a5424099ecb2e864053cf41770, base d8419fe. CI38381542725/38381543506의 verify/runtime 모두 SUCCESS, mergeStateStatus CLEAN을 확인했다.
+- `gh pr merge 4 --repo seungmin-park/gcp-deployment --squash --match-head-commit 6574de314a7cd5a5424099ecb2e864053cf41770` 후2026-10-13T10:40:02Z에 MERGED, main a13aeaddd83d3830ac68c8f769e9a22681abad08을 확인했다. native auto-merge나 보호 규칙 강제를 수행했다고 보고하지 않는다.
+- 실제 JVM 전환 CI는 요청1800건·오류/타임아웃0·쓰기36건 재조회 일치·복구 시나리오4개 통과다. 격리 DEMP fixture이며 운영 DEMP 전환 결과로 확대하지 않는다.
+- 배포 중10:25 수집은 stable 검사에서 시작 전에 거부됐다. 별도 수동 실행 없이10:30 타이머가 새 배포 JAR로 run8 STATUS를 시작해10:31:08Z에13534건 SUCCESS·종료0을 확인했고 전체527178건은 유지됐다.
+- 머지 후 main CI의 최종 결과는 [운영 PR4](https://github.com/seungmin-park/gcp-deployment/pull/4)의 전달 기록에서 확인한다.

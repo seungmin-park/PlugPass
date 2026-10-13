@@ -22,3 +22,8 @@ PR #57 main1e7b91b의 CI38368626850·CD38369290604 성공 후 같은 JAR로 운�
 Red: 20개 기존 충전기를 같은 페이지로 다시 저장할 때 Hibernate query 실행40회, 상한2 assertion 실패(`page-efficiency-red.log`). Green: 페이지의 충전기 식별자와 충전소 목록을 먼저 읽고 map에서 기존 객체를 찾아 갱신해 조회2회 이내로 제한했다. 동일페이지 중복 객체와 관측 시각 거부·페이지 rollback은 기존 서비스/수집 테스트로 함께 확인했다. 단건 upsert 계약은 유지한다. IDENTITY insert를 임의 flush/clear로 숨기거나 bulk SQL로 도메인 규칙을 우회하지 않는다. 실제 전국 완료 시간은 재배포 후 재수집으로 별도 확인한다.
 
 저장 병목 수정 공용 verify 종료0: Java429·프런트350·Python32·개발30·빈DBJAR4·MySQL8·재시작JAR7. 실패/오류/skip0. `/tmp/plugpass-production/performance-verify.log`·`.exit`, 별도 worktree `/private/tmp/plugpass-performance`의 runtime/MySQL 보고서. 운영 미검증 효과를 로컬 건수 개선과 구분한다.
+
+### PR58 원격 잠금 테스트 순서 보정
+
+- CI 38372016598에서 연결 종료 직후 재수집이 `SKIPPED`를 반환했다. TCP 연결 종료가 서버의 잠금 해제 완료를 보장하는 동기화 지점은 아니므로, 테스트 소유 연결에서 `RELEASE_LOCK` 응답 1을 확인한 뒤 재수집한다. 운영 잠금 구현도 명시적 해제를 사용한다.
+- 수정 후 `python3 scripts/verify-mysql.py --tests-only`: MySQL 8개 통과, 종료 0. 성능 수정의 전체 검증 결과는 위 기록을 유지한다.

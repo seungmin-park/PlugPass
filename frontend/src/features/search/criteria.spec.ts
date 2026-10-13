@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { parseSearchCriteria } from './criteria'
+import { parseSearchCriteria, toSearchQuery } from './criteria'
 
 describe('URL 검색 조건', () => {
   const query = { latitude: '37.5', longitude: '127', radiusMeters: '1000', connector: 'DC_COMBO' }
@@ -39,5 +39,26 @@ describe('URL 검색 조건', () => {
   })
   it.each(['DC_CHADEMO', 'AC_SLOW', 'AC_THREE_PHASE', 'DC_COMBO', 'NACS'])('%s 커넥터를 허용한다', connector => {
     expect(parseSearchCriteria({ ...query, connector })).toMatchObject({ kind: 'valid', criteria: { connector } })
+  })
+  it('차량에서 고른 여러 규격을 URL로 왕복하고 기존 단일 규격은 보존한다', () => {
+    const multi = { latitude: 37.5, longitude: 127, radiusMeters: 1000, connector: 'DC_COMBO' as const,
+      connectors: ['DC_COMBO', 'AC_SLOW'] as const, vehicleId: 'tesla-kr', adapterIds: ['tesla-ccs1', 'tesla-j1772'],
+      vehicleSupportConfirmed: true, limit: 20 }
+    const encoded = toSearchQuery(multi)
+    expect(encoded).toMatchObject({ connectors: 'DC_COMBO,AC_SLOW', vehicleId: 'tesla-kr', adapterIds: 'tesla-ccs1,tesla-j1772', vehicleSupportConfirmed: '1' })
+    expect(encoded).not.toHaveProperty('connector')
+    expect(parseSearchCriteria(encoded)).toEqual({ kind: 'valid', criteria: { ...multi, connectors: [...multi.connectors] } })
+    expect(toSearchQuery({ latitude: 37.5, longitude: 127, radiusMeters: 1000, connector: 'DC_COMBO', limit: 20 })).toHaveProperty('connector', 'DC_COMBO')
+  })
+  it('어댑터가 없는 확인된 차량 URL도 왕복한다', () => {
+    const criteria = { latitude: 37.5, longitude: 127, radiusMeters: 1000, connector: 'DC_COMBO' as const,
+      connectors: ['DC_COMBO'] as const, vehicleId: 'kona-electric-2020-kr', adapterIds: [] as const, limit: 20 }
+    expect(parseSearchCriteria(toSearchQuery(criteria))).toEqual({ kind: 'valid', criteria: { ...criteria, connectors: ['DC_COMBO'], adapterIds: [] } })
+  })
+  it('빈·중복·미지원 규격과 단일/복수 혼합 URL을 거부한다', () => {
+    for (const connectors of ['', 'DC_COMBO,DC_COMBO', 'DC_COMBO,UNKNOWN']) {
+      expect(parseSearchCriteria({ ...query, connector: undefined, connectors })).toMatchObject({ kind: 'invalid', fields: { connectors: expect.any(String) } })
+    }
+    expect(parseSearchCriteria({ ...query, connectors: 'DC_COMBO,AC_SLOW' })).toMatchObject({ kind: 'invalid', fields: { connectors: expect.any(String) } })
   })
 })

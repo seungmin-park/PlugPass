@@ -34,6 +34,18 @@ connector 한 값 / connectors 여러 값 → 요청 검증 → ConnectorSelecti
 
 두 입력을 함께 보내면 400이다. 합집합 SQL 조회에서 조합형 충전기 한 대는 한 번만 반환하고, 호환 필터와 정렬 뒤 limit을 적용한다. 기존 단일 규격 URL과 응답 구조는 유지한다. 검색/지도 영역/추천 세 요청이 같은 입력 규칙을 사용한다. 서버는 차량과 어댑터 보유 여부를 추정하지 않는다. [실행 근거](t42a-verification.md).
 
+## T42b 차량 정보와 이번에 사용할 어댑터
+
+```text
+제조사 근거가 있는 차량 / 목록에 없는 차량 → SearchForm
+        ├─ 차량 카탈로그 → VehicleCompatibility → 직접 규격
+        ├─ 이번에 사용할 어댑터 + 차량 지원 확인 → 어댑터 규격
+        └─ 직접 확인한 충전구 → 기존 단일 규격
+선택 조건 → URL·SearchCriteria → 검색/지도 영역/추천 API → 결과·상세·후보 복귀
+```
+
+`vehicleCatalog`는 확인한 국내 차량 자료와 출처·확인일을, `vehicleCompatibility`는 직접/어댑터/확인 필요 판단을 소유한다. 화면은 어댑터 보유를 추정하지 않고 이번 사용과 차량 지원 확인을 받아야 검색에 포함한다. 현재 자동 확정 차량은 국내 2020 코나 일렉트릭의 DC 콤보뿐이다. Tesla 국내 차량은 연식·개별 차량 충전 사양을 자동 확정하지 않으며 사용자가 지원을 확인한 공식 어댑터 규격만 추가한다. 목록에 없는 차량은 설명서를 확인한 뒤 직접 규격을 선택한다. `vehicleProfile`은 저장 실패·오래된 ID를 안전하게 처리한다. 검색 URL은 단일 `connector`와 복수 `connectors`를 모두 복원하고, 결과에는 직접/선택 어댑터 조건을 설명한다. [실행 근거](t42b-verification.md).
+
 `StationNavigation.spec.ts`12건과 `navigationLinks.spec.ts`19건: Android/iOS/iPadOS/desktop, 목적지·특수문자·좌표 경계·로딩/실패·교체. `navigation.spec.ts`3건: 실제 수집/DB 상세→선택→앱 전달 URL→웹 새 탭→검색 복귀·다른 목적지와 키보드 조작. 개발 E2E와 재시작된 MySQL을 사용하는 운영 JAR에서 같은 spec을 실행한다. 앱 실행 경계만 가로채므로 실제 휴대폰 앱 실행은 미확인이다. [검증·실패·한계](t28-verification.md).
 
 ## T29 처리 중 시각적 표시

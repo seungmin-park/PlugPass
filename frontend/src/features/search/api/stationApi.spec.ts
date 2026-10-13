@@ -11,6 +11,14 @@ afterEach(() => { httpClient.defaults.adapter = originalAdapter })
 const criteria = { latitude: 37.5, longitude: 127, radiusMeters: 1000, connector: 'DC_COMBO' as const, limit: 20 }
 
 describe('주변 검색 API', () => {
+  it('차량의 여러 규격은 단일 규격과 중복 전달하지 않는다', async () => {
+    const adapter = vi.fn<AxiosAdapter>(async config => jsonResponse(config, search))
+    httpClient.defaults.adapter = adapter
+    await getStations({ ...criteria, connectors: ['DC_COMBO', 'AC_SLOW'] })
+    expect(adapter).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ params: {
+      latitude: 37.5, longitude: 127, radiusMeters: 1000, connectors: 'DC_COMBO,AC_SLOW', limit: 20,
+    } }))
+  })
   it('정확한 경로·조건·10초 timeout·취소 signal을 보내고 nullable 시각을 보존한다', async () => {
     const signal = new AbortController().signal
     const adapter = vi.fn<AxiosAdapter>(async config => {

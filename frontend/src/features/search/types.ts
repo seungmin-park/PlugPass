@@ -6,8 +6,13 @@ export interface SearchCriteria {
   longitude: number
   radiusMeters: number
   connector: Connector
+  connectors?: readonly Connector[]
+  vehicleId?: string
+  adapterIds?: readonly string[]
+  vehicleSupportConfirmed?: boolean
   limit: number
 }
+export type SearchConditions = Pick<SearchCriteria, 'connector' | 'connectors' | 'vehicleId' | 'adapterIds' | 'vehicleSupportConfirmed'>
 export type SearchCriteriaResult =
   | { kind: 'empty' }
   | { kind: 'valid'; criteria: SearchCriteria }

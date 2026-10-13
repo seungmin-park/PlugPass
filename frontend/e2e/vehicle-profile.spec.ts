@@ -1,0 +1,51 @@
+import { test, expect } from './fixtures'
+
+test('차량 선택과 이번에 사용할 어댑터가 검색·상세·후보 URL에 이어진다', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await page.goto('/app/index.html#/stations')
+  await page.context().grantPermissions(['geolocation'])
+  await page.context().setGeolocation({ latitude: 37.5, longitude: 127 })
+  await page.getByRole('button', { name: '현재 위치 사용', exact: true }).click()
+  await page.getByRole('button', { name: '주변 충전소 검색' }).click()
+  await expect(page.getByRole('alert')).toContainText('차량을 먼저 선택해 주세요')
+  await page.getByLabel('내 차량').selectOption('tesla-kr')
+  await page.getByRole('checkbox', { name: /Tesla CCS 콤보 1 어댑터/ }).check()
+  await page.getByRole('checkbox', { name: /Tesla J1772 어댑터/ }).check()
+  await page.getByRole('button', { name: '주변 충전소 검색' }).click()
+  await expect(page.getByRole('alert')).toContainText('차량 지원 여부를 확인해 주세요')
+  await page.getByRole('checkbox', { name: /내 차량에서 선택한 어댑터 사용 가능 여부/ }).check()
+  const response = page.waitForResponse(value => value.url().includes('/api/v1/stations?'))
+  await page.getByRole('button', { name: '주변 충전소 검색' }).click()
+  expect(new URL((await response).url()).searchParams.get('connectors')).toBe('DC_COMBO,AC_SLOW')
+  await expect(page.getByRole('link', { name: '데모 가까운 충전소 상세 보기' })).toBeVisible()
+  await expect(page.getByText(/이번에 선택한 어댑터를 사용할 조건으로 찾았습니다/)).toBeVisible()
+  await expect(page).toHaveURL(/connectors=DC_COMBO,AC_SLOW/)
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+  await page.getByRole('link', { name: '데모 가까운 충전소 상세 보기' }).click()
+  await expect(page).toHaveURL(/connectors=DC_COMBO,AC_SLOW/)
+  await page.getByRole('link', { name: '다른 충전소 찾기' }).click()
+  await expect(page).toHaveURL(/connectors=DC_COMBO,AC_SLOW/)
+  await page.goto('/app/index.html#/stations')
+  await expect(page.getByLabel('내 차량', { exact: true })).toHaveValue('tesla-kr')
+  await expect(page.getByRole('checkbox', { name: /Tesla CCS 콤보 1 어댑터/ })).toBeChecked()
+})
+
+test('320px에서 직접 규격을 바꿔도 선택지 위치와 크기가 흔들리지 않는다', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 812 })
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.goto('/app/index.html#/stations')
+  await page.getByLabel('내 차량').selectOption('manual')
+  const labels = page.locator('.connector-options .filter-option span')
+  const before = await labels.evaluateAll(elements => elements.map(element => {
+    const rect = element.getBoundingClientRect()
+    return { x: rect.x, y: rect.y + scrollY, width: rect.width, height: rect.height }
+  }))
+  await page.getByText('NACS', { exact: true }).click()
+  await expect(page.getByRole('radio', { name: 'NACS', exact: true })).toBeChecked()
+  const after = await labels.evaluateAll(elements => elements.map(element => {
+    const rect = element.getBoundingClientRect()
+    return { x: rect.x, y: rect.y + scrollY, width: rect.width, height: rect.height }
+  }))
+  expect(after).toEqual(before)
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+})

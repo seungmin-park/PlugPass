@@ -70,16 +70,16 @@
 
 전달은 두 기능 PR로 나눈다. T42a `feat/multi-connector-search`가 기존 단일 규격을 보존하며 다중 규격 검색·추천 API를 제공한다. T42b `feat/vehicle-profile`이 차량/어댑터 입력과 URL·화면을 새 API에 연결한다. 각 PR은 별도로 전체 verify·필수 CI·보호된 자동 머지를 확인한다.
 
-대상: 새 frontend/src/features/vehicle/{vehicleCatalog.ts,vehicleCompatibility.ts,vehicleProfile.ts}·각 spec과 VehicleSelector.vue·spec, 검색 criteria/types/API/store/View·추천 API, Java search/recommendation의 request/query/service/repository와 기존 대응 테스트, REST Docs.
+대상: frontend/src/features/vehicle/{vehicleCatalog.ts,vehicleCompatibility.ts,vehicleProfile.ts}·대응 spec, 기존 SearchForm.vue·spec, 검색 criteria/types/API/View·추천 API, Java search/recommendation의 request/query/service/repository와 기존 대응 테스트, REST Docs.
 
 계약: VehicleSelector는 검증된 카탈로그 ID와 선택한 어댑터 ID를 전달한다. 차량 정보에는 시장·연식 구분과 공식 출처/확인일을 둔다. 정책 결과는 직접 연결 규격/선택 어댑터 규격/확인 필요를 구분한다. API는 connector(기존 단일 값)와 connectors(새 다중 값) 충돌을 400으로 거부하고 어느 것도 없으면 입력 오류로 처리한다. 지원 차량을 확정하기 전 공식 제조사 자료를 조사하며 불확실한 조합은 카탈로그에 넣지 않는다.
 
-- [ ] Red: 정책의 직접/어댑터 미선택/사용 선택/미지원 조합·시장/연식 미확인, 프로필 저장 실패/오래된 카탈로그 ID를 검증한다.
-- [ ] Green: 국내 검증 가능한 최소 카탈로그와 차량 입력·미등록 차량의 직접 규격 설정을 제공한다. 보유 어댑터를 자동 가정하지 않는다.
+- [x] Red: 정책의 직접/어댑터 미선택/사용 선택/미지원 조합·시장/연식 미확인, 프로필 저장 실패/오래된 카탈로그 ID를 검증한다. [T42b 실행 기록](t42b-verification.md).
+- [x] Green: 국내 검증 가능한 최소 카탈로그와 차량 입력·미등록 차량의 직접 규격 설정을 제공한다. 보유 어댑터를 자동 가정하지 않는다.
 - [x] Backend Red/Green: 다중 규격 합집합·같은 chargerId 중복 집계 방지·호환 필터 후 limit·추천 동일 정책·구 규격 URL을 실제 Repository/Service/HTTP 경계에서 검증한다. 상태/거리 정렬 계약은 유지한다. [T42a 실행 기록](t42a-verification.md).
-- [ ] Frontend Red/Green: 차량 선택→API·URL·뒤로가기/상세/추천 조건 유지, 오류/응답 역전, 선택 표시 공간 고정·reduced motion을 검증한다.
-- [ ] 공식 자료·REST Docs·기능 지도·필수 테스트 목록 갱신, 전체 Java/프런트/MySQL/공용 verify·cmux 개발/배포 브라우저 후 기록/PR/CI/머지.
+- [x] Frontend Red/Green: 차량 선택→API·URL·뒤로가기/상세/추천 조건 유지, 오류/응답 역전, 선택 표시 공간 고정·reduced motion을 검증한다.
+- [x] 공식 자료·REST Docs·기능 지도·필수 테스트 목록 갱신, 전체 Java/프런트/MySQL/공용 verify·cmux 개발/배포 Chromium headless 검증. [T42b 실행 기록](t42b-verification.md). PR 필수 CI·병합은 PR 생성 후 확인한다.
 
 ## 실행 환경과 증거
 
-현재 호출 확인: workspace:1000050003 / surface:1000050003. 보조 pane:1000050009가 있어 실행 전에 그 surface의 용도를 확인하고 재사용한다. 재개 시 ID를 다시 확인한다. 테스트 보고서·종료 코드와 실패 원인을 기능별 docs/tNN-verification.md에 기록한다. 문서 검토는 제품 테스트 통과로 보고하지 않는다.
+현재 호출 확인: workspace:1000050003 / surface:1000050003. 보조 pane:1000050011 / surface:1000050020을 재사용한다. 재개 시 ID를 다시 확인한다. 사용자의 2026-10-13 요청에 따라 Chromium은 headless로 실행하며 명령·로그를 cmux 보조 터미널에 보인다. headless 브라우저를 보이는 화면이라고 표현하지 않는다. 테스트 보고서·종료 코드와 실패 원인을 기능별 docs/tNN-verification.md에 기록한다. 문서 검토는 제품 테스트 통과로 보고하지 않는다.

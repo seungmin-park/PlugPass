@@ -510,14 +510,14 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 
 ## 모바일 실사용 개선 — T38~T42
 
-설계 검토 대기. [코드 근거·동작·실패 조건·검증](docs/mobile-ux-improvement-plan.md). 기능별 순차 PR·CI·보호된 자동 머지, 작업 목적의 브랜치/worktree 이름을 사용한다.
+설계·구현·검증 진행. [코드 근거·동작·실패 조건·검증](docs/mobile-ux-improvement-plan.md). 기능별 순차 PR·CI·보호된 자동 머지, 작업 목적의 브랜치/worktree 이름을 사용한다.
 
 - [x] T38 `fix/ios-location-recovery-work`: 위치 실패 분류·권한 변경 후 재요청·주소 대안·운영 합성 예시 제거. 로컬 전체verify 종료0, [실행 기록](docs/t38-verification.md). [PR63](https://github.com/seungmin-park/PlugPass/pull/63) 필수 CI 성공·main68cf84c 실제 병합 확인. iOS 실기기 성공은 미검증.
 - [x] T39 `feat/search-results-first`: 결과 우선 배치·조건 접기·주소 선택/지도/검색 동기화·모바일 첫 결과 검증. [실행 기록](docs/t39-verification.md), 로컬 전체verify 종료0. [PR64](https://github.com/seungmin-park/PlugPass/pull/64) 필수 CI 성공·main9a0126f 실제 병합 확인.
 - [x] T40 `feat/station-quick-directions`: 카드/마커→하단 패널→길찾기, 앱 선호 재사용·변경·초점/실패 복구. [실행 기록](docs/t40-verification.md), 로컬 전체 verify 종료0. [PR65](https://github.com/seungmin-park/PlugPass/pull/65) 필수 CI 성공·main488c374 실제 병합 확인.
 - [x] T41 `feat/charging-information-summary`: 이용 조건 요약·시각 의미 설명·원본 정보 접기·빈 데이터 정리. [실행 기록](docs/t41-verification.md), 로컬 전체 verify 종료0. [PR66](https://github.com/seungmin-park/PlugPass/pull/66) 필수 CI 성공·main2129ed3 실제 병합 확인.
-- [x] T42a `feat/multi-connector-search`: T32 후속 다중 규격 검색/추천 API·중복 방지·기존 단일 요청 호환. [실행 기록](docs/t42a-verification.md), headless Chromium 포함 로컬 전체 verify 종료0. PR/CI/머지는 전달 후 확인.
-- [ ] T42b `feat/vehicle-profile`: 공식 근거 차량 카탈로그·이번에 사용할 어댑터·차량 조건 URL/추천 연결·선택 시 레이아웃 안정화.
+- [x] T42a `feat/multi-connector-search`: T32 후속 다중 규격 검색/추천 API·중복 방지·기존 단일 요청 호환. [실행 기록](docs/t42a-verification.md), headless Chromium 포함 로컬 전체 verify 종료0. [PR67](https://github.com/seungmin-park/PlugPass/pull/67) 필수 CI 성공·main9dc615d 실제 병합 확인.
+- [x] T42b `feat/vehicle-profile`: 공식 근거 차량 카탈로그·이번에 사용할 어댑터·차량 조건 URL/추천 연결·선택 시 레이아웃 안정화. 주소·지도 검색의 프로필 저장 누락 Red/Green 포함. 로컬 전체 verify 종료0, [실행 기록](docs/t42b-verification.md). 필수 CI·머지 결과는 PR에서 확인한다.
 - [ ] 각 기능의 실제 Red/Green·전체 verify·cmux·PR head CI·실제 병합 근거를 연결한다.
 
 실행 상세: [모바일 실사용 개선 실행 계획](docs/mobile-ux-implementation-plan.md). 직접 순차 실행, 계획 검토 후 T38부터 시작한다.

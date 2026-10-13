@@ -12,8 +12,9 @@ import { useNavigationPreferenceStore } from '../../station-detail/navigation/na
 import type { StationSummary } from '../types'
 import { parseSearchCriteria, toSearchQuery } from '../criteria'
 import { isSearchArea, searchCriteriaForArea, type SearchArea } from '../searchArea'
-import type { SearchCriteria } from '../types'
-import type { Connector } from '../../charging-info/types'
+import type { SearchConditions, SearchCriteria } from '../types'
+import { clearVehicleProfile, readVehicleProfile, saveVehicleProfile } from '../../vehicle/vehicleProfile'
+import { resolveVehicleCompatibility } from '../../vehicle/vehicleCompatibility'
 import { formatTimestamp } from '../../charging-info/presentation'
 import { useStationSearchStore } from '../stores/stationSearchStore'
 import { useCurrentLocation, type LocationCoordinates } from '../../../shared/location/useCurrentLocation'
@@ -32,7 +33,17 @@ const conditionsOpen = ref(false)
 const resultsHeading = ref<HTMLElement | null>(null)
 const pendingArea = ref<SearchArea | null>(null)
 const restoredArea = ref<SearchArea | undefined>(undefined)
-const selectedConnector = ref<Connector>('DC_COMBO')
+const savedProfile = ref((() => { try { return readVehicleProfile(window.localStorage) } catch { return null } })())
+const savedConditions = computed<SearchConditions | null>(() => {
+  const profile = savedProfile.value
+  if (!profile) return null
+  const compatibility = resolveVehicleCompatibility(profile)
+  const connector = compatibility.connectors[0]
+  if (compatibility.requiresConfirmation || !connector) return null
+  return { connector, connectors: compatibility.connectors, vehicleId: profile.vehicleId, adapterIds: profile.adapterIds,
+    ...(profile.vehicleSupportConfirmed ? { vehicleSupportConfirmed: true } : {}) }
+})
+const selectedConditions = ref<SearchConditions | null>(savedConditions.value)
 const selectedStationId = ref<number | null>(null)
 const selectedStation = computed(() => store.response?.stations.find(station => station.id === selectedStationId.value))
 watch(() => store.status, status => {
@@ -44,6 +55,15 @@ const locationLabel = ref('검색 위치')
 const guidance = ref('검색할 위치와 조건을 선택해 주세요.')
 const parsedCriteria = computed(() => parseSearchCriteria(route.query))
 const confirmedCriteria = computed(() => parsedCriteria.value.kind === 'valid' ? parsedCriteria.value.criteria : null)
+const vehicleResultMessage = computed(() => {
+  const criteria = confirmedCriteria.value
+  if (!criteria?.vehicleId) return null
+  const compatibility = resolveVehicleCompatibility({ vehicleId: criteria.vehicleId, adapterIds: [...(criteria.adapterIds ?? [])],
+    vehicleSupportConfirmed: criteria.vehicleSupportConfirmed ?? false })
+  if (compatibility.direct.length && compatibility.viaAdapter.length) return '직접 연결 또는 이번에 선택한 어댑터를 사용할 조건으로 찾았습니다. 충전기별 연결 규격을 확인해 주세요.'
+  if (compatibility.viaAdapter.length) return '이번에 선택한 어댑터를 사용할 조건으로 찾았습니다. 충전기별 이용 가능 여부를 확인해 주세요.'
+  return '차량 자료에서 확인된 직접 연결 규격으로 찾았습니다.'
+})
 const mapCenter = computed(() => selectedLocation.value ?? confirmedCriteria.value ?? { latitude: 37.5665, longitude: 126.978 })
 const validMapArea = computed(() => pendingArea.value !== null && isSearchArea(pendingArea.value))
 const inputError = computed(() => parsedCriteria.value.kind === 'invalid'
@@ -58,7 +78,11 @@ watch(() => route.query, () => {
   const sameLocation = criteria?.latitude === selectedLocation.value?.latitude && criteria?.longitude === selectedLocation.value?.longitude
   selectedLocation.value = criteria ? { latitude: criteria.latitude, longitude: criteria.longitude } : null
   restoredArea.value = criteria?.area
-  selectedConnector.value = criteria?.connector ?? 'DC_COMBO'
+  selectedConditions.value = criteria ? { connector: criteria.connector,
+    ...(criteria.connectors ? { connectors: criteria.connectors } : {}),
+    ...(criteria.vehicleId ? { vehicleId: criteria.vehicleId } : {}),
+    ...(criteria.adapterIds ? { adapterIds: criteria.adapterIds } : {}),
+    ...(criteria.vehicleSupportConfirmed ? { vehicleSupportConfirmed: true } : {}) } : savedConditions.value
   if (!sameLocation) locationLabel.value = '검색 위치'
   conditionsOpen.value = !criteria
   guidance.value = '검색할 위치와 조건을 선택해 주세요.'
@@ -82,21 +106,22 @@ async function selectPlace(place: PlaceMatch): Promise<void> {
   selectedLocation.value = { latitude: place.latitude, longitude: place.longitude }
   locationLabel.value = place.name
   mapVisible.value = true
-  await confirmSearch({ latitude: place.latitude, longitude: place.longitude, connector: selectedConnector.value,
+  if (!selectedConditions.value) { guidance.value = '차량을 먼저 선택한 뒤 검색해 주세요.'; return }
+  await confirmSearch({ latitude: place.latitude, longitude: place.longitude, ...selectedConditions.value,
     radiusMeters: confirmedCriteria.value?.radiusMeters ?? 1000, limit: confirmedCriteria.value?.limit ?? 20 })
 }
 function focusPlaceSearch(): void {
   cancelLocation()
   document.getElementById('place-query')?.focus()
 }
-async function submitSearch(conditions: { connector: Connector }): Promise<void> {
-  selectedConnector.value = conditions.connector
+async function submitSearch(conditions: SearchConditions): Promise<void> {
+  selectedConditions.value = conditions
   if (mapVisible.value) {
     if (!pendingArea.value || !validMapArea.value) {
       guidance.value = '지도가 준비되고 이동이 끝난 후 검색해 주세요. 지도를 사용할 수 없다면 접고 선택 위치 주변을 검색할 수 있습니다.'
       return
     }
-    await confirmSearch(searchCriteriaForArea(pendingArea.value, conditions.connector, confirmedCriteria.value?.limit ?? 20))
+    await confirmSearch({ ...searchCriteriaForArea(pendingArea.value, conditions.connector, confirmedCriteria.value?.limit ?? 20), ...conditions })
     return
   }
   if (!selectedLocation.value) {
@@ -113,6 +138,13 @@ async function confirmSearch(criteria: SearchCriteria): Promise<void> {
   } else {
     await router.push({ path: '/stations', query: toSearchQuery(criteria) })
   }
+  try {
+    if (criteria.vehicleId) {
+      const profile = { vehicleId: criteria.vehicleId, adapterIds: [...(criteria.adapterIds ?? [])],
+        vehicleSupportConfirmed: criteria.vehicleSupportConfirmed ?? false }
+      if (saveVehicleProfile(window.localStorage, profile)) savedProfile.value = profile
+    } else if (clearVehicleProfile(window.localStorage)) savedProfile.value = null
+  } catch { /* 저장소가 차단돼도 현재 검색은 계속한다. */ }
   await nextTick()
   if (!store.error) resultsHeading.value?.focus()
 }
@@ -120,7 +152,10 @@ function refreshSearch(): void {
   if (confirmedCriteria.value) void store.search(confirmedCriteria.value)
 }
 function receiveMapArea(area: SearchArea | null): void { pendingArea.value = area }
-function searchMapArea(): void { void submitSearch({ connector: selectedConnector.value }) }
+function searchMapArea(): void {
+  if (selectedConditions.value) void submitSearch(selectedConditions.value)
+  else guidance.value = '차량을 먼저 선택한 뒤 검색해 주세요.'
+}
 function toggleMap(): void {
   pendingArea.value = null
   mapVisible.value = !mapVisible.value
@@ -165,13 +200,13 @@ function openDetail(stationId: number): void {
       </template>
     </div>
     <div class="search-layout" :class="{ 'results-layout': confirmedCriteria }">
-      <details class="search-panel" :open="conditionsOpen || !confirmedCriteria || !!fieldErrors.connector" @toggle="conditionsOpen = ($event.target as HTMLDetailsElement).open">
+      <details class="search-panel" :open="conditionsOpen || !confirmedCriteria || !!fieldErrors.connector || !!fieldErrors.connectors || !!fieldErrors.vehicleId" @toggle="conditionsOpen = ($event.target as HTMLDetailsElement).open">
         <summary><span>{{ confirmedCriteria ? '검색 조건 변경' : '검색 위치와 조건' }}</span><span v-if="confirmedCriteria" class="criteria-summary">{{ locationLabel }} 주변</span></summary>
         <div class="panel-heading">
           <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16M8 3v6m8 0v6M8 15v6" /></svg>
           <h2>검색 조건</h2>
         </div>
-        <p class="panel-description">내 차량에 맞는 커넥터를 선택하세요. 지도로 지역을 고르거나 선택 위치 주변을 검색할 수 있습니다.</p>
+        <p class="panel-description">차량과 이번에 사용할 장비를 선택하세요. 지도로 지역을 고르거나 선택 위치 주변을 검색할 수 있습니다.</p>
         <div class="location-picker" aria-label="검색 위치 선택">
           <button type="button" class="secondary-button" id="current-location" @click="selectCurrentLocation">현재 위치 사용</button>
           <p v-if="selectedLocation" class="selected-location">{{ locationLabel }}: {{ selectedLocation.latitude }} / {{ selectedLocation.longitude }}</p>
@@ -184,7 +219,12 @@ function openDetail(stationId: number): void {
         </div>
         <PlaceSearch @select="selectPlace" />
         <SearchForm :key="route.fullPath"
-          :initial-connector="confirmedCriteria?.connector ?? 'DC_COMBO'" :field-errors="fieldErrors" @change="selectedConnector = $event" @submit="submitSearch" />
+          :initial-connector="confirmedCriteria?.connector ?? 'DC_COMBO'"
+          :initial-mode="confirmedCriteria && !confirmedCriteria.vehicleId ? 'manual' : 'choose'"
+          :initial-vehicle-id="confirmedCriteria?.vehicleId ?? (!confirmedCriteria ? savedProfile?.vehicleId : undefined)"
+          :initial-adapter-ids="confirmedCriteria?.adapterIds ?? (!confirmedCriteria ? savedProfile?.adapterIds : undefined)"
+          :initial-vehicle-support-confirmed="confirmedCriteria?.vehicleSupportConfirmed ?? (!confirmedCriteria ? savedProfile?.vehicleSupportConfirmed : undefined)"
+          :field-errors="fieldErrors" @change="selectedConditions = $event" @submit="submitSearch" />
         <div class="location-guidance">
           <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7" /><circle cx="12" cy="12" r="2.5" /><path d="M12 2v3m0 14v3M2 12h3m14 0h3" /></svg>
           <div><h3>위치 선택 안내</h3><p class="initial-guidance" role="status">{{ guidance }}</p></div>
@@ -222,10 +262,11 @@ function openDetail(stationId: number): void {
           <p v-if="!store.response.dataReady" class="request-notice" role="status">
             {{ store.response.stations.length ? '전체 수집 완료 전 정보입니다. 일부 충전소만 표시될 수 있습니다.' : '아직 전체 수집이 완료되지 않았습니다. 수집 후 다시 조회해 주세요.' }}
           </p>
-          <p v-else-if="!store.response.stations.length" class="request-notice" role="status">조건에 맞는 충전소가 없습니다. 지도 위치나 커넥터를 변경해 주세요.</p>
+          <p v-else-if="!store.response.stations.length" class="request-notice" role="status">조건에 맞는 충전소가 없습니다. 지도 위치나 차량 조건을 변경해 주세요.</p>
           <p v-if="store.response.collection?.state === 'DELAYED'" class="collection-summary" role="status">갱신이 지연되고 있습니다. 마지막으로 저장된 정보를 표시합니다.</p>
           <p v-else-if="store.response.collection?.state === 'NOT_READY'" class="collection-summary" role="status">전체 데이터 준비 전 · 일부 지역의 정보가 없을 수 있습니다.</p>
           <p class="results-count">{{ store.response.stations.length }}개 표시 · 최대 {{ confirmedCriteria.limit }}개 표시</p>
+          <p v-if="vehicleResultMessage" class="vehicle-result-note">{{ vehicleResultMessage }}</p>
           <p class="results-caution">{{ confirmedCriteria.area ? '지도 중심에서의 직선거리 기준입니다.' : '선택 위치에서의 직선거리 기준입니다.' }} 이용 가능 보고는 도착 시점의 빈자리를 보장하지 않습니다.</p>
           <p v-if="selectedStation" role="status">선택한 충전소: {{ selectedStation.name }}</p>
           <div class="station-list"><StationCard v-for="station in store.response.stations" :key="station.id" :station="station"

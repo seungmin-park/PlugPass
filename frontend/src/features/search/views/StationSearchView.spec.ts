@@ -11,12 +11,28 @@ import searchResponse from '../../../../tests/fixtures/search.json'
 const originalAdapter = httpClient.defaults.adapter
 if (originalAdapter === undefined) throw new Error('Axios 기본 adapter가 필요합니다')
 const query = { latitude: '37.5', longitude: '127', radiusMeters: '1000', connector: 'DC_COMBO', limit: '20' }
-afterEach(() => { httpClient.defaults.adapter = originalAdapter })
+afterEach(() => { httpClient.defaults.adapter = originalAdapter; window.localStorage.clear() })
 function searchRouter() {
   return createRouter({ history: createMemoryHistory(), routes: [{ path: '/stations', component: StationSearchView }, { path: '/other', component: { template: '<p>다른 화면</p>' } }] })
 }
 
 describe('위치 선택부터 실제 API 계약까지 검색 화면', () => {
+  it('차량 URL을 복원해 검색·상세 복귀에 여러 규격을 유지한다', async () => {
+    const adapter = vi.fn<AxiosAdapter>(async config => jsonResponse(config, searchResponse))
+    httpClient.defaults.adapter = adapter
+    const router = searchRouter()
+    await router.push({ path: '/stations', query: { latitude: '37.5', longitude: '127', radiusMeters: '1000',
+      connectors: 'DC_COMBO,AC_SLOW', vehicleId: 'tesla-kr', adapterIds: 'tesla-ccs1,tesla-j1772', vehicleSupportConfirmed: '1', limit: '20' } })
+    const wrapper = mount(StationSearchView, { global: { plugins: [router, createPinia()] } })
+    await flushPromises()
+    expect(wrapper.get<HTMLSelectElement>('#vehicle-choice').element.value).toBe('tesla-kr')
+    expect(wrapper.text()).toContain('이번에 선택한 어댑터를 사용할 조건으로 찾았습니다')
+    expect(wrapper.findAll<HTMLInputElement>('input[type="checkbox"]:checked').map(input => input.element.value)).toEqual(['tesla-ccs1', 'tesla-j1772', 'on'])
+    expect(adapter).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ params: {
+      latitude: 37.5, longitude: 127, radiusMeters: 1000, connectors: 'DC_COMBO,AC_SLOW', limit: 20,
+    } }))
+    expect(wrapper.get('.station-list a[href^="#/stations/"]').attributes('href')).toContain('connectors=DC_COMBO%2CAC_SLOW')
+  })
   it('초기 화면에서 위치·API를 자동 요청하지 않고 현재 위치와 주소 검색을 제공한다', async () => {
     const getCurrentPosition = vi.fn<Geolocation['getCurrentPosition']>()
     vi.stubGlobal('navigator', { geolocation: { getCurrentPosition } })
@@ -32,6 +48,9 @@ describe('위치 선택부터 실제 API 계약까지 검색 화면', () => {
     expect(getCurrentPosition).not.toHaveBeenCalled()
     expect(adapter).not.toHaveBeenCalled()
     await wrapper.get('.search-form').trigger('submit')
+    expect(wrapper.text()).toContain('차량을 먼저 선택해 주세요')
+    await wrapper.get('#vehicle-choice').setValue('manual')
+    await wrapper.get('.search-form').trigger('submit')
     expect(wrapper.text()).toContain('검색할 위치를 먼저 선택해 주세요')
     expect(adapter).not.toHaveBeenCalled()
   })
@@ -45,6 +64,7 @@ describe('위치 선택부터 실제 API 계약까지 검색 화면', () => {
     await wrapper.get('#current-location').trigger('click')
     await flushPromises()
     expect(wrapper.text()).toContain('현재 위치: 37.5 / 127')
+    await wrapper.get('#vehicle-choice').setValue('manual')
     await wrapper.get('input[value="NACS"]').setValue()
     expect(router.currentRoute.value.query).toEqual({})
     expect(adapter).not.toHaveBeenCalled()
@@ -201,6 +221,7 @@ describe('위치 선택부터 실제 API 계약까지 검색 화면', () => {
     await wrapper.get('#current-location').trigger('click')
     await flushPromises()
     getCurrentPosition.mock.calls[1]?.[0]({ coords: { latitude: 38, longitude: 128, accuracy: 1, altitude: null, altitudeAccuracy: null, heading: null, speed: null, toJSON: () => ({}) }, timestamp: 0, toJSON: () => ({}) })
+    await wrapper.get('#vehicle-choice').setValue('manual')
     await wrapper.get('.search-form').trigger('submit')
     await flushPromises()
     expect(router.currentRoute.value.query).toEqual(query)
@@ -218,6 +239,7 @@ describe('위치 선택부터 실제 API 계약까지 검색 화면', () => {
     const position: GeolocationPosition = { coords: { latitude: 38, longitude: 128, accuracy: 1, altitude: null, altitudeAccuracy: null, heading: null, speed: null, toJSON: () => ({}) }, timestamp: 0, toJSON: () => ({}) }
     getCurrentPosition.mock.calls[0]?.[0](position)
     await flushPromises()
+    await wrapper.get('#vehicle-choice').setValue('manual')
     await wrapper.get('.search-form').trigger('submit')
     await flushPromises()
     expect(router.currentRoute.value.query).toEqual({ ...query, latitude: '38', longitude: '128' })
@@ -239,6 +261,7 @@ describe('위치 선택부터 실제 API 계약까지 검색 화면', () => {
     vi.stubGlobal('navigator', { userAgent: navigator.userAgent, platform: navigator.platform, geolocation: { getCurrentPosition: (success: PositionCallback) => success({ coords: { latitude: 37.5, longitude: 127, accuracy: 1, altitude: null, altitudeAccuracy: null, heading: null, speed: null, toJSON: () => ({}) }, timestamp: 0, toJSON: () => ({}) }) } })
     await wrapper.get('#current-location').trigger('click')
     await flushPromises()
+    await wrapper.get('#vehicle-choice').setValue('manual')
     await wrapper.get('.search-form').trigger('submit')
     await flushPromises()
     expect(router.currentRoute.value.query).toEqual(query)

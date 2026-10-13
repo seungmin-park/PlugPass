@@ -85,3 +85,26 @@ include::{snippets}/recommendations/response-fields.adoc[]
 이유 코드: RECENT_AVAILABLE, UNVERIFIED_AVAILABLE, SOURCE_OBSERVED_AT_MISSING, SOURCE_OBSERVED_AT_IN_FUTURE,
 MAX_AGE_EXCEEDED, INCOMPATIBLE_CONNECTOR, ACCESS_RESTRICTED, DELETED_BY_PROVIDER, STATUS_UNKNOWN, NOT_AVAILABLE,
 NO_COMPATIBLE_CHARGER, ACCESS_CONDITIONS_UNVERIFIED, OPERATING_HOURS_UNVERIFIED, OPERATING_HOURS_REQUIRE_CHECK.
+
+== 지도 영역 검색
+
+남쪽 < 북쪽, 서쪽 < 동쪽의 유한 좌표만 허용한다. 각 축 최대1도와 중심~모서리 최대10km를 모두 만족해야 한다.
+날짜변경선을 가로지르는 영역은 지원하지 않는다. 영역·호환 커넥터를 먼저 적용하고 중심 직선거리·ID순으로 limit개를 반환한다.
+너무 넓으면 조용히 잘라내지 않고 400 fields.areaValid로 확대를 안내한다.
+
+include::{snippets}/station-area/curl-request.adoc[]
+include::{snippets}/station-area/query-parameters.adoc[]
+include::{snippets}/station-area/http-response.adoc[]
+include::{snippets}/station-area/response-fields.adoc[]
+
+== 주소·장소 검색
+
+키는 서버 환경변수 KAKAO_LOCAL_REST_API_KEY로 설정한다. 키 미설정은 503 PLACE_SEARCH_NOT_CONFIGURED다.
+카카오 주소/키워드 API를 각각 1회 요청하며 자동 재시도하지 않는다. 동일 주소·좌표는 합치고 주소 후보 우선 최대10개를 반환한다.
+인증 오류503, 호출 제한429, 시간 초과504, 외부 오류/잘못된 응답502로 구분한다. 원문 오류·키를 반환하지 않는다.
+위치 후보 선택은 충전소 검색 확정과 별개다. 외부 조회 중 DB 트랜잭션을 열지 않는다.
+
+include::{snippets}/place-search/curl-request.adoc[]
+include::{snippets}/place-search/query-parameters.adoc[]
+include::{snippets}/place-search/http-response.adoc[]
+include::{snippets}/place-search/response-fields.adoc[]

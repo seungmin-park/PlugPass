@@ -31,6 +31,16 @@ public class ApiExceptionHandler {
         return ResponseEntity.badRequest().body(new ApiError("INVALID_REQUEST","입력값을 확인해주세요",
                 Map.of(exception.getName(),"올바른 형식으로 입력해야 합니다")));
     }
+    @ExceptionHandler(PlaceSearchException.class)
+    ResponseEntity<ApiError> placeSearchUnavailable(PlaceSearchException exception) {
+        HttpStatus status = switch (exception.failure()) {
+            case RATE_LIMIT -> HttpStatus.TOO_MANY_REQUESTS;
+            case TIMEOUT -> HttpStatus.GATEWAY_TIMEOUT;
+            case INVALID_RESPONSE, UPSTREAM -> HttpStatus.BAD_GATEWAY;
+            default -> HttpStatus.SERVICE_UNAVAILABLE;
+        };
+        return ResponseEntity.status(status).body(new ApiError(exception.code(), exception.getMessage(), Map.of()));
+    }
     private String message(FieldError error) {
         if (error.isBindingFailure()) { return "올바른 형식으로 입력해야 합니다"; }
         return error.getDefaultMessage();

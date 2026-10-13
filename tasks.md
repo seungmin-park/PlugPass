@@ -423,8 +423,8 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 - [x] REFACTOR/검토: 이름→실제 역할→배치, 데이터 흐름과 외부 URL 계약을 검토하고 필요한 정리 후 전체 검증한다.
 - [x] 현재 cmux에서 개발/JAR 브라우저와 공용 verify를 실행하고 종료 코드·assertion·로그를 기록한다.
 - [x] 문서·기능 지도·공식 출처·검증 스킬을 갱신한다. [실행 기록](docs/t28-verification.md).
-- [ ] 서명 commit/PR·필수 CI를 확인한다.
-- [ ] 운영 배포 승인 후 보호된 머지를 확인한다. 현재 main 머지는 production CD를 실행한다.
+- [x] 서명 commit533616e·[PR #55](https://github.com/seungmin-park/PlugPass/pull/55)·필수 CI SUCCESS를 확인했다.
+- [x] 사용자 운영 배포 승인(go) 후 PR #55 보호된 머지를 확인했다. main ac5f7af·[main CI 성공](https://github.com/seungmin-park/PlugPass/actions/runs/38360930911), [운영 CD](https://github.com/seungmin-park/PlugPass/actions/runs/38361469506)의 최종 결과는 PR 전달 기록에서 추적한다.
 - [ ] 실기기 Android/iPhone에서 앱 설치/미설치·실행 취소·목적지 표시를 확인한다. 브라우저 에뮬레이션으로 완료 처리하지 않는다.
 
 ### T29 — 처리 중 시각적 안내
@@ -435,7 +435,37 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 - [x] GREEN: 공용 LoadingIndicator를 연결하고 성공/실패/취소·재시도에서 기존 상태와 함께 표시/제거한다.
 - [x] 실제 브라우저에서 회전·움직임 감소 설정·모바일 레이아웃을 확인하고 현재 cmux에서 보여 준다.
 - [x] 전체 단위·타입·lint·build·공용 verify와 문서를 갱신한다. Java372·프런트328·개발브라우저27·빈 DB JAR3·MySQL7·재시작 MySQL/JAR7·Python32건, 종료0.
-- [ ] 서명 commit/PR·필수 CI를 확인한다. 운영 배포와 연결된 머지는 승인 후 진행한다.
+- [x] 서명 commit533616e·[PR #55](https://github.com/seungmin-park/PlugPass/pull/55)·필수 CI SUCCESS를 확인했다. 사용자 승인 후 PR #55를 main ac5f7af로 머지했다.
+
+### T30 — 지도 영역 검색
+
+사용자 선택: 지도 재검색+주소 검색. [설계/계획](plan.md#지도-영역주소-검색-2026-10-13-t30t31). 기준 브랜치는 T28/T29 PR #55 위의 feat/map-address-search다.
+
+- [x] 현재 지도 수명·반경 API·Repository 경계 필터와 호환 조건을 확인하고 설계를 기록한다.
+- [x] RED: 영역 HTTP3건·프런트7+2건의 의도한 실패를 확인했다. 잘못된 입력·정렬은 이후 보강 검증으로 구분한다.
+- [x] GREEN: MapSearchArea·영역 request·Service·Controller, 도메인/저장/HTTP 검증과 REST Docs를 반영한다.
+- [x] RED→GREEN: 반경 선택 제거, 이동·확대 후 영역 재검색, 지도 위치 유지·뒤로가기·실패/재시도를 구현한다.
+- [x] cmux 실제 지도 이동/확대·개발30/JAR4·전체 verify 종료0. [실행 기록](docs/t30-verification.md).
+- [x] 지도/주소 [PR #56](https://github.com/seungmin-park/PlugPass/pull/56)을 생성하고 필수 CI를 연결했다. 현재 head 결과는 PR 체크/본문에 기록한다.
+- [x] 운영 배포 승인을 받고 선행 PR #55의 main을 통합했다. 통합 전후 파일 내용은 동일하다. 최신 head 필수 CI → 보호된 머지 → main CI → 운영 CD의 최종 상태·실행 링크는 [PR #56 전달 기록](https://github.com/seungmin-park/PlugPass/pull/56)에서 추적한다.
+
+### T31 — 카카오 주소·장소 검색
+
+사용자 결정: 카카오로 구현하고 키는 추후 서버 환경변수로 설정한다. 키 없는 상태와 실카카오 미검증을 구분한다.
+
+- [x] RED→GREEN: 장소 API 입력 검증·키 미설정503, 외부 HTTP 성공/빈 결과/오류·좌표 검증·중복 제거를 구현한다.
+- [x] RED→GREEN: 검색어 입력→후보 선택→지도 이동→지역 충전소 검색, 대기/빈 결과/실패/응답 역전 상태를 구현한다.
+- [x] 타입/lint/build·전체 verify·cmux 흐름, 문서/기능 지도/공식 출처/필수 suite를 반영한다.
+- [x] 서명 commit·[PR #56](https://github.com/seungmin-park/PlugPass/pull/56) 생성과 필수 CI 실행을 연결했다. 현재 head 결과는 PR 체크/본문을 따른다.
+- [x] 사용자 go로 운영 배포까지 승인되었다. T30과 같은 PR #56에서 필수 CI·보호된 머지·운영 CD를 추적하며 실제 완료 여부는 PR 전달 기록을 따른다.
+- [ ] 키 설정 후 실제 카카오 주소·장소 결과를 확인한다. fixture 통과로 대체하지 않는다.
+
+### T32 — 개인 보유 어댑터를 반영한 호환 검색 (후속)
+
+- [x] 사용자 의도를 커넥터 지식보다 차주 개인 장비 보유로 정정하고 여러 커뮤니티의 보유/미보유·사용/미사용 사례를 조사한다. [근거·한계](docs/adapter-ownership-research.md).
+- [x] 제조사 계약과 경험담, 국내/해외 차량, 개인 케이블/변환 어댑터를 구분해 후속 계획에 반영한다.
+- [ ] 국내 차주 사용성 확인과 검증 가능한 차량·어댑터 카탈로그 범위를 확정한다.
+- [ ] 내 차량+사용할 어댑터, 직접 연결/어댑터 필요/확인 필요 표시와 다중 규격 중복 집계 방지를 설계·TDD로 구현한다.
 
 ### 공통 완료 템플릿
 

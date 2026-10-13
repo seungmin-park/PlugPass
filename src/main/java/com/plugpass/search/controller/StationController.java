@@ -4,6 +4,7 @@ import com.plugpass.search.service.StationQueryService;
 
 import jakarta.validation.Valid;
 import com.plugpass.search.dto.request.StationSearchRequest;
+import com.plugpass.search.dto.request.StationAreaSearchRequest;
 import com.plugpass.search.dto.response.StationSearchResponse;
 import com.plugpass.search.dto.response.StationDetailResponse;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +21,11 @@ public class StationController {
     @GetMapping("/{stationId}")
     public StationDetailResponse detail(@PathVariable Long stationId) {
         return StationDetailResponse.from(stationQueryService.detail(stationId));
+    }
+
+    @GetMapping("/area")
+    public StationSearchResponse searchArea(@Valid @ModelAttribute StationAreaSearchRequest request) {
+        return StationSearchResponse.from(stationQueryService.searchArea(request.toQuery()));
     }
 
     @GetMapping

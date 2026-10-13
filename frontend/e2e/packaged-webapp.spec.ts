@@ -49,3 +49,20 @@ test('배포 JAR의 지도 JS·CSS를 불러와 빈 검색 결과의 지도와 �
   expect(loadedAssets.some(url => new URL(url).pathname.endsWith('.css'))).toBe(true)
   await expect(page.getByRole('alert')).toHaveCount(0)
 })
+
+
+test('배포 JAR에서 지도 영역을 재검색하고 직접 링크로 복원한다', async ({ page }) => {
+  await page.route('https://tile.openstreetmap.org/**', route => route.fulfill({ contentType: 'image/svg+xml',
+    body: '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"/>' }))
+  await page.goto('/app/index.html#/stations')
+  await page.getByRole('button', { name: '지도 보기', exact: true }).click()
+  const response = page.waitForResponse(response => response.url().includes('/api/v1/stations/area?'))
+  await page.getByRole('button', { name: '이 지역 재검색' }).click()
+  expect((await response).status()).toBe(200)
+  await expect(page.getByText('0개 표시 · 최대 20개 표시')).toBeVisible()
+  const url = page.url()
+  await page.reload()
+  await expect(page).toHaveURL(url)
+  await expect(page.getByRole('button', { name: '지도 접기', exact: true })).toBeVisible()
+  await expect(page.getByRole('searchbox', { name: '주소·장소 검색' })).toBeVisible()
+})

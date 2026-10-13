@@ -1,6 +1,6 @@
-import { divIcon, latLngBounds, map, marker, tileLayer, type Map as LeafletMap, type Marker } from 'leaflet'
+import { divIcon, map, marker, tileLayer, type Map as LeafletMap, type Marker } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import type { MapCoordinates, MapStation, StationMapCallbacks, StationMapFactory } from './stationMap'
+import type { MapStation, StationMapCallbacks, StationMapFactory } from './stationMap'
 
 function addBackgroundTiles(stationMap: LeafletMap, callbacks: StationMapCallbacks): void {
   let tilesFailed = false
@@ -41,20 +41,19 @@ function addStationMarkers(stationMap: LeafletMap, stations: readonly MapStation
   return stationMarkers
 }
 
-function frameStations(stationMap: LeafletMap, stations: readonly MapStation[], center: MapCoordinates): void {
-  if (!stations.length) return
-  const bounds = latLngBounds([[center.latitude, center.longitude]])
-  for (const station of stations) bounds.extend([station.latitude, station.longitude])
-  stationMap.fitBounds(bounds, { padding: [28, 28], maxZoom: 16, animate: false })
-}
-
 export const createLeafletStationMap: StationMapFactory = (container, stations, center, callbacks) => {
   const stationMap = map(container, { scrollWheelZoom: false, zoomAnimation: false, fadeAnimation: false, markerZoomAnimation: false })
   try {
     stationMap.setView([center.latitude, center.longitude], 14)
     addBackgroundTiles(stationMap, callbacks)
-    const stationMarkers = addStationMarkers(stationMap, stations, callbacks)
-    frameStations(stationMap, stations, center)
+    let stationMarkers = addStationMarkers(stationMap, stations, callbacks)
+    const reportArea = () => {
+      const bounds = stationMap.getBounds()
+      callbacks.areaChanged?.({ south: bounds.getSouth(), north: bounds.getNorth(), west: bounds.getWest(), east: bounds.getEast() })
+    }
+    stationMap.on('movestart', () => callbacks.areaChanged?.(null))
+    stationMap.on('moveend', reportArea)
+    reportArea()
     return {
       selectStation(stationId) {
         for (const [markerId, stationMarker] of stationMarkers) {
@@ -67,6 +66,12 @@ export const createLeafletStationMap: StationMapFactory = (container, stations, 
         const selectedMarker = stationId === null ? undefined : stationMarkers.get(stationId)
         if (selectedMarker) stationMap.panTo(selectedMarker.getLatLng(), { animate: false })
       },
+      updateStations(nextStations) {
+        for (const stationMarker of stationMarkers.values()) stationMarker.remove()
+        stationMarkers = addStationMarkers(stationMap, nextStations, callbacks)
+      },
+      moveTo(nextCenter) { stationMap.setView([nextCenter.latitude, nextCenter.longitude], 14, { animate: false }) },
+      showArea(area) { stationMap.fitBounds([[area.south, area.west], [area.north, area.east]], { animate: false }) },
       destroy() { stationMap.remove() },
     }
   } catch (failure: unknown) {

@@ -1,3 +1,4 @@
+import type { SearchArea } from '../searchArea'
 export interface MapCoordinates {
   latitude: number
   longitude: number
@@ -8,10 +9,14 @@ export interface MapStation extends MapCoordinates {
 }
 export interface StationMapSession {
   selectStation(stationId: number | null): void
+  updateStations(stations: readonly MapStation[]): void
+  moveTo(center: MapCoordinates): void
+  showArea(area: SearchArea): void
   destroy(): void
 }
 export interface StationMapCallbacks {
   selectStation(stationId: number): void
+  areaChanged?(area: SearchArea | null): void
   tilesLoaded(): void
   tilesFailed(): void
 }

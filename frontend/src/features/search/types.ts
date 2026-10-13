@@ -1,5 +1,7 @@
 import type { ChargerInfo, Connector } from '../charging-info/types'
+import type { SearchArea } from './searchArea'
 export interface SearchCriteria {
+  area?: SearchArea
   latitude: number
   longitude: number
   radiusMeters: number

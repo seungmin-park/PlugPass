@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { loadStationMap } from '../map/loadStationMap'
+import type { SearchArea } from '../searchArea'
 import type { MapCoordinates, MapStation, StationMapSession } from '../map/stationMap'
 import { useErrorFocus } from '../../../shared/ui/useErrorFocus'
 import LoadingIndicator from '../../../shared/ui/LoadingIndicator.vue'
 
-const props = defineProps<{ stations: readonly MapStation[]; center: MapCoordinates; selectedStationId: number | null }>()
-const emit = defineEmits<{ select: [stationId: number] }>()
+const props = defineProps<{ stations: readonly MapStation[]; center: MapCoordinates; area?: SearchArea | undefined; selectedStationId: number | null }>()
+const emit = defineEmits<{ select: [stationId: number]; 'area-change': [area: SearchArea | null] }>()
 const container = ref<HTMLElement | null>(null)
 const status = ref<'loading' | 'ready' | 'error'>('loading')
 const backgroundLoading = ref(true)
@@ -51,6 +52,7 @@ async function openMap(): Promise<void> {
     const createMap = await loadStationMap()
     if (currentGeneration !== generation || !container.value) return
     session = createMap(container.value, props.stations, props.center, {
+      areaChanged: area => { if (currentGeneration === generation) emit('area-change', area) },
       selectStation: stationId => { if (currentGeneration === generation) emit('select', stationId) },
       tilesLoaded: () => {
         if (currentGeneration !== generation) return
@@ -59,6 +61,7 @@ async function openMap(): Promise<void> {
       },
       tilesFailed: () => { if (currentGeneration === generation) reportTileFailure() },
     })
+    if (props.area) session.showArea(props.area)
     session.selectStation(props.selectedStationId)
     status.value = 'ready'
   } catch {
@@ -71,7 +74,15 @@ async function openMap(): Promise<void> {
 }
 onMounted(() => { void openMap() })
 watch(() => props.selectedStationId, stationId => session?.selectStation(stationId))
-watch([() => props.stations, () => props.center], () => { void openMap() })
+watch(() => props.stations, stations => {
+  session?.updateStations(stations)
+  session?.selectStation(props.selectedStationId)
+})
+watch(() => props.area, area => { if (area) session?.showArea(area) })
+watch(() => [props.center.latitude, props.center.longitude], () => {
+  if (props.area) return
+  session?.moveTo(props.center)
+})
 onBeforeUnmount(() => {
   generation += 1
   clearLoadTimer()

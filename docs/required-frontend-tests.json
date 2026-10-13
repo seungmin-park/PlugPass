@@ -28,5 +28,11 @@
   "src/features/search/components/StationMap.spec.ts",
   "src/features/station-detail/views/StationNavigation.spec.ts",
   "src/features/station-detail/navigation/navigationLinks.spec.ts",
-  "src/shared/ui/LoadingFlows.spec.ts"
+  "src/shared/ui/LoadingFlows.spec.ts",
+  "src/features/search/components/MapAreaSearch.spec.ts",
+  "src/features/search/api/stationAreaApi.spec.ts",
+  "src/features/search/views/MapSearchView.spec.ts",
+  "src/features/search/views/PlaceSearchView.spec.ts",
+  "src/features/search/stores/placeSearchStore.spec.ts",
+  "src/features/search/api/placeApi.spec.ts"
 ]

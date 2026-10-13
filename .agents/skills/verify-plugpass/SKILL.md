@@ -234,3 +234,11 @@ Leaflet1.9.4 + OpenStreetMap 공용 타일을 사용한다. 키/허용 도메인
 - `npm --prefix frontend run test:unit -- src/shared/ui`: 공용 상태 안내와 실제 검색/상세/추천 대기 및 위치 취소를 확인한다. 지도 SDK 대기는 StationMap.spec.ts에서 확인한다.
 - `bash scripts/frontend-e2e.sh loading.spec.ts`: 실제 백엔드 요청을 지연/재개해 회전 transform·완료 후 제거·375px를 확인하고 감소 모드와503 재시도 복구를 분리한다. 기존 ui-failures의 timeout도 spinner 제거를 확인한다.
 - 공용 verify의 개발/운영 JAR 양쪽에서 loading.spec.ts를 필수로 실행한다. 스크린리더 의미/장식 분리를 검사하지만 실제 음성 출력 검증은 아니다. [실행 기록](../../../docs/t28-verification.md#t29-회전-로딩-표시).
+
+## T30/T31 지도 영역·주소 검색
+
+- `./gradlew test --tests "com.plugpass.search.*" --tests "com.plugpass.places.*"`: 영역 경계/호환 필터 후 limit·중심거리/ID 정렬, DTO400·REST Docs, 서버 키 미설정503, 실제 외부 HTTP fixture의 주소/장소 합치기·인코딩·인증/429/5xx/timeout·깨진 응답을 확인한다.
+- `npm --prefix frontend run test:unit -- src/features/search src/features/recommendation/api/recommendationApi.spec.ts`: 반경 UI 제거, 영역 URL·API 선택, 지도 인스턴스 보존, 이동 중 재검색 거부, 주소 로딩/취소/빈 결과/실패/응답 역전과 기존 추천 파라미터 계약을 확인한다.
+- `bash scripts/frontend-e2e.sh map-place-search.spec.ts`: 현재 cmux 검증 터미널의 headed 러너로 실제 영역 API·상세 복귀/새로고침·모바일·키 없음 안내·후보 선택을 확인한다. 주소 후보 성공은 API 경계 fixture이며 실카카오 인증 성공이 아니다.
+- `bash scripts/verify.sh`는 새 필수 Java/프런트/브라우저 suite와 배포 JAR 영역 검색을 포함한다. 실제 현재 건수/종료 코드·소스 hash는 [T30 기록](../../../docs/t30-verification.md)에 기록한다. 같은 workspace의 cmux 브라우저에서 외부 타일·실제 클릭/키보드 이동을 별도 확인한다. 브라우저 탭이 hidden이면 애니메이션이 정지할 수 있으므로 실제 표시 상태를 확인한다.
+- 카카오 키는 서버 `KAKAO_LOCAL_REST_API_KEY`만 사용한다. 키 미설정 상태와 실제 인증/검색 품질 미검증을 구분하며 개인 어댑터 조사는 T32 후속 설계다.

@@ -6,7 +6,9 @@ import { isStationId } from '../../../shared/api/stationId'
 import { hasNonblankStrings, isNullableString, isRecord, isNumberInRange, isNonnegativeInteger, isNonnegativeNumber } from '../../../shared/api/responseValidation'
 
 export async function getStations(criteria: SearchCriteria, signal?: AbortSignal): Promise<StationSearchResponse> {
-  return getValidatedJson('/stations', isSearchResponse, { params: requireSearchCriteria(criteria), ...(signal ? { signal } : {}) })
+  const validated = requireSearchCriteria(criteria)
+  const params = validated.area ? { ...validated.area, connector: validated.connector, limit: validated.limit } : validated
+  return getValidatedJson(validated.area ? '/stations/area' : '/stations', isSearchResponse, { params, ...(signal ? { signal } : {}) })
 }
 
 function isSearchResponse(value: unknown): value is StationSearchResponse {

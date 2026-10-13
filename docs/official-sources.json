@@ -782,5 +782,21 @@
     "cache": ".firecrawl/loading-reduced-motion-20261013.md",
     "coverage": "status 의미와 atomic 안내, prefers-reduced-motion 관련 절; 전체 접근성 인증 아님",
     "sha256": "5dec6dcfe8b8a53dc9a69f7b52dee25c496e87f33bbd8712b001c75f68e2b6ec"
+  },
+  {
+    "id": "leaflet-map-1.9.4",
+    "url": "https://raw.githubusercontent.com/Leaflet/Leaflet/v1.9.4/src/map/Map.js",
+    "accessed": "2026-10-13",
+    "cache": ".firecrawl/leaflet-map-1.9.4-20261013.js",
+    "coverage": "T30 설치 버전의 getBounds/moveend/setView/fitBounds; rolling 2.0 문서 대신 태그 소스",
+    "sha256": "13848a47cbd99031148c50af50bbd6e7de71b5b634958d53e688a8a0c81ccaf1"
+  },
+  {
+    "id": "kakao-local-search",
+    "url": "https://developers.kakao.com/docs/ko/local/dev-guide",
+    "accessed": "2026-10-13",
+    "cache": ".firecrawl/kakao-local-20261013.html",
+    "coverage": "T31 주소·키워드 검색 경로, KakaoAK 인증, query/size, documents 좌표·주소 필드",
+    "sha256": "6dc33d05fb95aaba88ba345912c8bb3e953f111899bf3761ded425dbf2abe30a"
   }
 ]

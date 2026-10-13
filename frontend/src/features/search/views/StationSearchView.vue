@@ -6,6 +6,10 @@ import PlaceSearch from '../components/PlaceSearch.vue'
 import type { PlaceMatch } from '../api/placeApi'
 import StationCard from '../components/StationCard.vue'
 import StationMap from '../components/StationMap.vue'
+import StationActionSheet from '../../station-detail/components/StationActionSheet.vue'
+import { createNavigationLinks, navigationPlatform } from '../../station-detail/navigation/navigationLinks'
+import { useNavigationPreferenceStore } from '../../station-detail/navigation/navigationPreferenceStore'
+import type { StationSummary } from '../types'
 import { parseSearchCriteria, toSearchQuery } from '../criteria'
 import { isSearchArea, searchCriteriaForArea, type SearchArea } from '../searchArea'
 import type { SearchCriteria } from '../types'
@@ -21,6 +25,8 @@ import { useErrorFocus } from '../../../shared/ui/useErrorFocus'
 const route = useRoute()
 const router = useRouter()
 const store = useStationSearchStore()
+const navigationPreference = useNavigationPreferenceStore()
+const platform = navigationPlatform(navigator.userAgent, navigator.maxTouchPoints)
 const mapVisible = ref(route.query.south !== undefined)
 const conditionsOpen = ref(false)
 const resultsHeading = ref<HTMLElement | null>(null)
@@ -30,7 +36,7 @@ const selectedConnector = ref<Connector>('DC_COMBO')
 const selectedStationId = ref<number | null>(null)
 const selectedStation = computed(() => store.response?.stations.find(station => station.id === selectedStationId.value))
 watch(() => store.status, status => {
-  if (status === 'loading' || status === 'idle') selectedStationId.value = null
+  if (status === 'loading' || status === 'idle') { selectedStationId.value = null }
 }, { flush: 'sync' })
 const { status: locationStatus, error: locationError, requestLocation, cancel: cancelLocation } = useCurrentLocation()
 const selectedLocation = ref<LocationCoordinates | null>(null)
@@ -122,6 +128,13 @@ function toggleMap(): void {
 }
 function selectStation(stationId: number): void {
   if (store.response?.stations.some(station => station.id === stationId)) selectedStationId.value = stationId
+}
+function closeStationSheet(): void {
+  selectedStationId.value = null
+}
+function directionsHref(station: StationSummary): string | undefined {
+  const links = createNavigationLinks(station, platform, window.location.href)
+  return links?.apps.find(app => app.id === navigationPreference.app)?.href ?? (platform === 'web' ? links?.webHref : undefined)
 }
 function detailHref(stationId: number): string {
   const criteria = confirmedCriteria.value
@@ -216,8 +229,8 @@ function openDetail(stationId: number): void {
           <p class="results-caution">{{ confirmedCriteria.area ? '지도 중심에서의 직선거리 기준입니다.' : '선택 위치에서의 직선거리 기준입니다.' }} 이용 가능 보고는 도착 시점의 빈자리를 보장하지 않습니다.</p>
           <p v-if="selectedStation" role="status">선택한 충전소: {{ selectedStation.name }}</p>
           <div class="station-list"><StationCard v-for="station in store.response.stations" :key="station.id" :station="station"
-            :detail-href="detailHref(station.id)" :map-selectable="mapVisible" :selected="selectedStationId === station.id"
-            @select="selectStation(station.id)" @open-detail="openDetail(station.id)" /></div>
+            :detail-href="detailHref(station.id)" :directions-href="directionsHref(station)" :map-selectable="mapVisible" :selected="selectedStationId === station.id"
+            @directions="selectStation(station.id)" @select="selectStation(station.id)" @open-detail="openDetail(station.id)" /></div>
           <details class="collection-details"><summary>정보 갱신 안내</summary>
           <p class="result-time">조회 시각: {{ formatTimestamp(store.fetchedAt) }}</p>
           <p class="result-time">전체 수집 성공 시각: {{ formatTimestamp(store.response.lastSuccessfulRunAt) }}</p>
@@ -232,5 +245,6 @@ function openDetail(stationId: number): void {
         </template>
       </div>
     </div>
+    <StationActionSheet v-if="selectedStation" :station="selectedStation" :detail-href="detailHref(selectedStation.id)" @close="closeStationSheet" @open-detail="openDetail(selectedStation.id)" />
   </section>
 </template>

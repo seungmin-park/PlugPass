@@ -36,7 +36,7 @@ describe('실제 조회 상태에 연결한 진행 표시', () => {
 
   it('위치 확인 중 원을 표시하고 실패하면 제거한다', async () => {
     const getCurrentPosition = vi.fn<Geolocation['getCurrentPosition']>()
-    vi.stubGlobal('navigator', Object.create(navigator, { geolocation: { value: { getCurrentPosition } } }))
+    vi.stubGlobal('navigator', { userAgent: navigator.userAgent, maxTouchPoints: navigator.maxTouchPoints, geolocation: { getCurrentPosition } })
     await router.push('/stations')
     const wrapper = mount(App, { global: { plugins: [router, createPinia()] } })
     await wrapper.get('#current-location').trigger('click')

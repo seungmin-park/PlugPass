@@ -3,8 +3,8 @@ import type { StationSummary } from '../types'
 import { formatDistance } from '../../charging-info/presentation'
 import StatusBadge from '../../charging-info/components/StatusBadge.vue'
 import FreshnessBadge from '../../charging-info/components/FreshnessBadge.vue'
-defineProps<{ station: StationSummary; detailHref?: string; mapSelectable?: boolean; selected?: boolean }>()
-defineEmits<{ openDetail: []; select: [] }>()
+defineProps<{ station: StationSummary; detailHref?: string; mapSelectable?: boolean; selected?: boolean; directionsHref?: string | undefined }>()
+defineEmits<{ openDetail: []; select: []; directions: [] }>()
 </script>
 <template>
   <article class="station-card" :class="{ 'station-card-selected': selected }" :aria-labelledby="`station-${station.id}`">
@@ -22,6 +22,10 @@ defineEmits<{ openDetail: []; select: [] }>()
     </ul>
     <p v-else>충전기 정보 확인 필요</p>
     <button v-if="mapSelectable" type="button" class="secondary-button" :aria-label="`${station.name} 지도에서 선택`" :aria-pressed="!!selected" @click="$emit('select')">{{ selected ? '지도에서 선택됨' : '지도에서 선택' }}</button>
+    <div class="station-actions">
+      <a v-if="directionsHref" :id="`station-directions-${station.id}`" :href="directionsHref" :aria-label="`${station.name} 길찾기`" :target="directionsHref.startsWith('https:') ? '_blank' : undefined" rel="noopener noreferrer">길찾기</a>
+      <button v-else :id="`station-directions-${station.id}`" type="button" class="search-button" :aria-label="`${station.name} 길찾기`" @click="$emit('directions')">길찾기</button>
     <a v-if="detailHref" :href="detailHref" @click.exact.left.prevent="$emit('openDetail')">{{ station.name }} 상세 보기</a>
+    </div>
   </article>
 </template>

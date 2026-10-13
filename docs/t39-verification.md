@@ -37,4 +37,4 @@ URL/store는 확정 검색을, View는 사용자 선택과 포커스를, 지도 
 
 ## 최종 결과
 
-공용 `bash scripts/verify.sh` 종료0. Java451·프런트358·개발브라우저36·배포JAR4·MySQL8·재시작JAR브라우저7, 실패/오류/skip0. 타입/lint/build 통과. /tmp/plugpass-t39-verify.log·build/verification·build/test-results·frontend/test-results에 원본 결과가 있다. 수정 후 독립 재리뷰에서 남은 차단 결함 없음. PR/CI/머지는 전달 후 확인한다.
+공용 `bash scripts/verify.sh` 종료0. Java451·프런트358·개발브라우저36·배포JAR4·MySQL8·재시작JAR브라우저7, 실패/오류/skip0. 타입/lint/build 통과. /tmp/plugpass-t39-verify.log·build/verification·build/test-results·frontend/test-results에 원본 결과가 있다. 수정 후 독립 재리뷰에서 남은 차단 결함 없음. [PR64](https://github.com/seungmin-park/PlugPass/pull/64) 필수 CI 성공 뒤 main9a0126f에 실제 병합했다.

@@ -17,6 +17,12 @@ describe('충전소 검색 카드', () => {
     expect(wrapper.text()).toContain('최신성 확인 불가')
     expect(wrapper.text()).not.toContain('충전 가능 확정')
   })
+  it('상세에 들어가지 않고 길찾기를 선택할 수 있다', async () => {
+    const wrapper = mount(StationCard, { props: { station } })
+    expect(wrapper.find('button[aria-label="가까운 충전소 길찾기"]').exists()).toBe(true)
+    await wrapper.get('button[aria-label="가까운 충전소 길찾기"]').trigger('click')
+    expect(wrapper.emitted('directions')).toEqual([[]])
+  })
   it('빈 충전기일 때 정보 확인 안내를 제공한다', () => {
     const wrapper = mount(StationCard, { props: { station: { ...station, chargers: [] } } })
     expect(wrapper.text()).toContain('충전기 정보 확인 필요')

@@ -28,7 +28,63 @@ describe('검색 지도의 목록 선택', () => {
     expect(wrapper.get('button[aria-label="대체 충전소 지도에서 선택"]').attributes('aria-pressed')).toBe('true')
     expect(wrapper.get('[aria-label="대체 충전소 지도 마커"]').attributes('aria-pressed')).toBe('true')
     expect(wrapper.get('[aria-label="가까운 충전소 지도 마커"]').attributes('aria-pressed')).toBe('false')
-    expect(wrapper.text()).toContain('선택한 충전소: 대체 충전소')
+    expect(wrapper.find('[role="dialog"]').exists()).toBe(true)
+    expect(wrapper.get('[role="dialog"]').text()).toContain('대체 충전소')
+    expect(wrapper.get('[role="dialog"]').text()).toContain('길찾기')
+    expect(wrapper.get('[role="dialog"]').text()).toContain('운영 시간과 출입 조건을 확인해 주세요')
+  })
+
+  it('카드에서 길찾기를 연 뒤 다른 마커를 선택하면 목적지도 함께 바뀐다', async () => {
+    vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue('iPhone')
+    httpClient.defaults.adapter = async config => jsonResponse(config, searchResponse)
+    const router = searchRouter()
+    await router.push({ path: '/stations', query })
+    const wrapper = mount(StationSearchView, { global: { plugins: [router, createPinia()] } })
+    await flushPromises()
+    await wrapper.get('#show-map').trigger('click')
+    await vi.waitFor(() => expect(wrapper.findAll('.leaflet-marker-icon')).toHaveLength(2))
+    await wrapper.get('button[aria-label="가까운 충전소 길찾기"]').trigger('click')
+    expect(wrapper.get('.station-action-sheet h2').text()).toBe('가까운 충전소')
+    await wrapper.get('[aria-label="대체 충전소 지도 마커"]').trigger('click')
+    expect(wrapper.get('.station-action-sheet h2').text()).toBe('대체 충전소')
+    expect(wrapper.get('#navigation-kakao').attributes('href')).toBe('kakaomap://route?ep=37.5,127.001&by=car')
+  })
+
+  it('하단 패널의 길찾기 링크에서도 Escape로 닫을 수 있다', async () => {
+    httpClient.defaults.adapter = async config => jsonResponse(config, searchResponse)
+    const router = searchRouter()
+    await router.push({ path: '/stations', query })
+    const wrapper = mount(StationSearchView, { global: { plugins: [router, createPinia()] } })
+    await flushPromises()
+    await wrapper.get('#show-map').trigger('click')
+    await vi.waitFor(() => expect(wrapper.findAll('.leaflet-marker-icon')).toHaveLength(2))
+    await wrapper.get('[aria-label="대체 충전소 지도 마커"]').trigger('click')
+    await wrapper.get('#navigation-web').trigger('keydown', { key: 'Escape' })
+    expect(wrapper.find('.station-action-sheet').exists()).toBe(false)
+  })
+
+  it('지도 앱을 고른 뒤 패널을 닫으면 바뀐 카드 길찾기 링크로 초점이 돌아온다', async () => {
+    vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue('iPhone')
+    httpClient.defaults.adapter = async config => jsonResponse(config, searchResponse)
+    const router = searchRouter()
+    await router.push({ path: '/stations', query })
+    const host = document.createElement('div')
+    document.body.append(host)
+    const wrapper = mount(StationSearchView, { attachTo: host, global: { plugins: [router, createPinia()] } })
+    try {
+      await flushPromises()
+      const initialButton = wrapper.get('button[aria-label="가까운 충전소 길찾기"]')
+      ;(initialButton.element as HTMLElement).focus()
+      await initialButton.trigger('click')
+      wrapper.get('#navigation-kakao').element.addEventListener('click', event => event.preventDefault(), { once: true })
+      await wrapper.get('#navigation-kakao').trigger('click')
+      await wrapper.get('.station-action-sheet .sheet-close').trigger('click')
+      await flushPromises()
+      expect(document.activeElement).toBe(wrapper.get('a[aria-label="가까운 충전소 길찾기"]').element)
+    } finally {
+      wrapper.unmount()
+      host.remove()
+    }
   })
 
   it.each([{ label: 'Enter', key: 'Enter' }, { label: 'Space', key: ' ' }])('카드 선택을 실제 SDK 마커에 반영하고 $label 키로 다른 카드를 선택한다', async ({ key }) => {
@@ -70,7 +126,7 @@ describe('검색 지도의 목록 선택', () => {
     await wrapper.get('button[aria-label="대체 충전소 지도에서 선택"]').trigger('click')
     expect(wrapper.get('button[aria-label="가까운 충전소 지도에서 선택"]').attributes('aria-pressed')).toBe('false')
     expect(wrapper.get('button[aria-label="대체 충전소 지도에서 선택"]').attributes('aria-pressed')).toBe('true')
-    expect(wrapper.findAll('article a').map(link => link.text())).toEqual(['가까운 충전소 상세 보기', '대체 충전소 상세 보기'])
+    expect(wrapper.findAll('article a').filter(link => link.text().includes('상세 보기')).map(link => link.text())).toEqual(['가까운 충전소 상세 보기', '대체 충전소 상세 보기'])
   })
 
   it('새 조건으로 검색하면 같은 ID가 다시 반환돼도 이전 선택을 지운다', async () => {

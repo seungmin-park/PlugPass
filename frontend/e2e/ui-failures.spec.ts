@@ -40,6 +40,38 @@ test('위치 실패 시 주소 검색으로 이동한다', async ({ page }) => {
   await expect(page.getByRole('searchbox', { name: '주소·장소 검색', exact: true })).toBeFocused()
 })
 
+test('위치 오류 안내와 대안 버튼은 좁은 화면에서도 서로 떨어져 보인다', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 812 })
+  await page.addInitScript(() => Object.defineProperty(navigator, 'geolocation', { configurable: true, value: {
+    getCurrentPosition: (_success: PositionCallback, failure: PositionErrorCallback) => failure({ code: 1, message: 'denied', PERMISSION_DENIED: 1, POSITION_UNAVAILABLE: 2, TIMEOUT: 3 }),
+  } }))
+  await page.goto('/app/index.html#/stations')
+  await page.getByRole('button', { name: '현재 위치 사용', exact: true }).click()
+  await expect(page.getByRole('alert')).toContainText('위치 권한이 거부되었습니다')
+
+  const gaps = await page.evaluate(() => {
+    const bounds = (selector: string) => {
+      const element = document.querySelector(selector)
+      if (!(element instanceof HTMLElement)) throw new Error(`${selector} 요소가 없습니다`)
+      return element.getBoundingClientRect()
+    }
+    const current = bounds('#current-location')
+    const message = bounds('.location-picker [role="alert"] p')
+    const retry = bounds('#retry-location')
+    const address = bounds('#location-address')
+    return {
+      aboveMessage: message.top - current.bottom,
+      belowMessage: retry.top - message.bottom,
+      betweenActions: address.top >= retry.bottom ? address.top - retry.bottom : address.left - retry.right,
+      horizontalOverflow: document.documentElement.scrollWidth > window.innerWidth,
+    }
+  })
+  expect(gaps.aboveMessage).toBeGreaterThanOrEqual(8)
+  expect(gaps.belowMessage).toBeGreaterThanOrEqual(8)
+  expect(gaps.betweenActions).toBeGreaterThanOrEqual(8)
+  expect(gaps.horizontalOverflow).toBe(false)
+})
+
 test('빈 검색 결과는 조건 변경 안내와 정확한 0개를 표시한다', async ({ page }) => {
   await page.route('**/api/v1/stations?*', route => route.fulfill({ json: { ...searchResponse, stations: [] } }))
   await page.goto(`/app/index.html#/stations?${criteria}`)

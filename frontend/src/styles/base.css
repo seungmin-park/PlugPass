@@ -123,6 +123,8 @@ h1 { font-size: 36px; font-weight: 700; letter-spacing: -0.025em; margin-bottom:
 .location-picker { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
 .location-picker p { width: 100%; font-size: 13px; overflow-wrap: anywhere; }
 .location-picker .selected-location { color: var(--color-primary); font-weight: 600; }
+.location-error { flex-basis: 100%; display: grid; gap: 12px; min-width: 0; }
+.location-error-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .secondary-button { min-height: 44px; padding: 10px 14px; border: 1px solid var(--color-line); border-radius: 8px; color: var(--color-primary); background: var(--color-panel); cursor: pointer; font-size: 14px; font-weight: 600; }
 .secondary-button:hover { background: var(--color-field); }
 .secondary-button:disabled { cursor: wait; color: var(--color-muted); }

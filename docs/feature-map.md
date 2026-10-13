@@ -248,3 +248,7 @@ main push → 기존 CI 전체 gate → 성공한 CI artifact
 ## T35 상태 변경분 수집
 
 CLI `--plugpass.ingestion.command.mode=auto` → ScheduledSyncService/CollectionSchedule → 기본정보 또는 StatusSyncService → DB 잠금/공공 상태 API → StatusUpsertService/Charger. 검증: CollectionScheduleTests, IngestionCommandTests, StatusSyncTests, StatusUpsertTests, ChargerStatusChangeTests, CollectionReadinessTests 및 실제 MySQL 배포 계약. [실행·한계](status-sync-verification.md). 수집 상태 화면과 운영 타이머는 후속이다.
+
+## T36 수집 상태 안내
+
+검색 API → CollectionStatusService/CollectionHealth → collection 필드 → StationSearchView의 준비·지연·성공 시각 안내. CollectionStatusTests, StationSearchHttpTests, StationSearchView.spec.ts, stationApi.spec.ts 및 ui-failures의 모바일 지연→새로고침 복구가 검증한다. [기록](collection-status-verification.md). 수집 정상과 충전기 관측 최신성을 구분한다.

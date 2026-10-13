@@ -3,6 +3,7 @@ package com.plugpass.search.controller;
 import com.plugpass.search.dto.ChargerObservation;
 import com.plugpass.search.dto.StationDetail;
 import com.plugpass.search.service.StationQueryService;
+import com.plugpass.ingestion.service.CollectionStatusService;
 
 import java.time.Instant;
 import java.util.List;
@@ -40,6 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class StationDetailHttpTests {
     @Autowired private MockMvc mockMvc;
     @MockitoBean private StationQueryService stationQueryService;
+    @MockitoBean private CollectionStatusService collectionStatusService;
 
     @Test
     @DisplayName("상세의 상태·원본·UTC 시각·제한 정보 값과 REST Docs 모든 필드를 확인한다")

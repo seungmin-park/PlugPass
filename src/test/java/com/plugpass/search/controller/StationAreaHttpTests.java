@@ -4,6 +4,7 @@ import com.plugpass.search.domain.MapSearchArea;
 import com.plugpass.search.domain.StationAreaSearchQuery;
 import com.plugpass.search.dto.StationSearchResult;
 import com.plugpass.search.service.StationQueryService;
+import com.plugpass.ingestion.service.CollectionStatusService;
 import com.plugpass.station.domain.Connector;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -29,6 +30,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 class StationAreaHttpTests {
     @Autowired private MockMvc mockMvc;
     @MockitoBean private StationQueryService stationQueryService;
+    @MockitoBean private CollectionStatusService collectionStatusService;
     @Test
     @DisplayName("지도 경계와 기본 limit을 전달하고 빈 응답 계약을 문서화한다")
     void documentsArea() throws Exception {
@@ -42,7 +44,7 @@ class StationAreaHttpTests {
                 parameterWithName("north").description("북쪽 위도"), parameterWithName("west").description("서쪽 경도"),
                 parameterWithName("east").description("동쪽 경도"), parameterWithName("connector").description("차량 커넥터"),
                 parameterWithName("limit").optional().description("1~50, 기본20")), responseFields(
-                fieldWithPath("dataReady").description("전체 수집 성공 이력"), fieldWithPath("lastSuccessfulRunAt").optional().description("마지막 전체 성공 시각"),
+                subsectionWithPath("collection").optional().description("수집 작업 상태 CURRENT/DELAYED/NOT_READY, 전체·상태 성공/최근 시도 시각과 300초 갱신 주기; 현장 관측 최신성 보장 아님"), fieldWithPath("dataReady").description("전체 수집 성공 이력"), fieldWithPath("lastSuccessfulRunAt").optional().description("마지막 전체 성공 시각"),
                 fieldWithPath("stations").description("중심 거리·ID순 충전소; 기존 주변 검색과 동일한 원소 계약"))));
         verify(stationQueryService).searchArea(new StationAreaSearchQuery(new MapSearchArea(37.49, 37.51, 126.99, 127.01), Connector.DC_COMBO, 20));
     }

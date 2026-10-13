@@ -24,7 +24,16 @@ export interface StationSummary {
   reportedAvailableCount: number
   chargers: ChargerInfo[]
 }
+export interface CollectionStatus {
+  state: 'NOT_READY' | 'CURRENT' | 'DELAYED'
+  lastCatalogSuccessAt: string | null
+  lastStatusSuccessAt: string | null
+  lastAttemptAt: string | null
+  lastAttemptStatus: string | null
+  statusIntervalSeconds: number
+}
 export interface StationSearchResponse {
+  collection?: CollectionStatus | null
   dataReady: boolean
   lastSuccessfulRunAt: string | null
   stations: StationSummary[]

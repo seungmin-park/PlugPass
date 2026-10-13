@@ -12,7 +12,10 @@ test('배포 JAR의 JS·CSS와 같은 origin 검색 API가 실제 화면을 만�
   const response = await searchResponse
   expect(response.status()).toBe(200)
   expect(new URL(response.url()).origin).toBe(new URL(page.url()).origin)
-  expect(await response.json()).toEqual({ dataReady: false, lastSuccessfulRunAt: null, stations: [] })
+  expect(await response.json()).toEqual({ dataReady: false, lastSuccessfulRunAt: null, stations: [], collection: {
+    state: 'NOT_READY', lastCatalogSuccessAt: null, lastStatusSuccessAt: null,
+    lastAttemptAt: null, lastAttemptStatus: null, statusIntervalSeconds: 300,
+  } })
   expect(assets.some(asset => new URL(asset.url).pathname.endsWith('.js') && asset.status === 200)).toBe(true)
   expect(assets.some(asset => new URL(asset.url).pathname.endsWith('.css') && asset.status === 200)).toBe(true)
   await page.reload()

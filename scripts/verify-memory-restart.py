@@ -91,7 +91,7 @@ def main():
             verify_collected(before)
         with running_server(classpath, provider.server_port, 'false', output / 'after.log') as base:
             after = search(base)
-            assert after == {'dataReady': False, 'lastSuccessfulRunAt': None, 'stations': []}
+            assert after == {'dataReady': False, 'lastSuccessfulRunAt': None, 'stations': [], 'collection': {'state': 'NOT_READY', 'lastCatalogSuccessAt': None, 'lastStatusSuccessAt': None, 'lastAttemptAt': None, 'lastAttemptStatus': None, 'statusIntervalSeconds': 300}}
         with running_server(classpath, provider.server_port, 'true', output / 'recollected.log') as base:
             recollected = search(base)
             verify_collected(recollected)

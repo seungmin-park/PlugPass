@@ -1,14 +1,19 @@
 package com.plugpass.search.dto.response;
 
 import java.time.Instant;
+import com.plugpass.ingestion.dto.CollectionStatus;
+import com.plugpass.ingestion.dto.response.CollectionStatusResponse;
 import java.util.List;
 import com.plugpass.search.dto.StationSearchResult;
 import com.plugpass.search.dto.StationMatch;
 import com.plugpass.station.domain.ChargerStatus;
 
-public record StationSearchResponse(boolean dataReady, Instant lastSuccessfulRunAt, List<StationSummaryResponse> stations) {
+public record StationSearchResponse(boolean dataReady, Instant lastSuccessfulRunAt, List<StationSummaryResponse> stations, CollectionStatusResponse collection) {
     public static StationSearchResponse from(StationSearchResult result) {
-        return new StationSearchResponse(result.dataReady(),result.lastSuccessfulRunAt(),result.stations().stream().map(StationSummaryResponse::from).toList());
+        return from(result, null);
+    }
+    public static StationSearchResponse from(StationSearchResult result, CollectionStatus collection) {
+        return new StationSearchResponse(result.dataReady(),result.lastSuccessfulRunAt(),result.stations().stream().map(StationSummaryResponse::from).toList(),CollectionStatusResponse.from(collection));
     }
     public record StationSummaryResponse(Long id, String provider, String providerStationId, String name,
             double latitude, double longitude, double distanceMeters, int compatibleChargerCount, long reportedAvailableCount,

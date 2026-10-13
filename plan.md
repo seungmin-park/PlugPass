@@ -259,3 +259,7 @@ T31: 주소·장소 입력 후 검색 버튼/Enter로 요청한다. 주소 및 �
 ### T35 기능별 전달
 
 `feat/charger-status-sync`에서 상태 API·실행 종류·자동 수집 선택·상태 역전 방지만 전달한다. 수집 상태 API/화면(T36), 운영 타이머·백업(T37)은 별도 기능 PR로 검증→필수 CI→native auto-merge→실제 머지를 확인한다. [T35 검증](docs/status-sync-verification.md).
+
+### T36 기능별 전달
+
+`feat/collection-status-ui`는 검색 응답의 수집 준비·최근 성공·지연 안내를 추가한다. 실제 수집 기능 PR59 이후 별도 CI·자동 머지로 전달한다. [검증 기록](docs/collection-status-verification.md).

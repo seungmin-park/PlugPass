@@ -288,3 +288,7 @@ Spring의 classpath static 제공을 사용한다. Gradle이 Node/npm으로 프�
 
 Java25·Boot4.1.1·MySQL8.4를 유지한다. [MySQL8.4 GET_LOCK](https://dev.mysql.com/doc/refman/8.4/en/locking-functions.html)은 DB 세션이 소유하고 transaction commit과 무관하며 세션 종료 또는 RELEASE_LOCK으로 해제된다. timeout0으로 즉시 획득/거부한다. 풀 연결은 명시적으로 해제 후 반환하고 해제 실패는 연결 abort 후 오류로 보고한다. 단일 VM의 운영 실행 잠금과 함께 사용하며 다중 MySQL 서버 합의 락이라고 표현하지 않는다.
 [Boot ApplicationRunner/ExitCodeGenerator](https://docs.spring.io/spring-boot/reference/features/spring-application.html)는 기동 후 일회 실행과 종료 코드를 제공한다. 프로젝트는 명시적 command.enabled에서만 실행하고 성공0·실패1·중복2를 반환한다. 운영 CLI는 web-application-type=none으로 웹 포트를 열지 않는다.
+
+## T35 상태 API 및 저장 계약
+
+기존 Spring Boot4.1.1/Hibernate/JPA·MySQL8.4와 공식 공급자 가이드 v1.25 계약을 유지한다. getChargerStatus의 최근 변경 조회를 getChargerInfo 전체 스냅샷과 구분한다. period=10의 실운영 인증 HTTP200/code00 표본은 production-data-verification.md에 기록했다. 상태 변경 로컬 시각 비교·24시간 전체/5분 상태 실행·10분 누락 복구는 프로젝트 정책이며 공급자의 지연 SLA가 아니다. MySQL additive V2 migration과 실제 재시작 검증을 사용한다.

@@ -120,8 +120,8 @@ class StationUpsertTests {
     }
 
     @Test
-    @DisplayName("관측 시각이 없는 공급자는 상태 변경 시각으로 응답 순서를 추측하지 않는다")
-    void keepsUnverifiedOrderingExplicit() {
+    @DisplayName("이전 상태 변경 응답은 최신 상태를 보존하지만 관측 시각은 여전히 확인 불가다")
+    void preservesLatestChangeWithoutInventingObservation() {
         ChargerId chargerId = new ChargerId("ME", "28260005", "02");
         Instant collectedAt = Instant.parse("2026-10-01T00:00:00Z");
         ChargerDetails laterChange = new ChargerDetails("03", null, null, null, null, "20261001090000", null, null, null);
@@ -134,9 +134,9 @@ class StationUpsertTests {
 
         assertThat(chargerRepository.findByIdentity(chargerId)).isPresent();
         Charger reloadedCharger = chargerRepository.findByIdentity(chargerId).orElseThrow();
-        assertThat(reloadedCharger.getStatus()).isEqualTo(ChargerStatus.AVAILABLE);
+        assertThat(reloadedCharger.getStatus()).isEqualTo(ChargerStatus.OCCUPIED);
         assertThat(reloadedCharger.getSourceObservedAt()).isNull();
-        assertThat(reloadedCharger.getDetails().sourceStatusChangedAtRaw()).isEqualTo("20190829121020");
+        assertThat(reloadedCharger.getDetails().sourceStatusChangedAtRaw()).isEqualTo("20261001090000");
     }
 
     @Test

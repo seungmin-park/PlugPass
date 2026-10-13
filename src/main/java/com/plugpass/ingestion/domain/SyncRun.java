@@ -23,6 +23,7 @@ public class SyncRun {
     @Column(nullable = false, updatable = false) private Instant startedAt;
     private Instant completedAt;
     @Column(nullable = false) @Enumerated(EnumType.STRING) private SyncStatus status;
+    @Column(nullable = false, columnDefinition = "varchar(16)") @Enumerated(EnumType.STRING) private SyncKind kind;
     private long processedCount;
     private Integer failedPage;
     @Column(nullable = false) private long failedPageCount;
@@ -31,7 +32,10 @@ public class SyncRun {
     private int retryCount;
 
     @Builder
-    private SyncRun(Instant startedAt) {
+    private SyncRun(Instant startedAt) { this(startedAt, SyncKind.CATALOG); }
+    public static SyncRun statusRun(Instant startedAt) { return new SyncRun(startedAt, SyncKind.STATUS); }
+    private SyncRun(Instant startedAt, SyncKind kind) {
+        this.kind = kind;
         if (startedAt == null) { throw new IllegalArgumentException("startedAt must not be null"); }
         this.startedAt = startedAt;
         this.status = SyncStatus.RUNNING;

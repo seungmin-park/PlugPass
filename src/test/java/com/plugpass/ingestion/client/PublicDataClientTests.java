@@ -1,6 +1,7 @@
 package com.plugpass.ingestion.client;
 
 import com.plugpass.ingestion.config.PublicDataProperties;
+import com.plugpass.ingestion.dto.StatusPage;
 import com.plugpass.ingestion.dto.StationPage;
 
 import java.io.IOException;
@@ -147,6 +148,28 @@ class PublicDataClientTests {
                 .collect(Collectors.toMap(pair -> pair[0], pair -> URLDecoder.decode(pair[1], StandardCharsets.UTF_8)));
         assertThat(parameters).containsExactlyInAnyOrderEntriesOf(Map.of("serviceKey", SERVICE_KEY, "pageNo", "1", "numOfRows", "10", "zcode", "28", "dataType", "XML"));
     }
+    @Test
+    @DisplayName("상태 API는 10분 겹침 범위를 요청하고 위치정보 없이 상태 변경분을 읽는다")
+    void readsStatusChangesWithOverlappingWindow() throws IOException {
+        AtomicReference<String> query = new AtomicReference<>();
+        String body = """
+                <response><header><resultCode>00</resultCode><pageNo>1</pageNo><numOfRows>1</numOfRows><totalCount>1</totalCount></header>
+                <body><items><item><busiId>ME</busiId><statId>001</statId><chgerId>02</chgerId>
+                <stat>3</stat><statUpdDt>20261001103000</statUpdDt></item></items></body></response>
+                """;
+        server.createContext("/getChargerStatus", exchange -> {
+            query.set(exchange.getRequestURI().getRawQuery()); respond(exchange, 200, body);
+        });
+        client = new DefaultPublicDataClient(properties(SERVICE_KEY, Duration.ofSeconds(2)), Clock.fixed(COLLECTED_AT, ZoneOffset.UTC));
+        StatusPage page = ((PublicStatusClient) client).fetchStatusPage(1, Duration.ofSeconds(2));
+        assertThat(page).isNotNull();
+        assertThat(page.snapshots()).hasSize(1);
+        assertThat(page.snapshots().getFirst().status()).isEqualTo(ChargerStatus.OCCUPIED);
+        assertThat(page.snapshots().getFirst().changedAtRaw()).isEqualTo("20261001103000");
+        assertThat(page.snapshots().getFirst().chargerId().stationId()).isEqualTo("001");
+        assertThat(query.get()).contains("period=10", "zcode=28");
+    }
+
     @Test
     @DisplayName("전국 범위는 zcode 제한을 보내지 않고 기존 페이지 계약으로 조회한다")
     void searchesAllRegionsWithoutRegionParameter() throws IOException {

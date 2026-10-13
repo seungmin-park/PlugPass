@@ -86,6 +86,8 @@ for (const width of [320, 375]) {
     expect(bounds?.y).toBeGreaterThanOrEqual(0)
     expect(bounds?.y).toBeLessThan(600)
     await expect(page.locator('.kakao-test-map')).toBeAttached()
+    await expect(page.getByText(/위치를 선택하지 않았다면 서울 시청 주변/)).toHaveCount(0)
+    await expect(page.getByText(/마커 또는 카드의 ‘지도에서 선택’/)).toHaveCount(0)
     await expect(page.locator('.station-card')).toHaveCount(0)
     await notice.getByRole('button', { name: '내 차량 선택하기' }).click()
     await expect(page.getByLabel('내 차량')).toBeFocused()

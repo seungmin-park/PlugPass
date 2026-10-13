@@ -6,7 +6,9 @@ import com.plugpass.search.dto.StationSearchResult;
 import com.plugpass.search.service.StationQueryService;
 import com.plugpass.ingestion.service.CollectionStatusService;
 import com.plugpass.station.domain.Connector;
+import com.plugpass.station.domain.ConnectorSelection;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -64,6 +66,19 @@ class StationAreaHttpTests {
         mockMvc.perform(get("/api/v1/stations/area").queryParams(parameters)).andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.fields.south").value("남쪽 경계는 필수입니다"));
         verifyNoInteractions(stationQueryService);
+    }
+    @Test
+    @DisplayName("지도 영역도 여러 규격을 합쳐 전달하고 혼합 입력은 거부한다")
+    void acceptsMultipleConnectorsAndRejectsConflict() throws Exception {
+        StationSearchResult result = mock(StationSearchResult.class); when(result.stations()).thenReturn(List.of());
+        when(stationQueryService.searchArea(any())).thenReturn(result);
+        MultiValueMap<String,String> multiple = parameters(); multiple.remove("connector");
+        multiple.add("connectors", "DC_COMBO"); multiple.add("connectors", "AC_SLOW");
+        mockMvc.perform(get("/api/v1/stations/area").queryParams(multiple)).andExpect(status().isOk());
+        verify(stationQueryService).searchArea(new StationAreaSearchQuery(new MapSearchArea(37.49,37.51,126.99,127.01),
+                new ConnectorSelection(Set.of(Connector.DC_COMBO,Connector.AC_SLOW)),20));
+        MultiValueMap<String,String> conflict = parameters(); conflict.add("connectors", "AC_SLOW");
+        mockMvc.perform(get("/api/v1/stations/area").queryParams(conflict)).andExpect(status().isBadRequest());
     }
     private MultiValueMap<String, String> parameters() {
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();

@@ -5,6 +5,8 @@ import com.plugpass.search.dto.ChargerObservation;
 import com.plugpass.search.dto.StationMatch;
 import com.plugpass.search.dto.StationSearchResult;
 import com.plugpass.station.domain.Connector;
+import com.plugpass.station.domain.ConnectorSelection;
+import java.util.Set;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -82,6 +84,19 @@ class StationSearchTests {
         assertThat(station.chargers()).extracting(observation -> observation.freshness().reasonCode()).containsExactly("SOURCE_OBSERVED_AT_MISSING","MAX_AGE_EXCEEDED");
         assertThat(station.chargers().getFirst().collectedAt()).isEqualTo(now);
         assertThat(station.chargers().getFirst().details().limitYn()).isEqualTo("N");
+    }
+    @Test
+    @DisplayName("여러 규격의 합집합은 조합형 충전기를 한 번만 세고 호환 필터 뒤에 limit을 적용한다")
+    void combinesConnectorsWithoutDuplicateChargers() {
+        saveCharger("near","01",new GeoPoint(37.5,126.6),"06",ChargerStatus.AVAILABLE,now);
+        saveCharger("near","02",new GeoPoint(37.5,126.6),"02",ChargerStatus.AVAILABLE,now);
+        saveCharger("far","01",new GeoPoint(37.5001,126.6),"04",ChargerStatus.AVAILABLE,now);
+        ConnectorSelection selection = new ConnectorSelection(Set.of(Connector.DC_CHADEMO,Connector.DC_COMBO,Connector.AC_SLOW));
+        StationSearchResult result = stationQueryService.search(new StationSearchQuery(new GeoPoint(37.5,126.6),1000,selection,1));
+        assertThat(result.stations()).hasSize(1);
+        assertThat(result.stations().getFirst().providerStationId()).isEqualTo("near");
+        assertThat(result.stations().getFirst().chargers()).extracting(ChargerObservation::chargerId).containsExactly("01","02");
+        assertThat(result.stations().getFirst().chargers()).hasSize(2);
     }
     @Test
     @DisplayName("거리가 같으면 내부 충전소 ID로 정렬하고 limit을 적용한다")

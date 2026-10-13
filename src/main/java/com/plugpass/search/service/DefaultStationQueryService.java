@@ -72,7 +72,7 @@ public class DefaultStationQueryService implements StationQueryService {
         SearchBounds bounds = SearchBounds.around(query.location(), query.radiusMeters());
         Map<Station,List<Charger>> byStation = chargerRepository.findSearchCandidates(
                 bounds.minLatitude(), bounds.maxLatitude(), bounds.minLongitude(), bounds.maxLongitude(),
-                query.connector().providerCodes()).stream()
+                query.connectors().providerCodes()).stream()
                 .collect(Collectors.groupingBy(Charger::getStation));
         List<StationMatch> matches = byStation.entrySet().stream()
                 .map(entry -> match(entry.getKey(), entry.getValue(), query.location(), now))
@@ -89,7 +89,7 @@ public class DefaultStationQueryService implements StationQueryService {
                 .map(SyncRun::getCompletedAt).orElse(null);
         MapSearchArea area = query.area();
         Map<Station,List<Charger>> byStation = chargerRepository.findSearchCandidates(
-                area.south(), area.north(), area.west(), area.east(), query.connector().providerCodes()).stream()
+                area.south(), area.north(), area.west(), area.east(), query.connectors().providerCodes()).stream()
                 .collect(Collectors.groupingBy(Charger::getStation));
         List<StationMatch> matches = byStation.entrySet().stream()
                 .map(entry -> match(entry.getKey(), entry.getValue(), area.center(), now))

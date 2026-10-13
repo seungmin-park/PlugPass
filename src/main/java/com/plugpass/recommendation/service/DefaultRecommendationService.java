@@ -29,7 +29,7 @@ public class DefaultRecommendationService implements RecommendationService {
                 groups.requiresConfirmation().stream().limit(query.limit()).toList(),groups.excluded().stream().limit(query.limit()).toList());
     }
     private StationCandidate candidate(StationMatch station, StationSearchQuery query) {
-        return new StationCandidate(station.id(),station.name(),station.distanceMeters(),query.connector(),
+        return new StationCandidate(station.id(),station.name(),station.distanceMeters(),query.connectors(),
                 station.chargers().stream().map(this::chargerCandidate).toList());
     }
     private CandidateCharger chargerCandidate(ChargerObservation charger) {

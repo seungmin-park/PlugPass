@@ -8,9 +8,11 @@ import com.plugpass.search.service.StationQueryService;
 import com.plugpass.ingestion.service.CollectionStatusService;
 import com.plugpass.ingestion.dto.CollectionStatus;
 import com.plugpass.station.domain.Connector;
+import com.plugpass.station.domain.ConnectorSelection;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 import com.plugpass.freshness.domain.Freshness;
 import com.plugpass.freshness.domain.FreshnessAssessment;
@@ -105,6 +107,45 @@ class StationSearchHttpTests {
         mockMvc.perform(get("/api/v1/stations").queryParams(validParameters()))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.dataReady").value(false))
                 .andExpect(jsonPath("$.lastSuccessfulRunAt").isEmpty()).andExpect(jsonPath("$.stations").isEmpty());
+    }
+    @Test
+    @DisplayName("여러 차량 연결 규격은 하나의 검색 조건으로 받는다")
+    void acceptsMultipleConnectors() throws Exception {
+        StationSearchResult result = mock(StationSearchResult.class); when(result.stations()).thenReturn(List.of());
+        when(stationQueryService.search(any())).thenReturn(result);
+        MultiValueMap<String,String> parameters = validParameters(); parameters.remove("connector");
+        parameters.add("connectors", "DC_COMBO"); parameters.add("connectors", "AC_SLOW");
+        mockMvc.perform(get("/api/v1/stations").queryParams(parameters)).andExpect(status().isOk())
+                .andDo(document("station-search-multiple-connectors", queryParameters(
+                        parameterWithName("latitude").description("기준 위도"),
+                        parameterWithName("longitude").description("기준 경도"),
+                        parameterWithName("radiusMeters").description("반경 m"),
+                        parameterWithName("connectors").description("이번에 사용할 연결 규격. 여러 번 보내거나 쉼표로 나열; 단일 connector와 혼합 불가"))));
+        verify(stationQueryService).search(new StationSearchQuery(new GeoPoint(37.5,126.6),1000,
+                new ConnectorSelection(Set.of(Connector.DC_COMBO,Connector.AC_SLOW)),20));
+    }
+    @Test
+    @DisplayName("쉼표로 나열한 규격도 여러 규격으로 해석하고 빈 선택은 거부한다")
+    void acceptsCommaSeparatedConnectorsAndRejectsEmpty() throws Exception {
+        StationSearchResult result = mock(StationSearchResult.class); when(result.stations()).thenReturn(List.of());
+        when(stationQueryService.search(any())).thenReturn(result);
+        MultiValueMap<String,String> parameters = validParameters(); parameters.remove("connector");
+        parameters.set("connectors", "DC_COMBO,AC_SLOW");
+        mockMvc.perform(get("/api/v1/stations").queryParams(parameters)).andExpect(status().isOk());
+        verify(stationQueryService).search(new StationSearchQuery(new GeoPoint(37.5,126.6),1000,
+                new ConnectorSelection(Set.of(Connector.DC_COMBO,Connector.AC_SLOW)),20));
+        parameters.set("connectors", "");
+        mockMvc.perform(get("/api/v1/stations").queryParams(parameters)).andExpect(status().isBadRequest());
+    }
+    @Test
+    @DisplayName("단일 규격과 여러 규격을 함께 보내면 모호한 검색을 거부한다")
+    void rejectsConflictingConnectorInputs() throws Exception {
+        StationSearchResult result = mock(StationSearchResult.class); when(result.stations()).thenReturn(List.of());
+        when(stationQueryService.search(any())).thenReturn(result);
+        MultiValueMap<String,String> parameters = validParameters(); parameters.add("connectors", "AC_SLOW");
+        mockMvc.perform(get("/api/v1/stations").queryParams(parameters)).andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("INVALID_REQUEST"));
+        verifyNoInteractions(stationQueryService);
     }
     @ParameterizedTest
     @DisplayName("검색 필수값 누락은 400과 필드별 오류로 거부한다")

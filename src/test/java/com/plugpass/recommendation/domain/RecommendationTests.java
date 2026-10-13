@@ -1,10 +1,12 @@
 package com.plugpass.recommendation.domain;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 import com.plugpass.freshness.domain.Freshness;
 import com.plugpass.freshness.domain.FreshnessAssessment;
 import com.plugpass.station.domain.Connector;
+import com.plugpass.station.domain.ConnectorSelection;
 import com.plugpass.station.domain.ChargerStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,6 +30,16 @@ class RecommendationTests {
         assertThat(groups.preferred().getFirst().reasonCodes()).containsExactly("RECENT_AVAILABLE");
         assertThat(groups.requiresConfirmation()).isEmpty();
         assertThat(groups.excluded()).isEmpty();
+    }
+    @Test
+    @DisplayName("여러 규격 중 하나로 연결할 수 있으면 후보를 한 번만 추천한다")
+    void ranksUnionOfConnectorsOnce() {
+        ConnectorSelection selection = new ConnectorSelection(Set.of(Connector.DC_COMBO,Connector.AC_SLOW));
+        CandidateCharger slow = charger("02",ChargerStatus.AVAILABLE,Freshness.RECENT,"N","24시간",null);
+        CandidateCharger combo = charger("06",ChargerStatus.AVAILABLE,Freshness.RECENT,"N","24시간",null);
+        CandidateGroups groups = candidatePolicy.rank(List.of(new StationCandidate(1L,"두 규격",100,selection,List.of(slow,combo))));
+        assertThat(groups.preferred()).extracting(RankedCandidate::id).containsExactly(1L);
+        assertThat(groups.preferred().getFirst().reasonCodes()).containsExactly("RECENT_AVAILABLE");
     }
     @Test
     @DisplayName("관측 시각이 없는 이용 가능 보고는 확인 필요 그룹에 둔다")

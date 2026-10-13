@@ -56,6 +56,50 @@ test('카카오 위치 후보 선택과 실제 충전소 조회를 연결한다'
   await expect(page.getByRole('heading', { name: '주변 충전소', exact: true })).toBeFocused()
 })
 
+test('차량 없이 지도 재검색을 누르면 차량 선택 단계를 알려 준다', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await page.goto('/app/index.html#/stations')
+  await page.getByRole('button', { name: '지도 보기', exact: true }).click()
+  await page.locator('.kakao-test-zoom-in').click()
+  await page.getByRole('button', { name: '이 지역 재검색' }).click()
+  const notice = page.locator('.search-prerequisite-notice')
+  await expect(notice).toBeVisible()
+  await expect(notice).toContainText('지도에서 검색할 지역을 골랐어요')
+  await expect(notice).toBeFocused()
+  await expect(page.locator('.station-card')).toHaveCount(0)
+})
+
+for (const width of [320, 375]) {
+  test(`${width}px에서 차량 없이 주소를 골라도 다음 단계가 지도 앞에 보인다`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 812 })
+    await page.goto('/app/index.html#/stations')
+    await page.getByRole('searchbox', { name: '주소·장소 검색' }).fill('검증 지역')
+    await page.getByRole('button', { name: '주소·장소 찾기' }).click()
+    await page.getByRole('button', { name: '검증용 주소 후보 검증용 주소 후보' }).click()
+
+    const notice = page.locator('.search-prerequisite-notice')
+    await expect(notice).toBeVisible()
+    await expect(notice).toContainText('충전소 결과를 보려면 내 차량을 선택해 주세요')
+    await expect(notice).toBeFocused()
+    const bounds = await notice.boundingBox()
+    expect(bounds).not.toBeNull()
+    expect(bounds?.y).toBeGreaterThanOrEqual(0)
+    expect(bounds?.y).toBeLessThan(600)
+    await expect(page.locator('.kakao-test-map')).toBeAttached()
+    await expect(page.locator('.station-card')).toHaveCount(0)
+    await notice.getByRole('button', { name: '내 차량 선택하기' }).click()
+    await expect(page.getByLabel('내 차량')).toBeFocused()
+    await page.getByLabel('내 차량').selectOption('manual')
+    await expect(notice).toHaveCount(0)
+    await page.getByRole('button', { name: '주변 충전소 검색' }).click()
+    await expect(page.getByRole('link', { name: '데모 가까운 충전소 상세 보기' })).toBeVisible()
+    const searchedArea = new URL(page.url().split('#')[1] ?? '', 'http://test').searchParams
+    expect(searchedArea.get('latitude')).toBe('37.5')
+    expect(searchedArea.get('longitude')).toBe('127')
+    expect(searchedArea.has('south')).toBe(false)
+  })
+}
+
 for (const width of [320, 375]) {
   test(`${width}px에서 첫 결과와 조건 변경을 긴 안내 앞에 표시한다`, async ({ page }) => {
     await page.setViewportSize({ width, height: 812 })

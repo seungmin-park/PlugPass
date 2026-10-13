@@ -12,7 +12,7 @@ import { readVehicleProfile, saveVehicleProfile } from '../../vehicle/vehiclePro
 const originalAdapter = httpClient.defaults.adapter
 if (originalAdapter === undefined) throw new Error('Axios adapter가 필요합니다')
 beforeEach(() => vi.stubEnv('VITE_KAKAO_JS_KEY', ''))
-afterEach(() => { httpClient.defaults.adapter = originalAdapter; window.localStorage.clear(); vi.unstubAllEnvs() })
+afterEach(() => { httpClient.defaults.adapter = originalAdapter; window.localStorage.clear(); vi.unstubAllEnvs(); vi.restoreAllMocks() })
 
 it('주소를 검색하고 후보를 고른 뒤에만 그 위치의 충전소를 조회한다', async () => {
   const adapter = vi.fn<AxiosAdapter>(async config => jsonResponse(config, config.url === '/places'
@@ -39,6 +39,42 @@ it('주소를 검색하고 후보를 고른 뒤에만 그 위치의 충전소를
   expect(adapter).toHaveBeenLastCalledWith(expect.objectContaining({ url: '/stations', params: expect.objectContaining({ latitude: 37.5, longitude: 127, connectors: 'DC_COMBO' }) }))
   expect(router.currentRoute.value.query.latitude).toBe('37.5')
   expect(readVehicleProfile(window.localStorage)).toEqual({ vehicleId: 'kona-electric-2020-kr', adapterIds: [], vehicleSupportConfirmed: false })
+})
+it('차량 없이 주소를 고르면 지도보다 앞에서 다음 행동을 알리고 차량 선택으로 이동한다', async () => {
+  vi.spyOn(mapLoader, 'loadStationMap').mockResolvedValue((_container, _stations, _center, callbacks) => {
+    callbacks.tilesLoaded()
+    return { selectStation: () => {}, updateStations: () => {}, moveTo: () => {}, showArea: () => {}, destroy: () => {} }
+  })
+  const adapter = vi.fn<AxiosAdapter>(async config => jsonResponse(config, config.url === '/places'
+    ? { places: [{ name: '선택할 장소', address: '서울 주소', latitude: 37.5, longitude: 127 }] } : searchResponse))
+  httpClient.defaults.adapter = adapter
+  const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/stations', component: StationSearchView }] })
+  await router.push('/stations')
+  const wrapper = mount(StationSearchView, { attachTo: document.body, global: { plugins: [router, createPinia()] } })
+  await wrapper.get('#place-query').setValue('서울 시청')
+  await wrapper.get('.place-search-form').trigger('submit')
+  await flushPromises()
+  await wrapper.get('.place-result').trigger('click')
+  await flushPromises()
+
+  const notice = wrapper.get<HTMLElement>('.search-prerequisite-notice')
+  expect(notice.text()).toContain('선택할 장소')
+  expect(notice.text()).toContain('차량을 선택')
+  expect(document.activeElement).toBe(notice.element)
+  expect(wrapper.get('.place-search').element.compareDocumentPosition(notice.element) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  expect(notice.element.compareDocumentPosition(wrapper.get('.search-map-explorer').element) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  expect(adapter).toHaveBeenCalledTimes(1)
+  expect(router.currentRoute.value.query).toEqual({})
+  await notice.get('button').trigger('click')
+  expect(document.activeElement?.id).toBe('vehicle-choice')
+  await wrapper.get('#vehicle-choice').setValue('manual')
+  await wrapper.get('.search-form').trigger('submit')
+  await flushPromises()
+  expect(router.currentRoute.value.query).toEqual({ latitude: '37.5', longitude: '127', radiusMeters: '1000', connector: 'DC_COMBO', limit: '20' })
+  expect(adapter).toHaveBeenLastCalledWith(expect.objectContaining({ url: '/stations', params: {
+    latitude: 37.5, longitude: 127, radiusMeters: 1000, connector: 'DC_COMBO', limit: 20,
+  } }))
+  wrapper.unmount()
 })
 it('주소 검색 키가 없어도 안내 뒤 현재 위치로 충전소 검색을 계속한다', async () => {
   const adapter = vi.fn<AxiosAdapter>()

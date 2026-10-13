@@ -65,3 +65,7 @@ Refactor: 지도 세션은 생성/마커 갱신/중심 이동/영역 복원/해�
 - 기존 JSON·DB·반경 URL 계약을 유지하고 새 `/stations/area`, `/places` 계약을 추가했다. 이름/책임/배치와 호출부를 검토했으며 REST Docs·전체 회귀로 공개 계약을 확인했다.
 - 실카카오 키/계정 쿼터/실제 검색 품질은 미검증이다. 휴대폰 앱 실행은 T28 실기기 확인 항목으로 남는다. 차량/어댑터 호환 카탈로그는 T32 후속이다.
 - T28/T29 PR[#55](https://github.com/seungmin-park/PlugPass/pull/55), head533616e의 필수 CI는 [SUCCESS](https://github.com/seungmin-park/PlugPass/actions/runs/38354807231/job/115155087164). 지도/주소 검색은 [PR #56](https://github.com/seungmin-park/PlugPass/pull/56)으로 전달했다. 필수 원격 CI 결과는 PR의 현재 head 체크와 본문 검증 기록을 따른다. CI는 main 대상 PR에서만 실행하므로 base=main이며 선행 #55 변경도 포함한다. #55 선행 머지 시 최신 main 반영·CI 재확인이 필요하다. main CI→production 배포가 활성화되어 있어 머지는 배포 승인 뒤 진행한다.
+
+## 운영 전달 승인과 통합
+
+2026-10-13 사용자 `go`로 두 PR 머지와 운영 배포를 승인받았다. PR #55는 main `ac5f7af`로 머지되었고 main CI38360930911은 성공했다. 후속 브랜치의 통합 커밋 `4203ff6`은 이전 검증본 `4e34a2c`와 전체 파일 내용이 동일함을 `git diff 4e34a2c 4203ff6 --exit-code` 종료0으로 확인했다. 최종 head의 필수 CI·머지 SHA·main CI·운영 CD·공개 화면 확인 결과는 [PR #56](https://github.com/seungmin-park/PlugPass/pull/56) 본문에 실행 링크와 함께 기록한다. 이 문서의 승인/통합 기록만으로 배포 성공을 판정하지 않는다.

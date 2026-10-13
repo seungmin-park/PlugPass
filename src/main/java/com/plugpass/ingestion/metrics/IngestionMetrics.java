@@ -8,6 +8,7 @@ import com.plugpass.freshness.domain.Freshness;
 import com.plugpass.freshness.domain.FreshnessPolicy;
 import com.plugpass.ingestion.domain.SyncRun;
 import com.plugpass.ingestion.domain.SyncStatus;
+import com.plugpass.ingestion.domain.SyncKind;
 import com.plugpass.ingestion.dto.SyncResult;
 import com.plugpass.ingestion.repository.SyncRunRepository;
 import com.plugpass.station.repository.ChargerRepository;
@@ -60,7 +61,7 @@ public final class IngestionMetrics {
         return "INTERNAL";
     }
     private Instant lastSuccess() {
-        return syncRunRepository.findFirstByStatusOrderByCompletedAtDesc(SyncStatus.SUCCESS).map(SyncRun::getCompletedAt).orElse(null);
+        return syncRunRepository.findFirstByKindAndStatusOrderByCompletedAtDesc(SyncKind.CATALOG, SyncStatus.SUCCESS).map(SyncRun::getCompletedAt).orElse(null);
     }
     private double lastSuccessAge() {
         Instant success = lastSuccess();

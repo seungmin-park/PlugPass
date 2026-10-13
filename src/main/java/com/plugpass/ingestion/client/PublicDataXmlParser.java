@@ -1,6 +1,8 @@
 package com.plugpass.ingestion.client;
 
 import com.plugpass.ingestion.dto.response.PublicDataItem;
+import com.plugpass.ingestion.dto.response.PublicStatusItem;
+import com.plugpass.ingestion.dto.response.PublicStatusResponse;
 import com.plugpass.ingestion.dto.response.PublicDataResponse;
 
 import java.io.IOException;
@@ -47,6 +49,27 @@ final class PublicDataXmlParser {
             throw contractFailure();
         }
     }
+    PublicStatusResponse parseStatus(byte[] xml, int requestedPageCapacity) {
+        try {
+            Element response = parseDocument(xml).getDocumentElement();
+            if (!"response".equals(response.getTagName())) { throw contractFailure(); }
+            Element header = requiredChild(response, "header");
+            requireProviderSuccess(requiredText(header, "resultCode"));
+            int pageNumber = Integer.parseInt(requiredText(header, "pageNo").strip());
+            int reported = Integer.parseInt(requiredText(header, "numOfRows").strip());
+            long total = Long.parseLong(requiredText(header, "totalCount").strip());
+            if (pageNumber < 1 || reported < 0 || reported > 9999 || total < 0) { throw contractFailure(); }
+            List<PublicStatusItem> items = children(requiredChild(requiredChild(response, "body"), "items"), "item")
+                    .stream().map(item -> new PublicStatusItem(requiredText(item, "busiId"), requiredText(item, "statId"),
+                            requiredText(item, "chgerId"), requiredText(item, "stat"), requiredText(item, "statUpdDt"),
+                            text(item, "lastTsdt"), text(item, "lastTedt"), text(item, "nowTsdt"))).toList();
+            long firstIndex = ((long) pageNumber - 1) * requestedPageCapacity;
+            if (items.size() > reported || items.size() > requestedPageCapacity || (items.isEmpty() && firstIndex < total)
+                    || (!items.isEmpty() && firstIndex + items.size() > total)) { throw contractFailure(); }
+            return new PublicStatusResponse(pageNumber, reported, total, items);
+        } catch (IllegalArgumentException failure) { throw contractFailure(); }
+    }
+
     private Document parseDocument(byte[] xml) {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();

@@ -42,5 +42,10 @@
   "com.plugpass.places.controller.PlaceSearchHttpTests",
   "com.plugpass.search.domain.MapSearchAreaTests",
   "com.plugpass.ingestion.command.IngestionCommandTests",
-  "com.plugpass.ingestion.service.StationPageEfficiencyTests"
+  "com.plugpass.ingestion.service.StationPageEfficiencyTests",
+  "com.plugpass.ingestion.domain.CollectionScheduleTests",
+  "com.plugpass.ingestion.service.CollectionReadinessTests",
+  "com.plugpass.ingestion.service.StatusSyncTests",
+  "com.plugpass.ingestion.service.StatusUpsertTests",
+  "com.plugpass.station.domain.ChargerStatusChangeTests"
 ]

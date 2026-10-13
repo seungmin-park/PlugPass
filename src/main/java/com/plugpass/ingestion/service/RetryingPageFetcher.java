@@ -1,24 +1,23 @@
 package com.plugpass.ingestion.service;
 
-import com.plugpass.ingestion.dto.StationPage;
+import java.util.function.BiFunction;
 import com.plugpass.ingestion.config.IngestionProperties;
-import com.plugpass.ingestion.client.PublicDataClient;
 
 import java.time.Duration;
 import com.plugpass.exception.PublicDataException;
 import com.plugpass.exception.PublicDataFailure;
 
-final class RetryingPageFetcher {
-    private final PublicDataClient publicDataClient;
+final class RetryingPageFetcher<T> {
+    private final BiFunction<Integer, Duration, T> request;
     private final IngestionProperties properties;
-    RetryingPageFetcher(PublicDataClient publicDataClient, IngestionProperties properties) {
-        this.publicDataClient = publicDataClient; this.properties = properties;
+    RetryingPageFetcher(BiFunction<Integer, Duration, T> request, IngestionProperties properties) {
+        this.request = request; this.properties = properties;
     }
-    StationPage fetchPage(int page, IngestionBudget budget) {
+    T fetchPage(int page, IngestionBudget budget) {
         for (int attempt = 0; attempt <= properties.maxRetries(); attempt++) {
             Duration remaining = budget.beginRequest(page,attempt);
             try {
-                StationPage response = publicDataClient.fetchPage(page,remaining);
+                T response = request.apply(page,remaining);
                 budget.remaining();
                 return response;
             } catch (PublicDataException failure) {

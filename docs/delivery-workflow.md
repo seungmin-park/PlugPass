@@ -24,7 +24,7 @@ PR 하나는 목적 하나, 독립적인 검증, 독립적인 되돌리기를 �
 
 ## 에이전트의 작업 순서
 
-1. 최신 main에서 작업 브랜치를 만든다. Codex의 기본 prefix는 `codex/`이며 사용자 지정이 있으면 따른다. 사용자 변경을 덮거나 강제 push하지 않는다.
+1. 최신 main에서 작업 브랜치를 만든다. 작업 유형에 따라 `feat/`, `fix/`, `refactor/`, `docs/`, `test/`, `chore/` 접두사를 사용한다. 도구 이름을 브랜치 접두사로 사용하지 않는다. 사용자 변경을 덮거나 강제 push하지 않는다.
 2. 변경 목적과 실패 조건을 설명하고 해당 동작·테스트를 구현한다. 변경 diff를 리뷰한다.
 3. [verify-plugpass](../.agents/skills/verify-plugpass/SKILL.md)에 따라 `bash scripts/verify.sh`를 실행한다. 현재 소스 증거가 필요하면 [.agents/verification.json](../.agents/verification.json)으로 같은 명령을 기록한다. 최종 commit으로 HEAD가 바뀌면 그 HEAD에 대한 증거를 다시 확보한다.
 4. 기존 Git 서명 설정을 유지하여 커밋하고 해당 브랜치를 push한다. 인증 실패는 우회하지 않고 원인을 알린다.

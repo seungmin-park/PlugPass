@@ -87,7 +87,7 @@ class MySqlDeploymentTests {
         JdbcTemplate jdbcTemplate = context.getBean(JdbcTemplate.class);
         assertThat(jdbcTemplate.queryForObject("select version()", String.class)).startsWith("8.4.");
         assertThat(jdbcTemplate.queryForList("select version from flyway_schema_history where success = 1", String.class))
-                .containsExactly("1");
+                .containsExactly("1", "2");
     }
 
     @Test

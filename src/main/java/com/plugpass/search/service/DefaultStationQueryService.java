@@ -22,6 +22,7 @@ import com.plugpass.station.repository.StationRepository;
 import com.plugpass.ingestion.domain.SyncRun;
 import com.plugpass.ingestion.repository.SyncRunRepository;
 import com.plugpass.ingestion.domain.SyncStatus;
+import com.plugpass.ingestion.domain.SyncKind;
 import com.plugpass.station.domain.Charger;
 import com.plugpass.station.repository.ChargerRepository;
 import com.plugpass.station.domain.Station;
@@ -66,7 +67,7 @@ public class DefaultStationQueryService implements StationQueryService {
     @Transactional(readOnly = true)
     public StationSearchResult searchWithinRadius(StationSearchQuery query) {
         Instant now = clock.instant();
-        Instant lastSuccessfulRunAt = syncRunRepository.findFirstByStatusOrderByCompletedAtDesc(SyncStatus.SUCCESS)
+        Instant lastSuccessfulRunAt = syncRunRepository.findFirstByKindAndStatusOrderByCompletedAtDesc(SyncKind.CATALOG, SyncStatus.SUCCESS)
                 .map(SyncRun::getCompletedAt).orElse(null);
         SearchBounds bounds = SearchBounds.around(query.location(), query.radiusMeters());
         Map<Station,List<Charger>> byStation = chargerRepository.findSearchCandidates(
@@ -84,7 +85,7 @@ public class DefaultStationQueryService implements StationQueryService {
     @Transactional(readOnly = true)
     public StationSearchResult searchArea(StationAreaSearchQuery query) {
         Instant now = clock.instant();
-        Instant lastSuccessfulRunAt = syncRunRepository.findFirstByStatusOrderByCompletedAtDesc(SyncStatus.SUCCESS)
+        Instant lastSuccessfulRunAt = syncRunRepository.findFirstByKindAndStatusOrderByCompletedAtDesc(SyncKind.CATALOG, SyncStatus.SUCCESS)
                 .map(SyncRun::getCompletedAt).orElse(null);
         MapSearchArea area = query.area();
         Map<Station,List<Charger>> byStation = chargerRepository.findSearchCandidates(

@@ -244,3 +244,7 @@ main push → 기존 CI 전체 gate → 성공한 CI artifact
 ## 운영 수집 기반 T33/T34
 
 `--plugpass.ingestion.command.enabled=true` → IngestionCommand → StationSyncService → IngestionLock → 기존 페이지 수집/저장. 웹 자동 수집과 별개인 일회 실행이며 MySQL은 연결 단위 잠금으로 다른 JVM을 거부한다. ALL 지역은 전국 zcode 생략이다. `IngestionCommandTests`, `MySqlDeploymentTests.skipsWhenAnotherConnectionOwnsIngestion`, `PublicDataClientTests.searchesAllRegionsWithoutRegionParameter`와 기존 실패 보존 회귀를 실행한다. [실제 검증·운영 미완료 범위](production-data-verification.md).
+
+## T35 상태 변경분 수집
+
+CLI `--plugpass.ingestion.command.mode=auto` → ScheduledSyncService/CollectionSchedule → 기본정보 또는 StatusSyncService → DB 잠금/공공 상태 API → StatusUpsertService/Charger. 검증: CollectionScheduleTests, IngestionCommandTests, StatusSyncTests, StatusUpsertTests, ChargerStatusChangeTests, CollectionReadinessTests 및 실제 MySQL 배포 계약. [실행·한계](status-sync-verification.md). 수집 상태 화면과 운영 타이머는 후속이다.

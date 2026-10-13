@@ -54,7 +54,7 @@ public class DefaultStationSyncService implements StationSyncService {
         SyncRun run = syncRunRepository.save(SyncRun.builder().startedAt(clock.instant()).build());
         SyncProgress progress = new SyncProgress();
         IngestionBudget budget = new IngestionBudget(ingestionProperties,ingestionTime);
-        RetryingPageFetcher fetcher = new RetryingPageFetcher(publicDataClient,ingestionProperties);
+        RetryingPageFetcher<StationPage> fetcher = new RetryingPageFetcher<>(publicDataClient::fetchPage,ingestionProperties);
         try {
             while (true) {
                 lease.requireOwnership();

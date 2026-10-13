@@ -79,6 +79,21 @@ public class Charger {
             throw new IllegalArgumentException("collectedAt must not be null");
         }
     }
+    public void updateStatus(ChargerStatusChange change) {
+        if (change == null) { throw new IllegalArgumentException("status change is required"); }
+        if (details != null && change.precedes(details.sourceStatusChangedAtRaw())) { return; }
+        ChargerDetails previous = details == null ? new ChargerDetails(null,null,null,null,null,null,null,null,null) : details;
+        ChargerDetails next = new ChargerDetails(previous.connectorCode(), previous.useTime(), previous.limitYn(),
+                previous.limitDetail(), previous.note(), change.changedAtRaw(), change.lastStartedAtRaw(),
+                change.lastEndedAtRaw(), change.startedAtRaw(), previous.delYn(), previous.delDetail());
+        this.status = change.status();
+        this.rawStatus = change.rawStatus();
+        this.details = next;
+        this.sourceObservedAt = null;
+        this.collectedAt = change.collectedAt();
+        this.updatedAt = change.collectedAt();
+    }
+
     public boolean acceptsObservation(Instant observedAt) {
         if (sourceObservedAt == null || observedAt == null) {
             return true;
@@ -88,6 +103,17 @@ public class Charger {
     public void update(ChargerStatus status, String rawStatus, ChargerDetails details, Instant observedAt, Instant collectedAt) {
         validate(status, collectedAt);
         if (!acceptsObservation(observedAt)) {
+            return;
+        }
+        if (this.details != null && ChargerStatusChange.preservesExisting(
+                details == null ? null : details.sourceStatusChangedAtRaw(), this.details.sourceStatusChangedAtRaw())) {
+            if (details != null) {
+                this.details = new ChargerDetails(details.connectorCode(), details.useTime(), details.limitYn(),
+                        details.limitDetail(), details.note(), this.details.sourceStatusChangedAtRaw(),
+                        this.details.lastChargingStartedAtRaw(), this.details.lastChargingEndedAtRaw(),
+                        this.details.chargingStartedAtRaw(), details.delYn(), details.delDetail());
+            }
+            this.updatedAt = collectedAt;
             return;
         }
         this.status = status;

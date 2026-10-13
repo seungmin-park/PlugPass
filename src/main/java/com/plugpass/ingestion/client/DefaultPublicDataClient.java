@@ -3,6 +3,9 @@ package com.plugpass.ingestion.client;
 import com.plugpass.ingestion.config.PublicDataProperties;
 import com.plugpass.ingestion.dto.StationPage;
 import com.plugpass.ingestion.dto.StationSnapshot;
+import com.plugpass.ingestion.dto.StatusPage;
+import com.plugpass.ingestion.dto.ChargerStatusSnapshot;
+import com.plugpass.ingestion.dto.response.PublicStatusResponse;
 import com.plugpass.ingestion.dto.response.PublicDataResponse;
 
 import java.net.URI;
@@ -26,7 +29,7 @@ import java.util.concurrent.TimeoutException;
 import com.plugpass.exception.PublicDataException;
 import com.plugpass.exception.PublicDataFailure;
 
-public final class DefaultPublicDataClient implements PublicDataClient {
+public final class DefaultPublicDataClient implements PublicDataClient, PublicStatusClient {
     private final PublicDataProperties properties;
     private final Clock clock;
     private final HttpClient httpClient;
@@ -43,18 +46,8 @@ public final class DefaultPublicDataClient implements PublicDataClient {
     public StationPage fetchPage(int page) { return fetchPage(page,properties.responseTimeout()); }
     @Override
     public StationPage fetchPage(int page, Duration remaining) {
-        if (remaining == null || remaining.isZero() || remaining.isNegative()) { throw new IllegalArgumentException("remaining must be positive"); }
-        Duration timeout = remaining.compareTo(properties.responseTimeout()) < 0 ? remaining : properties.responseTimeout();
-        if (page < 1) {
-            throw new IllegalArgumentException("page must be at least 1");
-        }
-        if (properties.serviceKey() == null || properties.serviceKey().isBlank()) {
-            throw new PublicDataException(PublicDataFailure.AUTHENTICATION);
-        }
-        HttpRequest request = HttpRequest.newBuilder(requestUri(page)).timeout(timeout).GET().build();
-        HttpResponse<byte[]> response = sendRequest(request,timeout);
+        HttpResponse<byte[]> response = requestPage(page, remaining, properties.endpoint(), "");
         Instant collectedAt = clock.instant();
-        requireHttpSuccess(response);
         PublicDataResponse providerResponse = xmlParser.parse(response.body(), properties.pageSize());
         if (providerResponse.pageNumber() != page || (providerResponse.reportedRowCount() != properties.pageSize()
                 && providerResponse.reportedRowCount() != providerResponse.items().size())) {
@@ -67,10 +60,41 @@ public final class DefaultPublicDataClient implements PublicDataClient {
             throw new PublicDataException(PublicDataFailure.CONTRACT);
         }
     }
-    private URI requestUri(int page) {
-        return URI.create(properties.endpoint() + "?serviceKey=" + URLEncoder.encode(properties.serviceKey(), StandardCharsets.UTF_8)
+    @Override
+    public StatusPage fetchStatusPage(int page, Duration remaining) {
+        HttpResponse<byte[]> response = requestPage(page, remaining, properties.endpoint().resolve("getChargerStatus"), "&period=10");
+        PublicStatusResponse parsed = xmlParser.parseStatus(response.body(), properties.pageSize());
+        if (parsed.pageNumber() != page || (parsed.reportedRowCount() != properties.pageSize()
+                && parsed.reportedRowCount() != parsed.items().size())) {
+            throw new PublicDataException(PublicDataFailure.CONTRACT);
+        }
+        Instant collectedAt = clock.instant();
+        try {
+            List<ChargerStatusSnapshot> snapshots = parsed.items().stream()
+                    .map(item -> item.toSnapshot(statusMapper.map(item.rawStatus()), collectedAt)).toList();
+            return new StatusPage(page, properties.pageSize(), parsed.totalCount(), snapshots);
+        } catch (IllegalArgumentException failure) { throw new PublicDataException(PublicDataFailure.CONTRACT); }
+    }
+
+    private HttpResponse<byte[]> requestPage(int page, Duration remaining, URI endpoint, String extraParameters) {
+        if (remaining == null || remaining.isZero() || remaining.isNegative()) { throw new IllegalArgumentException("remaining must be positive"); }
+        Duration timeout = remaining.compareTo(properties.responseTimeout()) < 0 ? remaining : properties.responseTimeout();
+        if (page < 1) {
+            throw new IllegalArgumentException("page must be at least 1");
+        }
+        if (properties.serviceKey() == null || properties.serviceKey().isBlank()) {
+            throw new PublicDataException(PublicDataFailure.AUTHENTICATION);
+        }
+        HttpRequest request = HttpRequest.newBuilder(requestUri(endpoint, page, extraParameters)).timeout(timeout).GET().build();
+        HttpResponse<byte[]> response = sendRequest(request,timeout);
+        requireHttpSuccess(response);
+        return response;
+    }
+
+    private URI requestUri(URI endpoint, int page, String extraParameters) {
+        return URI.create(endpoint + "?serviceKey=" + URLEncoder.encode(properties.serviceKey(), StandardCharsets.UTF_8)
                 + "&pageNo=" + page + "&numOfRows=" + properties.pageSize()
-                + ("ALL".equals(properties.region()) ? "" : "&zcode=" + properties.region()) + "&dataType=XML");
+                + ("ALL".equals(properties.region()) ? "" : "&zcode=" + properties.region()) + "&dataType=XML" + extraParameters);
     }
     private HttpResponse<byte[]> sendRequest(HttpRequest request, Duration timeout) {
         CompletableFuture<HttpResponse<byte[]>> responseFuture = httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofByteArray());

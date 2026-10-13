@@ -201,6 +201,13 @@ function openDetail(stationId: number): void {
             {{ store.response.stations.length ? '전체 수집 완료 전 정보입니다. 일부 충전소만 표시될 수 있습니다.' : '아직 전체 수집이 완료되지 않았습니다. 수집 후 다시 조회해 주세요.' }}
           </p>
           <p v-else-if="!store.response.stations.length" class="request-notice" role="status">조건에 맞는 충전소가 없습니다. 지도 위치나 커넥터를 변경해 주세요.</p>
+          <div v-if="store.response.collection" class="request-notice" role="status">
+            <p v-if="store.response.collection.state === 'DELAYED'">갱신이 지연되고 있습니다. 마지막으로 저장된 정보를 표시합니다.</p>
+            <p v-else-if="store.response.collection.state === 'NOT_READY'">전체 데이터 준비 전 · 일부 지역의 정보가 없을 수 있습니다.</p>
+            <p v-else>수집 정상 · 상태 변경분은 {{ store.response.collection.statusIntervalSeconds / 60 }}분마다 갱신합니다.</p>
+            <p class="result-time">상태 변경분 수집 성공 시각: {{ formatTimestamp(store.response.collection.lastStatusSuccessAt) }}</p>
+            <p class="result-time">수집 성공은 현장 관측 시각이나 도착 시 빈자리를 보장하지 않습니다.</p>
+          </div>
           <p class="results-count">{{ store.response.stations.length }}개 표시 · 최대 {{ confirmedCriteria.limit }}개 표시</p>
           <p class="results-caution">{{ confirmedCriteria.area ? '지도 중심에서의 직선거리 기준입니다.' : '선택 위치에서의 직선거리 기준입니다.' }} 이용 가능 보고는 도착 시점의 빈자리를 보장하지 않습니다.</p>
           <p class="result-time">조회 시각: {{ formatTimestamp(store.fetchedAt) }}</p>

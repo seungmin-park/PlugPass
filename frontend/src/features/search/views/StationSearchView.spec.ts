@@ -101,6 +101,22 @@ describe('위치 선택부터 실제 API 계약까지 검색 화면', () => {
     expect(adapter).not.toHaveBeenCalled()
   })
   it.each([
+    ['CURRENT', '수집 정상'],
+    ['DELAYED', '갱신이 지연되고 있습니다. 마지막으로 저장된 정보를 표시합니다'],
+    ['NOT_READY', '전체 데이터 준비 전'],
+  ])('수집 상태 %s를 충전기 관측 시각과 구분한다', async (state, message) => {
+    const collection = { state, lastCatalogSuccessAt: '2026-10-13T00:00:00Z', lastStatusSuccessAt: null,
+      lastAttemptAt: '2026-10-13T00:00:00Z', lastAttemptStatus: 'SUCCESS', statusIntervalSeconds: 300 }
+    httpClient.defaults.adapter = async config => jsonResponse(config, { ...searchResponse, collection })
+    const router = searchRouter()
+    await router.push({ path: '/stations', query })
+    const wrapper = mount(StationSearchView, { global: { plugins: [router, createPinia()] } })
+    await flushPromises()
+    expect(wrapper.text()).toContain(message)
+    expect(wrapper.text()).toContain('상태 변경분 수집 성공 시각')
+    expect(wrapper.findAll('article')).toHaveLength(searchResponse.stations.length)
+  })
+  it.each([
     [{ dataReady: false, lastSuccessfulRunAt: null, stations: [] }, '아직 전체 수집이 완료되지 않았습니다'],
     [{ ...searchResponse, dataReady: false, lastSuccessfulRunAt: null }, '전체 수집 완료 전 정보'],
     [{ dataReady: true, lastSuccessfulRunAt: '2026-10-05T00:00:00Z', stations: [] }, '조건에 맞는 충전소가 없습니다'],

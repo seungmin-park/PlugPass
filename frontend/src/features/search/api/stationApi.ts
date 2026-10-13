@@ -1,4 +1,4 @@
-import type { SearchCriteria, StationSearchResponse, StationSummary } from '../types'
+import type { CollectionStatus, SearchCriteria, StationSearchResponse, StationSummary } from '../types'
 import { requireSearchCriteria } from '../criteria'
 import { isChargerInfo } from '../../charging-info/response'
 import { getValidatedJson } from '../../../shared/api/httpClient'
@@ -13,6 +13,7 @@ export async function getStations(criteria: SearchCriteria, signal?: AbortSignal
 
 function isSearchResponse(value: unknown): value is StationSearchResponse {
   return isRecord(value) && typeof value.dataReady === 'boolean' && isNullableString(value.lastSuccessfulRunAt)
+    && (value.collection === undefined || value.collection === null || isCollectionStatus(value.collection))
     && Array.isArray(value.stations) && value.stations.every(isStationSummary)
 }
 
@@ -21,4 +22,11 @@ function isStationSummary(value: unknown): value is StationSummary {
     && isNumberInRange(value.latitude, -90, 90) && isNumberInRange(value.longitude, -180, 180)
     && isNonnegativeNumber(value.distanceMeters) && isNonnegativeInteger(value.compatibleChargerCount)
     && isNonnegativeInteger(value.reportedAvailableCount) && Array.isArray(value.chargers) && value.chargers.every(isChargerInfo)
+}
+
+function isCollectionStatus(value: unknown): value is CollectionStatus {
+  return isRecord(value) && ['NOT_READY', 'CURRENT', 'DELAYED'].includes(String(value.state))
+    && isNullableString(value.lastCatalogSuccessAt) && isNullableString(value.lastStatusSuccessAt)
+    && isNullableString(value.lastAttemptAt) && isNullableString(value.lastAttemptStatus)
+    && isNonnegativeInteger(value.statusIntervalSeconds) && value.statusIntervalSeconds > 0
 }

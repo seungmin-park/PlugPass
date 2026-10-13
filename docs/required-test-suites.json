@@ -47,5 +47,6 @@
   "com.plugpass.ingestion.service.CollectionReadinessTests",
   "com.plugpass.ingestion.service.StatusSyncTests",
   "com.plugpass.ingestion.service.StatusUpsertTests",
-  "com.plugpass.station.domain.ChargerStatusChangeTests"
+  "com.plugpass.station.domain.ChargerStatusChangeTests",
+  "com.plugpass.ingestion.service.CollectionStatusTests"
 ]

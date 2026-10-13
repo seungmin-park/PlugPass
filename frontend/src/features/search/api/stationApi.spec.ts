@@ -36,7 +36,7 @@ describe('주변 검색 API', () => {
     await expect(getStations(criteria)).resolves.toEqual(future)
   })
   it.each([
-    null, [], {}, { ...search, dataReady: 'true' }, { ...search, lastSuccessfulRunAt: 123 },
+    null, [], {}, { ...search, collection: { state: 'CURRENT' } }, { ...search, dataReady: 'true' }, { ...search, lastSuccessfulRunAt: 123 },
     { ...search, stations: {} }, { ...search, stations: search.stations.map(station => ({ ...station, id: 9007199254740992 })) },
     { ...search, stations: search.stations.map(station => ({ ...station, provider: ' ' })) },
     { ...search, stations: search.stations.map(station => ({ ...station, name: '' })) },

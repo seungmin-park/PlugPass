@@ -499,3 +499,9 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 - [x] 자동 실행의 24시간·10분 경계와 최초 전체→상태 전환을 검증했다.
 - [ ] 분리 소스 전체 verify, V2 운영 사전 migration, PR 필수 CI·자동 머지·배포를 확인한다.
 - [ ] 후속 T36 안내 화면과 T37 운영 타이머·백업은 각각 별도 PR로 완료한다.
+
+#### T36 수집 상태 안내 PR
+
+- [x] 실제 DB 상태 계산, HTTP/REST Docs, 프런트 구조/문구의 Red→Green을 확인했다.
+- [x] 분리 소스 전체 verify: Java451·프런트354·개발31·JAR4·MySQL8·재시작JAR7, 종료0.
+- [ ] 기능 PR의 원격 CI·자동 머지·운영 화면 결과를 확인한다.

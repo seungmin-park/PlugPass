@@ -1,6 +1,7 @@
 package com.plugpass.search.controller;
 
 import com.plugpass.search.service.StationQueryService;
+import com.plugpass.ingestion.service.CollectionStatusService;
 
 import jakarta.validation.Valid;
 import com.plugpass.search.dto.request.StationSearchRequest;
@@ -17,7 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/stations")
 public class StationController {
     private final StationQueryService stationQueryService;
-    public StationController(StationQueryService stationQueryService) { this.stationQueryService = stationQueryService; }
+    private final CollectionStatusService collectionStatusService;
+    public StationController(StationQueryService stationQueryService, CollectionStatusService collectionStatusService) {
+        this.stationQueryService = stationQueryService;
+        this.collectionStatusService = collectionStatusService;
+    }
     @GetMapping("/{stationId}")
     public StationDetailResponse detail(@PathVariable Long stationId) {
         return StationDetailResponse.from(stationQueryService.detail(stationId));
@@ -25,11 +30,11 @@ public class StationController {
 
     @GetMapping("/area")
     public StationSearchResponse searchArea(@Valid @ModelAttribute StationAreaSearchRequest request) {
-        return StationSearchResponse.from(stationQueryService.searchArea(request.toQuery()));
+        return StationSearchResponse.from(stationQueryService.searchArea(request.toQuery()), collectionStatusService.current());
     }
 
     @GetMapping
     public StationSearchResponse search(@Valid @ModelAttribute StationSearchRequest request) {
-        return StationSearchResponse.from(stationQueryService.search(request.toQuery()));
+        return StationSearchResponse.from(stationQueryService.search(request.toQuery()), collectionStatusService.current());
     }
 }

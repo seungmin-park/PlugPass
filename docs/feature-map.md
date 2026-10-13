@@ -256,3 +256,7 @@ CLI `--plugpass.ingestion.command.mode=auto` → ScheduledSyncService/Collection
 ## 모바일 위치 복구 T38
 
 현재 위치 → 환경/권한별 안내 → 재시도 또는 주소 입력. 운영 합성 예시 입력은 제거한다. 소유자: useCurrentLocation composable(요청 수명/오류)·StationSearchView(사용자 행동/포커스). 기존 API/URL/도메인 정책 유지. 실제 Red/Green·전체 검증·실기기 한계: [T38 기록](t38-verification.md).
+
+## 결과 우선 검색 T39
+
+주소 후보 선택→지도 중심/반경 검색→결과 포커스. 검색 후 조건은 접고 수집 상세는 목록 뒤로 옮긴다. 지연/준비 전은 기본 표시한다. 소유자와 실제 실패/검증: [T39 기록](t39-verification.md).

@@ -28,7 +28,7 @@
 - 두 번째 실행은 개발 E2E31통과/1실패였다. 키보드 현재 위치 요청 중 status가 로딩/선택 안내 두 개라 생긴 strict selector 오류를 정확한 안내로 좁혀 수정했다.
 - 최종 `bash scripts/verify.sh` 종료0: Java451·프런트356·개발E2E32·JAR4·MySQL8·MySQL 재시작JAR브라우저7, 실패/오류/skip0. type-check/lint/build 통과. 실제 MySQL8.4.11 재시작 후 데이터/readiness 보존과 설정 누락 거부 확인.
 - 로그 `/tmp/plugpass-t38-verify.log`, JUnit `build/test-results/{test,mysqlTest}`, runtime `build/verification/runtime.json`, 브라우저 HTML/trace `frontend/playwright-report`·`frontend/test-results`. 검증 pane은 유지했다.
-- PR/원격CI/실제 머지는 전달 후 추가한다.
+- [PR63](https://github.com/seungmin-park/PlugPass/pull/63), head45459e3, [필수CI](https://github.com/seungmin-park/PlugPass/actions/runs/38393377407) 성공, main squash68cf84c 실제 병합 확인. 자동 머지 신청 후 CLEAN/성공 상태에서 같은 head의 native auto-merge 명령으로 병합을 확인했다.
 
 ## cmux와 실기기 한계
 

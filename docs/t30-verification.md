@@ -64,4 +64,4 @@ Refactor: 지도 세션은 생성/마커 갱신/중심 이동/영역 복원/해�
 - Controller는 request validation과 DTO 반환, Service는 조회 조정, MapSearchArea는 영역 불변식, Kakao client는 인증/HTTP/응답 변환을 소유한다. 프런트 Store가 비동기 상태·취소·응답 순서를 맡고 Leaflet 어댑터가 지도 수명을 맡는다. 추측성 차량/어댑터 인터페이스는 추가하지 않았다.
 - 기존 JSON·DB·반경 URL 계약을 유지하고 새 `/stations/area`, `/places` 계약을 추가했다. 이름/책임/배치와 호출부를 검토했으며 REST Docs·전체 회귀로 공개 계약을 확인했다.
 - 실카카오 키/계정 쿼터/실제 검색 품질은 미검증이다. 휴대폰 앱 실행은 T28 실기기 확인 항목으로 남는다. 차량/어댑터 호환 카탈로그는 T32 후속이다.
-- T28/T29 PR[#55](https://github.com/seungmin-park/PlugPass/pull/55), head533616e의 필수 CI는 [SUCCESS](https://github.com/seungmin-park/PlugPass/actions/runs/38354807231/job/115155087164). 지도/주소 검색 PR·최종 원격 CI는 전달 시 별도로 기록한다. main CI→production 배포가 활성화되어 있어 머지는 배포 승인 뒤 진행한다.
+- T28/T29 PR[#55](https://github.com/seungmin-park/PlugPass/pull/55), head533616e의 필수 CI는 [SUCCESS](https://github.com/seungmin-park/PlugPass/actions/runs/38354807231/job/115155087164). 지도/주소 검색은 [PR #56](https://github.com/seungmin-park/PlugPass/pull/56)으로 전달했다. 필수 원격 CI 결과는 PR의 현재 head 체크와 본문 검증 기록을 따른다. CI는 main 대상 PR에서만 실행하므로 base=main이며 선행 #55 변경도 포함한다. #55 선행 머지 시 최신 main 반영·CI 재확인이 필요하다. main CI→production 배포가 활성화되어 있어 머지는 배포 승인 뒤 진행한다.

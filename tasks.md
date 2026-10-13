@@ -446,7 +446,8 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 - [x] GREEN: MapSearchArea·영역 request·Service·Controller, 도메인/저장/HTTP 검증과 REST Docs를 반영한다.
 - [x] RED→GREEN: 반경 선택 제거, 이동·확대 후 영역 재검색, 지도 위치 유지·뒤로가기·실패/재시도를 구현한다.
 - [x] cmux 실제 지도 이동/확대·개발30/JAR4·전체 verify 종료0. [실행 기록](docs/t30-verification.md).
-- [ ] 지도/주소 PR의 현재 head CI와 배포 승인 후 머지를 확인한다.
+- [x] 지도/주소 [PR #56](https://github.com/seungmin-park/PlugPass/pull/56)을 생성하고 필수 CI를 연결했다. 현재 head 결과는 PR 체크/본문에 기록한다.
+- [ ] 배포 승인 후 최신 main·필수 CI를 확인하고 보호된 머지를 완료한다.
 
 ### T31 — 카카오 주소·장소 검색
 
@@ -455,7 +456,8 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 - [x] RED→GREEN: 장소 API 입력 검증·키 미설정503, 외부 HTTP 성공/빈 결과/오류·좌표 검증·중복 제거를 구현한다.
 - [x] RED→GREEN: 검색어 입력→후보 선택→지도 이동→지역 충전소 검색, 대기/빈 결과/실패/응답 역전 상태를 구현한다.
 - [x] 타입/lint/build·전체 verify·cmux 흐름, 문서/기능 지도/공식 출처/필수 suite를 반영한다.
-- [ ] 서명 commit·PR와 현재 head의 CI를 확인한다. 배포 연결 머지는 별도 승인 후 진행한다.
+- [x] 서명 commit·[PR #56](https://github.com/seungmin-park/PlugPass/pull/56) 생성과 필수 CI 실행을 연결했다. 현재 head 결과는 PR 체크/본문을 따른다.
+- [ ] 배포 연결 머지는 별도 승인 후 최신 main·필수 CI를 다시 확인하여 진행한다.
 - [ ] 키 설정 후 실제 카카오 주소·장소 결과를 확인한다. fixture 통과로 대체하지 않는다.
 
 ### T32 — 개인 보유 어댑터를 반영한 호환 검색 (후속)

@@ -12,7 +12,8 @@ import com.plugpass.ingestion.dto.SyncResult;
 import com.plugpass.ingestion.repository.SyncRunRepository;
 
 import java.time.Clock;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Optional;
+import com.plugpass.ingestion.client.IngestionLock;
 import com.plugpass.exception.PublicDataException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -28,11 +29,11 @@ public class DefaultStationSyncService implements StationSyncService {
     private final IngestionProperties ingestionProperties;
     private final IngestionTime ingestionTime;
     private final IngestionMetrics ingestionMetrics;
-    private final AtomicBoolean running = new AtomicBoolean();
+    private final IngestionLock ingestionLock;
 
     public DefaultStationSyncService(PublicDataClient publicDataClient, StationUpsertService stationUpsertService,
             SyncRunRepository syncRunRepository, Clock clock, IngestionProperties ingestionProperties, IngestionTime ingestionTime,
-            IngestionMetrics ingestionMetrics) {
+            IngestionMetrics ingestionMetrics, IngestionLock ingestionLock) {
         this.publicDataClient = publicDataClient;
         this.stationUpsertService = stationUpsertService;
         this.syncRunRepository = syncRunRepository;
@@ -40,23 +41,26 @@ public class DefaultStationSyncService implements StationSyncService {
         this.ingestionProperties = ingestionProperties;
         this.ingestionTime = ingestionTime;
         this.ingestionMetrics = ingestionMetrics;
+        this.ingestionLock = ingestionLock;
     }
     @Override
     @Transactional(propagation = Propagation.NEVER)
     public SyncResult synchronize() {
-        if (!running.compareAndSet(false,true)) { return new SyncResult(null,SyncStatus.SKIPPED,0,null,null,0,0,0); }
-        try { return runSynchronization(); }
-        finally { running.set(false); }
+        Optional<IngestionLock.Lease> acquired = ingestionLock.acquire();
+        if (acquired.isEmpty()) { return new SyncResult(null,SyncStatus.SKIPPED,0,null,null,0,0,0); }
+        try (IngestionLock.Lease lease = acquired.orElseThrow()) { return runSynchronization(lease); }
     }
-    private SyncResult runSynchronization() {
+    private SyncResult runSynchronization(IngestionLock.Lease lease) {
         SyncRun run = syncRunRepository.save(SyncRun.builder().startedAt(clock.instant()).build());
         SyncProgress progress = new SyncProgress();
         IngestionBudget budget = new IngestionBudget(ingestionProperties,ingestionTime);
         RetryingPageFetcher fetcher = new RetryingPageFetcher(publicDataClient,ingestionProperties);
         try {
             while (true) {
+                lease.requireOwnership();
                 StationPage page = fetcher.fetchPage(progress.pageNumber(),budget);
                 progress.validatePage(page);
+                lease.requireOwnership();
                 stationUpsertService.upsertPage(page.snapshots());
                 progress.recordCommittedPage(page);
                 if (!page.hasNext()) { break; }

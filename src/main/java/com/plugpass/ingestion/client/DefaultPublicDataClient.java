@@ -69,7 +69,8 @@ public final class DefaultPublicDataClient implements PublicDataClient {
     }
     private URI requestUri(int page) {
         return URI.create(properties.endpoint() + "?serviceKey=" + URLEncoder.encode(properties.serviceKey(), StandardCharsets.UTF_8)
-                + "&pageNo=" + page + "&numOfRows=" + properties.pageSize() + "&zcode=" + properties.region() + "&dataType=XML");
+                + "&pageNo=" + page + "&numOfRows=" + properties.pageSize()
+                + ("ALL".equals(properties.region()) ? "" : "&zcode=" + properties.region()) + "&dataType=XML");
     }
     private HttpResponse<byte[]> sendRequest(HttpRequest request, Duration timeout) {
         CompletableFuture<HttpResponse<byte[]>> responseFuture = httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofByteArray());

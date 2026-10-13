@@ -27,3 +27,42 @@ Red: 20개 기존 충전기를 같은 페이지로 다시 저장할 때 Hibernat
 
 - CI 38372016598에서 연결 종료 직후 재수집이 `SKIPPED`를 반환했다. TCP 연결 종료가 서버의 잠금 해제 완료를 보장하는 동기화 지점은 아니므로, 테스트 소유 연결에서 `RELEASE_LOCK` 응답 1을 확인한 뒤 재수집한다. 운영 잠금 구현도 명시적 해제를 사용한다.
 - 수정 후 `python3 scripts/verify-mysql.py --tests-only`: MySQL 8개 통과, 종료 0. 성능 수정의 전체 검증 결과는 위 기록을 유지한다.
+
+## 기능별 전달과 운영 실행 (2026-10-13)
+
+| 기능 | PR | 확인한 결과 |
+| --- | --- | --- |
+| 단일 수집 CLI·DB 잠금 | [#57](https://github.com/seungmin-park/PlugPass/pull/57) | 필수 CI·머지·운영 배포 성공 |
+| 전국 페이지 저장 병목 | [#58](https://github.com/seungmin-park/PlugPass/pull/58) | 필수 CI·머지·배포 후 전체527178건 수집 성공 |
+| 상태 변경분·누락 복구 | [#59](https://github.com/seungmin-park/PlugPass/pull/59) | head e143766 CI38377444905 성공, native auto-merge dab999e, main CI38378536599·CD38379199727 성공 |
+| 수집 상태 API·화면 | [#60](https://github.com/seungmin-park/PlugPass/pull/60) | head12449e7 CI38379069778 성공, native auto-merge13e9bee, main CI38379835959·CD38380315850 성공 |
+| 운영 타이머·백업 | [운영 #4](https://github.com/seungmin-park/gcp-deployment/pull/4) | 대상13/최종 전체167 테스트 성공, 운영 systemd 구문 검증·타이머 활성화. 저장소 보호 규칙 조회는 요금제 제한403 |
+
+### 실제 최초 수집과 보존
+
+- 초기 실행은 페이지별 쿼리가 반복 flush를 유발해 첫 페이지를 완료하지 못했으며 SIGTERM으로 중단했다. 성공으로 기록하지 않았다. 이 중단 이력(run1)은 RUNNING으로 남아 있으나 실제 실행 프로세스는 없다. 화면은 이 과거 행을 현재 수집 중 상태로 표시하지 않고 가장 최근 실행과 성공 시각을 사용한다. 강제 종료 이력 자동 정리는 후속 보완 대상이다.
+- 성능 수정 JAR release `plugpass-3ec5c217cf0e`/source5e8baf9의 run2는09:21:15Z 시작→09:31:25Z 완료,527178건·53요청·재시도0·종료0이다. 운영 DB의 충전소101082개/충전기527178개를 확인했다.
+- 동일 cmux 브라우저에서 공개 서비스의 예시 좌표 검색→실제20개 충전소→첫 상세·길찾기 선택을 실제 클릭했다. 브라우저 오류0. 이 과정은 실제 내비 앱 설치·실행 검증으로 확대하지 않는다.
+- V2는 PR59 성공 CI JAR sha256 `5a0831fd378ea1cd635126f70e586bc5bf7b029a5a755311759abb06f1597509`로 사전 migration·Hibernate 검증을 수행했다. migration 계정0·기존527178건 유지·공개 health UP 확인 후 머지했다.
+
+### 백업과 주기
+
+- 운영 백업 `/srv/deploy/backups/plugpass/20261013T093400Z/plugpass.sql.gz`를 네트워크 없는 별도 MySQL8.4.11에 복원했다. station101082/charger527178/sync_run2/flyway_schema_history1 모두 일치한다. 운영 DB를 복원 대상으로 쓰지 않았다.
+- SHA-256 `247def187798b397f5f3041ed6369bf516abbcbafd9ca61ddd2e30afd3ffb33e`. 같은 검증본을 로컬 `~/.local/share/plugpass/backups/20261013T093400Z/`에도 보관했고 해시가 같다. 이 일회 복사와 자동 원격 보관을 구분한다.
+- systemd 타이머: 수집5분마다, 백업02:30 Asia/Seoul. 기존 웹 슬롯은 수집 비활성화를 유지한다. 백업 실패는300초 후 재시도하며 로컬 검증 백업7일 보관이다. 기존 원격 버킷/설정이 없어 remoteCopied=false다.
+- 수집 데이터/이력 자동 삭제는 없다. 공급자 응답 누락을 삭제로 해석하지 않고 폐쇄 원본 필드를 유지한다. 요청 실패 시 기존 페이지 commit과 이전 성공 시각을 보존한다.
+
+### 검증 범위
+
+최종 UI 소스 트리 `d51aea1716b1e8de66ee0ad0b5eea4120d1cdfa4`는 로컬 최종 검증과 main13e9bee에서 동일하다. Java451·프런트354·Python32·개발 브라우저31·JAR4·MySQL8·재시작 JAR7건 모두 실패/오류/skip0. 별도 상태 수집 PR은 Java447·프런트350·개발30으로 분리 검증했다. 각 PR의 [상태 수집](status-sync-verification.md), [화면](collection-status-verification.md) 기록을 함께 따른다. 문서 후속 갱신 자체는 새 애플리케이션 실행으로 표현하지 않는다.
+
+### 자동 복구·예약 상태 갱신·운영 화면
+
+- run3 CATALOG: 09:53:04Z→10:02:07Z, 전체527178건·53요청·재시도0·종료0. 마지막 성공 공백을 감지한 auto 모드의 실제 전체 복구이며 기존 충전기를 중복 생성하지 않았다.
+- 10:05 타이머의 run4 STATUS: 10:05:44Z→10:06:17Z, 상태 변경16687건 성공. systemd Result=success/ExecMainStatus=0, DB 전체527178건 유지. 다음 타이머10:10Z, 백업17:30Z(다음 날02:30 KST) 예약을 확인했다.
+- PR60 배포 release `plugpass-51e6772446b0`/green. 기존 SPA는 hash 이동만으로 새 번들을 읽지 않아 full reload 후 검증했다. 같은 cmux browser surface1000050013의375×812 화면에서 새로고침을 실제 클릭하고 수집 정상·성공 시각2026-10-13 19:06:17 KST·충전소18개를 확인했다. browser errors0/console entries0. 관측 시각이 없는 충전기의 최신성 확인 불가 안내는 유지된다.
+- 운영 PR4 CI38379596532는 외부 DEMP main의 fixture 테이블 수 변경(15→17)으로 실패했다. 기존 전환 assertion을 유지하고 검증 기록의 DEMP 소스7981f365dd086745b76993f08b108d46635a044b로 checkout을 고정했다. 고정 계약 Red1→Green2, 전체167건 통과. 최종 head6574de3의 원격 결과는 PR4 체크에서 추적한다. 실제 DEMP 서비스는 변경하지 않았다.
+
+### 남은 운영 한계
+
+자동 원격 백업·외부 알림 수신자는 아직 설정하지 않았다. 현 상태는 systemd 실패/재시도·journal 로그와 API/화면 지연 안내까지다. 백업 타이머 설치와 실제 수동 백업/복원은 확인했지만 다음02:30 예약 실행은 아직 관측 전이다. 성공 검증본은7일 보관하며 실패한 부분 백업의 자동 정리는 없다. 중단 run1의 RUNNING 이력 자동 정리와 저장 이력 보존 기간은 후속 정책이 필요하다. 운영 저장소의 보호 API403 때문에 PR4의 보호된 자동 머지는 실행하지 않는다.

@@ -100,3 +100,11 @@ H2 메모리 방식은 프로세스 재시작 후 업무 데이터·수집 이�
 동일 배포 JAR에 `--spring.main.web-application-type=none --plugpass.ingestion.command.enabled=true --plugpass.ingestion.schedule.enabled=false`를 전달한다. 전체 성공은 종료0, 실패/부분 실패1, 다른 실행이 잠금을 소유하면2다. 인증키는 기존 서버 환경으로만 주입한다. MySQL에서는 `plugpass.ingestion` DB 연결 잠금을 사용하고 외부 요청/페이지 저장 전 소유권을 확인한다. 웹 배포 슬롯의 자동 수집은 계속 끈다.
 
 전국은 `PLUGPASS_PUBLIC_DATA_REGION=ALL`로 zcode를 생략한다. 기본 예산은 기존10페이지/20요청/120초이며 전국 초기 실행에 명시적으로 최대200페이지/300요청/30분을 허용한다. 상한을 넘거나 전체 건수가 맞지 않으면 실패를 기록하고 이전 페이지 commit은 보존한다. 페이지·요청 상한 확장은 계정 쿼터를 자동 확인하는 기능이 아니다. 사용자 확인 한도는 getChargerInfo/getChargerStatus 각각 일일100,000회다.
+
+### 운영 데이터 주기·보존 (2026-10-13)
+
+`plugpass-ingestion.timer`는5분마다 활성 검증 JAR의 auto 모드를 호출한다. 최초/전체 성공24시간 경과/성공10분 공백이면 전체 정보를 재수집하고 그 외에는 최근10분 상태 변경분을 수집한다. 전국 기본정보는 최대200페이지·300요청·30분, 상태는20페이지·40요청·120초이며 일시 실패 재시도는1회다. 단일 실행 잠금과 페이지 commit을 유지한다.
+
+조회 결과의 collection CURRENT/DELAYED/NOT_READY는 수집 작업의 건강 상태다. 현장 관측 시각이나 빈자리 보장이 아니며 기존 충전기 UNVERIFIED를 유지한다. 실패 시 이전 목록·성공 시각을 유지하고 갱신 지연을 안내한다. 데이터/이력 자동 삭제는 없고 공급자의 누락을 폐쇄나 삭제로 추측하지 않는다.
+
+`plugpass-backup.timer`: 매일02:30 KST, 성공한 로컬 백업7일, 격리 MySQL 복원·건수 일치 후 성공 표시. 서버 내 백업과 일회 로컬 사본을 검증했으며 자동 원격 저장소는 미설정이다. 타이머/스크립트와 명령은 [운영 저장소 PR4](https://github.com/seungmin-park/gcp-deployment/pull/4), 실제 건수·해시·한계는 [운영 검증](production-data-verification.md)을 따른다.

@@ -27,3 +27,7 @@ CURRENT는 수집 작업 정상이며 충전기 현장 상태 최신성 보장�
 이름·책임 검토: 조회 Controller에 시간 규칙을 넣지 않았고 상태 서비스가 기존 검색 Service의 쿼리 계약을 바꾸지 않는다. DTO는 응답 값, View는 표현과 기존 사용자 이벤트를 맡는다. 새 필드는 additive이며 상세·추천 응답은 바꾸지 않는다.
 
 최종 책임 분리 후 동일 공용 verify를 다시 실행해 종료0을 확인했다. Service는 `dto.CollectionStatus`를 반환하고 HTTP 계층에서 CollectionStatusResponse로 변환한다. 최종 로그 `/tmp/plugpass-production/collection-ui-final-verify.log`, 검증 JAR sha256258d6c7e34f6349f482566dfb783866a66f883ea80a2dd422100644869db3ded. 테스트 건수·실패0은 동일하다.
+
+## 최종 전달·운영 확인
+
+PR60 head12449e7 CI38379069778 성공 → 자동 머지13e9bee → main CI38379835959·CD38380315850 성공. 운영 release plugpass-51e6772446b0에서 새로고침 클릭 후 수집 정상·19:06:17 KST 성공 시각·18개 결과를 확인했다. 같은 cmux375px 화면, 브라우저 오류/콘솔 경고0. 로컬 검증 소스와 머지 후 소스 트리가 같다. 상세 근거와 한계는 [운영 실행 기록](production-data-verification.md)을 따른다.

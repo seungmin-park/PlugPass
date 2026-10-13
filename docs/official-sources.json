@@ -718,5 +718,69 @@
     "cache": ".firecrawl/mysql-connector-versions-20261012.md",
     "coverage": "rolling26.7 표시와 실제 Boot관리9.7.0 차이 확인; 동일 버전 문서로 추정하지 않음",
     "sha256": "006a6e8c1c7e6935cadfc4f42c9dbe3a7a928cf5a39235dda3fd9c4a23853ecc"
+  },
+  {
+    "id": "navigation-kakao-scheme",
+    "url": "https://apis.map.kakao.com/android_v2/docs/api-guide/urlscheme/",
+    "accessed": "2026-10-13",
+    "cache": ".firecrawl/navigation-kakao-scheme-20261013.md",
+    "coverage": "T28 앱 연결·자동차 길찾기·미설치·좌표 파라미터 관련 절",
+    "sha256": "2eecc79fb6b559645717cf8fb090f16a05c40db5c75ad60772d0b5409607e74f"
+  },
+  {
+    "id": "navigation-kakao-web",
+    "url": "https://apis.map.kakao.com/web/guide/#routeurl",
+    "accessed": "2026-10-13",
+    "cache": ".firecrawl/navigation-kakao-20261013.md",
+    "coverage": "T28 앱 연결·자동차 길찾기·미설치·좌표 파라미터 관련 절",
+    "sha256": "453d99af19f7279d4e6c72cf47d39411cebd30dfb96d02e6667a13ce1ae379c6"
+  },
+  {
+    "id": "navigation-naver-scheme",
+    "url": "https://guide.ncloud-docs.com/docs/en/application-maps-url-scheme-vpc",
+    "accessed": "2026-10-13",
+    "cache": ".firecrawl/navigation-naver-current-20261013.md",
+    "coverage": "T28 앱 연결·자동차 길찾기·미설치·좌표 파라미터 관련 절",
+    "sha256": "63f364814fee1c20f0ae65f337088f9081a00bc268a8469a33dc3a18777b8c56"
+  },
+  {
+    "id": "navigation-kakao-ios",
+    "url": "https://apis.map.kakao.com/ios_v2/docs/getting-started/urlscheme/",
+    "accessed": "2026-10-13",
+    "cache": ".firecrawl/navigation-kakao-ios-20261013.md",
+    "coverage": "T28 관련 앱 scheme·intent fallback·타사 설치 앱 탐지 제한",
+    "sha256": "6398b295e9957c7a0f680716a8fa9a3982674d187be7c86ad83b8163f8556579"
+  },
+  {
+    "id": "navigation-android-intents",
+    "url": "https://developer.chrome.com/docs/android/intents",
+    "accessed": "2026-10-13",
+    "cache": ".firecrawl/navigation-android-intents-20261013.md",
+    "coverage": "T28 관련 앱 scheme·intent fallback·타사 설치 앱 탐지 제한",
+    "sha256": "b30dde6e5171d7bfaa81a64a0c06f4562530217c83677fffda3a828fcbe0ed9f"
+  },
+  {
+    "id": "navigation-installed-apps",
+    "url": "https://developer.chrome.com/docs/capabilities/get-installed-related-apps",
+    "accessed": "2026-10-13",
+    "cache": ".firecrawl/navigation-installed-apps-20261013.md",
+    "coverage": "T28 관련 앱 scheme·intent fallback·타사 설치 앱 탐지 제한",
+    "sha256": "b350f3c2a55c6eddc6af66cbe9eb467f9bf03feeade4ce01705a4baddd35cdb9"
+  },
+  {
+    "id": "loading-status",
+    "url": "https://www.w3.org/WAI/WCAG22/Techniques/aria/ARIA22",
+    "accessed": "2026-10-13",
+    "cache": ".firecrawl/loading-status-20261013.md",
+    "coverage": "status 의미와 atomic 안내, prefers-reduced-motion 관련 절; 전체 접근성 인증 아님",
+    "sha256": "1cd3b5cec0da2dab451800ad8bcd50cbc19e5df1d0cbed7f3cfb98f71be07688"
+  },
+  {
+    "id": "loading-reduced-motion",
+    "url": "https://www.w3.org/TR/mediaqueries-5/#prefers-reduced-motion",
+    "accessed": "2026-10-13",
+    "cache": ".firecrawl/loading-reduced-motion-20261013.md",
+    "coverage": "status 의미와 atomic 안내, prefers-reduced-motion 관련 절; 전체 접근성 인증 아님",
+    "sha256": "5dec6dcfe8b8a53dc9a69f7b52dee25c496e87f33bbd8712b001c75f68e2b6ec"
   }
 ]

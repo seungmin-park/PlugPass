@@ -55,6 +55,8 @@ describe('지도 인스턴스의 수명과 표시 경계', () => {
       center: { latitude: 37.5, longitude: 127 }, selectedStationId: null,
     } })
     const canvas = wrapper.get('.station-map-canvas').element
+    expect(wrapper.find('.loading-spinner').exists()).toBe(true)
+    expect(wrapper.get('.loading-indicator').text()).toBe('지도를 불러오고 있습니다.')
     wrapper.unmount()
     finishLoading(createMap)
     await flushPromises()

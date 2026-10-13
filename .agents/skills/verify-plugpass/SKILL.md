@@ -220,3 +220,17 @@ Leaflet1.9.4 + OpenStreetMap 공용 타일을 사용한다. 키/허용 도메인
 현재cmux의 확인한 전용pane에서 `bash scripts/frontend-e2e.sh station-map.spec.ts`를 headed로 실행한다. 실제수집/H2/API에 Leaflet을 연결하며 자동테스트의 타일은 제어한다. SDK503→화면새로고침→지도다시표시, 타일503→지도재시도, 선택/초기화·375/1440px4건을 확인한다. 실제 외부 타일은 같은workspace의 cmux브라우저에서 따로 클릭·로딩·출처·진단을 확인한다. 타일fixture를 실제지리정보로 표현하지 않는다.
 
 공용verify는 개발브라우저의 필수 `station-map.spec.ts`와 운영JAR의 지연로딩 지도JS/CSS·빈검색·출처 검사를 포함한다. 실제전체건수·종료코드·실패/skip·보고서와 원격CI는 실행 뒤 [T25 기록](../../../docs/t25-verification.md)에 남긴다. 기존검사기의 필수파일 비교·진단감시를 유지하고 소스문서만으로 모든 SDK/브라우저경로를 검증했다고 보고하지 않는다.
+
+## T28 모바일 지도 앱 길찾기
+
+- `npm --prefix frontend run test:unit -- src/features/station-detail`: 기존 상세와 OS별 링크/특수문자/좌표/실패/교체를 확인한다. 새31건의 Red·Green은 [T28 기록](../../../docs/t28-verification.md)에 있다.
+- `bash scripts/frontend-e2e.sh navigation.spec.ts`: 현재 cmux의 전용 pane에서 headed Chromium을 실행한다. 실제 상세 API의 목적지가 클릭한 앱 URL/웹 새 탭까지 전달되는지3건을 assertion한다.
+- 공용 `bash scripts/verify.sh`는 새 필수 프런트2파일·개발 브라우저1파일을 검사한다. 실제 MySQL 재시작 후 운영 JAR에서도 charging-journey·navigation·loading을 합쳐7건 실행하며 누락을 거부한다.
+- iPhone/Android UA와375px는 모바일 연결 URL/화면 검증이다. 외부 앱 실행 경계를 가로채므로 앱 설치/미설치·실행 취소·GPS/출발지·내비 시작은 실기기에서 별도로 확인한다. 실기기 없이 이 항목을 완료로 표시하지 않는다.
+- 2026-10-13 main의 CD_ENABLED=true에서는 main CI가 운영 배포를 실행한다. AGENTS.md의 별도 배포 권한을 확인하고 PR/CI와 실제 머지·배포를 구분한다.
+
+## T29 처리 중 표시
+
+- `npm --prefix frontend run test:unit -- src/shared/ui`: 공용 상태 안내와 실제 검색/상세/추천 대기 및 위치 취소를 확인한다. 지도 SDK 대기는 StationMap.spec.ts에서 확인한다.
+- `bash scripts/frontend-e2e.sh loading.spec.ts`: 실제 백엔드 요청을 지연/재개해 회전 transform·완료 후 제거·375px를 확인하고 감소 모드와503 재시도 복구를 분리한다. 기존 ui-failures의 timeout도 spinner 제거를 확인한다.
+- 공용 verify의 개발/운영 JAR 양쪽에서 loading.spec.ts를 필수로 실행한다. 스크린리더 의미/장식 분리를 검사하지만 실제 음성 출력 검증은 아니다. [실행 기록](../../../docs/t28-verification.md#t29-회전-로딩-표시).

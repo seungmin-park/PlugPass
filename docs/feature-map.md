@@ -1,5 +1,17 @@
 # 기능과 검증 범위
 
+## T28 모바일 지도 앱 길찾기
+
+`상세 API → StationDetailView → StationDirections → navigationLinks → OS/외부 앱`.
+상세 Store가 현재 충전소와 조회 수명을 소유하고, 컴포넌트는 기본 HTML details/summary로 선택 영역을 연다. 링크 모듈은 유한 좌표·이름 검증, 인코딩, OS별 scheme/intent·설치 URL·웹 대안을 만든다. 검색 좌표를 출발지로 보내지 않는다. 이전 상세의 링크는 다음 요청 시작 시 제거된다.
+
+`StationNavigation.spec.ts`12건과 `navigationLinks.spec.ts`19건: Android/iOS/iPadOS/desktop, 목적지·특수문자·좌표 경계·로딩/실패·교체. `navigation.spec.ts`3건: 실제 수집/DB 상세→선택→앱 전달 URL→웹 새 탭→검색 복귀·다른 목적지와 키보드 조작. 개발 E2E와 재시작된 MySQL을 사용하는 운영 JAR에서 같은 spec을 실행한다. 앱 실행 경계만 가로채므로 실제 휴대폰 앱 실행은 미확인이다. [검증·실패·한계](t28-verification.md).
+
+## T29 처리 중 시각적 표시
+
+`기존 API Store/위치 composable/지도 상태 → LoadingIndicator(message) → 회전 원 + 작업 문구`.
+검색·상세·후보·수집 상태·위치·지도 대기 중 공용 표현을 사용한다. 성공/오류/취소 후 제거·재조회 때 다시 표시하고 감소 설정은 회전만 멈춘다. 상태/취소/timeout 소유권은 기존 객체에 유지한다. `RequestState.spec.ts`와 `LoadingFlows.spec.ts`, 지도 테스트가 수명 계약을, `loading.spec.ts`가 실제 CSS 회전·감소 모드·모바일·503 복구를 검증한다. 기존 timeout E2E도 spinner 제거를 확인한다. [Red·Green·실행 범위](t28-verification.md#t29-회전-로딩-표시).
+
 ## 운영 DB 전환 (2026-10-12, T26/T27)
 
 사용자 확정 DB는 MySQL8.4 LTS다. [계획](mysql-deployment-plan.md)·[설정](operations.md#mysql-배포-프로필)을 따른다.

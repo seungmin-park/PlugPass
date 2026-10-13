@@ -6,6 +6,7 @@ import { parseSearchCriteria, toSearchQuery } from '../../search/criteria'
 import { parseStationId } from '../../../shared/api/stationId'
 import { useRecommendationStore } from '../stores/recommendationStore'
 import CandidateGroup from '../components/CandidateGroup.vue'
+import LoadingIndicator from '../../../shared/ui/LoadingIndicator.vue'
 import { formatTimestamp } from '../../charging-info/presentation'
 
 const route = useRoute()
@@ -38,7 +39,7 @@ function openDetail(stationId: number): void { void router.push({ path: `/statio
       <p>제외 충전소 ID: {{ excludeStationId }} · 최대 {{ parsedCriteria.kind === 'valid' ? parsedCriteria.criteria.limit : '' }}개씩 표시</p>
       <p class="results-caution">직선거리 기준입니다. 후보는 도착 시점의 빈자리를 보장하지 않습니다.</p>
       <div class="metadata-state" :aria-busy="store.metadataStatus === 'loading'">
-        <p v-if="store.metadataStatus === 'loading'" role="status">수집 상태를 조회하고 있습니다.</p>
+        <LoadingIndicator v-if="store.metadataStatus === 'loading'" message="수집 상태를 조회하고 있습니다." />
         <div v-if="store.metadataError" ref="metadataNotice" tabindex="-1" class="request-notice request-error" role="alert">
           <p>수집 상태 확인 실패: {{ store.metadataError.message }}</p>
           <button id="retry-metadata" type="button" class="secondary-button" @click="store.retryMetadata">수집 상태 다시 조회</button>
@@ -50,7 +51,7 @@ function openDetail(stationId: number): void { void router.push({ path: `/statio
         </template>
       </div>
       <div :aria-busy="store.candidateStatus === 'loading'">
-        <p v-if="store.candidateStatus === 'loading'" role="status">대체 후보를 조회하고 있습니다.</p>
+        <LoadingIndicator v-if="store.candidateStatus === 'loading'" message="대체 후보를 조회하고 있습니다." />
         <div v-if="store.candidateError" ref="candidateNotice" tabindex="-1" class="request-notice request-error" role="alert">
           <p>{{ store.candidateError.message }}</p><button id="retry-candidates" type="button" class="secondary-button" @click="store.retryCandidates">후보 다시 조회</button>
         </div>

@@ -25,5 +25,8 @@
   "tests/vueAppDiagnostics.spec.ts",
   "src/features/search/views/StationMapSelection.spec.ts",
   "src/features/search/views/StationMapAvailability.spec.ts",
-  "src/features/search/components/StationMap.spec.ts"
+  "src/features/search/components/StationMap.spec.ts",
+  "src/features/station-detail/views/StationNavigation.spec.ts",
+  "src/features/station-detail/navigation/navigationLinks.spec.ts",
+  "src/shared/ui/LoadingFlows.spec.ts"
 ]

@@ -1,0 +1,181 @@
+
+> plugpass-web@0.1.0 test:unit
+> vitest run src/shared/ui/RequestState.spec.ts src/shared/ui/LoadingFlows.spec.ts src/features/search/components/StationMap.spec.ts
+
+
+ RUN  v5.0.3 /Users/seungmin/Desktop/repo/PlugPass/frontend
+
+ ❯ src/shared/ui/RequestState.spec.ts (6 tests | 4 failed) 27ms
+   ❯ 조회 상태 안내 (6)
+     × 로딩 안내를 읽을 수 있는 상태 영역으로 제공한다 16ms
+     × idle로 끝나면 회전 표시를 제거하고 재조회 때 다시 표시한다 2ms
+     × success로 끝나면 회전 표시를 제거하고 재조회 때 다시 표시한다 1ms
+     × error로 끝나면 회전 표시를 제거하고 재조회 때 다시 표시한다 1ms
+     ✓ validation 필드 메시지를 보여 주고 재시도 이벤트를 전달한다 5ms
+     ✓ 조회할 조건이 없으면 재시도 버튼을 제공하지 않는다 1ms
+ ❯ src/shared/ui/LoadingFlows.spec.ts (4 tests | 4 failed) 43ms
+   ❯ 실제 조회 상태에 연결한 진행 표시 (4)
+     × undefined 응답 대기 중 원을 표시하고 성공하면 제거한다 24ms
+     × undefined 응답 대기 중 원을 표시하고 성공하면 제거한다 6ms
+     × undefined 응답 대기 중 원을 표시하고 성공하면 제거한다 4ms
+     × 위치 확인 중 원을 표시하고 예시 위치로 취소하면 제거한다 9ms
+ ❯ src/features/search/components/StationMap.spec.ts (6 tests | 1 failed) 324ms
+   ❯ 지도 인스턴스의 수명과 표시 경계 (6)
+     ✓ 단일 충전소를 표시하고 해제한 컨테이너에 다시 지도를 만들 수 있다 104ms
+     ✓ 빈 결과는 지도와 출처를 유지하며 존재하지 않는 선택을 만들지 않는다 54ms
+     ✓ 같은 좌표의 두 충전소도 각각의 이름과 선택 ID를 유지한다 55ms
+     × SDK 대기 중 화면을 떠나면 늦게 완료해도 지도 DOM을 만들지 않는다 4ms
+     ✓ SDK 대기 중 표시 데이터가 바뀌면 늦은 이전 로딩이 새 지도를 덮지 않는다 53ms
+     ✓ 충전소 이름을 HTML로 삽입하지 않고 마커 라벨에 텍스트로 넣는다 53ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/shared/ui/LoadingFlows.spec.ts > 실제 조회 상태에 연결한 진행 표시 > undefined 응답 대기 중 원을 표시하고 성공하면 제거한다
+AssertionError: expected [] to deeply equal [ '주변 충전소를 조회하고 있습니다.' ]
+
+- Expected
++ Received
+
+- [
+-   "주변 충전소를 조회하고 있습니다.",
+- ]
++ []
+
+ ❯ src/shared/ui/LoadingFlows.spec.ts:30:86
+     28|     const wrapper = mount(App, { global: { plugins: [router, createPin…
+     29|     await flushPromises()
+     30|     expect(wrapper.findAll('.loading-indicator').map(indicator => indi…
+       |                                                                                      ^
+     31|     expect(wrapper.findAll('.loading-spinner')).toHaveLength(messages.…
+     32|     finish()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯
+
+ FAIL  src/shared/ui/LoadingFlows.spec.ts > 실제 조회 상태에 연결한 진행 표시 > undefined 응답 대기 중 원을 표시하고 성공하면 제거한다
+AssertionError: expected [] to deeply equal [ '충전소 상세를 조회하고 있습니다.' ]
+
+- Expected
++ Received
+
+- [
+-   "충전소 상세를 조회하고 있습니다.",
+- ]
++ []
+
+ ❯ src/shared/ui/LoadingFlows.spec.ts:30:86
+     28|     const wrapper = mount(App, { global: { plugins: [router, createPin…
+     29|     await flushPromises()
+     30|     expect(wrapper.findAll('.loading-indicator').map(indicator => indi…
+       |                                                                                      ^
+     31|     expect(wrapper.findAll('.loading-spinner')).toHaveLength(messages.…
+     32|     finish()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/9]⎯
+
+ FAIL  src/shared/ui/LoadingFlows.spec.ts > 실제 조회 상태에 연결한 진행 표시 > undefined 응답 대기 중 원을 표시하고 성공하면 제거한다
+AssertionError: expected [] to deeply equal [ '수집 상태를 조회하고 있습니다.', …(1) ]
+
+- Expected
++ Received
+
+- [
+-   "수집 상태를 조회하고 있습니다.",
+-   "대체 후보를 조회하고 있습니다.",
+- ]
++ []
+
+ ❯ src/shared/ui/LoadingFlows.spec.ts:30:86
+     28|     const wrapper = mount(App, { global: { plugins: [router, createPin…
+     29|     await flushPromises()
+     30|     expect(wrapper.findAll('.loading-indicator').map(indicator => indi…
+       |                                                                                      ^
+     31|     expect(wrapper.findAll('.loading-spinner')).toHaveLength(messages.…
+     32|     finish()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/9]⎯
+
+ FAIL  src/shared/ui/LoadingFlows.spec.ts > 실제 조회 상태에 연결한 진행 표시 > 위치 확인 중 원을 표시하고 예시 위치로 취소하면 제거한다
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/shared/ui/LoadingFlows.spec.ts:43:55
+     41|     const wrapper = mount(App, { global: { plugins: [router, createPin…
+     42|     await wrapper.get('#current-location').trigger('click')
+     43|     expect(wrapper.find('.loading-spinner').exists()).toBe(true)
+       |                                                       ^
+     44|     expect(wrapper.get('.loading-indicator').text()).toContain('현재 위치를…
+     45|     await wrapper.get('#example-location').trigger('click')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/9]⎯
+
+ FAIL  src/shared/ui/RequestState.spec.ts > 조회 상태 안내 > 로딩 안내를 읽을 수 있는 상태 영역으로 제공한다
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/shared/ui/RequestState.spec.ts:10:55
+      8|     const wrapper = mount(RequestState, { props: { status: 'loading' }…
+      9|     expect(wrapper.get('[role="status"]').text()).toContain('주변 충전소를 조…
+     10|     expect(wrapper.find('.loading-spinner').exists()).toBe(true)
+       |                                                       ^
+     11|     expect(wrapper.get('.loading-spinner').attributes('aria-hidden')).…
+     12|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/9]⎯
+
+ FAIL  src/shared/ui/RequestState.spec.ts > 조회 상태 안내 > idle로 끝나면 회전 표시를 제거하고 재조회 때 다시 표시한다
+ FAIL  src/shared/ui/RequestState.spec.ts > 조회 상태 안내 > success로 끝나면 회전 표시를 제거하고 재조회 때 다시 표시한다
+ FAIL  src/shared/ui/RequestState.spec.ts > 조회 상태 안내 > error로 끝나면 회전 표시를 제거하고 재조회 때 다시 표시한다
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/shared/ui/RequestState.spec.ts:15:55
+     13|   it.each(['idle', 'success', 'error'] as const)('%s로 끝나면 회전 표시를 제거하고 …
+     14|     const wrapper = mount(RequestState, { props: { status: 'loading' }…
+     15|     expect(wrapper.find('.loading-spinner').exists()).toBe(true)
+       |                                                       ^
+     16|     await wrapper.setProps({ status })
+     17|     expect(wrapper.find('.loading-spinner').exists()).toBe(false)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/9]⎯
+
+ FAIL  src/features/search/components/StationMap.spec.ts > 지도 인스턴스의 수명과 표시 경계 > SDK 대기 중 화면을 떠나면 늦게 완료해도 지도 DOM을 만들지 않는다
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/features/search/components/StationMap.spec.ts:58:55
+     56|     } })
+     57|     const canvas = wrapper.get('.station-map-canvas').element
+     58|     expect(wrapper.find('.loading-spinner').exists()).toBe(true)
+       |                                                       ^
+     59|     expect(wrapper.get('.loading-indicator').text()).toBe('지도를 불러오고 있습…
+     60|     wrapper.unmount()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/9]⎯
+
+
+ Test Files  3 failed (3)
+      Tests  9 failed | 7 passed (16)
+   Start at  14:50:25
+   Duration  1.09s (environment 56%, transform 21%, tests 15%, import 4%, setup 3%)
+
+JSON report written to /Users/seungmin/Desktop/repo/PlugPass/frontend/test-results/unit.json

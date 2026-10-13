@@ -56,8 +56,10 @@ test('응답 timeout은 로딩을 끝내고 대기 초과를 안내한다', asyn
   await page.route('**/api/v1/stations?*', () => { /* 외부 응답을 보내지 않아 실제 Axios timeout을 검증한다. */ })
   await page.goto(`/app/index.html#/stations?${criteria}`)
   await expect(page.getByText('주변 충전소를 조회하고 있습니다.')).toBeVisible()
+  await expect(page.locator('.loading-spinner')).toBeVisible()
   await expect(page.getByRole('alert')).toContainText('응답 대기 시간을 초과했습니다', { timeout: 15_000 })
   await expect(page.getByText('주변 충전소를 조회하고 있습니다.')).toHaveCount(0)
+  await expect(page.locator('.loading-spinner')).toHaveCount(0)
 })
 
 test('이전 검색이 늦게 도착해도 현재 조건의 목록을 유지한다', async ({ page }) => {

@@ -1,0 +1,380 @@
+
+> plugpass-web@0.1.0 test:unit
+> vitest run src/features/station-detail/navigation/navigationLinks.spec.ts
+
+
+ RUN  v5.0.3 /Users/seungmin/Desktop/repo/PlugPass/frontend
+
+ ❯ src/features/station-detail/navigation/navigationLinks.spec.ts (19 tests | 16 failed) 9ms
+   ❯ 길찾기 목적지 경계 (19)
+     × 유효하지 않은 목적지 {"name":"","latitude":37.5,"longitude":127}로 외부 링크를 만들지 않는다 4ms
+     × 유효하지 않은 목적지 {"name":"  ","latitude":37.5,"longitude":127}로 외부 링크를 만들지 않는다 0ms
+     × 유효하지 않은 목적지 {"name":"충전소","latitude":null,"longitude":127}로 외부 링크를 만들지 않는다 0ms
+     × 유효하지 않은 목적지 {"name":"충전소","latitude":null,"longitude":127}로 외부 링크를 만들지 않는다 0ms
+     × 유효하지 않은 목적지 {"name":"충전소","latitude":90.01,"longitude":127}로 외부 링크를 만들지 않는다 0ms
+     × 유효하지 않은 목적지 {"name":"충전소","latitude":-90.01,"longitude":127}로 외부 링크를 만들지 않는다 0ms
+     × 유효하지 않은 목적지 {"name":"충전소","latitude":37.5,"longitude":null}로 외부 링크를 만들지 않는다 0ms
+     × 유효하지 않은 목적지 {"name":"충전소","latitude":37.5,"longitude":-180.01}로 외부 링크를 만들지 않는다 0ms
+     × 유효하지 않은 목적지 {"name":"충전소","latitude":37.5,"longitude":180.01}로 외부 링크를 만들지 않는다 0ms
+     ✓ 네이버 지원 좌표 경계 31.43/122.37를 전달한다 0ms
+     ✓ 네이버 지원 좌표 경계 44.35/132를 전달한다 0ms
+     × 네이버 지원 범위 밖 31.429/127는 해당 앱 링크를 제공하지 않는다 1ms
+     × 네이버 지원 범위 밖 44.351/127는 해당 앱 링크를 제공하지 않는다 0ms
+     × 네이버 지원 범위 밖 37.5/122.369는 해당 앱 링크를 제공하지 않는다 0ms
+     × 네이버 지원 범위 밖 37.5/132.001는 해당 앱 링크를 제공하지 않는다 0ms
+     × 네이버 지원 범위 밖 -90/-180는 해당 앱 링크를 제공하지 않는다 0ms
+     × 네이버 지원 범위 밖 90/180는 해당 앱 링크를 제공하지 않는다 0ms
+     × 네이버 지원 범위 밖 0/0는 해당 앱 링크를 제공하지 않는다 0ms
+     ✓ 네이버 호출자에는 페이지 경로만 전달하고 검색 조건·fragment는 보내지 않는다 0ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 16 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/station-detail/navigation/navigationLinks.spec.ts > 길찾기 목적지 경계 > 유효하지 않은 목적지 {"name":"","latitude":37.5,"longitude":127}로 외부 링크를 만들지 않는다
+AssertionError: expected { …(2) } to be null
+
+- Expected:
+null
+
++ Received:
+{
+  "apps": [
+    {
+      "href": "kakaomap://route?ep=37.5,127&by=car",
+      "id": "kakao",
+      "installHref": "https://apps.apple.com/app/id304608425",
+      "name": "카카오맵",
+    },
+    {
+      "href": "nmap://route/car?dlat=37.5&dlng=127&dname=&appname=https%3A%2F%2Fplugpass.example%2Fapp%2Findex.html",
+      "id": "naver",
+      "installHref": "https://apps.apple.com/app/id311867728",
+      "name": "네이버 지도",
+    },
+  ],
+  "webHref": "https://map.kakao.com/link/to/,37.5,127",
+}
+
+ ❯ src/features/station-detail/navigation/navigationLinks.spec.ts:16:98
+     14|     { name: '충전소', latitude: 37.5, longitude: 180.01 },
+     15|   ])('유효하지 않은 목적지 %j로 외부 링크를 만들지 않는다', destination => {
+     16|     expect(createNavigationLinks(destination, 'ios', 'https://plugpass…
+       |                                                                                                  ^
+     17|   })
+     18|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/16]⎯
+
+ FAIL  src/features/station-detail/navigation/navigationLinks.spec.ts > 길찾기 목적지 경계 > 유효하지 않은 목적지 {"name":"  ","latitude":37.5,"longitude":127}로 외부 링크를 만들지 않는다
+AssertionError: expected { …(2) } to be null
+
+- Expected:
+null
+
++ Received:
+{
+  "apps": [
+    {
+      "href": "kakaomap://route?ep=37.5,127&by=car",
+      "id": "kakao",
+      "installHref": "https://apps.apple.com/app/id304608425",
+      "name": "카카오맵",
+    },
+    {
+      "href": "nmap://route/car?dlat=37.5&dlng=127&dname=%20%20&appname=https%3A%2F%2Fplugpass.example%2Fapp%2Findex.html",
+      "id": "naver",
+      "installHref": "https://apps.apple.com/app/id311867728",
+      "name": "네이버 지도",
+    },
+  ],
+  "webHref": "https://map.kakao.com/link/to/%20%20,37.5,127",
+}
+
+ ❯ src/features/station-detail/navigation/navigationLinks.spec.ts:16:98
+     14|     { name: '충전소', latitude: 37.5, longitude: 180.01 },
+     15|   ])('유효하지 않은 목적지 %j로 외부 링크를 만들지 않는다', destination => {
+     16|     expect(createNavigationLinks(destination, 'ios', 'https://plugpass…
+       |                                                                                                  ^
+     17|   })
+     18|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/16]⎯
+
+ FAIL  src/features/station-detail/navigation/navigationLinks.spec.ts > 길찾기 목적지 경계 > 유효하지 않은 목적지 {"name":"충전소","latitude":null,"longitude":127}로 외부 링크를 만들지 않는다
+AssertionError: expected { …(2) } to be null
+
+- Expected:
+null
+
++ Received:
+{
+  "apps": [
+    {
+      "href": "kakaomap://route?ep=NaN,127&by=car",
+      "id": "kakao",
+      "installHref": "https://apps.apple.com/app/id304608425",
+      "name": "카카오맵",
+    },
+    {
+      "href": "nmap://route/car?dlat=NaN&dlng=127&dname=%EC%B6%A9%EC%A0%84%EC%86%8C&appname=https%3A%2F%2Fplugpass.example%2Fapp%2Findex.html",
+      "id": "naver",
+      "installHref": "https://apps.apple.com/app/id311867728",
+      "name": "네이버 지도",
+    },
+  ],
+  "webHref": "https://map.kakao.com/link/to/%EC%B6%A9%EC%A0%84%EC%86%8C,NaN,127",
+}
+
+ ❯ src/features/station-detail/navigation/navigationLinks.spec.ts:16:98
+     14|     { name: '충전소', latitude: 37.5, longitude: 180.01 },
+     15|   ])('유효하지 않은 목적지 %j로 외부 링크를 만들지 않는다', destination => {
+     16|     expect(createNavigationLinks(destination, 'ios', 'https://plugpass…
+       |                                                                                                  ^
+     17|   })
+     18|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/16]⎯
+
+ FAIL  src/features/station-detail/navigation/navigationLinks.spec.ts > 길찾기 목적지 경계 > 유효하지 않은 목적지 {"name":"충전소","latitude":null,"longitude":127}로 외부 링크를 만들지 않는다
+AssertionError: expected { …(2) } to be null
+
+- Expected:
+null
+
++ Received:
+{
+  "apps": [
+    {
+      "href": "kakaomap://route?ep=Infinity,127&by=car",
+      "id": "kakao",
+      "installHref": "https://apps.apple.com/app/id304608425",
+      "name": "카카오맵",
+    },
+    {
+      "href": "nmap://route/car?dlat=Infinity&dlng=127&dname=%EC%B6%A9%EC%A0%84%EC%86%8C&appname=https%3A%2F%2Fplugpass.example%2Fapp%2Findex.html",
+      "id": "naver",
+      "installHref": "https://apps.apple.com/app/id311867728",
+      "name": "네이버 지도",
+    },
+  ],
+  "webHref": "https://map.kakao.com/link/to/%EC%B6%A9%EC%A0%84%EC%86%8C,Infinity,127",
+}
+
+ ❯ src/features/station-detail/navigation/navigationLinks.spec.ts:16:98
+     14|     { name: '충전소', latitude: 37.5, longitude: 180.01 },
+     15|   ])('유효하지 않은 목적지 %j로 외부 링크를 만들지 않는다', destination => {
+     16|     expect(createNavigationLinks(destination, 'ios', 'https://plugpass…
+       |                                                                                                  ^
+     17|   })
+     18|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/16]⎯
+
+ FAIL  src/features/station-detail/navigation/navigationLinks.spec.ts > 길찾기 목적지 경계 > 유효하지 않은 목적지 {"name":"충전소","latitude":90.01,"longitude":127}로 외부 링크를 만들지 않는다
+AssertionError: expected { …(2) } to be null
+
+- Expected:
+null
+
++ Received:
+{
+  "apps": [
+    {
+      "href": "kakaomap://route?ep=90.01,127&by=car",
+      "id": "kakao",
+      "installHref": "https://apps.apple.com/app/id304608425",
+      "name": "카카오맵",
+    },
+    {
+      "href": "nmap://route/car?dlat=90.01&dlng=127&dname=%EC%B6%A9%EC%A0%84%EC%86%8C&appname=https%3A%2F%2Fplugpass.example%2Fapp%2Findex.html",
+      "id": "naver",
+      "installHref": "https://apps.apple.com/app/id311867728",
+      "name": "네이버 지도",
+    },
+  ],
+  "webHref": "https://map.kakao.com/link/to/%EC%B6%A9%EC%A0%84%EC%86%8C,90.01,127",
+}
+
+ ❯ src/features/station-detail/navigation/navigationLinks.spec.ts:16:98
+     14|     { name: '충전소', latitude: 37.5, longitude: 180.01 },
+     15|   ])('유효하지 않은 목적지 %j로 외부 링크를 만들지 않는다', destination => {
+     16|     expect(createNavigationLinks(destination, 'ios', 'https://plugpass…
+       |                                                                                                  ^
+     17|   })
+     18|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/16]⎯
+
+ FAIL  src/features/station-detail/navigation/navigationLinks.spec.ts > 길찾기 목적지 경계 > 유효하지 않은 목적지 {"name":"충전소","latitude":-90.01,"longitude":127}로 외부 링크를 만들지 않는다
+AssertionError: expected { …(2) } to be null
+
+- Expected:
+null
+
++ Received:
+{
+  "apps": [
+    {
+      "href": "kakaomap://route?ep=-90.01,127&by=car",
+      "id": "kakao",
+      "installHref": "https://apps.apple.com/app/id304608425",
+      "name": "카카오맵",
+    },
+    {
+      "href": "nmap://route/car?dlat=-90.01&dlng=127&dname=%EC%B6%A9%EC%A0%84%EC%86%8C&appname=https%3A%2F%2Fplugpass.example%2Fapp%2Findex.html",
+      "id": "naver",
+      "installHref": "https://apps.apple.com/app/id311867728",
+      "name": "네이버 지도",
+    },
+  ],
+  "webHref": "https://map.kakao.com/link/to/%EC%B6%A9%EC%A0%84%EC%86%8C,-90.01,127",
+}
+
+ ❯ src/features/station-detail/navigation/navigationLinks.spec.ts:16:98
+     14|     { name: '충전소', latitude: 37.5, longitude: 180.01 },
+     15|   ])('유효하지 않은 목적지 %j로 외부 링크를 만들지 않는다', destination => {
+     16|     expect(createNavigationLinks(destination, 'ios', 'https://plugpass…
+       |                                                                                                  ^
+     17|   })
+     18|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/16]⎯
+
+ FAIL  src/features/station-detail/navigation/navigationLinks.spec.ts > 길찾기 목적지 경계 > 유효하지 않은 목적지 {"name":"충전소","latitude":37.5,"longitude":null}로 외부 링크를 만들지 않는다
+AssertionError: expected { …(2) } to be null
+
+- Expected:
+null
+
++ Received:
+{
+  "apps": [
+    {
+      "href": "kakaomap://route?ep=37.5,Infinity&by=car",
+      "id": "kakao",
+      "installHref": "https://apps.apple.com/app/id304608425",
+      "name": "카카오맵",
+    },
+    {
+      "href": "nmap://route/car?dlat=37.5&dlng=Infinity&dname=%EC%B6%A9%EC%A0%84%EC%86%8C&appname=https%3A%2F%2Fplugpass.example%2Fapp%2Findex.html",
+      "id": "naver",
+      "installHref": "https://apps.apple.com/app/id311867728",
+      "name": "네이버 지도",
+    },
+  ],
+  "webHref": "https://map.kakao.com/link/to/%EC%B6%A9%EC%A0%84%EC%86%8C,37.5,Infinity",
+}
+
+ ❯ src/features/station-detail/navigation/navigationLinks.spec.ts:16:98
+     14|     { name: '충전소', latitude: 37.5, longitude: 180.01 },
+     15|   ])('유효하지 않은 목적지 %j로 외부 링크를 만들지 않는다', destination => {
+     16|     expect(createNavigationLinks(destination, 'ios', 'https://plugpass…
+       |                                                                                                  ^
+     17|   })
+     18|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/16]⎯
+
+ FAIL  src/features/station-detail/navigation/navigationLinks.spec.ts > 길찾기 목적지 경계 > 유효하지 않은 목적지 {"name":"충전소","latitude":37.5,"longitude":-180.01}로 외부 링크를 만들지 않는다
+AssertionError: expected { …(2) } to be null
+
+- Expected:
+null
+
++ Received:
+{
+  "apps": [
+    {
+      "href": "kakaomap://route?ep=37.5,-180.01&by=car",
+      "id": "kakao",
+      "installHref": "https://apps.apple.com/app/id304608425",
+      "name": "카카오맵",
+    },
+    {
+      "href": "nmap://route/car?dlat=37.5&dlng=-180.01&dname=%EC%B6%A9%EC%A0%84%EC%86%8C&appname=https%3A%2F%2Fplugpass.example%2Fapp%2Findex.html",
+      "id": "naver",
+      "installHref": "https://apps.apple.com/app/id311867728",
+      "name": "네이버 지도",
+    },
+  ],
+  "webHref": "https://map.kakao.com/link/to/%EC%B6%A9%EC%A0%84%EC%86%8C,37.5,-180.01",
+}
+
+ ❯ src/features/station-detail/navigation/navigationLinks.spec.ts:16:98
+     14|     { name: '충전소', latitude: 37.5, longitude: 180.01 },
+     15|   ])('유효하지 않은 목적지 %j로 외부 링크를 만들지 않는다', destination => {
+     16|     expect(createNavigationLinks(destination, 'ios', 'https://plugpass…
+       |                                                                                                  ^
+     17|   })
+     18|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/16]⎯
+
+ FAIL  src/features/station-detail/navigation/navigationLinks.spec.ts > 길찾기 목적지 경계 > 유효하지 않은 목적지 {"name":"충전소","latitude":37.5,"longitude":180.01}로 외부 링크를 만들지 않는다
+AssertionError: expected { …(2) } to be null
+
+- Expected:
+null
+
++ Received:
+{
+  "apps": [
+    {
+      "href": "kakaomap://route?ep=37.5,180.01&by=car",
+      "id": "kakao",
+      "installHref": "https://apps.apple.com/app/id304608425",
+      "name": "카카오맵",
+    },
+    {
+      "href": "nmap://route/car?dlat=37.5&dlng=180.01&dname=%EC%B6%A9%EC%A0%84%EC%86%8C&appname=https%3A%2F%2Fplugpass.example%2Fapp%2Findex.html",
+      "id": "naver",
+      "installHref": "https://apps.apple.com/app/id311867728",
+      "name": "네이버 지도",
+    },
+  ],
+  "webHref": "https://map.kakao.com/link/to/%EC%B6%A9%EC%A0%84%EC%86%8C,37.5,180.01",
+}
+
+ ❯ src/features/station-detail/navigation/navigationLinks.spec.ts:16:98
+     14|     { name: '충전소', latitude: 37.5, longitude: 180.01 },
+     15|   ])('유효하지 않은 목적지 %j로 외부 링크를 만들지 않는다', destination => {
+     16|     expect(createNavigationLinks(destination, 'ios', 'https://plugpass…
+       |                                                                                                  ^
+     17|   })
+     18|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/16]⎯
+
+ FAIL  src/features/station-detail/navigation/navigationLinks.spec.ts > 길찾기 목적지 경계 > 네이버 지원 범위 밖 31.429/127는 해당 앱 링크를 제공하지 않는다
+ FAIL  src/features/station-detail/navigation/navigationLinks.spec.ts > 길찾기 목적지 경계 > 네이버 지원 범위 밖 44.351/127는 해당 앱 링크를 제공하지 않는다
+ FAIL  src/features/station-detail/navigation/navigationLinks.spec.ts > 길찾기 목적지 경계 > 네이버 지원 범위 밖 37.5/122.369는 해당 앱 링크를 제공하지 않는다
+ FAIL  src/features/station-detail/navigation/navigationLinks.spec.ts > 길찾기 목적지 경계 > 네이버 지원 범위 밖 37.5/132.001는 해당 앱 링크를 제공하지 않는다
+ FAIL  src/features/station-detail/navigation/navigationLinks.spec.ts > 길찾기 목적지 경계 > 네이버 지원 범위 밖 -90/-180는 해당 앱 링크를 제공하지 않는다
+ FAIL  src/features/station-detail/navigation/navigationLinks.spec.ts > 길찾기 목적지 경계 > 네이버 지원 범위 밖 90/180는 해당 앱 링크를 제공하지 않는다
+ FAIL  src/features/station-detail/navigation/navigationLinks.spec.ts > 길찾기 목적지 경계 > 네이버 지원 범위 밖 0/0는 해당 앱 링크를 제공하지 않는다
+AssertionError: expected [ 'kakao', 'naver' ] to deeply equal [ 'kakao' ]
+
+- Expected
++ Received
+
+  [
+    "kakao",
++   "naver",
+  ]
+
+ ❯ src/features/station-detail/navigation/navigationLinks.spec.ts:27:46
+     25|     '네이버 지원 범위 밖 %s/%s는 해당 앱 링크를 제공하지 않는다', (latitude, longitude) => {
+     26|       const links = createNavigationLinks({ name: '범위 밖', latitude, lo…
+     27|       expect(links?.apps.map(app => app.id)).toEqual(['kakao'])
+       |                                              ^
+     28|       expect(links?.webHref).toContain(`,${latitude},${longitude}`)
+     29|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/16]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  16 failed | 3 passed (19)
+   Start at  14:36:30
+   Duration  375ms (environment 79%, setup 9%, transform 7%, tests 3%, import 1%, worker 1%)
+
+JSON report written to /Users/seungmin/Desktop/repo/PlugPass/frontend/test-results/unit.json

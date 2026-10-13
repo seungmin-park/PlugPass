@@ -7,6 +7,16 @@ describe('조회 상태 안내', () => {
   it('로딩 안내를 읽을 수 있는 상태 영역으로 제공한다', () => {
     const wrapper = mount(RequestState, { props: { status: 'loading' } })
     expect(wrapper.get('[role="status"]').text()).toContain('주변 충전소를 조회하고 있습니다')
+    expect(wrapper.find('.loading-spinner').exists()).toBe(true)
+    expect(wrapper.get('.loading-spinner').attributes('aria-hidden')).toBe('true')
+  })
+  it.each(['idle', 'success', 'error'] as const)('%s로 끝나면 회전 표시를 제거하고 재조회 때 다시 표시한다', async status => {
+    const wrapper = mount(RequestState, { props: { status: 'loading' } })
+    expect(wrapper.find('.loading-spinner').exists()).toBe(true)
+    await wrapper.setProps({ status })
+    expect(wrapper.find('.loading-spinner').exists()).toBe(false)
+    await wrapper.setProps({ status: 'loading' })
+    expect(wrapper.find('.loading-spinner').exists()).toBe(true)
   })
   it('validation 필드 메시지를 보여 주고 재시도 이벤트를 전달한다', async () => {
     const error = new ApiError('validation', '입력 오류', 400, 'INVALID_REQUEST', { radiusMeters: '반경 오류' })

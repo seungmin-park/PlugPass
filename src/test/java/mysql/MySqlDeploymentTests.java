@@ -2,6 +2,10 @@ package mysql;
 
 import com.plugpass.PlugPassApplication;
 import com.plugpass.ingestion.domain.SyncRun;
+import com.plugpass.ingestion.domain.SyncStatus;
+import com.plugpass.ingestion.service.StationSyncService;
+import com.plugpass.ingestion.dto.SyncResult;
+import java.sql.ResultSet;
 import com.plugpass.ingestion.repository.SyncRunRepository;
 import com.plugpass.ingestion.dto.StationSnapshot;
 import com.plugpass.ingestion.service.StationUpsertService;
@@ -208,6 +212,26 @@ class MySqlDeploymentTests {
                 statement.execute("alter table station rename column removed_name to name");
             }
         }
+    }
+
+    @Test
+    @DisplayName("다른 DB 연결이 수집 잠금을 소유하면 외부 요청과 실행 이력을 만들지 않는다")
+    void skipsWhenAnotherConnectionOwnsIngestion() throws Exception {
+        startApplication();
+        try (Connection connection = databaseConnection(); Statement statement = connection.createStatement()) {
+            try (ResultSet result = statement.executeQuery("select GET_LOCK('plugpass.ingestion', 0)")) {
+                assertThat(result.next()).isTrue();
+                assertThat(result.getInt(1)).isEqualTo(1);
+            }
+            SyncResult skipped = context.getBean(StationSyncService.class).synchronize();
+            assertThat(skipped.status()).isEqualTo(SyncStatus.SKIPPED);
+            assertThat(skipped.requestCount()).isZero();
+            assertThat(context.getBean(SyncRunRepository.class).count()).isZero();
+        }
+        SyncResult resumed = context.getBean(StationSyncService.class).synchronize();
+        assertThat(resumed.status()).isEqualTo(SyncStatus.FAILURE);
+        assertThat(resumed.failureCode()).isEqualTo("AUTHENTICATION");
+        assertThat(context.getBean(SyncRunRepository.class).count()).isEqualTo(1);
     }
 
     private Connection databaseConnection() throws Exception {

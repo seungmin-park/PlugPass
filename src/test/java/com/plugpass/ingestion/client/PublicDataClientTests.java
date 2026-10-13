@@ -148,6 +148,24 @@ class PublicDataClientTests {
         assertThat(parameters).containsExactlyInAnyOrderEntriesOf(Map.of("serviceKey", SERVICE_KEY, "pageNo", "1", "numOfRows", "10", "zcode", "28", "dataType", "XML"));
     }
     @Test
+    @DisplayName("전국 범위는 zcode 제한을 보내지 않고 기존 페이지 계약으로 조회한다")
+    void searchesAllRegionsWithoutRegionParameter() throws IOException {
+        AtomicReference<String> query = new AtomicReference<>();
+        String body = readFixture("normal.xml");
+        server.createContext("/getChargerInfo", exchange -> {
+            query.set(exchange.getRequestURI().getRawQuery());
+            respond(exchange, 200, body);
+        });
+        PublicDataProperties local = properties(SERVICE_KEY, Duration.ofSeconds(2));
+        assertThatCode(() -> client = new DefaultPublicDataClient(new PublicDataProperties(local.endpoint(),
+                SERVICE_KEY, 10, "ALL", Duration.ofSeconds(1), Duration.ofSeconds(2)),
+                Clock.fixed(COLLECTED_AT, ZoneOffset.UTC))).doesNotThrowAnyException();
+        StationPage result = client.fetchPage(1);
+        assertThat(result.snapshots()).hasSize(1);
+        assertThat(query.get()).doesNotContain("zcode").contains("numOfRows=10");
+    }
+
+    @Test
     @DisplayName("빈 페이지는 빈 결과와 다음 페이지 없음으로 반환한다")
     void returnsEmptyPage() throws IOException {
         String body = readFixture("empty.xml");

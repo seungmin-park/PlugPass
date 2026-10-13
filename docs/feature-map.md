@@ -240,3 +240,7 @@ main push → 기존 CI 전체 gate → 성공한 CI artifact
 - 주소 Store는 요청 세대/취소와 로딩·성공·빈 결과·오류를 소유한다. 입력 변경/화면 이탈 후 늦은 응답은 버린다.
 - 키 없음503, 인증503, 제한429, timeout504, 외부/계약 오류502. 키/공급자 원문 오류는 공개하지 않는다.
 - [실행 기록](t30-verification.md), [주소·영역 REST Docs](../src/docs/asciidoc/index.adoc), [다음 어댑터 개선 조사](adapter-ownership-research.md).
+
+## 운영 수집 기반 T33/T34
+
+`--plugpass.ingestion.command.enabled=true` → IngestionCommand → StationSyncService → IngestionLock → 기존 페이지 수집/저장. 웹 자동 수집과 별개인 일회 실행이며 MySQL은 연결 단위 잠금으로 다른 JVM을 거부한다. ALL 지역은 전국 zcode 생략이다. `IngestionCommandTests`, `MySqlDeploymentTests.skipsWhenAnotherConnectionOwnsIngestion`, `PublicDataClientTests.searchesAllRegionsWithoutRegionParameter`와 기존 실패 보존 회귀를 실행한다. [실제 검증·운영 미완료 범위](production-data-verification.md).

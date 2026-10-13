@@ -94,3 +94,9 @@ RECENT는 관측 시각이 미래가 아니고 maxAge(기본10분) 이하, STALE
 H2 메모리 방식은 프로세스 재시작 후 업무 데이터·수집 이력의 복구를 보장하지 않는다.
 
 실제 검증: [3주차 기록](week3-verification.md). fixture 서버의 장애·복구를 검증한 범위이며 실공공 API 인증과 cmux 화면 E2E는 별도 미확인이다.
+
+## 명시적인 일회 수집 (T33/T34)
+
+동일 배포 JAR에 `--spring.main.web-application-type=none --plugpass.ingestion.command.enabled=true --plugpass.ingestion.schedule.enabled=false`를 전달한다. 전체 성공은 종료0, 실패/부분 실패1, 다른 실행이 잠금을 소유하면2다. 인증키는 기존 서버 환경으로만 주입한다. MySQL에서는 `plugpass.ingestion` DB 연결 잠금을 사용하고 외부 요청/페이지 저장 전 소유권을 확인한다. 웹 배포 슬롯의 자동 수집은 계속 끈다.
+
+전국은 `PLUGPASS_PUBLIC_DATA_REGION=ALL`로 zcode를 생략한다. 기본 예산은 기존10페이지/20요청/120초이며 전국 초기 실행에 명시적으로 최대200페이지/300요청/30분을 허용한다. 상한을 넘거나 전체 건수가 맞지 않으면 실패를 기록하고 이전 페이지 commit은 보존한다. 페이지·요청 상한 확장은 계정 쿼터를 자동 확인하는 기능이 아니다. 사용자 확인 한도는 getChargerInfo/getChargerStatus 각각 일일100,000회다.

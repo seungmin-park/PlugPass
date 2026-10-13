@@ -13,7 +13,7 @@ public record PublicDataProperties(URI endpoint, String serviceKey, int pageSize
                 || endpoint.getRawQuery() != null || endpoint.getUserInfo() != null || endpoint.getFragment() != null) {
             throw new IllegalArgumentException("endpoint must be an HTTP URL without credentials, query or fragment");
         }
-        if (region == null || !region.matches("[0-9]{2}")) {
+        if (region == null || !(region.matches("[0-9]{2}") || "ALL".equals(region))) {
             throw new IllegalArgumentException("region must be a two-digit code");
         }
         if (pageSize < 10 || pageSize > 9999) {

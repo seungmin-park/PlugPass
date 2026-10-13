@@ -283,3 +283,8 @@ Spring의 classpath static 제공을 사용한다. Gradle이 Node/npm으로 프�
 [카카오 Local 공식 REST API](https://developers.kakao.com/docs/ko/local/dev-guide)는 `/v2/local/search/address.json`·`keyword.json`에 `Authorization: KakaoAK ...`, `query`, `size`를 받는다. `x`는 경도, `y`는 위도다.
 프로젝트 판단: 서버만 키를 갖고 버튼/Enter당 각 API1회, 요청당3초, 재시도 없음, 주소 후보 우선 최대10개, 같은 주소·좌표 중복 제거. 외부 대기에 DB 트랜잭션은 열지 않는다. 키 미설정503이어도 기동과 충전소 검색은 정상이다.
 실제 HTTP fixture로 인코딩/헤더·변환·중복·빈 결과·인증/429/5xx/timeout·깨진 응답을 검증한다. 실카카오 인증/계정 쿼터/실제 주소 검색 품질은 키 설정 뒤 별도 확인한다.
+
+## T33 운영 수집 실행 (2026-10-13)
+
+Java25·Boot4.1.1·MySQL8.4를 유지한다. [MySQL8.4 GET_LOCK](https://dev.mysql.com/doc/refman/8.4/en/locking-functions.html)은 DB 세션이 소유하고 transaction commit과 무관하며 세션 종료 또는 RELEASE_LOCK으로 해제된다. timeout0으로 즉시 획득/거부한다. 풀 연결은 명시적으로 해제 후 반환하고 해제 실패는 연결 abort 후 오류로 보고한다. 단일 VM의 운영 실행 잠금과 함께 사용하며 다중 MySQL 서버 합의 락이라고 표현하지 않는다.
+[Boot ApplicationRunner/ExitCodeGenerator](https://docs.spring.io/spring-boot/reference/features/spring-application.html)는 기동 후 일회 실행과 종료 코드를 제공한다. 프로젝트는 명시적 command.enabled에서만 실행하고 성공0·실패1·중복2를 반환한다. 운영 CLI는 web-application-type=none으로 웹 포트를 열지 않는다.

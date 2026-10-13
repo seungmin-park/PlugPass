@@ -2,11 +2,20 @@ package com.plugpass.ingestion.config;
 import java.time.Duration;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class IngestionConfigurationTests {
+    @Test
+    @DisplayName("전국 초기 수집은 명시적으로 늘린 유한 예산을 허용한다")
+    void allowsBoundedNationalCollection() {
+        assertThatCode(() -> new IngestionProperties(200, 300, 1, Duration.ofMinutes(30), Duration.ofSeconds(1)))
+                .doesNotThrowAnyException();
+    }
+
     @ParameterizedTest
     @DisplayName("호출 한도와 유한 시간 범위를 벗어나는 수집 설정은 거부한다")
     @MethodSource("invalidBudgets")
@@ -15,13 +24,13 @@ class IngestionConfigurationTests {
     }
     static Stream<Arguments> invalidBudgets() {
         return Stream.of(Arguments.of(0,20,1,Duration.ofSeconds(120),Duration.ofSeconds(1)),
-                Arguments.of(11,20,1,Duration.ofSeconds(120),Duration.ofSeconds(1)),
+                Arguments.of(201,20,1,Duration.ofSeconds(120),Duration.ofSeconds(1)),
                 Arguments.of(10,0,1,Duration.ofSeconds(120),Duration.ofSeconds(1)),
-                Arguments.of(10,21,1,Duration.ofSeconds(120),Duration.ofSeconds(1)),
+                Arguments.of(10,301,1,Duration.ofSeconds(120),Duration.ofSeconds(1)),
                 Arguments.of(10,20,-1,Duration.ofSeconds(120),Duration.ofSeconds(1)),
                 Arguments.of(10,20,2,Duration.ofSeconds(120),Duration.ofSeconds(1)),
                 Arguments.of(10,20,1,Duration.ZERO,Duration.ofSeconds(1)),
-                Arguments.of(10,20,1,Duration.ofSeconds(121),Duration.ofSeconds(1)),
+                Arguments.of(10,20,1,Duration.ofSeconds(1801),Duration.ofSeconds(1)),
                 Arguments.of(10,20,1,null,Duration.ofSeconds(1)),
                 Arguments.of(10,20,1,Duration.ofSeconds(120),Duration.ofSeconds(-1)),
                 Arguments.of(10,20,1,Duration.ofSeconds(120),null));

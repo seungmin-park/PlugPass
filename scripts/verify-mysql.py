@@ -109,7 +109,8 @@ def verify_restart(container, environment, output, serve):
         subprocess.run(['npm', '--prefix', 'frontend', 'run', 'test:e2e', '--',
                         '--config=playwright.mysql.config.ts'], cwd=ROOT, env=browser_environment, check=True)
         browser_count = CHECKS['check_browser_tests'](
-            json.loads((ROOT / 'frontend/test-results/mysql.json').read_text()), ['charging-journey.spec.ts'])
+            json.loads((ROOT / 'frontend/test-results/mysql.json').read_text()),
+            ['charging-journey.spec.ts', 'navigation.spec.ts', 'loading.spec.ts'])
         for name, body in [('before', before), ('after', after)]:
             (output / (name + '.json')).write_text(json.dumps(body, ensure_ascii=False, indent=2) + '\n')
         if serve:

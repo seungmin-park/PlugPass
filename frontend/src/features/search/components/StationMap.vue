@@ -3,6 +3,7 @@ import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { loadStationMap } from '../map/loadStationMap'
 import type { MapCoordinates, MapStation, StationMapSession } from '../map/stationMap'
 import { useErrorFocus } from '../../../shared/ui/useErrorFocus'
+import LoadingIndicator from '../../../shared/ui/LoadingIndicator.vue'
 
 const props = defineProps<{ stations: readonly MapStation[]; center: MapCoordinates; selectedStationId: number | null }>()
 const emit = defineEmits<{ select: [stationId: number] }>()
@@ -82,7 +83,7 @@ onBeforeUnmount(() => {
 <template>
   <section id="station-map-panel" class="station-map-panel" aria-label="검색 결과 지도" :aria-busy="status === 'loading' || backgroundLoading">
     <p>마커 또는 카드의 ‘지도에서 선택’을 누르면 같은 충전소가 선택됩니다.</p>
-    <p v-if="status === 'loading' || backgroundLoading" role="status">지도를 불러오고 있습니다.</p>
+    <LoadingIndicator v-if="status === 'loading' || backgroundLoading" message="지도를 불러오고 있습니다." />
     <p v-if="errorMessage" ref="errorNotice" role="alert" tabindex="-1">{{ errorMessage }}</p>
     <button v-if="status === 'error'" id="reload-map" type="button" class="secondary-button" @click="reloadPage">화면 새로고침</button>
     <button v-else-if="errorMessage" id="retry-map" type="button" class="secondary-button" @click="openMap">지도 다시 시도</button>

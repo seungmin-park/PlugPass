@@ -1,5 +1,21 @@
 # PlugPass 기술 스택과 개발 기준
 
+## 처리 중 표시 (2026-10-13, T29)
+
+기존 Vue3.5.43·TypeScript6.0.3과 CSS keyframes를 사용하고 의존성은 추가하지 않는다. [W3C ARIA22](https://www.w3.org/WAI/WCAG22/Techniques/aria/ARIA22)의 status/polite 및 atomic 안내와 [Media Queries5의 움직임 감소 설정](https://www.w3.org/TR/mediaqueries-5/#prefers-reduced-motion)을 참고했다. Media Queries5 문서는 Working Draft이며 실제 지원은 프로젝트 Chromium/WKWebView에서 확인한다. 공용 컴포넌트가 작업 문구와 회전만 맡고 기존 loading/취소/오류 상태를 재사용하는 것은 프로젝트 설계 판단이다. 감소 모드에서는 회전을 끄고 원과 문구를 유지한다. 실제 브라우저 computed style/transform과 상태 수명 테스트를 사용하며 스크린리더 음성 확인으로 확대하지 않는다.
+
+## 모바일 지도 앱 연결 (2026-10-13, T28)
+
+설치 해석 `npm --prefix frontend ls vue vitest @playwright/test --depth=0`에서 Vue3.5.43·Vitest5.0.3·Playwright1.63.0을 확인했다. 검증은 저장소 지정 Node26.7.0을 사용한다. 외부 지도 SDK나 새 의존성 없이 URL 연결을 구현한다.
+
+[카카오맵 Android 규격](https://apis.map.kakao.com/android_v2/docs/api-guide/urlscheme/)과 [iOS 규격](https://apis.map.kakao.com/ios_v2/docs/getting-started/urlscheme/)의 `kakaomap://route`, 위도·경도 순서의 `ep`, 자동차 `by=car`, [웹 길찾기](https://apis.map.kakao.com/web/guide/#routeurl)의 `/link/to/이름,위도,경도`를 사용한다. 카카오 공식 규격은 출발지 생략 기본값을 명시하지 않으므로 현재 위치 자동 선택을 보장한다고 쓰지 않는다. 목적지만 전달하고 화면에서 출발지를 지도 앱에서 확인하도록 안내한다. [담당자 답변](https://devtalk.kakao.com/t/api/105628)의 과거 앱별 출발지 처리 차이도 실기기 확인 이유다.
+
+[네이버 현행 URL Scheme](https://guide.ncloud-docs.com/docs/en/application-maps-url-scheme-vpc)의 `route/car`, `dlat/dlng/dname/appname`, 출발지 생략 시 현재 위치 기본값을 확인했다. 공식 좌표 범위(위도31.43~44.35·경도122.37~132) 밖에서는 네이버 앱 링크를 만들지 않는다. 기존 deprecated Maps 문서 대신 현행 Application Services 문서를 출처에 추가했다. 웹 식별자 `appname`에는 origin+pathname만 넣어 검색 query/hash를 넘기지 않는다.
+
+[Chrome Android intent](https://developer.chrome.com/docs/android/intents)의 사용자 클릭·패키지·`S.browser_fallback_url`을 사용한다. Android fallback은 해당 앱의 Google Play URL이다. iOS는 직접 앱 scheme과 명시적인 App Store 링크를 제공한다. 브라우저/인앱 정책에 따른 실패에는 웹 길찾기와 외부 브라우저 안내를 남긴다. 타이머를 설치 여부 판정으로 쓰지 않는다.
+
+[Chrome 설치 관련 API](https://developer.chrome.com/docs/capabilities/get-installed-related-apps)는 검증된 관련 앱만 조회할 수 있고 타사 앱 목록 탐지가 아니다. 두 앱을 설치 여부 표시 없이 제공하는 것은 프로젝트의 UX 판단이다. UA는 링크 형식을 고르는 힌트이며 설치/실행 여부의 증거가 아니다. 실제 앱 실행·앱의 위치 권한·출발지·내비 시작은 [T28 기록](t28-verification.md)의 실기기 확인 항목으로 구분한다.
+
 ## MySQL 배포 DB (2026-10-12)
 
 사용자가 MySQL을 확정했다. 업무 객체·Service 트랜잭션·Repository·HTTP 계약은 유지하고 배포 datasource와 스키마 소유자만 바꾼다. 실제 Gradle `runtimeClasspath`에서 Boot4.1.1·Hibernate7.4.5.Final·MySQL Connector/J9.7.0·Flyway core/mysql12.4.0·H2 2.4.240을 확인했다. DB 검증은 MySQL8.4 공식 이미지의 digest를 고정하며 실제 서버 버전/실행 결과를 기록한다.

@@ -1,0 +1,142 @@
+
+> plugpass-web@0.1.0 test:unit
+> vitest run src/features/station-detail/views/StationNavigation.spec.ts
+
+
+ RUN  v5.0.3 /Users/seungmin/Desktop/repo/PlugPass/frontend
+
+ ❯ src/features/station-detail/views/StationNavigation.spec.ts (12 tests | 8 failed) 72ms
+   ❯ 상세에서 외부 지도 길찾기 (12)
+     × iPhone의 iOS 앱 링크는 목적지만 전달하고 설치 대안을 제공한다 33ms
+     × iPad의 iOS 앱 링크는 목적지만 전달하고 설치 대안을 제공한다 7ms
+     × Macintosh의 iOS 앱 링크는 목적지만 전달하고 설치 대안을 제공한다 4ms
+     × Android는 정확한 패키지와 미설치 fallback을 포함한 intent를 만든다 4ms
+     × 데스크톱에서는 앱 스킴 대신 목적지 웹 길찾기를 제공한다 3ms
+     × 충전소 이름의 한글·쉼표·URL 구분자를 데이터로 인코딩한다 3ms
+     ✓ 잘못된 상세 {"latitude":91}는 길찾기를 제공하지 않는다 3ms
+     ✓ 잘못된 상세 {"longitude":-181}는 길찾기를 제공하지 않는다 2ms
+     ✓ 잘못된 상세 {"latitude":null}는 길찾기를 제공하지 않는다 2ms
+     ✓ 잘못된 상세 {"name":""}는 길찾기를 제공하지 않는다 2ms
+     × 새 상세를 기다리는 동안 이전 링크를 제거하고 새 목적지로 교체한다 3ms
+     × 조회 실패에는 링크를 만들지 않고 재시도 성공 후 제공한다 5ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/station-detail/views/StationNavigation.spec.ts > 상세에서 외부 지도 길찾기 > iPhone의 iOS 앱 링크는 목적지만 전달하고 설치 대안을 제공한다
+ FAIL  src/features/station-detail/views/StationNavigation.spec.ts > 상세에서 외부 지도 길찾기 > iPad의 iOS 앱 링크는 목적지만 전달하고 설치 대안을 제공한다
+ FAIL  src/features/station-detail/views/StationNavigation.spec.ts > 상세에서 외부 지도 길찾기 > Macintosh의 iOS 앱 링크는 목적지만 전달하고 설치 대안을 제공한다
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/features/station-detail/views/StationNavigation.spec.ts:21:46
+     19|     const wrapper = mount(App, { global: { plugins: [router, createPin…
+     20|     await flushPromises()
+     21|     expect(wrapper.find('summary').exists()).toBe(true)
+       |                                              ^
+     22|     expect(wrapper.find('summary').text()).toBe('길찾기')
+     23|     expect(wrapper.find('a[data-navigation="kakao"]').attributes('href…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  src/features/station-detail/views/StationNavigation.spec.ts > 상세에서 외부 지도 길찾기 > Android는 정확한 패키지와 미설치 fallback을 포함한 intent를 만든다
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/features/station-detail/views/StationNavigation.spec.ts:41:65
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  src/features/station-detail/views/StationNavigation.spec.ts > 상세에서 외부 지도 길찾기 > 데스크톱에서는 앱 스킴 대신 목적지 웹 길찾기를 제공한다
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/features/station-detail/views/StationNavigation.spec.ts:57:63
+     55|     const wrapper = mount(App, { global: { plugins: [router, createPin…
+     56|     await flushPromises()
+     57|     expect(wrapper.find('a[data-navigation="web"]').exists()).toBe(tru…
+       |                                                               ^
+     58|     expect(wrapper.find('a[data-navigation="web"]').attributes('href')…
+     59|     expect(wrapper.findAll('a[href^="intent:"], a[href^="nmap:"], a[hr…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  src/features/station-detail/views/StationNavigation.spec.ts > 상세에서 외부 지도 길찾기 > 충전소 이름의 한글·쉼표·URL 구분자를 데이터로 인코딩한다
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/features/station-detail/views/StationNavigation.spec.ts:68:65
+     66|     const wrapper = mount(App, { global: { plugins: [router, createPin…
+     67|     await flushPromises()
+     68|     expect(wrapper.find('a[data-navigation="naver"]').exists()).toBe(t…
+       |                                                                 ^
+     69|     const naver = new URL(wrapper.find('a[data-navigation="naver"]').a…
+     70|     expect(naver.searchParams.get('dname')).toBe('충전소, A/B &?#=끝')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  src/features/station-detail/views/StationNavigation.spec.ts > 상세에서 외부 지도 길찾기 > 새 상세를 기다리는 동안 이전 링크를 제거하고 새 목적지로 교체한다
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/features/station-detail/views/StationNavigation.spec.ts:94:65
+     92|     const wrapper = mount(App, { global: { plugins: [router, createPin…
+     93|     await flushPromises()
+     94|     expect(wrapper.find('a[data-navigation="kakao"]').exists()).toBe(t…
+       |                                                                 ^
+     95|     await router.push('/stations/3')
+     96|     await flushPromises()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  src/features/station-detail/views/StationNavigation.spec.ts > 상세에서 외부 지도 길찾기 > 조회 실패에는 링크를 만들지 않고 재시도 성공 후 제공한다
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/features/station-detail/views/StationNavigation.spec.ts:117:46
+    115|     await wrapper.get('#retry').trigger('click')
+    116|     await flushPromises()
+    117|     expect(wrapper.find('summary').exists()).toBe(true)
+       |                                              ^
+    118|   })
+    119| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  8 failed | 4 passed (12)
+   Start at  14:34:15
+   Duration  669ms (transform 38%, environment 38%, tests 12%, import 8%, setup 4%)
+
+JSON report written to /Users/seungmin/Desktop/repo/PlugPass/frontend/test-results/unit.json

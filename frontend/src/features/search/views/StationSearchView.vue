@@ -12,6 +12,7 @@ import { useStationSearchStore } from '../stores/stationSearchStore'
 import { useCurrentLocation, type LocationCoordinates } from '../../../shared/location/useCurrentLocation'
 import { ApiError } from '../../../shared/api/apiError'
 import RequestState from '../../../shared/ui/RequestState.vue'
+import LoadingIndicator from '../../../shared/ui/LoadingIndicator.vue'
 import { useErrorFocus } from '../../../shared/ui/useErrorFocus'
 
 const route = useRoute()
@@ -113,7 +114,7 @@ function openDetail(stationId: number): void {
           <button type="button" class="secondary-button" id="example-location" @click="selectExampleLocation">검증용 예시 위치 사용</button>
           <p>예시 위치 37.5 / 127은 합성 데모 지역입니다. 해당 지역의 데이터가 없으면 결과가 없을 수 있습니다.</p>
           <p v-if="selectedLocation" class="selected-location">{{ locationLabel }}: {{ selectedLocation.latitude }} / {{ selectedLocation.longitude }}</p>
-          <p v-if="locationStatus === 'loading'" role="status">현재 위치를 확인하고 있습니다. 최대 10초 기다려 주세요.</p>
+          <LoadingIndicator v-if="locationStatus === 'loading'" message="현재 위치를 확인하고 있습니다. 최대 10초 기다려 주세요." />
           <p v-if="locationError" ref="locationNotice" tabindex="-1" role="alert">{{ locationError }}</p>
         </div>
         <SearchForm :key="route.fullPath" :initial-radius-meters="confirmedCriteria?.radiusMeters ?? 1000"

@@ -413,6 +413,30 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 
 완료: [MySQL 실행 기록](docs/mysql-verification.md), [PR #52](https://github.com/seungmin-park/PlugPass/pull/52), main `36f8f3a`, [필수 CI 성공](https://github.com/seungmin-park/PlugPass/actions/runs/38239046683), [원격 원본 보고서 요약](docs/evidence/mysql/ci-summary.json). 실제 운영 자원 생성·공개 배포는 별도다.
 
+### T28 — 모바일 지도 앱 길찾기
+
+사용자 승인: 2026-10-13. 범위: 상세에서 카카오맵·네이버 지도 자동차 길찾기, Android/iOS 연결, 설치·웹 대안과 데스크톱 웹 길찾기. [계획](plan.md#모바일-지도-앱-길찾기-2026-10-13-t28)을 따른다.
+
+- [x] 기존 상세 좌표·API 계약과 공식 지도 앱 연결 규격, 브라우저의 설치 앱 조회 한계를 확인한다.
+- [x] RED: OS별 목적지 링크·한글/특수문자·잘못된 좌표·로딩/오류·상세 전환 테스트를 작성하고 실제 assertion 실패를 확인한다.
+- [x] GREEN: 길찾기 선택 UI·순수 링크 생성·설치/웹 대안을 구현하고 대상·전체 프런트 테스트를 통과한다.
+- [x] REFACTOR/검토: 이름→실제 역할→배치, 데이터 흐름과 외부 URL 계약을 검토하고 필요한 정리 후 전체 검증한다.
+- [x] 현재 cmux에서 개발/JAR 브라우저와 공용 verify를 실행하고 종료 코드·assertion·로그를 기록한다.
+- [x] 문서·기능 지도·공식 출처·검증 스킬을 갱신한다. [실행 기록](docs/t28-verification.md).
+- [ ] 서명 commit/PR·필수 CI를 확인한다.
+- [ ] 운영 배포 승인 후 보호된 머지를 확인한다. 현재 main 머지는 production CD를 실행한다.
+- [ ] 실기기 Android/iPhone에서 앱 설치/미설치·실행 취소·목적지 표시를 확인한다. 브라우저 에뮬레이션으로 완료 처리하지 않는다.
+
+### T29 — 처리 중 시각적 안내
+
+2026-10-13 사용자 추가 요청. 기존 비동기 상태에 회전 원과 현재 작업 문구를 연결한다. [계획](plan.md#처리-중-시각적-안내-2026-10-13-t29).
+
+- [x] RED: 검색·상세·후보/수집 상태·위치·지도 대기 시 spinner 부재 assertion 실패를 확인한다.
+- [x] GREEN: 공용 LoadingIndicator를 연결하고 성공/실패/취소·재시도에서 기존 상태와 함께 표시/제거한다.
+- [x] 실제 브라우저에서 회전·움직임 감소 설정·모바일 레이아웃을 확인하고 현재 cmux에서 보여 준다.
+- [x] 전체 단위·타입·lint·build·공용 verify와 문서를 갱신한다. Java372·프런트328·개발브라우저27·빈 DB JAR3·MySQL7·재시작 MySQL/JAR7·Python32건, 종료0.
+- [ ] 서명 commit/PR·필수 CI를 확인한다. 운영 배포와 연결된 머지는 승인 후 진행한다.
+
 ### 공통 완료 템플릿
 
 전역 agent-engineering의 현재 프로젝트 적용 범위와 실제 결과는 [적용 기록](docs/agent-engineering-application.md)에 연결한다. 기능별 진행 상태는 바꾸지 않으며, 도구 테스트·지침 검토·에이전트 행동 평가를 구분한다.

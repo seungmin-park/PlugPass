@@ -8,6 +8,8 @@ import { parseSearchCriteria, toSearchQuery } from '../../search/criteria'
 import { formatTimestamp } from '../../charging-info/presentation'
 import { useStationDetailStore } from '../stores/stationDetailStore'
 import ChargerList from '../components/ChargerList.vue'
+import StationDirections from '../components/StationDirections.vue'
+import LoadingIndicator from '../../../shared/ui/LoadingIndicator.vue'
 
 const route = useRoute()
 const store = useStationDetailStore()
@@ -31,7 +33,7 @@ function refresh(): void { if (stationId.value !== null) void store.loadStation(
       <RouterLink v-else to="/stations">검색 조건 선택</RouterLink>
     </nav>
     <p v-if="parsedCriteria.kind !== 'valid'" role="status">대체 후보를 찾으려면 검색 조건을 먼저 선택해 주세요.</p>
-    <p v-if="store.status === 'loading'" role="status">충전소 상세를 조회하고 있습니다.</p>
+    <LoadingIndicator v-if="store.status === 'loading'" message="충전소 상세를 조회하고 있습니다." />
     <div v-else-if="inputError || store.error" ref="errorNotice" tabindex="-1" role="alert" class="request-notice request-error">
       <p>{{ (inputError ?? store.error)?.message }}</p>
       <button v-if="!inputError" id="retry" type="button" class="secondary-button" @click="refresh">다시 조회</button>
@@ -40,6 +42,7 @@ function refresh(): void { if (stationId.value !== null) void store.loadStation(
       <div class="results-heading"><h2>{{ store.station.name }}</h2><button class="secondary-button" type="button" @click="refresh">새로고침</button></div>
       <p>충전소 ID: {{ store.station.id }} · 공급자: {{ store.station.provider }} · 공급자 충전소 ID: {{ store.station.providerStationId }}</p>
       <p>위치: {{ store.station.latitude }} / {{ store.station.longitude }}</p>
+      <StationDirections :key="store.station.id" :destination="store.station" />
       <p>조회 시각: {{ formatTimestamp(store.fetchedAt) }}</p>
       <p class="results-caution">이용 가능 보고는 도착 시점의 빈자리를 보장하지 않습니다. 운영 시간과 출입 조건을 확인하세요.</p>
       <ChargerList :chargers="store.station.chargers" />

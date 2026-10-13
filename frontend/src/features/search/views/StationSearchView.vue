@@ -222,12 +222,12 @@ function openDetail(stationId: number): void {
     <div class="search-map-explorer">
       <button type="button" id="show-map" class="secondary-button" :aria-expanded="mapVisible" aria-controls="station-map-panel" @click="toggleMap">{{ mapVisible ? '지도 접기' : '지도 보기' }}</button>
       <template v-if="mapVisible">
-        <p v-if="!confirmedCriteria">지도를 움직여 찾을 지역을 고른 뒤 ‘이 지역 재검색’을 눌러 주세요. 위치를 선택하지 않았다면 서울 시청 주변에서 시작합니다.</p>
+        <p v-if="!confirmedCriteria && !selectedLocation">지도를 움직여 찾을 지역을 고른 뒤 ‘이 지역 재검색’을 눌러 주세요. 위치를 선택하지 않았다면 서울 시청 주변에서 시작합니다.</p>
         <StationMap :stations="store.response?.stations ?? []" :center="mapCenter" :area="restoredArea"
           :selected-station-id="selectedStationId" :compact="!!confirmedCriteria" @select="selectStation" @area-change="receiveMapArea" />
         <p v-if="pendingArea && !validMapArea" role="status">검색 영역이 너무 넓거나 지원 범위를 벗어났습니다. 지도를 확대해 주세요.</p>
         <button id="search-map-area" type="button" class="search-button" :disabled="!validMapArea || store.status === 'loading'" @click="searchMapArea">이 지역 재검색</button>
-        <p v-if="!confirmedCriteria">지도 이동 후 ‘이 지역 재검색’을 눌러 주세요.</p>
+        <p v-if="!confirmedCriteria && !selectedLocation">지도 이동 후 ‘이 지역 재검색’을 눌러 주세요.</p>
       </template>
     </div>
     <div class="search-layout" :class="{ 'results-layout': confirmedCriteria }">

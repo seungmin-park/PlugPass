@@ -534,4 +534,4 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 
 - [x] `fix/search-prerequisite-guidance`: 주소 후보나 지도 영역을 선택했지만 차량 조건이 없으면 검색창 바로 아래에서 이유와 다음 행동을 보여준다. 버튼은 차량 선택란에 초점을 둔다.
 - [x] Red→Green, 모바일 320px·375px의 주소 선택→차량 선택→실제 결과, 지도 재검색 실패 경로, 로컬 전체 verify 종료0을 확인한다. [실행 기록](docs/t45-search-prerequisite-guidance.md).
-- [ ] 독립 PR·보호 규칙·native auto-merge·실제 병합 결과를 확인한다.
+- [x] [PR #73](https://github.com/seungmin-park/PlugPass/pull/73)의 필수 CI·보호 규칙·native auto-merge·main 커밋 `b3197c7`과 운영 배포 성공을 확인했다.

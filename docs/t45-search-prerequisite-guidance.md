@@ -27,3 +27,15 @@
 전체 검증 첫 완주에서 현재 위치 선택 직후의 새 안내와 기존 양식 오류가 동시에 경고 역할을 가져 차량 프로필 E2E가 실패했다. 현재 위치 버튼은 양식 안의 차량 선택란과 가까워 새 상단 안내를 띄우지 않도록 조정했다. 같은 전체 검증을 다시 실행해 42개 개발 모드 브라우저 테스트를 모두 통과했다.
 
 이름·책임 검토: `promptForVehicle`은 차량 조건이 빠진 주소·지도 검색 요청의 안내 상태·초점을 소유하고, `focusVehicleChoice`는 CTA의 이동만 맡는다. `needsVehicleSelection`은 주소 후보 또는 지도 영역에 필요한 차량 조건이 빠졌음을 나타낸다. 양식 제출은 선택 위치를, 지도 재검색 버튼은 지도 영역을 사용하므로 두 행동의 책임이 분명하다. URL·JSON·DB 공개 계약은 바뀌지 않는다. 지도 SDK 실패나 주소 검색 실패는 기존 경계의 오류 안내와 재시도에 맡긴다. iPhone Safari 실기기 동작은 이 Chromium 검증만으로 주장하지 않는다.
+
+## PR #73 전달 및 운영 확인
+
+[PR #73](https://github.com/seungmin-park/PlugPass/pull/73)의 `PlugPass verify`가 검증한 head `17d68db`에서 성공했고 native auto-merge로 main `b3197c7`에 병합됐다. 같은 main의 CI와 Production CD도 성공했다. 운영 URL의 375px Chromium headless에서 실제 서울특별시청 주소 후보를 선택하자 안내가 화면 y≈336px에 표시되고 초점이 안내→차량 선택으로 이동했다. 선택 전 URL에는 검색 조건이 없었고, 차량 선택 후 주소 좌표로 검색 API HTTP200·충전소20건·화면 카드20개를 확인했다. 페이지 실행 오류는0건이었다. 이 결과는 실제 iPhone Safari의 위치 권한이나 화면 동작을 증명하지 않는다.
+
+## 선택한 주소에 맞는 지도 문구
+
+운영 스크린샷에서는 주소를 이미 골랐는데도 “위치를 선택하지 않았다면…”과 아직 없는 카드·마커의 조작법이 표시됐다. 별도 `fix/search-map-step-guidance` 변경에서 검색 전 지도 기본 위치·지역 재검색 설명은 선택 주소가 없을 때만 보이고, 마커·카드 조작법은 충전소가 있을 때만 보이도록 한다. 주소 선택 전 지도만 연 경우에는 지역 선택 안내를 유지한다.
+
+- Red: `PlaceSearchView.spec.ts`에서 주소 선택 뒤 기본 위치 설명이 남아 assertion 실패했다.
+- Green: `PlaceSearchView.spec.ts`와 `StationMap.spec.ts` 대상10건 통과. 지도만 연 경우와 주소 선택 후의 문구 차이를 확인했다.
+- 전체 `bash scripts/verify.sh` 종료0: 프런트 단위411·Java/H2 458·개발 모드 Chromium42·배포 JAR Chromium5·MySQL8·재시작 JAR Chromium7건. 실패·오류·건너뜀0. 로그는 `/tmp/plugpass-t45-map-copy-verify.log`와 `build/verification/`, `frontend/test-results/`, `build/test-results/`에 있다. 별도 PR·CI·병합 상태는 후속 PR에서 확인한다.

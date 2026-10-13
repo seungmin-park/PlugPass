@@ -54,7 +54,7 @@ export function loadKakaoMaps(key: string): Promise<KakaoMaps> {
       reject(new Error(message))
     }
     script.dataset.plugpassKakaoMap = ''
-    script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${encodeURIComponent(key)}&autoload=false`
+    script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${encodeURIComponent(key)}&autoload=false&libraries=services`
     script.async = true
     script.onerror = () => fail('카카오 지도 SDK를 불러오지 못했습니다.')
     script.onload = () => {

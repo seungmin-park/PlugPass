@@ -177,13 +177,17 @@ h1 { font-size: 36px; font-weight: 700; letter-spacing: -0.025em; margin-bottom:
 
 .search-map-explorer { margin-bottom: 1.5rem; }
 .search-map-explorer > p { color: var(--muted, #53617a); line-height: 1.6; }
-.place-search { margin: 1.25rem 0; }
-.place-search-form { display: grid; gap: .6rem; }
-.place-search-form label { font-weight: 700; }
-.place-search-form input { width: 100%; min-width: 0; box-sizing: border-box; padding: .8rem; border: 1px solid #cbd5e1; border-radius: .65rem; font: inherit; }
-.place-results { list-style: none; padding: 0; display: grid; gap: .5rem; }
-.place-result { width: 100%; text-align: left; display: grid; gap: .3rem; overflow-wrap: anywhere; }
+.place-search { margin: .75rem 0 1rem; padding: 1rem; border: 1px solid var(--color-line); border-radius: 18px; background: #fff; box-shadow: 0 12px 28px #173b4212; }
+.place-search-form { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: stretch; gap: .65rem; }
+.place-search-form label { grid-column: 1 / -1; font-weight: 700; }
+.place-search-form input { width: 100%; min-width: 0; box-sizing: border-box; padding: .85rem 1rem; border: 1px solid #aabdc1; border-radius: 12px; background: #f8fbfb; font: inherit; }
+.place-search-form input:focus-visible { outline: 3px solid #87d9ca; outline-offset: 2px; background: #fff; }
+.place-search-form button { border-radius: 12px; white-space: nowrap; }
+.place-results { list-style: none; padding: .4rem 0 0; margin: .65rem 0 0; display: grid; gap: .4rem; border-top: 1px solid var(--color-line); }
+.place-result { width: 100%; text-align: left; display: grid; gap: .3rem; overflow-wrap: anywhere; border: 0; border-radius: 10px; background: #f5faf9; }
+.place-result:hover, .place-result:focus-visible { background: #e4f4f0; }
 .place-result span { font-size: .9rem; }
+@media (max-width: 420px) { .place-search { padding: .8rem; } .place-search-form { grid-template-columns: minmax(0, 1fr) 7.2rem; } .place-search-form button { white-space: normal; } }
 
 /* 검색을 마치면 결과를 읽는 공간을 우선한다. */
 .results-layout { grid-template-columns: minmax(0, 1fr); gap: 16px; }

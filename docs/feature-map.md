@@ -301,3 +301,7 @@ CLI `--plugpass.ingestion.command.mode=auto` → ScheduledSyncService/Collection
 ## 결과 우선 검색 T39
 
 주소 후보 선택→지도 중심/반경 검색→결과 포커스. 검색 후 조건은 접고 수집 상세는 목록 뒤로 옮긴다. 지연/준비 전은 기본 표시한다. 소유자와 실제 실패/검증: [T39 기록](t39-verification.md).
+
+## 카카오 지도·주소 검색 T44
+
+상단 `PlaceSearch` → `placeSearchStore`(상태·취소·순서) → `placeApi` → 카카오 Web SDK services(운영 키) 또는 기존 서버 REST(키 없는 개발 환경). 후보 선택은 `StationSearchView.selectedLocation` 한 곳에 저장되어 `StationMapSession.moveTo`와 충전소 API 좌표가 일치한다. `kakaoPlaceSearch`가 공급자 결과 검증과 오류·중복을 소유한다. [지도 SDK 기록](t44-kakao-map-sdk.md), [주소 검색 기록](t44b-kakao-address-search.md).

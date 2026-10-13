@@ -31,8 +31,19 @@ const sdk = `
     constructor(options) { this.content = options.content; options.map.container.append(this.content) }
     setMap(target) { if (target === null) this.content.remove() }
   }
+  class Geocoder {
+    addressSearch(query, callback) {
+      callback(query.includes('서울') ? [{ address_name: '서울특별시 중구 세종대로 110',
+        road_address: { address_name: '서울특별시 중구 세종대로 110' }, x: '126.9784', y: '37.5663' }] : [],
+      query.includes('서울') ? 'OK' : 'ZERO_RESULT')
+    }
+  }
+  class Places {
+    keywordSearch(_query, callback) { callback([], 'ZERO_RESULT') }
+  }
   window.kakao = { maps: {
     load: ready => ready(), Map: KakaoMap, LatLng, LatLngBounds, CustomOverlay,
+    services: { Status: { OK: 'OK', ZERO_RESULT: 'ZERO_RESULT', ERROR: 'ERROR' }, Geocoder, Places },
     event: {
       addListener(map, name, handler) {
         const handlers = map.listeners.get(name) ?? []

@@ -6,6 +6,15 @@ interface PlaceResponse { places: PlaceMatch[] }
 export async function getPlaces(query: string, signal?: AbortSignal): Promise<PlaceMatch[]> {
   const normalized = query.trim()
   if (!normalized || normalized.length > 100) throw new ApiError('validation', '주소나 장소를 1~100자로 입력해 주세요')
+  const kakaoKey = import.meta.env.VITE_KAKAO_JS_KEY
+  if (kakaoKey) {
+    const [{ loadKakaoMaps }, { isKakaoPlaceMaps, searchKakaoPlaces }] = await Promise.all([
+      import('../map/kakaoStationMap'), import('./kakaoPlaceSearch'),
+    ])
+    const maps = await loadKakaoMaps(kakaoKey)
+    if (!isKakaoPlaceMaps(maps)) throw new ApiError('server', '주소 검색 서비스를 불러오지 못했습니다. 다시 시도해 주세요.')
+    return searchKakaoPlaces(normalized, maps, signal)
+  }
   const response = await getValidatedJson('/places', isPlaceResponse, { params: { query: normalized }, ...(signal ? { signal } : {}) })
   return response.places
 }

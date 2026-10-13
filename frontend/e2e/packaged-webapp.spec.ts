@@ -79,3 +79,19 @@ test('배포 JAR에서 지도 영역을 재검색하고 직접 링크로 복원�
   await page.getByText('검색 조건 변경', { exact: true }).click()
   await expect(page.getByRole('searchbox', { name: '주소·장소 검색' })).toBeVisible()
 })
+
+test('카카오 주소 후보를 고르면 지도와 충전소 검색 위치가 함께 바뀐다', async ({ page }) => {
+  test.skip(!process.env.KAKAO_JS_KEY, '운영 JavaScript 키로 빌드한 JAR에서 검증합니다')
+  await mockKakaoSdk(page)
+  const placeApiRequests: string[] = []
+  page.on('request', request => { if (request.url().includes('/api/v1/places')) placeApiRequests.push(request.url()) })
+  await page.goto('/app/index.html#/stations')
+  await page.getByLabel('내 차량').selectOption('manual')
+  await page.getByRole('searchbox', { name: '주소·장소 검색' }).fill('서울시청')
+  await expect(page.getByRole('button', { name: /서울특별시 중구 세종대로 110/ })).toBeVisible()
+  await page.getByRole('button', { name: /서울특별시 중구 세종대로 110/ }).click()
+  await expect(page).toHaveURL(/latitude=37.5663&longitude=126.9784/)
+  await expect(page.getByRole('region', { name: '검색 결과 지도' })).toBeVisible()
+  await expect(page.getByText('0개 표시 · 최대 20개 표시')).toBeVisible()
+  expect(placeApiRequests).toEqual([])
+})

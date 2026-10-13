@@ -1,9 +1,7 @@
 import { test, expect } from './fixtures'
-const tiles = '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect width="256" height="256" fill="#edf4fa"/></svg>'
 
 test('지도 이동 뒤 재검색한 영역을 새로고침과 상세 복귀까지 유지한다', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 })
-  await page.route('https://tile.openstreetmap.org/**', route => route.fulfill({ contentType: 'image/svg+xml', body: tiles }))
   await page.goto('/app/index.html#/stations')
   await expect(page.getByText('검색 반경', { exact: true })).toHaveCount(0)
   await page.context().grantPermissions(['geolocation'])
@@ -12,8 +10,8 @@ test('지도 이동 뒤 재검색한 영역을 새로고침과 상세 복귀까�
   await expect(page.getByText('현재 위치 선택됨', { exact: true })).toBeVisible()
   await page.getByLabel('내 차량').selectOption('manual')
   await page.getByRole('button', { name: '지도 보기', exact: true }).click()
-  await expect(page.locator('.leaflet-control-zoom-in')).toBeVisible()
-  await page.locator('.leaflet-control-zoom-in').click()
+  await expect(page.locator('.kakao-test-zoom-in')).toBeVisible()
+  await page.locator('.kakao-test-zoom-in').click()
   const response = page.waitForResponse(response => response.url().includes('/api/v1/stations/area?'))
   await page.getByRole('button', { name: '이 지역 재검색' }).click()
   expect((await response).status()).toBe(200)
@@ -23,20 +21,18 @@ test('지도 이동 뒤 재검색한 영역을 새로고침과 상세 복귀까�
   await page.getByRole('link', { name: '데모 가까운 충전소 상세 보기' }).click()
   await page.getByRole('link', { name: '검색 목록으로 돌아가기' }).click()
   await expect(page).toHaveURL(searchedUrl)
-  await expect(page.locator('.leaflet-control-zoom-in')).toBeVisible()
+  await expect(page.locator('.kakao-test-zoom-in')).toBeVisible()
   await page.reload()
   await expect(page.getByRole('link', { name: '데모 가까운 충전소 상세 보기' })).toBeVisible()
   await expect(page.getByRole('button', { name: '지도 접기', exact: true })).toBeVisible()
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
 })
 
-test('실제 서버의 키 미설정 안내 후 현재 지도 검색을 계속 이용한다', async ({ page, diagnostics }) => {
-  diagnostics.expectHttpError('/api/v1/places', 503)
+test('주소 후보가 없어도 현재 위치로 검색을 계속 이용한다', async ({ page }) => {
   await page.goto('/app/index.html#/stations')
-  await page.getByRole('searchbox', { name: '주소·장소 검색' }).fill('서울')
+  await page.getByRole('searchbox', { name: '주소·장소 검색' }).fill('없는 지역')
   await page.getByRole('button', { name: '주소·장소 찾기' }).click()
-  await expect(page.getByRole('alert')).toContainText('주소 검색 준비 중입니다')
-  await expect(page.getByRole('alert')).toBeFocused()
+  await expect(page.getByRole('status').filter({ hasText: '찾는 장소가 없습니다' })).toBeVisible()
   await page.context().grantPermissions(['geolocation'])
   await page.context().setGeolocation({ latitude: 37.5, longitude: 127 })
   await page.getByRole('button', { name: '현재 위치 사용', exact: true }).click()
@@ -46,24 +42,13 @@ test('실제 서버의 키 미설정 안내 후 현재 지도 검색을 계속 �
   await expect(page.getByRole('link', { name: '데모 가까운 충전소 상세 보기' })).toBeVisible()
 })
 
-test('지연된 위치 후보 조회의 로딩·선택과 실제 충전소 조회를 연결한다', async ({ page }) => {
-  await page.route('https://tile.openstreetmap.org/**', route => route.fulfill({ contentType: 'image/svg+xml', body: tiles }))
-  // 카카오 자격 증명은 없으므로 위치 후보 경계만 제어한다. 충전소 API/DB는 실제 실행한다.
-  let release: () => void = () => {}
-  const pending = new Promise<void>(resolve => { release = resolve })
-  await page.route('**/api/v1/places?*', async route => {
-    await pending
-    await route.fulfill({ json: { places: [{ name: '검증용 주소 후보', address: '합성 지역', latitude: 37.5, longitude: 127 }] } })
-  })
+test('카카오 위치 후보 선택과 실제 충전소 조회를 연결한다', async ({ page }) => {
   await page.goto('/app/index.html#/stations')
   await page.getByLabel('내 차량').selectOption('manual')
   await page.getByRole('searchbox', { name: '주소·장소 검색' }).fill('검증 지역')
   await page.getByRole('button', { name: '주소·장소 찾기' }).click()
-  await expect(page.getByRole('status').filter({ hasText: '주소와 장소를 찾고 있습니다' })).toBeVisible()
-  await expect(page.locator('.place-search .loading-spinner')).toBeVisible()
-  release()
-  await page.getByRole('button', { name: '검증용 주소 후보 합성 지역' }).click()
-  await expect(page.locator('.leaflet-control-zoom-in')).toBeVisible()
+  await page.getByRole('button', { name: '검증용 주소 후보 검증용 주소 후보' }).click()
+  await expect(page.locator('.kakao-test-map')).toBeAttached()
   await expect(page).toHaveURL(/latitude=37.5&longitude=127/)
   await expect(page.locator('.selected-location')).toHaveText('검증용 주소 후보 선택됨')
   await expect(page.getByRole('link', { name: '데모 가까운 충전소 상세 보기' })).toBeVisible()
@@ -90,15 +75,13 @@ for (const width of [320, 375]) {
 for (const width of [320, 375]) {
   test(`${width}px 주소 선택 후 지도와 결과에 바로 접근한다`, async ({ page }) => {
     await page.setViewportSize({ width, height: 812 })
-    await page.route('https://tile.openstreetmap.org/**', route => route.fulfill({ contentType: 'image/svg+xml', body: tiles }))
-    await page.route('**/api/v1/places?*', route => route.fulfill({ json: { places: [{ name: '선택 주소', address: '검증 주소', latitude: 37.5, longitude: 127 }] } }))
-    await page.goto('/app/index.html#/stations')
+      await page.goto('/app/index.html#/stations')
     await page.getByLabel('내 차량').selectOption('manual')
     await page.getByRole('searchbox', { name: '주소·장소 검색' }).fill('검증 주소')
     await page.getByRole('button', { name: '주소·장소 찾기' }).click()
-    await page.getByRole('button', { name: '선택 주소 검증 주소' }).click()
+    await page.getByRole('button', { name: '검증용 주소 후보 검증용 주소 후보' }).click()
     await expect(page.getByRole('heading', { name: '주변 충전소', exact: true })).toBeFocused()
-    await expect(page.locator('.leaflet-control-zoom-in')).toBeVisible()
+    await expect(page.locator('.kakao-test-zoom-in')).toBeVisible()
     const firstCard = page.locator('.station-card').first()
     await expect(firstCard).toBeVisible()
     const bounds = await firstCard.boundingBox()

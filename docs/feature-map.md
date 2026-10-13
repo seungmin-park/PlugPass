@@ -76,7 +76,7 @@ connector 한 값 / connectors 여러 값 → 요청 검증 → ConnectorSelecti
 
 | 사용자 경로 | 상태 소유자·경계 | 기대 결과·검증 범위 |
 | --- | --- | --- |
-| 검색 결과→지도 보기→마커/카드 선택 | 검색 View의 선택 ID, StationMap의 수명/실패, Leaflet adapter의 DOM/이벤트 | 선택/조건 초기화8·장애3·수명/경계6건. SDK와 타일의 별도 복구, Enter/Space·실제 cmux 타일/375·1440px. 자동 E2E의 타일 제어와 실제 외부 타일을 구분. [T25 실행](t25-verification.md) |
+| 검색 결과→지도 보기→마커/카드 선택 | 검색 View의 선택 ID, StationMap의 수명/실패, 카카오 지도 adapter의 DOM/이벤트 | 선택·조건 초기화, SDK 다운로드/배경 준비 실패, 키보드·375/1440px를 개발·패키지 Chromium에서 검증한다. 운영 카카오 SDK·지도 이미지도 확인했다. 과거 지도 검증은 [T25 실행](t25-verification.md), 현재 제거 범위는 [T44c](t44c-remove-leaflet.md). |
 | 타입·템플릿·실행 경고 검사 | tsconfig·package 명령·단위 setup·E2E fixture·공용 verify | 임시 타입/lint/Vue 경고/예외 거부·복원·테스트별 격리; [T18/T23/T24 계획](frontend-plan.md#101-엄격한-정적-검사와-vue-경고), 개발 모드와 JAR 검증 구분 |
 | 위치·반경·커넥터 선택→검색 | URL 확정 조건, SearchForm 입력, stationSearchStore 비동기 상태, stationApi HTTP | 위치14·Store7·View14건, 준비 전/부분/빈 결과·권한 거부·400·응답 역전. [T20 실제 실행](t20-verification.md); cmux 실제 검색/뒤로 가기/직접 링크 |
 | 검색→상세·직접 링크 | route ID, stationDetailStore, 공용 charging-info 표시 | Store6·View10·충전기3건; null·404·unknown·텍스트 비고·응답 역전. [T21 실제 실행](t21-verification.md) |

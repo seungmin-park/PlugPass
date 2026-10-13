@@ -1,10 +1,11 @@
-import { afterEach, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import type { AxiosAdapter } from 'axios'
 import { getPlaces } from './placeApi'
 import { httpClient } from '../../../shared/api/httpClient'
 import { jsonResponse } from '../../../../tests/httpResponse'
 const originalAdapter = httpClient.defaults.adapter
 if (originalAdapter === undefined) throw new Error('Axios adapter가 필요합니다')
+beforeEach(() => vi.stubEnv('VITE_KAKAO_JS_KEY', ''))
 afterEach(() => { httpClient.defaults.adapter = originalAdapter })
 afterEach(() => { vi.unstubAllEnvs(); vi.restoreAllMocks() })
 it.each(['', '   ', 'a'.repeat(101)])('잘못된 검색어는 HTTP 전에 거부한다: %s', async query => {

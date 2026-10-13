@@ -1,4 +1,5 @@
 import { test as base, expect, type ConsoleMessage } from '@playwright/test'
+import { mockKakaoSdk } from './kakaoSdkMock'
 
 class BrowserDiagnostics {
   private readonly messages: { type: string; text: string; url: string }[] = []
@@ -33,6 +34,7 @@ export const test = base.extend<{ diagnostics: BrowserDiagnostics }>({
   },
   page: async ({ context, diagnostics }, use) => {
     const page = await context.newPage()
+    await mockKakaoSdk(page)
     page.on('console', message => diagnostics.recordConsole(message))
     page.on('pageerror', error => diagnostics.recordException(error))
     try { await use(page) }

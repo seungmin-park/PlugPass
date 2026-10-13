@@ -31,6 +31,7 @@ const platform = navigationPlatform(navigator.userAgent, navigator.maxTouchPoint
 const mapVisible = ref(route.query.south !== undefined)
 const conditionsOpen = ref(false)
 const resultsHeading = ref<HTMLElement | null>(null)
+const revealResultsOnSuccess = ref(false)
 const pendingArea = ref<SearchArea | null>(null)
 const restoredArea = ref<SearchArea | undefined>(undefined)
 const savedProfile = ref((() => { try { return readVehicleProfile(window.localStorage) } catch { return null } })())
@@ -48,6 +49,11 @@ const selectedStationId = ref<number | null>(null)
 const selectedStation = computed(() => store.response?.stations.find(station => station.id === selectedStationId.value))
 watch(() => store.status, status => {
   if (status === 'loading' || status === 'idle') { selectedStationId.value = null }
+  if (status === 'error') revealResultsOnSuccess.value = false
+  if (status === 'success' && revealResultsOnSuccess.value) {
+    revealResultsOnSuccess.value = false
+    void nextTick(() => resultsHeading.value?.scrollIntoView?.({ block: 'start' }))
+  }
 }, { flush: 'sync' })
 const { status: locationStatus, error: locationError, requestLocation, cancel: cancelLocation } = useCurrentLocation()
 const selectedLocation = ref<LocationCoordinates | null>(null)
@@ -132,6 +138,7 @@ async function submitSearch(conditions: SearchConditions): Promise<void> {
 }
 async function confirmSearch(criteria: SearchCriteria): Promise<void> {
   conditionsOpen.value = false
+  revealResultsOnSuccess.value = true
   const current = confirmedCriteria.value
   if (current && JSON.stringify(toSearchQuery(current)) === JSON.stringify(toSearchQuery(criteria))) {
     void store.search(criteria)
@@ -188,6 +195,7 @@ function openDetail(stationId: number): void {
       <h1 id="search-heading">주변 충전소 찾기</h1>
       <p v-if="!confirmedCriteria">차량에 맞는 충전소와 이용 조건을 확인하세요.</p>
     </div>
+    <PlaceSearch @select="selectPlace" />
     <div class="search-map-explorer">
       <button type="button" id="show-map" class="secondary-button" :aria-expanded="mapVisible" aria-controls="station-map-panel" @click="toggleMap">{{ mapVisible ? '지도 접기' : '지도 보기' }}</button>
       <template v-if="mapVisible">
@@ -217,7 +225,6 @@ function openDetail(stationId: number): void {
             <button type="button" class="secondary-button" id="location-address" @click="focusPlaceSearch">주소로 검색하기</button>
           </div>
         </div>
-        <PlaceSearch @select="selectPlace" />
         <SearchForm :key="route.fullPath"
           :initial-connector="confirmedCriteria?.connector ?? 'DC_COMBO'"
           :initial-mode="confirmedCriteria && !confirmedCriteria.vehicleId ? 'manual' : 'choose'"

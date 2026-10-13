@@ -7,16 +7,29 @@ import { useErrorFocus } from '../../../shared/ui/useErrorFocus'
 const emit = defineEmits<{ select: [place: PlaceMatch] }>()
 const store = usePlaceSearchStore()
 const query = ref('')
+const suggestAsYouType = Boolean(import.meta.env.VITE_KAKAO_JS_KEY)
+let suggestionTimer: ReturnType<typeof setTimeout> | null = null
 const errorNotice = ref<HTMLElement | null>(null)
 useErrorFocus(() => store.status === 'error', errorNotice)
-function select(place: PlaceMatch): void { emit('select', place); store.reset() }
-onBeforeUnmount(store.reset)
+function clearSuggestionTimer(): void {
+  if (suggestionTimer !== null) clearTimeout(suggestionTimer)
+  suggestionTimer = null
+}
+function onInput(): void {
+  clearSuggestionTimer()
+  store.reset()
+  if (!suggestAsYouType || query.value.trim().length < 2) return
+  suggestionTimer = setTimeout(() => { void store.search(query.value) }, 300)
+}
+function submit(): void { clearSuggestionTimer(); void store.search(query.value) }
+function select(place: PlaceMatch): void { clearSuggestionTimer(); query.value = place.name; emit('select', place); store.reset() }
+onBeforeUnmount(() => { clearSuggestionTimer(); store.reset() })
 </script>
 <template>
   <section class="place-search" aria-label="주소·장소 검색" :aria-busy="store.status === 'loading'">
-    <form class="place-search-form" @submit.prevent="store.search(query)">
+    <form class="place-search-form" @submit.prevent="submit">
       <label for="place-query">주소·장소 검색</label>
-      <input id="place-query" v-model="query" type="search" maxlength="100" placeholder="지역명, 도로명 주소, 장소명" autocomplete="off" @input="store.reset()" />
+      <input id="place-query" v-model="query" type="search" maxlength="100" placeholder="지역명, 도로명 주소, 장소명" autocomplete="off" @input="onInput" />
       <button type="submit" class="secondary-button" :disabled="store.status === 'loading'">주소·장소 찾기</button>
     </form>
     <LoadingIndicator v-if="store.status === 'loading'" message="주소와 장소를 찾고 있습니다." />

@@ -21,6 +21,9 @@ it('주소를 검색하고 후보를 고른 뒤에만 그 위치의 충전소를
   await router.push('/stations')
   const wrapper = mount(StationSearchView, { global: { plugins: [router, createPinia()] } })
   expect(wrapper.find('#place-query').exists()).toBe(true)
+  const placeSearch = wrapper.get('.place-search').element
+  expect(placeSearch.closest('details')).toBeNull()
+  expect(placeSearch.compareDocumentPosition(wrapper.get('.search-map-explorer').element) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
   await wrapper.get('#vehicle-choice').setValue('kona-electric-2020-kr')
   await wrapper.get('#place-query').setValue(' 서울 시청 ')
   expect(adapter).not.toHaveBeenCalled()

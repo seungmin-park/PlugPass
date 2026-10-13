@@ -68,13 +68,15 @@
 
 ## T42 차량·현재 사용할 어댑터
 
+전달은 두 기능 PR로 나눈다. T42a `feat/multi-connector-search`가 기존 단일 규격을 보존하며 다중 규격 검색·추천 API를 제공한다. T42b `feat/vehicle-profile`이 차량/어댑터 입력과 URL·화면을 새 API에 연결한다. 각 PR은 별도로 전체 verify·필수 CI·보호된 자동 머지를 확인한다.
+
 대상: 새 frontend/src/features/vehicle/{vehicleCatalog.ts,vehicleCompatibility.ts,vehicleProfile.ts}·각 spec과 VehicleSelector.vue·spec, 검색 criteria/types/API/store/View·추천 API, Java search/recommendation의 request/query/service/repository와 기존 대응 테스트, REST Docs.
 
 계약: VehicleSelector는 검증된 카탈로그 ID와 선택한 어댑터 ID를 전달한다. 차량 정보에는 시장·연식 구분과 공식 출처/확인일을 둔다. 정책 결과는 직접 연결 규격/선택 어댑터 규격/확인 필요를 구분한다. API는 connector(기존 단일 값)와 connectors(새 다중 값) 충돌을 400으로 거부하고 어느 것도 없으면 입력 오류로 처리한다. 지원 차량을 확정하기 전 공식 제조사 자료를 조사하며 불확실한 조합은 카탈로그에 넣지 않는다.
 
 - [ ] Red: 정책의 직접/어댑터 미선택/사용 선택/미지원 조합·시장/연식 미확인, 프로필 저장 실패/오래된 카탈로그 ID를 검증한다.
 - [ ] Green: 국내 검증 가능한 최소 카탈로그와 차량 입력·미등록 차량의 직접 규격 설정을 제공한다. 보유 어댑터를 자동 가정하지 않는다.
-- [ ] Backend Red/Green: 다중 규격 합집합·같은 chargerId 중복 집계 방지·호환 필터 후 limit·추천 동일 정책·구 규격 URL을 실제 Repository/Service/HTTP 경계에서 검증한다. 상태/거리 정렬 계약은 유지한다.
+- [x] Backend Red/Green: 다중 규격 합집합·같은 chargerId 중복 집계 방지·호환 필터 후 limit·추천 동일 정책·구 규격 URL을 실제 Repository/Service/HTTP 경계에서 검증한다. 상태/거리 정렬 계약은 유지한다. [T42a 실행 기록](t42a-verification.md).
 - [ ] Frontend Red/Green: 차량 선택→API·URL·뒤로가기/상세/추천 조건 유지, 오류/응답 역전, 선택 표시 공간 고정·reduced motion을 검증한다.
 - [ ] 공식 자료·REST Docs·기능 지도·필수 테스트 목록 갱신, 전체 Java/프런트/MySQL/공용 verify·cmux 개발/배포 브라우저 후 기록/PR/CI/머지.
 

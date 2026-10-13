@@ -14,10 +14,10 @@ public final class CandidatePolicy {
                 .thenComparing(StationCandidate::id)).toList();
         for (StationCandidate candidate : ordered) {
             List<CandidateCharger> eligible = candidate.chargers().stream()
-                    .filter(charger -> charger.exclusionReason(candidate.connector()) == null)
+                    .filter(charger -> charger.exclusionReason(candidate.connectors()) == null)
                     .sorted(Comparator.comparing(charger -> charger.freshness().freshness())).toList();
             if (eligible.isEmpty()) {
-                List<String> reasons = candidate.chargers().stream().map(charger -> charger.exclusionReason(candidate.connector())).distinct().toList();
+                List<String> reasons = candidate.chargers().stream().map(charger -> charger.exclusionReason(candidate.connectors())).distinct().toList();
                 excluded.add(ranked(candidate,reasons.isEmpty() ? List.of("NO_COMPATIBLE_CHARGER") : reasons));
                 continue;
             }

@@ -5,8 +5,10 @@ import com.plugpass.recommendation.domain.RankedCandidate;
 import com.plugpass.recommendation.service.RecommendationService;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 import com.plugpass.station.domain.Connector;
+import com.plugpass.station.domain.ConnectorSelection;
 import com.plugpass.search.domain.StationSearchQuery;
 import com.plugpass.station.domain.GeoPoint;
 import org.junit.jupiter.api.DisplayName;
@@ -75,6 +77,19 @@ class RecommendationHttpTests {
                     fieldWithPath("excluded[].id").description("내부 충전소 ID"),fieldWithPath("excluded[].name").description("충전소명"),
                     fieldWithPath("excluded[].distanceMeters").description("직선거리 m"),fieldWithPath("excluded[].reasonCodes").description("제외 이유"))));
         verify(recommendationService).recommend(new StationSearchQuery(new GeoPoint(0,0),1000,Connector.DC_COMBO,20),10L);
+    }
+    @Test
+    @DisplayName("추천도 여러 연결 규격을 전달하고 단일 규격과 혼합하면 거부한다")
+    void acceptsMultipleConnectorsAndRejectsConflict() throws Exception {
+        when(recommendationService.recommend(any(),eq(1L))).thenReturn(new CandidateGroups(List.of(),List.of(),List.of()));
+        mockMvc.perform(get("/api/v1/recommendations").param("latitude","0").param("longitude","0")
+                .param("radiusMeters","1000").param("connectors","DC_COMBO","AC_SLOW").param("excludeStationId","1"))
+                .andExpect(status().isOk());
+        verify(recommendationService).recommend(new StationSearchQuery(new GeoPoint(0,0),1000,
+                new ConnectorSelection(Set.of(Connector.DC_COMBO,Connector.AC_SLOW)),20),1L);
+        mockMvc.perform(get("/api/v1/recommendations").param("latitude","0").param("longitude","0")
+                .param("radiusMeters","1000").param("connector","DC_COMBO").param("connectors","AC_SLOW"))
+                .andExpect(status().isBadRequest());
     }
     @ParameterizedTest
     @DisplayName("잘못된 추천 입력은 400과 필드 오류로 거부한다")

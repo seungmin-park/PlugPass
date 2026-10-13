@@ -2,15 +2,20 @@ package com.plugpass.recommendation.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import com.plugpass.freshness.domain.Freshness;
 import com.plugpass.freshness.domain.FreshnessAssessment;
 import com.plugpass.station.domain.Connector;
+import com.plugpass.station.domain.ConnectorSelection;
 import com.plugpass.station.domain.ChargerStatus;
 
 public record CandidateCharger(String connectorCode, ChargerStatus status, FreshnessAssessment freshness,
         String limitYn, String useTime, String delYn) {
     public String exclusionReason(Connector connector) {
-        if (!connector.matches(connectorCode)) { return "INCOMPATIBLE_CONNECTOR"; }
+        return exclusionReason(new ConnectorSelection(Set.of(connector)));
+    }
+    public String exclusionReason(ConnectorSelection connectors) {
+        if (!connectors.matches(connectorCode)) { return "INCOMPATIBLE_CONNECTOR"; }
         if ("Y".equalsIgnoreCase(delYn)) { return "DELETED_BY_PROVIDER"; }
         if ("Y".equalsIgnoreCase(limitYn)) { return "ACCESS_RESTRICTED"; }
         if (status == ChargerStatus.UNKNOWN) { return "STATUS_UNKNOWN"; }

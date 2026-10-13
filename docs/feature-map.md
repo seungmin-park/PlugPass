@@ -24,6 +24,16 @@
 
 `presentation`은 공급자 이용 제한 문구와 관측 시각의 누락·파손을 사용자 안내로 바꾼다. 상세의 `ChargerList`와 지도 선택 패널은 같은 문구를 사용한다. 서버의 최신성·추천 판정은 UI에서 다시 계산하지 않는다. `sourceStatusChangedAtRaw`는 상태 변경 시각이며 시간대와 현장 관측 의미를 추정하지 않는다. 충전소 식별자와 조회 시각은 별도 출처 영역에서 확인할 수 있다. [실행 근거](t41-verification.md).
 
+## T42a 여러 연결 규격의 검색·추천
+
+```text
+connector 한 값 / connectors 여러 값 → 요청 검증 → ConnectorSelection
+                                                   ├─ 공급자 코드 합집합 → 충전기 조회·충전소 정렬
+                                                   └─ 같은 선택 → 추천의 호환 판단
+```
+
+두 입력을 함께 보내면 400이다. 합집합 SQL 조회에서 조합형 충전기 한 대는 한 번만 반환하고, 호환 필터와 정렬 뒤 limit을 적용한다. 기존 단일 규격 URL과 응답 구조는 유지한다. 검색/지도 영역/추천 세 요청이 같은 입력 규칙을 사용한다. 서버는 차량과 어댑터 보유 여부를 추정하지 않는다. [실행 근거](t42a-verification.md).
+
 `StationNavigation.spec.ts`12건과 `navigationLinks.spec.ts`19건: Android/iOS/iPadOS/desktop, 목적지·특수문자·좌표 경계·로딩/실패·교체. `navigation.spec.ts`3건: 실제 수집/DB 상세→선택→앱 전달 URL→웹 새 탭→검색 복귀·다른 목적지와 키보드 조작. 개발 E2E와 재시작된 MySQL을 사용하는 운영 JAR에서 같은 spec을 실행한다. 앱 실행 경계만 가로채므로 실제 휴대폰 앱 실행은 미확인이다. [검증·실패·한계](t28-verification.md).
 
 ## T29 처리 중 시각적 표시

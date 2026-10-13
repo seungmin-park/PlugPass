@@ -12,7 +12,7 @@ for (const device of [
       await page.context().grantPermissions(['geolocation'])
   await page.context().setGeolocation({ latitude: 37.5, longitude: 127 })
   await page.getByRole('button', { name: '현재 위치 사용', exact: true }).click()
-  await expect(page.getByText('현재 위치: 37.5 / 127', { exact: true })).toBeVisible()
+  await expect(page.getByText('현재 위치 선택됨', { exact: true })).toBeVisible()
       await page.getByLabel('내 차량').selectOption('manual')
       await page.getByRole('button', { name: '주변 충전소 검색' }).click()
       await page.getByRole('button', { name: '데모 가까운 충전소 길찾기', exact: true }).click()

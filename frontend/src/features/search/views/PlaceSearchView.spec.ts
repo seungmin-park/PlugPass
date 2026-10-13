@@ -29,7 +29,7 @@ it('주소를 검색하고 후보를 고른 뒤에만 그 위치의 충전소를
   expect(adapter).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ url: '/places', params: { query: '서울 시청' } }))
   await wrapper.get('.place-result').trigger('click')
   await flushPromises()
-  expect(wrapper.text()).toContain('선택할 장소: 37.5 / 127')
+  expect(wrapper.get('.selected-location').text()).toBe('선택할 장소 선택됨')
   expect(adapter).toHaveBeenCalledTimes(2)
   expect(wrapper.find('#station-map-panel').exists()).toBe(true)
   expect(adapter).toHaveBeenLastCalledWith(expect.objectContaining({ url: '/stations', params: expect.objectContaining({ latitude: 37.5, longitude: 127, connectors: 'DC_COMBO' }) }))

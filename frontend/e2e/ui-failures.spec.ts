@@ -23,7 +23,7 @@ test('위치 권한 거부 후 주소 입력으로 이동하고 재시도로 회
   await page.getByRole('button', { name: '현재 위치 사용', exact: true }).click()
   await expect(page.getByRole('alert')).toContainText('위치 권한이 거부되었습니다')
   await page.getByRole('button', { name: '현재 위치 다시 시도' }).click()
-  await expect(page.getByText('현재 위치: 37.5 / 127', { exact: true })).toBeVisible()
+  await expect(page.getByText('현재 위치 선택됨', { exact: true })).toBeVisible()
   await page.getByLabel('내 차량').selectOption('manual')
   await page.getByRole('button', { name: '주변 충전소 검색' }).click()
   await expect(page.getByRole('link', { name: '데모 가까운 충전소 상세 보기' })).toBeVisible()

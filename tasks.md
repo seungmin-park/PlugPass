@@ -520,4 +520,9 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 - [x] T42b `feat/vehicle-profile`: 공식 근거 차량 카탈로그·이번에 사용할 어댑터·차량 조건 URL/추천 연결·선택 시 레이아웃 안정화. 주소·지도 검색의 프로필 저장 누락 Red/Green 포함. 로컬 전체 verify 종료0, [실행 기록](docs/t42b-verification.md). 필수 CI·머지 결과는 PR에서 확인한다.
 - [ ] 각 기능의 실제 Red/Green·전체 verify·cmux·PR head CI·실제 병합 근거를 연결한다.
 
+## 위치·지도 후속 개선
+
+- [x] T43 `fix/location-feedback`: 실제 좌표를 검색·지도에 유지하면서 선택 안내에서 긴 숫자를 제거한다. iOS 첫 권한 거부의 원인은 기기 설정 확인 전까지 미확정으로 기록한다. 로컬 전체 verify 종료0, [실행 기록](docs/t43-location-feedback.md). 필수 CI와 병합은 PR에서 확인한다.
+- [ ] T44 지도·주소 검색: 국내 사용자에게 익숙한 지도와 주소 후보를 한 흐름으로 재설계한다. 카카오 지도 Web SDK의 무료 쿼터 적용 앱 여부, JavaScript 키와 운영 도메인 등록, 실제 사용량을 확인한 뒤 구현한다.
+
 실행 상세: [모바일 실사용 개선 실행 계획](docs/mobile-ux-implementation-plan.md). 직접 순차 실행, 계획 검토 후 T38부터 시작한다.

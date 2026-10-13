@@ -78,13 +78,16 @@ describe('카카오 지도 SDK 로딩', () => {
 describe('카카오 지도와 검색 상태 연결', () => {
   it('마커를 선택하면 충전소 ID를 알리고 카드 선택은 지도 중심을 이동시킨다', async () => {
     const setCenter = vi.fn()
+    let level = 5
+    let gestures: { scrollwheel: boolean; keyboardShortcuts: boolean } | null = null
     class FakeMap {
-      constructor(public container: HTMLElement) {}
+      constructor(public container: HTMLElement, options: { scrollwheel: boolean; keyboardShortcuts: boolean }) { gestures = options }
       setCenter = setCenter
       getBounds() { return { getSouthWest: () => ({ getLat: () => 37.4, getLng: () => 126.9 }),
         getNorthEast: () => ({ getLat: () => 37.6, getLng: () => 127.1 }) } }
       setBounds() {}
-      relayout() {}
+      getLevel() { return level }
+      setLevel(nextLevel: number) { level = nextLevel }
     }
     class FakeLatLng { constructor(public latitude: number, public longitude: number) {} }
     class FakeLatLngBounds { constructor(public southWest: FakeLatLng, public northEast: FakeLatLng) {} }
@@ -104,6 +107,7 @@ describe('카카오 지도와 검색 상태 연결', () => {
     document.body.append(container)
     const map = createKakaoStationMap(container, [{ id: 7, name: '시청 충전소', latitude: 37.5, longitude: 127 }],
       { latitude: 37.4, longitude: 126.9 }, { selectStation, tilesLoaded, tilesFailed: vi.fn() })
+    expect(gestures).toMatchObject({ scrollwheel: true, keyboardShortcuts: true })
     const marker = container.querySelector<HTMLButtonElement>('[aria-label="시청 충전소 지도 마커"]')
     expect(marker).not.toBeNull()
     marker?.click()
@@ -111,6 +115,14 @@ describe('카카오 지도와 검색 상태 연결', () => {
     map.selectStation(7)
     expect(marker?.getAttribute('aria-pressed')).toBe('true')
     expect(setCenter).toHaveBeenCalled()
+    expect(map.zoomIn()).toBe(4)
+    expect(level).toBe(4)
+    expect(map.zoomOut()).toBe(5)
+    expect(level).toBe(5)
+    level = 1
+    expect(map.zoomIn()).toBe(1)
+    level = 14
+    expect(map.zoomOut()).toBe(14)
     map.destroy()
     expect(container.querySelector('[aria-label="시청 충전소 지도 마커"]')).toBeNull()
     container.remove()

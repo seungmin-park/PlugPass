@@ -535,3 +535,10 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 - [x] `fix/search-prerequisite-guidance`: 주소 후보나 지도 영역을 선택했지만 차량 조건이 없으면 검색창 바로 아래에서 이유와 다음 행동을 보여준다. 버튼은 차량 선택란에 초점을 둔다.
 - [x] Red→Green, 모바일 320px·375px의 주소 선택→차량 선택→실제 결과, 지도 재검색 실패 경로, 로컬 전체 verify 종료0을 확인한다. [실행 기록](docs/t45-search-prerequisite-guidance.md).
 - [x] [PR #73](https://github.com/seungmin-park/PlugPass/pull/73)의 필수 CI·보호 규칙·native auto-merge·main 커밋 `b3197c7`과 운영 배포 성공을 확인했다.
+
+## 지도 축척·화면 간격 — T46
+
+- [x] `feat/map-zoom-layout`: 지도 창 높이가 아닌 지도 안의 확대·축소로 범위를 정하고, [검증 계획](docs/t46-interface-test-plan.md)에 검색 전/후·상세·후보·오류·화면 폭을 연결했다.
+- [x] RED→GREEN: 확대 버튼/SDK 수준 변경과 키보드 변경 상태 동기화의 실패를 먼저 확인했다. 지도 안내·재검색 버튼의 겹침을 제거했다.
+- [x] 현재 cmux 보조 pane의 headless Chromium 개발44·패키지5·MySQL 재시작7 흐름과 공용 verify 종료0을 확인했다. [실행 결과](docs/t46-interface-test-plan.md#실행-결과-2026-10-14).
+- [ ] PR 필수 CI와 실제 병합을 확인한다.

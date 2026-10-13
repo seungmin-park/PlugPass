@@ -1,5 +1,9 @@
 # PlugPass 기술 스택과 개발 기준
 
+## 지도 축척 조작 (2026-10-14, T46)
+
+기존 카카오 Web SDK를 사용한다. [공식 Map 문서](https://apis.map.kakao.com/web/documentation/)에서 ROADMAP 확대 수준 1~14, 작은 값일수록 확대, `setLevel`/`getLevel`, `scrollwheel`과 `keyboardShortcuts` 옵션을 확인했다. [공식 확대 예제](https://apis.map.kakao.com/web/sample/changeLevel/)도 같은 증감 방향을 사용한다. 사용자가 말한 1:250/1:500은 축척의 예이며, SDK의 확대 수준 숫자를 실제 축척 비율이라고 표시하지 않는다. 화면 안의 버튼과 상태 문구는 프로젝트의 UI 판단이다. SDK 옵션·경계 단위 테스트와 Chromium 지도 흐름으로 확인한다.
+
 ## 처리 중 표시 (2026-10-13, T29)
 
 기존 Vue3.5.43·TypeScript6.0.3과 CSS keyframes를 사용하고 의존성은 추가하지 않는다. [W3C ARIA22](https://www.w3.org/WAI/WCAG22/Techniques/aria/ARIA22)의 status/polite 및 atomic 안내와 [Media Queries5의 움직임 감소 설정](https://www.w3.org/TR/mediaqueries-5/#prefers-reduced-motion)을 참고했다. Media Queries5 문서는 Working Draft이며 실제 지원은 프로젝트 Chromium/WKWebView에서 확인한다. 공용 컴포넌트가 작업 문구와 회전만 맡고 기존 loading/취소/오류 상태를 재사용하는 것은 프로젝트 설계 판단이다. 감소 모드에서는 회전을 끄고 원과 문구를 유지한다. 실제 브라우저 computed style/transform과 상태 수명 테스트를 사용하며 스크린리더 음성 확인으로 확대하지 않는다.

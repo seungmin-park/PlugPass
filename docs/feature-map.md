@@ -311,3 +311,13 @@ CLI `--plugpass.ingestion.command.mode=auto` → ScheduledSyncService/Collection
 `PlaceSearch` 후보 선택 또는 `StationMap` 영역 재검색 → `StationSearchView`가 위치·차량 조건을 확인 → 차량 조건이 없으면 주소 검색 아래 안내·차량 선택 버튼 → `SearchForm`의 선택 상태 변경 → 검색 제출 → 기존 URL·`stationSearchStore`·API. 지도 좌표는 차량 선택 전에도 유지한다. `SearchForm`은 차량별 호환 조건 판단을, View는 위치 선택과 다음 행동 안내를 소유한다. [테스트·실행 기록](t45-search-prerequisite-guidance.md).
 
 검색 전 지도 설명은 View가 선택 위치 유무에 맞춰 표시하고, `StationMap`은 충전소가 있을 때만 마커·카드 조작법을 표시한다.
+
+## 지도 축척·화면 간격 T46
+
+```text
+사용자 확대·축소 버튼/휠·터치·키보드 → StationMap → StationMapSession
+  → Kakao Map 수준 변경 → 영역 변경 이벤트 → View의 미확정 검색 영역
+  → 사용자가 이 지역 재검색 → 기존 영역 API
+```
+
+`StationMap`이 조작과 접근성 안내를, 카카오 어댑터가 실제 지도 확대 수준과 1~14 경계를 소유한다. View는 안내·지도·재검색·결과의 시각적 흐름을 배치한다. API·DB 계약은 그대로다. [요구별 검증 계획](t46-interface-test-plan.md).

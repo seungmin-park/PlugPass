@@ -17,6 +17,8 @@ interface KakaoBounds {
 }
 
 interface KakaoMap {
+  getLevel(): number
+  setLevel(level: number): void
   setCenter(position: KakaoLatLng): void
   setBounds(bounds: KakaoBounds): void
   getBounds(): KakaoBounds
@@ -27,7 +29,7 @@ interface KakaoOverlay {
 }
 
 interface KakaoMapApi {
-  Map: new (container: HTMLElement, options: { center: KakaoLatLng; level: number; scrollwheel: boolean }) => KakaoMap
+  Map: new (container: HTMLElement, options: { center: KakaoLatLng; level: number; scrollwheel: boolean; keyboardShortcuts: boolean }) => KakaoMap
   LatLng: new (latitude: number, longitude: number) => KakaoLatLng
   LatLngBounds: new (southWest: KakaoLatLng, northEast: KakaoLatLng) => KakaoBounds
   CustomOverlay: new (options: { map: KakaoMap; position: KakaoLatLng; content: HTMLElement; clickable: boolean; yAnchor: number }) => KakaoOverlay
@@ -86,7 +88,7 @@ export function createKakaoStationMap(
 ): StationMapSession {
   const maps = (window as KakaoWindow).kakao?.maps
   if (!maps) throw new Error('카카오 지도 SDK가 준비되지 않았습니다.')
-  const stationMap = new maps.Map(container, { center: new maps.LatLng(center.latitude, center.longitude), level: 5, scrollwheel: false })
+  const stationMap = new maps.Map(container, { center: new maps.LatLng(center.latitude, center.longitude), level: 5, scrollwheel: true, keyboardShortcuts: true })
   let overlays = new Map<number, { overlay: KakaoOverlay; button: HTMLButtonElement; coordinates: MapCoordinates }>()
 
   const toArea = (): SearchArea => {
@@ -95,11 +97,13 @@ export function createKakaoStationMap(
       west: bounds.getSouthWest().getLng(), east: bounds.getNorthEast().getLng() }
   }
   const reportArea = () => callbacks.areaChanged?.(toArea())
+  const reportZoom = () => callbacks.zoomChanged?.(stationMap.getLevel())
   const clearArea = () => callbacks.areaChanged?.(null)
   const reportTiles = () => callbacks.tilesLoaded()
   maps.event.addListener(stationMap, 'dragstart', clearArea)
   maps.event.addListener(stationMap, 'zoom_start', clearArea)
   maps.event.addListener(stationMap, 'idle', reportArea)
+  maps.event.addListener(stationMap, 'zoom_changed', reportZoom)
   maps.event.addListener(stationMap, 'tilesloaded', reportTiles)
   reportArea()
 
@@ -122,6 +126,17 @@ export function createKakaoStationMap(
   replaceStations(stations)
 
   return {
+    zoomIn() {
+      const level = Math.max(1, stationMap.getLevel() - 1)
+      stationMap.setLevel(level)
+      return level
+    },
+    zoomOut() {
+      const level = Math.min(14, stationMap.getLevel() + 1)
+      stationMap.setLevel(level)
+      return level
+    },
+    getZoomLevel() { return stationMap.getLevel() },
     selectStation(stationId) {
       for (const [id, entry] of overlays) {
         const selected = id === stationId
@@ -142,6 +157,7 @@ export function createKakaoStationMap(
       maps.event.removeListener(stationMap, 'dragstart', clearArea)
       maps.event.removeListener(stationMap, 'zoom_start', clearArea)
       maps.event.removeListener(stationMap, 'idle', reportArea)
+      maps.event.removeListener(stationMap, 'zoom_changed', reportZoom)
       maps.event.removeListener(stationMap, 'tilesloaded', reportTiles)
       container.replaceChildren()
     },

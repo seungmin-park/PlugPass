@@ -2,6 +2,44 @@ import { test, expect } from './fixtures'
 import { mockKakaoSdk } from './kakaoSdkMock'
 
 const criteria = 'latitude=37.5&longitude=127&radiusMeters=1000&connector=DC_COMBO&limit=20'
+test('검색 전 지도 버튼·안내문·지도 사이의 간격을 유지한다', async ({ page }) => {
+  await page.goto('/app/index.html#/stations')
+  await page.getByRole('button', { name: '지도 보기', exact: true }).click()
+  for (const width of [320, 375, 768, 1440]) {
+    await page.setViewportSize({ width, height: 812 })
+    const button = await page.getByRole('button', { name: '지도 접기', exact: true }).boundingBox()
+    const guidance = await page.locator('.search-map-explorer > p').first().boundingBox()
+    const frame = await page.locator('.station-map-frame').boundingBox()
+    expect(button && guidance && frame).toBeTruthy()
+    expect(guidance!.y - (button!.y + button!.height)).toBeGreaterThanOrEqual(10)
+    expect(frame!.y - (guidance!.y + guidance!.height)).toBeGreaterThanOrEqual(10)
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+  }
+})
+test('지도 축척을 조절하고 안내·조작 요소가 작은 화면에서 겹치지 않는다', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await page.goto(`/app/index.html#/stations?${criteria}`)
+  await page.getByRole('button', { name: '지도 보기', exact: true }).click()
+  for (const width of [320, 375, 768, 1440]) {
+    await page.setViewportSize({ width, height: 812 })
+    const metrics = await page.evaluate(() => {
+      const button = document.getElementById('show-map')?.getBoundingClientRect()
+      const frame = document.querySelector('.station-map-frame')?.getBoundingClientRect()
+      const search = document.getElementById('search-map-area')?.getBoundingClientRect()
+      if (!button || !frame || !search) return null
+      return { topGap: frame.top - button.bottom, bottomGap: search.top - frame.bottom,
+        fitsWidth: document.documentElement.scrollWidth <= innerWidth }
+    })
+    expect(metrics, `${width}px 지도 요소`).not.toBeNull()
+    expect(metrics!.topGap, `${width}px 지도 위 간격`).toBeGreaterThanOrEqual(10)
+    expect(metrics!.bottomGap, `${width}px 지도 아래 간격`).toBeGreaterThanOrEqual(10)
+    expect(metrics!.fitsWidth, `${width}px 가로 폭`).toBe(true)
+  }
+  await page.getByRole('button', { name: '지도 확대' }).click()
+  await expect(page.locator('.station-map-panel [role="status"]')).toContainText('확대 수준 4단계')
+  await page.getByRole('button', { name: '지도 축소' }).click()
+  await expect(page.locator('.station-map-panel [role="status"]')).toContainText('확대 수준 5단계')
+})
 test('실제 검색 결과의 마커↔카드 선택과 조건 변경 초기화를 연결한다', async ({ page }) => {
   await page.goto(`/app/index.html#/stations?${criteria}`)
   await expect(page.getByRole('link', { name: '데모 가까운 충전소 상세 보기' })).toBeVisible()

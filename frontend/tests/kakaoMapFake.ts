@@ -17,6 +17,7 @@ class FakeBounds {
 
 class FakeMap {
   readonly listeners = new Map<string, Listener[]>()
+  private level = 5
   private bounds = new FakeBounds(new FakeLatLng(37.495, 126.995), new FakeLatLng(37.505, 127.005))
 
   constructor(readonly container: HTMLElement) {
@@ -30,6 +31,8 @@ class FakeMap {
     zoomOut.addEventListener('click', () => this.zoom(2))
     container.append(surface, zoomIn, zoomOut)
     container.addEventListener('keydown', event => {
+      if (event.key === '+') { this.setLevel(this.level - 1); return }
+      if (event.key === '-') { this.setLevel(this.level + 1); return }
       if (!event.key.startsWith('Arrow')) return
       this.emit('dragstart')
       setTimeout(() => this.emit('idle'), 0)
@@ -41,6 +44,8 @@ class FakeMap {
   getBounds(): FakeBounds { return this.bounds }
   setBounds(bounds: FakeBounds): void { this.bounds = bounds; this.emit('idle') }
   setCenter(): void { this.emit('idle') }
+  getLevel(): number { return this.level }
+  setLevel(level: number): void { this.level = level; this.emit('zoom_start'); this.emit('zoom_changed'); this.emit('idle') }
 
   private zoom(scale: number): void {
     this.emit('zoom_start')

@@ -227,7 +227,6 @@ function openDetail(stationId: number): void {
           :selected-station-id="selectedStationId" :compact="!!confirmedCriteria" @select="selectStation" @area-change="receiveMapArea" />
         <p v-if="pendingArea && !validMapArea" role="status">검색 영역이 너무 넓거나 지원 범위를 벗어났습니다. 지도를 확대해 주세요.</p>
         <button id="search-map-area" type="button" class="search-button" :disabled="!validMapArea || store.status === 'loading'" @click="searchMapArea">이 지역 재검색</button>
-        <p v-if="!confirmedCriteria && !selectedLocation">지도 이동 후 ‘이 지역 재검색’을 눌러 주세요.</p>
       </template>
     </div>
     <div class="search-layout" :class="{ 'results-layout': confirmedCriteria }">

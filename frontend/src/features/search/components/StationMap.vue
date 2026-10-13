@@ -13,6 +13,7 @@ const status = ref<'loading' | 'ready' | 'error'>('loading')
 const backgroundLoading = ref(true)
 const errorMessage = ref<string | null>(null)
 const errorNotice = ref<HTMLElement | null>(null)
+const zoomLevel = ref(5)
 useErrorFocus(() => errorMessage.value !== null, errorNotice)
 let session: StationMapSession | null = null
 let generation = 0
@@ -24,6 +25,12 @@ function clearLoadTimer(): void {
 }
 function reloadPage(): void {
   window.location.reload()
+}
+function zoomIn(): void {
+  if (session) zoomLevel.value = session.zoomIn()
+}
+function zoomOut(): void {
+  if (session) zoomLevel.value = session.zoomOut()
 }
 function reportTileFailure(): void {
   clearLoadTimer()
@@ -53,6 +60,7 @@ async function openMap(): Promise<void> {
     if (currentGeneration !== generation || !container.value) return
     session = createMap(container.value, props.stations, props.center, {
       areaChanged: area => { if (currentGeneration === generation) emit('area-change', area) },
+      zoomChanged: level => { if (currentGeneration === generation) zoomLevel.value = level },
       selectStation: stationId => { if (currentGeneration === generation) emit('select', stationId) },
       tilesLoaded: () => {
         if (currentGeneration !== generation) return
@@ -63,6 +71,7 @@ async function openMap(): Promise<void> {
     })
     if (props.area) session.showArea(props.area)
     session.selectStation(props.selectedStationId)
+    zoomLevel.value = session.getZoomLevel()
     status.value = 'ready'
   } catch {
     if (currentGeneration !== generation) return
@@ -98,6 +107,13 @@ onBeforeUnmount(() => {
     <p v-if="errorMessage" ref="errorNotice" role="alert" tabindex="-1">{{ errorMessage }}</p>
     <button v-if="status === 'error'" id="reload-map" type="button" class="secondary-button" @click="reloadPage">화면 새로고침</button>
     <button v-else-if="errorMessage" id="retry-map" type="button" class="secondary-button" @click="openMap">지도 다시 시도</button>
-    <div v-show="status !== 'error'" ref="container" class="station-map-canvas" aria-label="충전소 위치 지도"></div>
+    <div v-show="status !== 'error'" class="station-map-frame">
+      <div ref="container" class="station-map-canvas" tabindex="0" aria-label="충전소 위치 지도"></div>
+      <div v-if="status === 'ready'" class="map-zoom-controls" aria-label="지도 확대와 축소">
+        <button type="button" aria-label="지도 확대" :disabled="zoomLevel <= 1" @click="zoomIn">+</button>
+        <button type="button" aria-label="지도 축소" :disabled="zoomLevel >= 14" @click="zoomOut">−</button>
+      </div>
+    </div>
+    <span v-if="status === 'ready'" class="visually-hidden" role="status">지도 확대 수준 {{ zoomLevel }}단계</span>
   </section>
 </template>

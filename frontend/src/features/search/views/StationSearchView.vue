@@ -209,7 +209,7 @@ function openDetail(stationId: number): void {
         <p class="panel-description">차량과 이번에 사용할 장비를 선택하세요. 지도로 지역을 고르거나 선택 위치 주변을 검색할 수 있습니다.</p>
         <div class="location-picker" aria-label="검색 위치 선택">
           <button type="button" class="secondary-button" id="current-location" @click="selectCurrentLocation">현재 위치 사용</button>
-          <p v-if="selectedLocation" class="selected-location">{{ locationLabel }}: {{ selectedLocation.latitude }} / {{ selectedLocation.longitude }}</p>
+          <p v-if="selectedLocation" class="selected-location">{{ locationLabel }} 선택됨</p>
           <LoadingIndicator v-if="locationStatus === 'loading'" message="현재 위치를 확인하고 있습니다. 최대 10초 기다려 주세요." />
           <div v-if="locationError" ref="locationNotice" tabindex="-1" role="alert">
             <p>{{ locationError }}</p>

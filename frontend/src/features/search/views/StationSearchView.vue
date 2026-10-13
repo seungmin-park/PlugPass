@@ -241,10 +241,12 @@ function openDetail(stationId: number): void {
           <button type="button" class="secondary-button" id="current-location" @click="selectCurrentLocation">현재 위치 사용</button>
           <p v-if="selectedLocation" class="selected-location">{{ locationLabel }} 선택됨</p>
           <LoadingIndicator v-if="locationStatus === 'loading'" message="현재 위치를 확인하고 있습니다. 최대 10초 기다려 주세요." />
-          <div v-if="locationError" ref="locationNotice" tabindex="-1" role="alert">
+          <div v-if="locationError" ref="locationNotice" class="location-error" tabindex="-1" role="alert">
             <p>{{ locationError }}</p>
-            <button type="button" class="secondary-button" id="retry-location" @click="selectCurrentLocation">현재 위치 다시 시도</button>
-            <button type="button" class="secondary-button" id="location-address" @click="focusPlaceSearch">주소로 검색하기</button>
+            <div class="location-error-actions">
+              <button type="button" class="secondary-button" id="retry-location" @click="selectCurrentLocation">현재 위치 다시 시도</button>
+              <button type="button" class="secondary-button" id="location-address" @click="focusPlaceSearch">주소로 검색하기</button>
+            </div>
           </div>
         </div>
         <SearchForm :key="route.fullPath"

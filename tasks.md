@@ -542,3 +542,10 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 - [x] RED→GREEN: 확대 버튼/SDK 수준 변경과 키보드 변경 상태 동기화의 실패를 먼저 확인했다. 지도 안내·재검색 버튼의 겹침을 제거했다.
 - [x] 현재 cmux 보조 pane의 headless Chromium 개발44·패키지5·MySQL 재시작7 흐름과 공용 verify 종료0을 확인했다. [실행 결과](docs/t46-interface-test-plan.md#실행-결과-2026-10-14).
 - [ ] PR 필수 CI와 실제 병합을 확인한다.
+
+## 위치 오류 안내 간격 — T47
+
+- [x] `fix/location-error-actions-spacing`: 오류 문구와 대안 버튼을 각각 간격이 있는 그룹으로 배치한다.
+- [x] 320px headless Chromium에서 기존 문구 아래 간격 0px 실패를 확인하고 수정 후 간격·가로 넘침 검사를 통과했다.
+- [x] 공용 verify 종료 코드 0, 개발 Chromium 45건·배포 JAR 5건·MySQL 재시작 Chromium 7건을 확인했다. [실행 기록](docs/t47-location-error-spacing.md).
+- [ ] PR 필수 CI와 실제 병합을 확인한다.

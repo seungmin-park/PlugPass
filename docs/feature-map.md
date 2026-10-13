@@ -321,3 +321,7 @@ CLI `--plugpass.ingestion.command.mode=auto` → ScheduledSyncService/Collection
 ```
 
 `StationMap`이 조작과 접근성 안내를, 카카오 어댑터가 실제 지도 확대 수준과 1~14 경계를 소유한다. View는 안내·지도·재검색·결과의 시각적 흐름을 배치한다. API·DB 계약은 그대로다. [요구별 검증 계획](t46-interface-test-plan.md).
+
+## 위치 오류 안내 간격 T47
+
+`useCurrentLocation`의 권한 오류 → `StationSearchView`의 오류 문구 → 재시도 또는 주소 검색. View가 두 행동의 배치와 포커스를 소유한다. 320px 화면에서 문구 위·아래 및 버튼 사이의 실제 좌표 간격과 가로 넘침을 브라우저에서 검증한다.

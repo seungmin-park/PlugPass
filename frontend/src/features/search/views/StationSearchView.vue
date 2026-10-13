@@ -59,6 +59,8 @@ const { status: locationStatus, error: locationError, requestLocation, cancel: c
 const selectedLocation = ref<LocationCoordinates | null>(null)
 const locationLabel = ref('검색 위치')
 const guidance = ref('검색할 위치와 조건을 선택해 주세요.')
+const needsVehicleSelection = ref(false)
+const prerequisiteNotice = ref<HTMLElement | null>(null)
 const parsedCriteria = computed(() => parseSearchCriteria(route.query))
 const confirmedCriteria = computed(() => parsedCriteria.value.kind === 'valid' ? parsedCriteria.value.criteria : null)
 const vehicleResultMessage = computed(() => {
@@ -91,6 +93,7 @@ watch(() => route.query, () => {
     ...(criteria.vehicleSupportConfirmed ? { vehicleSupportConfirmed: true } : {}) } : savedConditions.value
   if (!sameLocation) locationLabel.value = '검색 위치'
   conditionsOpen.value = !criteria
+  needsVehicleSelection.value = false
   guidance.value = '검색할 위치와 조건을 선택해 주세요.'
   if (criteria) void store.search(criteria)
   else store.reset()
@@ -104,6 +107,7 @@ async function selectCurrentLocation(): Promise<void> {
   restoredArea.value = undefined
   selectedLocation.value = coordinates
   locationLabel.value = '현재 위치'
+  needsVehicleSelection.value = false
   guidance.value = '현재 위치를 선택했습니다. 검색 버튼을 눌러 주세요.'
 }
 async function selectPlace(place: PlaceMatch): Promise<void> {
@@ -112,7 +116,7 @@ async function selectPlace(place: PlaceMatch): Promise<void> {
   selectedLocation.value = { latitude: place.latitude, longitude: place.longitude }
   locationLabel.value = place.name
   mapVisible.value = true
-  if (!selectedConditions.value) { guidance.value = '차량을 먼저 선택한 뒤 검색해 주세요.'; return }
+  if (!selectedConditions.value) { promptForVehicle(); return }
   await confirmSearch({ latitude: place.latitude, longitude: place.longitude, ...selectedConditions.value,
     radiusMeters: confirmedCriteria.value?.radiusMeters ?? 1000, limit: confirmedCriteria.value?.limit ?? 20 })
 }
@@ -120,8 +124,22 @@ function focusPlaceSearch(): void {
   cancelLocation()
   document.getElementById('place-query')?.focus()
 }
+function promptForVehicle(): void {
+  needsVehicleSelection.value = true
+  conditionsOpen.value = true
+  guidance.value = '차량을 먼저 선택한 뒤 검색해 주세요.'
+  void nextTick(() => prerequisiteNotice.value?.focus())
+}
+function focusVehicleChoice(): void {
+  conditionsOpen.value = true
+  void nextTick(() => document.getElementById('vehicle-choice')?.focus())
+}
 async function submitSearch(conditions: SearchConditions): Promise<void> {
   selectedConditions.value = conditions
+  if (selectedLocation.value) {
+    await confirmSearch({ ...selectedLocation.value, ...conditions, radiusMeters: confirmedCriteria.value?.radiusMeters ?? 1000, limit: confirmedCriteria.value?.limit ?? 20 })
+    return
+  }
   if (mapVisible.value) {
     if (!pendingArea.value || !validMapArea.value) {
       guidance.value = '지도가 준비되고 이동이 끝난 후 검색해 주세요. 지도를 사용할 수 없다면 접고 선택 위치 주변을 검색할 수 있습니다.'
@@ -130,11 +148,7 @@ async function submitSearch(conditions: SearchConditions): Promise<void> {
     await confirmSearch({ ...searchCriteriaForArea(pendingArea.value, conditions.connector, confirmedCriteria.value?.limit ?? 20), ...conditions })
     return
   }
-  if (!selectedLocation.value) {
-    guidance.value = '검색할 위치를 먼저 선택해 주세요.'
-    return
-  }
-  await confirmSearch({ ...selectedLocation.value, ...conditions, radiusMeters: confirmedCriteria.value?.radiusMeters ?? 1000, limit: confirmedCriteria.value?.limit ?? 20 })
+  guidance.value = '검색할 위치를 먼저 선택해 주세요.'
 }
 async function confirmSearch(criteria: SearchCriteria): Promise<void> {
   conditionsOpen.value = false
@@ -160,8 +174,10 @@ function refreshSearch(): void {
 }
 function receiveMapArea(area: SearchArea | null): void { pendingArea.value = area }
 function searchMapArea(): void {
-  if (selectedConditions.value) void submitSearch(selectedConditions.value)
-  else guidance.value = '차량을 먼저 선택한 뒤 검색해 주세요.'
+  const conditions = selectedConditions.value
+  if (!conditions) { promptForVehicle(); return }
+  if (!pendingArea.value || !validMapArea.value) return
+  void confirmSearch({ ...searchCriteriaForArea(pendingArea.value, conditions.connector, confirmedCriteria.value?.limit ?? 20), ...conditions })
 }
 function toggleMap(): void {
   pendingArea.value = null
@@ -196,6 +212,13 @@ function openDetail(stationId: number): void {
       <p v-if="!confirmedCriteria">차량에 맞는 충전소와 이용 조건을 확인하세요.</p>
     </div>
     <PlaceSearch @select="selectPlace" />
+    <div v-if="needsVehicleSelection && !selectedConditions" ref="prerequisiteNotice" class="search-prerequisite-notice" role="alert" tabindex="-1">
+      <div>
+        <strong>{{ selectedLocation ? `${locationLabel} 위치를 선택했어요.` : '지도에서 검색할 지역을 골랐어요.' }}</strong>
+        <p>충전소 결과를 보려면 내 차량을 선택해 주세요. 목록에 없다면 충전구를 직접 확인할 수 있어요.</p>
+      </div>
+      <button type="button" class="secondary-button" @click="focusVehicleChoice">내 차량 선택하기</button>
+    </div>
     <div class="search-map-explorer">
       <button type="button" id="show-map" class="secondary-button" :aria-expanded="mapVisible" aria-controls="station-map-panel" @click="toggleMap">{{ mapVisible ? '지도 접기' : '지도 보기' }}</button>
       <template v-if="mapVisible">

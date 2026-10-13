@@ -305,3 +305,7 @@ CLI `--plugpass.ingestion.command.mode=auto` → ScheduledSyncService/Collection
 ## 카카오 지도·주소 검색 T44
 
 상단 `PlaceSearch` → `placeSearchStore`(상태·취소·순서) → `placeApi` → 카카오 Web SDK services(운영 키) 또는 기존 서버 REST(키 없는 개발 환경). 후보 선택은 `StationSearchView.selectedLocation` 한 곳에 저장되어 `StationMapSession.moveTo`와 충전소 API 좌표가 일치한다. `kakaoPlaceSearch`가 공급자 결과 검증과 오류·중복을 소유한다. [지도 SDK 기록](t44-kakao-map-sdk.md), [주소 검색 기록](t44b-kakao-address-search.md).
+
+## 검색 선행 조건 안내 T45
+
+`PlaceSearch` 후보 선택 또는 `StationMap` 영역 재검색 → `StationSearchView`가 위치·차량 조건을 확인 → 차량 조건이 없으면 주소 검색 아래 안내·차량 선택 버튼 → `SearchForm`의 선택 상태 변경 → 검색 제출 → 기존 URL·`stationSearchStore`·API. 지도 좌표는 차량 선택 전에도 유지한다. `SearchForm`은 차량별 호환 조건 판단을, View는 위치 선택과 다음 행동 안내를 소유한다. [테스트·실행 기록](t45-search-prerequisite-guidance.md).

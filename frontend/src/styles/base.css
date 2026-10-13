@@ -175,6 +175,11 @@ h1 { font-size: 36px; font-weight: 700; letter-spacing: -0.025em; margin-bottom:
 .field-error { color: #8a2828; margin-top: 8px; font-size: 13px; }
 
 .search-map-explorer { margin-bottom: 1.5rem; }
+.search-prerequisite-notice { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 0 0 1rem; padding: 16px 18px; border: 1px solid #91c8bd; border-radius: 14px; background: #eaf7f3; }
+.search-prerequisite-notice strong { display: block; color: var(--color-ink); }
+.search-prerequisite-notice p { margin-top: 4px; font-size: 14px; line-height: 1.5; }
+.search-prerequisite-notice button { flex-shrink: 0; min-height: 44px; }
+@media (max-width: 600px) { .search-prerequisite-notice { align-items: stretch; flex-direction: column; } }
 .search-map-explorer > p { color: var(--muted, #53617a); line-height: 1.6; }
 .place-search { margin: .75rem 0 1rem; padding: 1rem; border: 1px solid var(--color-line); border-radius: 18px; background: #fff; box-shadow: 0 12px 28px #173b4212; }
 .place-search-form { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: stretch; gap: .65rem; }

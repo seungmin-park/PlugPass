@@ -24,6 +24,13 @@ const reasonLabels = new Map<string, string>([
   ['MAX_AGE_EXCEEDED', '서버의 최신성 기준을 지난 정보입니다'],
 ])
 export function reasonLabel(reason: string): string { return reasonLabels.get(reason) ?? '상세 확인이 필요한 사유' }
+export function accessConditionLabel(limitYn: string | null, limitDetail: string | null): string {
+  const detail = limitDetail?.trim()
+  if (detail) return `${detail} · 방문 전 운영 주체에 확인해 주세요`
+  if (limitYn === 'Y') return '이용 제한이 보고됐습니다. 방문 전 운영 주체에 확인해 주세요'
+  if (limitYn === 'N') return '별도 이용 제한이 보고되지 않았습니다. 현장 안내를 확인해 주세요'
+  return '이용 조건 정보가 없습니다. 방문 전 운영 주체에 확인해 주세요'
+}
 export function formatDistance(meters: number): string {
   if (meters < 1000) return `${Math.round(meters)}m`
   return `${new Intl.NumberFormat('ko-KR', { maximumFractionDigits: 1 }).format(meters / 1000)}km`
@@ -34,4 +41,28 @@ export function formatTimestamp(time: string | null): string {
   if (!Number.isFinite(date.getTime())) return '확인 불가'
   return new Intl.DateTimeFormat('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit',
     hour: '2-digit', minute: '2-digit', second: '2-digit', timeZoneName: 'short' }).format(date)
+}
+export function observationSummary(time: string | null): string {
+  if (!time) return '현장 관측 시각이 제공되지 않았습니다. 현재 상태는 출발 전 확인해 주세요.'
+  const formatted = formatTimestamp(time)
+  if (formatted === '확인 불가') return '현장 관측 시각을 해석할 수 없습니다. 현재 상태는 출발 전 확인해 주세요.'
+  return `현장 관측: ${formatted}`
+}
+export function formatSourceStatusChangedAt(raw: string | null): string | null {
+  const value = raw?.trim()
+  if (!value) return null
+  const unparsed = `원본 시각: ${value} · 형식 해석 불가, 시간대 미확인`
+  if (!/^\d{14}$/.test(value)) return unparsed
+  const year = Number(value.slice(0, 4))
+  const month = Number(value.slice(4, 6))
+  const day = Number(value.slice(6, 8))
+  const hour = Number(value.slice(8, 10))
+  const minute = Number(value.slice(10, 12))
+  const second = Number(value.slice(12, 14))
+  if (year < 1000) return unparsed
+  const calendarDate = new Date(Date.UTC(year, month - 1, day, hour, minute, second))
+  if (calendarDate.getUTCFullYear() !== year || calendarDate.getUTCMonth() !== month - 1
+    || calendarDate.getUTCDate() !== day || calendarDate.getUTCHours() !== hour
+    || calendarDate.getUTCMinutes() !== minute || calendarDate.getUTCSeconds() !== second) return unparsed
+  return `${value.slice(0, 4)}-${value.slice(4, 6)}-${value.slice(6, 8)} ${value.slice(8, 10)}:${value.slice(10, 12)}:${value.slice(12, 14)} · 시간대 미확인`
 }

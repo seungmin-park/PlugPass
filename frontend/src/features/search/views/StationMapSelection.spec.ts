@@ -31,7 +31,21 @@ describe('검색 지도의 목록 선택', () => {
     expect(wrapper.find('[role="dialog"]').exists()).toBe(true)
     expect(wrapper.get('[role="dialog"]').text()).toContain('대체 충전소')
     expect(wrapper.get('[role="dialog"]').text()).toContain('길찾기')
-    expect(wrapper.get('[role="dialog"]').text()).toContain('운영 시간과 출입 조건을 확인해 주세요')
+    expect(wrapper.get('[role="dialog"]').text()).toContain('별도 이용 제한이 보고되지 않았습니다. 현장 안내를 확인해 주세요')
+  })
+
+  it('마커 패널에서도 제한 사유가 비어 있으면 방문 전 확인을 안내한다', async () => {
+    httpClient.defaults.adapter = async config => jsonResponse(config, { ...searchResponse, stations: searchResponse.stations.map(station => ({
+      ...station, chargers: station.chargers.map(charger => ({ ...charger, limitYn: 'Y', limitDetail: null })),
+    })) })
+    const router = searchRouter()
+    await router.push({ path: '/stations', query })
+    const wrapper = mount(StationSearchView, { global: { plugins: [router, createPinia()] } })
+    await flushPromises()
+    await wrapper.get('#show-map').trigger('click')
+    await vi.waitFor(() => expect(wrapper.findAll('.leaflet-marker-icon')).toHaveLength(2))
+    await wrapper.get('[aria-label="대체 충전소 지도 마커"]').trigger('click')
+    expect(wrapper.get('.station-action-sheet .access-summary').text()).toContain('이용 제한이 보고됐습니다. 방문 전 운영 주체에 확인해 주세요')
   })
 
   it('카드에서 길찾기를 연 뒤 다른 마커를 선택하면 목적지도 함께 바뀐다', async () => {

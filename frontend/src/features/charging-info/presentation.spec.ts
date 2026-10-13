@@ -1,7 +1,17 @@
 import { describe, expect, it } from 'vitest'
-import { statusLabel, freshnessLabel, reasonLabel, formatDistance, formatTimestamp } from './presentation'
+import { accessConditionLabel, formatSourceStatusChangedAt, observationSummary, statusLabel, freshnessLabel, reasonLabel, formatDistance, formatTimestamp } from './presentation'
 
 describe('서버 판단을 유지하는 표시', () => {
+  it.each([
+    ['Y', '입주자만 이용', '입주자만 이용 · 방문 전 운영 주체에 확인해 주세요'],
+    ['Y', '시설 상황에 따라 이용이 제한될 수 있음', '시설 상황에 따라 이용이 제한될 수 있음 · 방문 전 운영 주체에 확인해 주세요'],
+    ['Y', '  ', '이용 제한이 보고됐습니다. 방문 전 운영 주체에 확인해 주세요'],
+    ['N', null, '별도 이용 제한이 보고되지 않았습니다. 현장 안내를 확인해 주세요'],
+    ['N', '방문객은 안내 데스크 문의', '방문객은 안내 데스크 문의 · 방문 전 운영 주체에 확인해 주세요'],
+    [null, null, '이용 조건 정보가 없습니다. 방문 전 운영 주체에 확인해 주세요'],
+  ])('이용 제한 %s와 설명 %s를 행동 가능한 안내로 표시한다', (limitYn, detail, expected) => {
+    expect(accessConditionLabel(limitYn, detail)).toBe(expected)
+  })
   it.each([
     ['RECENT_AVAILABLE', '최근 관측에서 이용 가능으로 보고되었습니다'],
     ['UNVERIFIED_AVAILABLE', '이용 가능 보고가 있으나 최신성을 확인할 수 없습니다'],
@@ -30,6 +40,22 @@ describe('서버 판단을 유지하는 표시', () => {
   })
   it.each([null, '', 'broken-time'])('누락·깨진 시각 %s는 확인 불가다', time => {
     expect(formatTimestamp(time)).toBe('확인 불가')
+  })
+  it('관측 시각 누락과 깨진 값을 사용자 안내로 구분한다', () => {
+    expect(observationSummary(null)).toBe('현장 관측 시각이 제공되지 않았습니다. 현재 상태는 출발 전 확인해 주세요.')
+    expect(observationSummary('broken-time')).toBe('현장 관측 시각을 해석할 수 없습니다. 현재 상태는 출발 전 확인해 주세요.')
+  })
+  it.each([
+    ['20260920161911', '2026-09-20 16:19:11 · 시간대 미확인'],
+    ['20240229010203', '2024-02-29 01:02:03 · 시간대 미확인'],
+    ['20260229010203', '원본 시각: 20260229010203 · 형식 해석 불가, 시간대 미확인'],
+    ['broken', '원본 시각: broken · 형식 해석 불가, 시간대 미확인'],
+  ])('공급자 상태 변경 시각 %s는 관측/시간대를 추정하지 않고 %s로 표시한다', (raw, expected) => {
+    expect(formatSourceStatusChangedAt(raw)).toBe(expected)
+  })
+  it('빈 공급자 상태 변경 시각은 표시하지 않는다', () => {
+    expect(formatSourceStatusChangedAt('  ')).toBeNull()
+    expect(formatSourceStatusChangedAt(null)).toBeNull()
   })
   it('유효한 UTC 시각은 로컬 시간대 이름을 포함하여 표시한다', () => {
     const formatted = formatTimestamp('2026-10-05T00:00:00Z')

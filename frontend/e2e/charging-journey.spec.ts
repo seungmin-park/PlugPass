@@ -12,8 +12,12 @@ test('실제 수집·DB에서 검색→상세→제외 후보→다른 상세를
   await expect(page.getByText('2개 표시 · 최대 20개 표시')).toBeVisible()
   await page.getByRole('link', { name: '데모 가까운 충전소 상세 보기' }).click()
   await expect(page.getByRole('heading', { name: '데모 가까운 충전소', exact: true })).toBeVisible()
-  await expect(page.getByText('관측 시각: 확인 불가', { exact: true })).toBeVisible()
+  await expect(page.getByText('현장 관측 시각이 제공되지 않았습니다. 현재 상태는 출발 전 확인해 주세요.', { exact: true })).toBeVisible()
   await expect(page.getByText('최신성 확인 불가', { exact: true })).toBeVisible()
+  await expect(page.getByText('원본 상태 코드: 2', { exact: true })).toBeHidden()
+  await page.getByText('정보 출처와 원본 데이터', { exact: true }).click()
+  await expect(page.getByText('원본 상태 코드: 2', { exact: true })).toBeVisible()
+  await expect(page.getByText(/서버가 정보를 받은 시각이며 현장 관측 시각과 다릅니다/)).toBeVisible()
   const firstId = new URL(page.url()).hash.match(/\/stations\/(\d+)/)?.[1]
   if (!firstId) throw new Error('첫 충전소 ID가 URL에 없습니다')
   await page.getByRole('link', { name: '다른 충전소 찾기' }).click()
@@ -25,6 +29,7 @@ test('실제 수집·DB에서 검색→상세→제외 후보→다른 상세를
   await expect(confirmation.getByText('관측 시각이 제공되지 않았습니다')).toBeVisible()
   await confirmation.getByRole('link', { name: '데모 대체 충전소 상세 보기' }).click()
   await expect(page.getByRole('heading', { name: '데모 대체 충전소', exact: true })).toBeVisible()
+  await page.getByText('충전소 정보 출처', { exact: true }).click()
   await expect(page.getByText(/공급자 충전소 ID: browser_second/)).toBeVisible()
   const secondId = new URL(page.url()).hash.match(/\/stations\/(\d+)/)?.[1]
   expect(secondId).toBeDefined()

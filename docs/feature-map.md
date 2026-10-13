@@ -15,6 +15,15 @@
 
 검색 View는 카드·마커·패널에 공통 충전소 ID 하나를 전달한다. `StationActionSheet`는 사용 조건 요약과 닫기/초점을, `StationDirections`는 선택 UI를, `navigationLinks`는 OS별 목적지 URL을, 선호 Store는 현재 선택과 저장소 복구를 맡는다. 저장소가 막혀도 현재 페이지에서 선택한 앱으로 연결한다. 좌표가 유효하지 않으면 링크를 만들지 않는다. 외부 앱이 실제 설치됐는지는 브라우저가 판정할 수 없으므로 설치·웹 대안을 제공한다. [Red·Green·전체 검증](t40-verification.md).
 
+## T41 이용 조건과 시각의 의미
+
+```text
+공급자 원본·서버 응답 → 표시 정책 → 충전기 요약: 상태·운영 시간·출입 조건·현장 관측
+                                  └→ 펼치는 출처: 원본 코드·서버 수집·상태 변경 시각
+```
+
+`presentation`은 공급자 이용 제한 문구와 관측 시각의 누락·파손을 사용자 안내로 바꾼다. 상세의 `ChargerList`와 지도 선택 패널은 같은 문구를 사용한다. 서버의 최신성·추천 판정은 UI에서 다시 계산하지 않는다. `sourceStatusChangedAtRaw`는 상태 변경 시각이며 시간대와 현장 관측 의미를 추정하지 않는다. 충전소 식별자와 조회 시각은 별도 출처 영역에서 확인할 수 있다. [실행 근거](t41-verification.md).
+
 `StationNavigation.spec.ts`12건과 `navigationLinks.spec.ts`19건: Android/iOS/iPadOS/desktop, 목적지·특수문자·좌표 경계·로딩/실패·교체. `navigation.spec.ts`3건: 실제 수집/DB 상세→선택→앱 전달 URL→웹 새 탭→검색 복귀·다른 목적지와 키보드 조작. 개발 E2E와 재시작된 MySQL을 사용하는 운영 JAR에서 같은 spec을 실행한다. 앱 실행 경계만 가로채므로 실제 휴대폰 앱 실행은 미확인이다. [검증·실패·한계](t28-verification.md).
 
 ## T29 처리 중 시각적 표시

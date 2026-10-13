@@ -61,10 +61,10 @@
 
 계약: API 원본 필드는 유지한다. presentation에 `accessConditionLabel(limitYn: string | null, limitDetail: string | null): string`을 추가해 구체 조건을 우선하고 Y만 있는 경우 확인 필요를 표시한다. 시각 표현은 sourceObservedAt·collectedAt·sourceStatusChangedAtRaw의 의미를 보존한다.
 
-- [ ] Red: Y/N/누락·공백/모호한 제한·구체 조건·삭제 표시·빈 비고·시각 null/깨짐/미래를 검증한다. 기술 코드가 기본 요약에 없고 정보 출처 펼침에서 보이는지 assertion한다.
-- [ ] Green: 상태·운영 시간·출입 조건을 먼저 표시하고 코드/식별자/수집 시각은 정보 출처로 옮긴다. 관측 미제공을 현장 확인 미제공으로 설명한다. 공급자 시각에 시간대를 추정해 붙이지 않는다.
-- [ ] Refactor: 사용자 문구는 presentation에 모으고 서버 freshness/추천 정책을 UI가 재계산하지 않는다.
-- [ ] 전체 프런트·개발/배포 E2E·공용 verify와 API 계약 유지 확인 후 기록/PR/CI/머지.
+- [x] Red: Y/N/누락·공백/모호한 제한·구체 조건·삭제 표시·빈 비고·시각 null/깨짐/미래를 검증한다. 기술 코드가 기본 요약에 없고 정보 출처 펼침에서 보이는지 assertion한다.
+- [x] Green: 상태·운영 시간·출입 조건을 먼저 표시하고 코드/식별자/수집 시각은 정보 출처로 옮긴다. 관측 미제공을 현장 확인 미제공으로 설명한다. 공급자 시각에 시간대를 추정해 붙이지 않는다.
+- [x] Refactor: 사용자 문구는 presentation에 모으고 서버 freshness/추천 정책을 UI가 재계산하지 않는다.
+- [x] 전체 프런트·개발/배포 E2E·공용 verify와 API 계약 유지 확인, [실행 기록](t41-verification.md). PR/CI/머지는 별도 결과를 기록한다.
 
 ## T42 차량·현재 사용할 어댑터
 

@@ -2,12 +2,13 @@
 import { computed, nextTick, onMounted, onUnmounted, ref, useId } from 'vue'
 import StationDirections from './StationDirections.vue'
 import type { StationSummary } from '../../search/types'
+import { accessConditionLabel } from '../../charging-info/presentation'
 const props = defineProps<{ station: StationSummary; detailHref: string }>()
 const emit = defineEmits<{ close: []; 'open-detail': [] }>()
 const sheet = ref<HTMLElement | null>(null)
 const titleId = useId()
 const accessSummary = computed(() => {
-  const conditions = props.station.chargers.map(charger => charger.limitDetail?.trim()).filter((detail): detail is string => !!detail)
+  const conditions = props.station.chargers.map(charger => accessConditionLabel(charger.limitYn, charger.limitDetail))
   return [...new Set(conditions)].join(' · ') || '운영 시간과 출입 조건을 확인해 주세요'
 })
 let previousFocus: HTMLElement | null = null

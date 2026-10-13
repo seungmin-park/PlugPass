@@ -28,6 +28,7 @@ describe('위치 선택부터 실제 API 계약까지 검색 화면', () => {
     await flushPromises()
     expect(wrapper.findAll('button').map(button => button.text())).toContain('현재 위치 사용')
     expect(wrapper.find('#example-location').exists()).toBe(false)
+    expect(wrapper.get('.information-guide').text()).toContain('공급자가 현장 관측 시각을 제공하지 않으면 확인 불가로 표시합니다')
     expect(getCurrentPosition).not.toHaveBeenCalled()
     expect(adapter).not.toHaveBeenCalled()
     await wrapper.get('.search-form').trigger('submit')

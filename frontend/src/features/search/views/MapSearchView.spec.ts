@@ -7,10 +7,11 @@ import StationSearchView from './StationSearchView.vue'
 import { httpClient } from '../../../shared/api/httpClient'
 import { jsonResponse } from '../../../../tests/httpResponse'
 import searchResponse from '../../../../tests/fixtures/search.json'
+import { readVehicleProfile } from '../../vehicle/vehicleProfile'
 
 const originalAdapter = httpClient.defaults.adapter
 if (originalAdapter === undefined) throw new Error('Axios adapter가 필요합니다')
-afterEach(() => { httpClient.defaults.adapter = originalAdapter })
+afterEach(() => { httpClient.defaults.adapter = originalAdapter; window.localStorage.clear() })
 
 it('검색 전 지도를 열고 이동한 영역으로 검색하며 응답 뒤에도 지도를 유지한다', async () => {
   vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(640)
@@ -21,6 +22,7 @@ it('검색 전 지도를 열고 이동한 영역으로 검색하며 응답 뒤�
   await router.push('/stations')
   const wrapper = mount(StationSearchView, { global: { plugins: [router, createPinia()] } })
   expect(wrapper.find('#show-map').exists()).toBe(true)
+  await wrapper.get('#vehicle-choice').setValue('kona-electric-2020-kr')
   vi.stubGlobal('navigator', { userAgent: navigator.userAgent, platform: navigator.platform, geolocation: { getCurrentPosition: (success: PositionCallback) => success({ coords: { latitude: 37.5, longitude: 127, accuracy: 1, altitude: null, altitudeAccuracy: null, heading: null, speed: null, toJSON: () => ({}) }, timestamp: 0, toJSON: () => ({}) }) } })
     await wrapper.get('#current-location').trigger('click')
     await flushPromises()
@@ -31,10 +33,11 @@ it('검색 전 지도를 열고 이동한 영역으로 검색하며 응답 뒤�
   const control = wrapper.get('.leaflet-control-zoom-in').element
   await wrapper.get('#search-map-area').trigger('click')
   await flushPromises()
-  expect(adapter).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ url: '/stations/area', params: expect.objectContaining({ connector: 'DC_COMBO', south: expect.any(Number), north: expect.any(Number) }) }))
+  expect(adapter).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ url: '/stations/area', params: expect.objectContaining({ connectors: 'DC_COMBO', south: expect.any(Number), north: expect.any(Number) }) }))
   expect(router.currentRoute.value.query.south).toBeDefined()
   expect(wrapper.get('.leaflet-control-zoom-in').element).toBe(control)
   expect(wrapper.findAll('.leaflet-marker-icon')).toHaveLength(2)
+  expect(readVehicleProfile(window.localStorage)).toEqual({ vehicleId: 'kona-electric-2020-kr', adapterIds: [], vehicleSupportConfirmed: false })
 })
 
 it('지나치게 축소한 지도는 확대 안내를 보여 주고 검색하지 않는다', async () => {

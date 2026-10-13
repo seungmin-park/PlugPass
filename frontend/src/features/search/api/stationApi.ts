@@ -7,7 +7,9 @@ import { hasNonblankStrings, isNullableString, isRecord, isNumberInRange, isNonn
 
 export async function getStations(criteria: SearchCriteria, signal?: AbortSignal): Promise<StationSearchResponse> {
   const validated = requireSearchCriteria(criteria)
-  const params = validated.area ? { ...validated.area, connector: validated.connector, limit: validated.limit } : validated
+  const selection = validated.connectors ? { connectors: validated.connectors.join(',') } : { connector: validated.connector }
+  const params = validated.area ? { ...validated.area, ...selection, limit: validated.limit }
+    : { latitude: validated.latitude, longitude: validated.longitude, radiusMeters: validated.radiusMeters, ...selection, limit: validated.limit }
   return getValidatedJson(validated.area ? '/stations/area' : '/stations', isSearchResponse, { params, ...(signal ? { signal } : {}) })
 }
 

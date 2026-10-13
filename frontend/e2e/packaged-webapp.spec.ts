@@ -58,6 +58,7 @@ test('배포 JAR에서 지도 영역을 재검색하고 직접 링크로 복원�
   await page.route('https://tile.openstreetmap.org/**', route => route.fulfill({ contentType: 'image/svg+xml',
     body: '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"/>' }))
   await page.goto('/app/index.html#/stations')
+  await page.getByLabel('내 차량').selectOption('manual')
   await page.getByRole('button', { name: '지도 보기', exact: true }).click()
   const response = page.waitForResponse(response => response.url().includes('/api/v1/stations/area?'))
   await page.getByRole('button', { name: '이 지역 재검색' }).click()

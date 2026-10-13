@@ -11,6 +11,14 @@ afterEach(() => { httpClient.defaults.adapter = originalAdapter })
 const criteria = { latitude: 37.5, longitude: 127, radiusMeters: 1000, connector: 'DC_COMBO' as const, limit: 20 }
 
 describe('대체 후보 API', () => {
+  it('대체 후보도 검색과 같은 여러 차량 규격을 보낸다', async () => {
+    const adapter = vi.fn<AxiosAdapter>(async config => jsonResponse(config, recommendation))
+    httpClient.defaults.adapter = adapter
+    await getRecommendations({ ...criteria, connectors: ['DC_COMBO', 'AC_SLOW'] }, 2)
+    expect(adapter).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ params: {
+      latitude: 37.5, longitude: 127, radiusMeters: 1000, connectors: 'DC_COMBO,AC_SLOW', limit: 20, excludeStationId: 2,
+    } }))
+  })
   it('제외 ID·조건·signal을 보내고 확인 필요 그룹을 보존한다', async () => {
     const signal = new AbortController().signal
     const adapter = vi.fn<AxiosAdapter>(async config => {

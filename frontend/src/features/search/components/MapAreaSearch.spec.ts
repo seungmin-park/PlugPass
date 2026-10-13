@@ -4,9 +4,10 @@ import StationMap from './StationMap.vue'
 import SearchForm from './SearchForm.vue'
 
 describe('지도 영역으로 검색 범위를 선택한다', () => {
-  it('반경을 묻지 않고 차량 커넥터만 제출한다', async () => {
+  it('반경을 묻지 않고 목록에 없는 차량의 확인한 충전구를 제출한다', async () => {
     const wrapper = mount(SearchForm)
-    expect(wrapper.findAll('legend').map(legend => legend.text())).toEqual(['차량 커넥터'])
+    await wrapper.get('#vehicle-choice').setValue('manual')
+    expect(wrapper.findAll('legend').map(legend => legend.text())).toEqual(['내 차량 충전구 직접 확인'])
     await wrapper.get('input[value="NACS"]').setValue()
     await wrapper.get('form').trigger('submit')
     expect(wrapper.emitted('submit')).toEqual([[{ connector: 'NACS' }]])

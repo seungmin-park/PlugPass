@@ -8,6 +8,9 @@ export interface MapStation extends MapCoordinates {
   name: string
 }
 export interface StationMapSession {
+  zoomIn(): number
+  zoomOut(): number
+  getZoomLevel(): number
   selectStation(stationId: number | null): void
   updateStations(stations: readonly MapStation[]): void
   moveTo(center: MapCoordinates): void
@@ -17,6 +20,7 @@ export interface StationMapSession {
 export interface StationMapCallbacks {
   selectStation(stationId: number): void
   areaChanged?(area: SearchArea | null): void
+  zoomChanged?(level: number): void
   tilesLoaded(): void
   tilesFailed(): void
 }

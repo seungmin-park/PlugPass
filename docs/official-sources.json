@@ -812,7 +812,7 @@
     "url": "https://apis.map.kakao.com/web/documentation/",
     "accessed": "2026-10-13",
     "cache": ".firecrawl/kakao-map-web-docs-20261013.html",
-    "coverage": "T44 Map/LatLng/LatLngBounds/CustomOverlay와 idle·tilesloaded 이벤트",
+    "coverage": "T44 Map/LatLng/LatLngBounds/CustomOverlay와 idle·tilesloaded 이벤트; T46 getLevel/setLevel·scrollwheel·keyboardShortcuts·zoom_changed",
     "sha256": "216addab11b44bb06bc357329994c94c822e0d2bb5d25765341574914091cf55"
   }
 ]

@@ -18,6 +18,7 @@ const sdk = (failFirstTiles: boolean) => `
       mapCount += 1
       this.container = container
       this.listeners = new globalThis.Map()
+      this.level = 5
       this.bounds = new LatLngBounds(new LatLng(37.495, 126.995), new LatLng(37.505, 127.005))
       const surface = document.createElement('div')
       surface.className = 'kakao-test-map'
@@ -40,6 +41,8 @@ const sdk = (failFirstTiles: boolean) => `
     getBounds() { return this.bounds }
     setBounds(bounds) { this.bounds = bounds; this.emit('idle') }
     setCenter() { this.emit('idle') }
+    getLevel() { return this.level }
+    setLevel(level) { this.level = level; this.emit('zoom_start'); this.emit('zoom_changed'); this.emit('idle') }
     zoom(scale) {
       this.emit('zoom_start')
       const southWest = this.bounds.getSouthWest()

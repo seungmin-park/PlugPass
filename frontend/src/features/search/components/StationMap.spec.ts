@@ -9,6 +9,19 @@ beforeEach(installKakaoMapFake)
 afterEach(() => { vi.unstubAllEnvs(); Reflect.deleteProperty(window, 'kakao') })
 
 describe('지도 인스턴스의 수명과 표시 경계', () => {
+  it('지도 확대·축소 조작을 보여주고 버튼으로 지도의 확대 수준을 바꾼다', async () => {
+    const wrapper = mount(StationMap, { props: {
+      stations: [], center: { latitude: 37.5, longitude: 127 }, selectedStationId: null,
+    } })
+    await vi.waitFor(() => expect(wrapper.find('.kakao-test-map').exists()).toBe(true))
+    expect(wrapper.get('.station-map-canvas').attributes('tabindex')).toBe('0')
+    await wrapper.get('button[aria-label="지도 확대"]').trigger('click')
+    expect(wrapper.get('[role="status"]').text()).toContain('확대')
+    await wrapper.get('button[aria-label="지도 축소"]').trigger('click')
+    expect(wrapper.get('[role="status"]').text()).toContain('확대 수준')
+    wrapper.get('.station-map-canvas').element.dispatchEvent(new KeyboardEvent('keydown', { key: '+' }))
+    await vi.waitFor(() => expect(wrapper.get('[role="status"]').text()).toContain('4단계'))
+  })
   it('단일 충전소를 표시하고 해제한 컨테이너에 다시 지도를 만들 수 있다', async () => {
     const wrapper = mount(StationMap, { props: {
       stations: [{ id: 1, name: '한 곳', latitude: 37.5, longitude: 127 }],

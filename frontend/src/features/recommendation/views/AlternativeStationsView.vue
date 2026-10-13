@@ -50,7 +50,7 @@ function openDetail(stationId: number): void { void router.push({ path: `/statio
           <p>전체 수집 성공 시각: {{ formatTimestamp(store.metadata.lastSuccessfulRunAt) }} (후보 관측 시각이 아닙니다)</p>
         </template>
       </div>
-      <div :aria-busy="store.candidateStatus === 'loading'">
+      <div class="candidate-state" :aria-busy="store.candidateStatus === 'loading'">
         <LoadingIndicator v-if="store.candidateStatus === 'loading'" message="대체 후보를 조회하고 있습니다." />
         <div v-if="store.candidateError" ref="candidateNotice" tabindex="-1" class="request-notice request-error" role="alert">
           <p>{{ store.candidateError.message }}</p><button id="retry-candidates" type="button" class="secondary-button" @click="store.retryCandidates">후보 다시 조회</button>

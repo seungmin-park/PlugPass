@@ -28,6 +28,8 @@ test('키보드로 본문·위치·주소 입력·커넥터·검색을 조작한
   await page.keyboard.press('Tab')
   await expect(page.getByRole('button', { name: '지도 보기', exact: true })).toBeFocused()
   await page.keyboard.press('Tab')
+  await expect(page.locator('.search-panel > summary')).toBeFocused()
+  await page.keyboard.press('Tab')
   await expect(page.getByRole('button', { name: '현재 위치 사용' })).toBeFocused()
   await page.keyboard.press('Enter')
   await expect(page.getByRole('status').filter({ hasText: '현재 위치를 선택했습니다' })).toBeVisible()
@@ -41,6 +43,7 @@ test('키보드로 본문·위치·주소 입력·커넥터·검색을 조작한
   await expect(page.getByRole('button', { name: '주변 충전소 검색' })).toBeFocused()
   await page.keyboard.press('Enter')
   await expect(page.getByText('2개 표시 · 최대 20개 표시')).toBeVisible()
+  await expect(page.getByRole('heading', { name: '주변 충전소', exact: true })).toBeFocused()
   await expect(page).toHaveURL(/radiusMeters=1000/)
 })
 

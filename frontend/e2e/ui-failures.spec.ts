@@ -100,6 +100,7 @@ test('이전 검색이 늦게 도착해도 현재 조건의 목록을 유지한�
   const initialRequest = page.waitForRequest(request => request.url().includes('radiusMeters=1000'))
   await page.goto(`/app/index.html#/stations?${criteria}`)
   await initialRequest
+  await page.getByText('검색 조건 변경', { exact: true }).click()
   await page.getByText('NACS', { exact: true }).click()
   await expect(page.getByRole('radio', { name: 'NACS', exact: true })).toBeChecked()
   await page.getByRole('button', { name: '주변 충전소 검색' }).click()
@@ -137,6 +138,7 @@ test('수집 지연 중에도 기존 목록을 표시하고 새로고침으로 �
   await page.route('**/api/v1/stations?*', route => route.fulfill({ json: { ...searchResponse,
     collection: { ...collection, state: 'CURRENT', lastAttemptStatus: 'SUCCESS', lastStatusSuccessAt: '2026-10-13T00:10:00Z' } } }))
   await page.getByRole('button', { name: '새로고침', exact: true }).click()
+  await page.getByText('정보 갱신 안내', { exact: true }).click()
   await expect(page.getByText('수집 정상 · 상태 변경분은 5분마다 갱신합니다.')).toBeVisible()
   await expect(page.getByText('갱신이 지연되고 있습니다.', { exact: false })).toHaveCount(0)
   await expect(page.getByRole('link', { name: '가까운 충전소 상세 보기', exact: true })).toBeVisible()

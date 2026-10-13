@@ -67,5 +67,7 @@ test('배포 JAR에서 지도 영역을 재검색하고 직접 링크로 복원�
   await page.reload()
   await expect(page).toHaveURL(url)
   await expect(page.getByRole('button', { name: '지도 접기', exact: true })).toBeVisible()
+  await expect(page.locator('.search-panel')).not.toHaveAttribute('open')
+  await page.getByText('검색 조건 변경', { exact: true }).click()
   await expect(page.getByRole('searchbox', { name: '주소·장소 검색' })).toBeVisible()
 })

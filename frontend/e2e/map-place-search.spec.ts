@@ -45,6 +45,7 @@ test('실제 서버의 키 미설정 안내 후 현재 지도 검색을 계속 �
 })
 
 test('지연된 위치 후보 조회의 로딩·선택과 실제 충전소 조회를 연결한다', async ({ page }) => {
+  await page.route('https://tile.openstreetmap.org/**', route => route.fulfill({ contentType: 'image/svg+xml', body: tiles }))
   // 카카오 자격 증명은 없으므로 위치 후보 경계만 제어한다. 충전소 API/DB는 실제 실행한다.
   let release: () => void = () => {}
   const pending = new Promise<void>(resolve => { release = resolve })
@@ -59,9 +60,46 @@ test('지연된 위치 후보 조회의 로딩·선택과 실제 충전소 조�
   await expect(page.locator('.place-search .loading-spinner')).toBeVisible()
   release()
   await page.getByRole('button', { name: '검증용 주소 후보 합성 지역' }).click()
+  await expect(page.locator('.leaflet-control-zoom-in')).toBeVisible()
+  await expect(page).toHaveURL(/latitude=37.5&longitude=127/)
   await expect(page.locator('.selected-location')).toContainText('검증용 주소 후보: 37.5 / 127')
-  await expect(page.locator('.station-list article')).toHaveCount(0)
-  await page.getByRole('button', { name: '주변 충전소 검색' }).click()
   await expect(page.getByRole('link', { name: '데모 가까운 충전소 상세 보기' })).toBeVisible()
   await expect(page.locator('.loading-spinner')).toHaveCount(0)
+  await expect(page.getByRole('heading', { name: '주변 충전소', exact: true })).toBeFocused()
 })
+
+for (const width of [320, 375]) {
+  test(`${width}px에서 첫 결과와 조건 변경을 긴 안내 앞에 표시한다`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 812 })
+    await page.goto('/app/index.html#/stations?latitude=37.5&longitude=127&radiusMeters=1000&connector=DC_COMBO&limit=20')
+    const firstCard = page.locator('.station-card').first()
+    await expect(firstCard).toBeVisible()
+    const bounds = await firstCard.boundingBox()
+    expect(bounds).not.toBeNull()
+    expect(bounds?.y).toBeLessThan(600)
+    await expect(page.locator('.search-panel')).not.toHaveAttribute('open')
+    await expect(page.locator('.collection-details')).not.toHaveAttribute('open')
+    await page.getByText('검색 조건 변경', { exact: true }).click()
+    await expect(page.getByRole('searchbox', { name: '주소·장소 검색' })).toBeVisible()
+  })
+}
+
+for (const width of [320, 375]) {
+  test(`${width}px 주소 선택 후 지도와 결과에 바로 접근한다`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 812 })
+    await page.route('https://tile.openstreetmap.org/**', route => route.fulfill({ contentType: 'image/svg+xml', body: tiles }))
+    await page.route('**/api/v1/places?*', route => route.fulfill({ json: { places: [{ name: '선택 주소', address: '검증 주소', latitude: 37.5, longitude: 127 }] } }))
+    await page.goto('/app/index.html#/stations')
+    await page.getByRole('searchbox', { name: '주소·장소 검색' }).fill('검증 주소')
+    await page.getByRole('button', { name: '주소·장소 찾기' }).click()
+    await page.getByRole('button', { name: '선택 주소 검증 주소' }).click()
+    await expect(page.getByRole('heading', { name: '주변 충전소', exact: true })).toBeFocused()
+    await expect(page.locator('.leaflet-control-zoom-in')).toBeVisible()
+    const firstCard = page.locator('.station-card').first()
+    await expect(firstCard).toBeVisible()
+    const bounds = await firstCard.boundingBox()
+    expect(bounds?.y).toBeLessThan(650)
+    await page.keyboard.press('Tab')
+    await expect(page.getByRole('button', { name: '새로고침', exact: true })).toBeFocused()
+  })
+}

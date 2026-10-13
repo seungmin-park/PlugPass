@@ -73,6 +73,18 @@ describe('위치 선택부터 실제 API 계약까지 검색 화면', () => {
     expect(adapter).toHaveBeenCalledTimes(2)
     expect(router.currentRoute.value.query.limit).toBe('2')
   })
+  it('검색 후 조건과 수집 세부 정보는 접고 결과를 먼저 보여 준다', async () => {
+    httpClient.defaults.adapter = async config => jsonResponse(config, searchResponse)
+    const router = searchRouter()
+    await router.push({ path: '/stations', query })
+    const wrapper = mount(StationSearchView, { global: { plugins: [router, createPinia()] } })
+    await flushPromises()
+    expect(wrapper.find('details.search-panel').exists()).toBe(true)
+    expect(wrapper.get<HTMLDetailsElement>('details.search-panel').element.open).toBe(false)
+    expect(wrapper.get('details.search-panel > summary').text()).toContain('검색 조건 변경')
+    expect(wrapper.get<HTMLDetailsElement>('details.collection-details').element.open).toBe(false)
+    expect(wrapper.get('.station-list').element.compareDocumentPosition(wrapper.get('.collection-details').element) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  })
   it('뒤로 가면 URL 조건을 복원하며 미제출 입력과 이전 결과를 남기지 않는다', async () => {
     const adapter = vi.fn<AxiosAdapter>(async config => jsonResponse(config, searchResponse))
     httpClient.defaults.adapter = adapter

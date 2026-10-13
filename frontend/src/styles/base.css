@@ -187,3 +187,7 @@ h1 { font-size: 36px; font-weight: 700; letter-spacing: -0.025em; margin-bottom:
 .has-results .station-map-canvas { height: 240px; }
 .has-results #search-map-area { position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); z-index: 1; min-height: 44px; font-size: 13px; white-space: nowrap; }
 @media (max-width: 767px) { .has-results .station-map-canvas { height: 180px; } }
+
+.station-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 16px; }
+.station-actions > a:first-child { min-height: 44px; display: inline-flex; align-items: center; padding: 8px 14px; background: var(--color-primary); color: white; border-radius: 8px; text-decoration: none; }
+.station-actions .search-button { min-height: 44px; }

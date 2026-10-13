@@ -17,7 +17,7 @@ function searchRouter() {
 }
 
 describe('위치 선택부터 실제 API 계약까지 검색 화면', () => {
-  it('초기 화면에서 위치·API를 자동 요청하지 않고 두 위치 선택을 제공한다', async () => {
+  it('초기 화면에서 위치·API를 자동 요청하지 않고 현재 위치와 주소 검색을 제공한다', async () => {
     const getCurrentPosition = vi.fn<Geolocation['getCurrentPosition']>()
     vi.stubGlobal('navigator', { geolocation: { getCurrentPosition } })
     const adapter = vi.fn<AxiosAdapter>(async config => jsonResponse(config, searchResponse))
@@ -27,21 +27,23 @@ describe('위치 선택부터 실제 API 계약까지 검색 화면', () => {
     const wrapper = mount(StationSearchView, { global: { plugins: [router, createPinia()] } })
     await flushPromises()
     expect(wrapper.findAll('button').map(button => button.text())).toContain('현재 위치 사용')
-    expect(wrapper.findAll('button').map(button => button.text())).toContain('검증용 예시 위치 사용')
+    expect(wrapper.find('#example-location').exists()).toBe(false)
     expect(getCurrentPosition).not.toHaveBeenCalled()
     expect(adapter).not.toHaveBeenCalled()
     await wrapper.get('.search-form').trigger('submit')
     expect(wrapper.text()).toContain('검색할 위치를 먼저 선택해 주세요')
     expect(adapter).not.toHaveBeenCalled()
   })
-  it('예시 위치와 미제출 조건은 검색 버튼을 누를 때 URL·API로 확정한다', async () => {
+  it('현재 위치와 미제출 조건은 검색 버튼을 누를 때 URL·API로 확정한다', async () => {
     const adapter = vi.fn<AxiosAdapter>(async config => jsonResponse(config, searchResponse))
     httpClient.defaults.adapter = adapter
     const router = searchRouter()
     await router.push('/stations')
     const wrapper = mount(StationSearchView, { global: { plugins: [router, createPinia()] } })
-    await wrapper.get('#example-location').trigger('click')
-    expect(wrapper.text()).toContain('합성 데모 지역')
+    vi.stubGlobal('navigator', { userAgent: navigator.userAgent, platform: navigator.platform, geolocation: { getCurrentPosition: (success: PositionCallback) => success({ coords: { latitude: 37.5, longitude: 127, accuracy: 1, altitude: null, altitudeAccuracy: null, heading: null, speed: null, toJSON: () => ({}) }, timestamp: 0, toJSON: () => ({}) }) } })
+    await wrapper.get('#current-location').trigger('click')
+    await flushPromises()
+    expect(wrapper.text()).toContain('현재 위치: 37.5 / 127')
     await wrapper.get('input[value="NACS"]').setValue()
     expect(router.currentRoute.value.query).toEqual({})
     expect(adapter).not.toHaveBeenCalled()
@@ -169,7 +171,7 @@ describe('위치 선택부터 실제 API 계약까지 검색 화면', () => {
     expect(wrapper.findAll('article')).toHaveLength(2)
     expect(adapter).toHaveBeenCalledTimes(2)
   })
-  it('위치 권한 거부와 늦은 위치 응답 후에도 예시 위치로 검색할 수 있다', async () => {
+  it('위치 권한 거부와 늦은 위치 응답 후에도 현재 위치 재시도로 검색할 수 있다', async () => {
     const getCurrentPosition = vi.fn<Geolocation['getCurrentPosition']>()
     vi.stubGlobal('navigator', { geolocation: { getCurrentPosition } })
     const adapter = vi.fn<AxiosAdapter>(async config => jsonResponse(config, searchResponse))
@@ -182,7 +184,9 @@ describe('위치 선택부터 실제 API 계약까지 검색 화면', () => {
     await flushPromises()
     expect(wrapper.text()).toContain('위치 권한이 거부되었습니다')
     await wrapper.get('#current-location').trigger('click')
-    await wrapper.get('#example-location').trigger('click')
+    vi.stubGlobal('navigator', { userAgent: navigator.userAgent, platform: navigator.platform, geolocation: { getCurrentPosition: (success: PositionCallback) => success({ coords: { latitude: 37.5, longitude: 127, accuracy: 1, altitude: null, altitudeAccuracy: null, heading: null, speed: null, toJSON: () => ({}) }, timestamp: 0, toJSON: () => ({}) }) } })
+    await wrapper.get('#current-location').trigger('click')
+    await flushPromises()
     getCurrentPosition.mock.calls[1]?.[0]({ coords: { latitude: 38, longitude: 128, accuracy: 1, altitude: null, altitudeAccuracy: null, heading: null, speed: null, toJSON: () => ({}) }, timestamp: 0, toJSON: () => ({}) })
     await wrapper.get('.search-form').trigger('submit')
     await flushPromises()
@@ -210,7 +214,7 @@ describe('위치 선택부터 실제 API 계약까지 검색 화면', () => {
     await flushPromises()
     expect(adapter).toHaveBeenCalledTimes(1)
   })
-  it('위치 성공 직후 예시 위치를 선택하면 대기 중이던 Promise가 새 선택을 덮지 않는다', async () => {
+  it('새 위치 요청이 완료되면 이전 성공 좌표를 덮어쓴다', async () => {
     const getCurrentPosition = vi.fn<Geolocation['getCurrentPosition']>()
     vi.stubGlobal('navigator', { geolocation: { getCurrentPosition } })
     httpClient.defaults.adapter = async config => jsonResponse(config, searchResponse)
@@ -219,7 +223,9 @@ describe('위치 선택부터 실제 API 계약까지 검색 화면', () => {
     const wrapper = mount(StationSearchView, { global: { plugins: [router, createPinia()] } })
     await wrapper.get('#current-location').trigger('click')
     getCurrentPosition.mock.calls[0]?.[0]({ coords: { latitude: 38, longitude: 128, accuracy: 1, altitude: null, altitudeAccuracy: null, heading: null, speed: null, toJSON: () => ({}) }, timestamp: 0, toJSON: () => ({}) })
-    await wrapper.get('#example-location').trigger('click')
+    vi.stubGlobal('navigator', { userAgent: navigator.userAgent, platform: navigator.platform, geolocation: { getCurrentPosition: (success: PositionCallback) => success({ coords: { latitude: 37.5, longitude: 127, accuracy: 1, altitude: null, altitudeAccuracy: null, heading: null, speed: null, toJSON: () => ({}) }, timestamp: 0, toJSON: () => ({}) }) } })
+    await wrapper.get('#current-location').trigger('click')
+    await flushPromises()
     await wrapper.get('.search-form').trigger('submit')
     await flushPromises()
     expect(router.currentRoute.value.query).toEqual(query)

@@ -10,7 +10,7 @@
 
 ## 남은 작업 실행 순서
 
-현재 T번호가 있는 미완료 구현 작업은 없다. 아래는 T16~T25의 완료된 구현 순서다. 맨 아래 미체크 항목은 다음 PR에서 재사용하는 점검 템플릿이다.
+신규 모바일 실사용 개선 T38~T42가 미완료다. T32의 차량/어댑터 구현은 T42에서 이어간다. [설계·검증 계획](docs/mobile-ux-improvement-plan.md)을 따른다. 아래는 T16~T25의 완료된 구현 순서다. 맨 아래 미체크 항목은 다음 PR에서 재사용하는 점검 템플릿이다.
 
 ```text
 T16 조회 개선 → T17 장애·복구 검증
@@ -506,3 +506,17 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 - [x] 실제 DB 상태 계산, HTTP/REST Docs, 프런트 구조/문구의 Red→Green을 확인했다.
 - [x] 분리 소스 전체 verify: Java451·프런트354·개발31·JAR4·MySQL8·재시작JAR7, 종료0.
 - [x] PR60 원격 CI·자동 머지13e9bee·main CI·CD 성공. cmux 운영 화면에서 정상 안내·19:06:17 KST 상태 성공 시각·18개 결과·브라우저 오류0을 확인했다.
+
+
+## 모바일 실사용 개선 — T38~T42
+
+설계 검토 대기. [코드 근거·동작·실패 조건·검증](docs/mobile-ux-improvement-plan.md). 기능별 순차 PR·CI·보호된 자동 머지, 작업 목적의 브랜치/worktree 이름을 사용한다.
+
+- [ ] T38 `fix/ios-location-recovery-work`: 위치 실패 분류·권한 변경 후 재요청·주소 대안·운영 합성 예시 제거. 로컬 전체verify 종료0, [실행 기록](docs/t38-verification.md). PR/CI/머지와 iOS 실기기 결과는 별도 기록.
+- [ ] T39 `feat/search-results-first`: 결과 우선 배치·조건 접기·주소 선택/지도/검색 동기화·모바일 첫 결과 검증.
+- [ ] T40 `feat/station-quick-directions`: 카드/마커→하단 패널→길찾기, 앱 선호 재사용·변경·초점/실패 복구.
+- [ ] T41 `feat/charging-information-summary`: 이용 조건 요약·시각 의미 설명·원본 정보 접기·빈 데이터 정리.
+- [ ] T42 `feat/vehicle-compatibility`: T32 후속 차량/사용 어댑터·공식 근거 카탈로그·다중 규격 검색/추천·중복 방지·선택 시 레이아웃 안정화.
+- [ ] 각 기능의 실제 Red/Green·전체 verify·cmux·PR head CI·실제 병합 근거를 연결한다.
+
+실행 상세: [모바일 실사용 개선 실행 계획](docs/mobile-ux-implementation-plan.md). 직접 순차 실행, 계획 검토 후 T38부터 시작한다.

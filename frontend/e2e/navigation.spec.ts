@@ -9,7 +9,10 @@ for (const device of [
 
     test('실제 충전소 목적지를 앱 링크로 전달하고 웹 대안과 검색 복귀를 유지한다', async ({ page }) => {
       await page.goto('/app/index.html#/stations')
-      await page.getByRole('button', { name: '검증용 예시 위치 사용' }).click()
+      await page.context().grantPermissions(['geolocation'])
+  await page.context().setGeolocation({ latitude: 37.5, longitude: 127 })
+  await page.getByRole('button', { name: '현재 위치 사용', exact: true }).click()
+  await expect(page.getByText('현재 위치: 37.5 / 127', { exact: true })).toBeVisible()
       await page.getByRole('button', { name: '주변 충전소 검색' }).click()
       await page.getByRole('link', { name: '데모 가까운 충전소 상세 보기' }).click()
       await page.locator('summary').filter({ hasText: '길찾기' }).click()
@@ -59,7 +62,10 @@ for (const device of [
 
 test('데스크톱 키보드로 길찾기를 열고 닫을 수 있다', async ({ page }) => {
   await page.goto('/app/index.html#/stations')
-  await page.getByRole('button', { name: '검증용 예시 위치 사용' }).click()
+  await page.context().grantPermissions(['geolocation'])
+  await page.context().setGeolocation({ latitude: 37.5, longitude: 127 })
+  await page.getByRole('button', { name: '현재 위치 사용', exact: true }).click()
+  await expect(page.getByText('현재 위치: 37.5 / 127', { exact: true })).toBeVisible()
   await page.getByRole('button', { name: '주변 충전소 검색' }).click()
   await page.getByRole('link', { name: '데모 가까운 충전소 상세 보기' }).click()
   await page.locator('summary').focus()

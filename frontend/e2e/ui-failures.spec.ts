@@ -4,19 +4,39 @@ import alternativeResponse from '../tests/fixtures/alternative.json' with { type
 
 const criteria = 'latitude=37.5&longitude=127&radiusMeters=1000&connector=DC_COMBO&limit=20'
 
-test('위치 권한을 거부해도 예시 위치를 선택할 수 있다', async ({ page }) => {
+test('위치 권한 거부 후 주소 입력으로 이동하고 재시도로 회복한다', async ({ page }) => {
   await page.addInitScript(() => {
+    let denied = true
     Object.defineProperty(navigator, 'geolocation', { configurable: true, value: {
-      getCurrentPosition: (_success: PositionCallback, failure: PositionErrorCallback) => failure({
-        code: 1, message: '검증용 권한 거부', PERMISSION_DENIED: 1, POSITION_UNAVAILABLE: 2, TIMEOUT: 3,
-      }),
+      getCurrentPosition: (success: PositionCallback, failure: PositionErrorCallback) => {
+        if (denied) {
+          denied = false
+          failure({ code: 1, message: '검증용 권한 거부', PERMISSION_DENIED: 1, POSITION_UNAVAILABLE: 2, TIMEOUT: 3 })
+          return
+        }
+        success({ coords: { latitude: 37.5, longitude: 127, accuracy: 1, altitude: null, altitudeAccuracy: null, heading: null, speed: null, toJSON: () => ({}) }, timestamp: Date.now(), toJSON: () => ({}) })
+      },
     } })
   })
   await page.goto('/app/index.html#/stations')
-  await page.getByRole('button', { name: '현재 위치 사용' }).click()
+  await expect(page.locator('#example-location')).toHaveCount(0)
+  await page.getByRole('button', { name: '현재 위치 사용', exact: true }).click()
   await expect(page.getByRole('alert')).toContainText('위치 권한이 거부되었습니다')
-  await page.getByRole('button', { name: '검증용 예시 위치 사용' }).click()
-  await expect(page.getByRole('status')).toContainText('예시 위치를 선택했습니다')
+  await page.getByRole('button', { name: '현재 위치 다시 시도' }).click()
+  await expect(page.getByText('현재 위치: 37.5 / 127', { exact: true })).toBeVisible()
+  await page.getByRole('button', { name: '주변 충전소 검색' }).click()
+  await expect(page.getByRole('link', { name: '데모 가까운 충전소 상세 보기' })).toBeVisible()
+})
+
+test('위치 실패 시 주소 검색으로 이동한다', async ({ page }) => {
+  await page.context().clearPermissions()
+  await page.addInitScript(() => Object.defineProperty(navigator, 'geolocation', { configurable: true, value: {
+    getCurrentPosition: (_success: PositionCallback, failure: PositionErrorCallback) => failure({ code: 1, message: 'denied', PERMISSION_DENIED: 1, POSITION_UNAVAILABLE: 2, TIMEOUT: 3 }),
+  } }))
+  await page.goto('/app/index.html#/stations')
+  await page.getByRole('button', { name: '현재 위치 사용', exact: true }).click()
+  await page.getByRole('button', { name: '주소로 검색하기' }).click()
+  await expect(page.getByRole('searchbox', { name: '주소·장소 검색', exact: true })).toBeFocused()
 })
 
 test('빈 검색 결과는 조건 변경 안내와 정확한 0개를 표시한다', async ({ page }) => {

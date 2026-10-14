@@ -337,3 +337,7 @@ CLI `--plugpass.ingestion.command.mode=auto` → ScheduledSyncService/Collection
 ## 상태 색상·지도 핀 T50
 
 충전기 상태 문자열 → `StatusBadge`의 보수적인 색조 선택과 기존 한국어 문구 → 목록·상세·패널에 같은 표현. 카카오 지도 어댑터는 충전소 ID의 클릭 가능한 버튼을 계속 만들고 CSS가 작은 시각 핀과 44px 터치 영역을 분리한다. 상태·거리·검색 API 판단은 유지한다. [검증 계획](t50-map-visuals-test-plan.md).
+
+## 지도 카드 행동 정리 T51
+
+검색 카드는 길찾기·상세 이동만 제공한다. 지도 마커 선택 → `StationSearchView.selectedStationId` → 해당 카드 강조 + 하단 정보 패널. `지도에서 선택` 이벤트/버튼은 제거한다. 지도 접기 버튼은 결과 화면에서 지도 왼쪽 아래에 배치해 첫 마커를 가리지 않고, SDK 배경 오류 시에는 일반 흐름에 배치한다. 카드 길찾기는 지도 실패에도 패널을 계속 연다. [검증 계획](t51-map-card-actions-test-plan.md).

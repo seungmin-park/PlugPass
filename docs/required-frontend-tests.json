@@ -35,5 +35,5 @@
   "src/features/search/views/PlaceSearchView.spec.ts",
   "src/features/search/stores/placeSearchStore.spec.ts",
   "src/features/search/api/placeApi.spec.ts",
-  "src/features/station-detail/navigation/navigationPreference.spec.ts"
+  "src/features/station-detail/navigation/navigationHandoff.spec.ts"
 ]

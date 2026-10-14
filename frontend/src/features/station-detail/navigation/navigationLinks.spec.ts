@@ -2,6 +2,19 @@ import { describe, expect, it } from 'vitest'
 import { createNavigationLinks } from './navigationLinks'
 
 describe('길찾기 목적지 경계', () => {
+  it('Android는 특정 지도 앱을 고정하지 않는 공통 위치 요청과 카카오맵 설치 대안을 만든다', () => {
+    const links = createNavigationLinks({ name: '시흥 충전소', latitude: 37.5, longitude: 127 }, 'android')
+    expect(links?.directHref).toContain('intent://0,0?q=37.5%2C127')
+    expect(links?.directHref).toContain('scheme=geo;')
+    expect(links?.directHref).not.toContain('package=')
+    expect(links?.directHref).toContain(encodeURIComponent('https://play.google.com/store/apps/details?id=net.daum.android.map'))
+  })
+
+  it('iPhone은 카카오맵 앱 주소로 목적지를 한 번에 전달한다', () => {
+    const links = createNavigationLinks({ name: '시흥 충전소', latitude: 37.5, longitude: 127 }, 'ios')
+    expect(links?.directHref).toBe('kakaomap://route?ep=37.5,127&by=car')
+  })
+
   it.each([
     { name: '', latitude: 37.5, longitude: 127 },
     { name: '  ', latitude: 37.5, longitude: 127 },
@@ -13,25 +26,11 @@ describe('길찾기 목적지 경계', () => {
     { name: '충전소', latitude: 37.5, longitude: -180.01 },
     { name: '충전소', latitude: 37.5, longitude: 180.01 },
   ])('유효하지 않은 목적지 %j로 외부 링크를 만들지 않는다', destination => {
-    expect(createNavigationLinks(destination, 'ios', 'https://plugpass.example/app/index.html')).toBeNull()
+    expect(createNavigationLinks(destination, 'ios')).toBeNull()
   })
 
-  it.each([[31.43, 122.37], [44.35, 132]])('네이버 지원 좌표 경계 %s/%s를 전달한다', (latitude, longitude) => {
-    const links = createNavigationLinks({ name: '경계', latitude, longitude }, 'ios', 'https://plugpass.example/app/index.html')
-    expect(links?.apps.map(app => app.id)).toEqual(['kakao', 'naver'])
-  })
-
-  it.each([[31.429, 127], [44.351, 127], [37.5, 122.369], [37.5, 132.001], [-90, -180], [90, 180], [0, 0]])(
-    '네이버 지원 범위 밖 %s/%s는 해당 앱 링크를 제공하지 않는다', (latitude, longitude) => {
-      const links = createNavigationLinks({ name: '범위 밖', latitude, longitude }, 'ios', 'https://plugpass.example/app/index.html')
-      expect(links?.apps.map(app => app.id)).toEqual(['kakao'])
-      expect(links?.webHref).toContain(`,${latitude},${longitude}`)
-    })
-
-  it('네이버 호출자에는 페이지 경로만 전달하고 검색 조건·fragment는 보내지 않는다', () => {
-    const links = createNavigationLinks({ name: '서울', latitude: 37.5, longitude: 127 }, 'ios',
-      'https://plugpass.example/app/index.html?token=private#/stations/2?latitude=36')
-    const naver = links?.apps.find(app => app.id === 'naver')
-    expect(new URL(naver?.href ?? '').searchParams.get('appname')).toBe('https://plugpass.example/app/index.html')
+  it('Android 목적지 이름을 인텐트 쿼리 데이터로 인코딩한다', () => {
+    const links = createNavigationLinks({ name: '충전소, A/B &?#=끝', latitude: 37.5, longitude: 127 }, 'android')
+    expect(links?.directHref).toContain(encodeURIComponent('37.5,127(충전소, A/B &?#=끝)'))
   })
 })

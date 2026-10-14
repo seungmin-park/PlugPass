@@ -8,6 +8,7 @@ import { createPinia } from 'pinia'
 import router from './index'
 
 const originalAdapter = httpClient.defaults.adapter
+if (originalAdapter === undefined) throw new Error('Axios 기본 adapter가 필요합니다')
 afterEach(() => { httpClient.defaults.adapter = originalAdapter })
 
 describe('웹앱 화면 이동', () => {

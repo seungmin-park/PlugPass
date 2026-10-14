@@ -19,7 +19,7 @@ for (const width of [320, 375]) test(`${width}px에서 GPS 결과를 지도와 �
       firstCardTop: firstCard.top, horizontalOverflow: document.documentElement.scrollWidth > innerWidth }
   })
   expect(layout.mapHeight).toBeGreaterThanOrEqual(260)
-  expect(layout.overlap).toBeGreaterThanOrEqual(8)
+  expect(layout.overlap).toBeLessThanOrEqual(-8)
   expect(layout.firstCardTop).toBeLessThan(620)
   expect(layout.horizontalOverflow).toBe(false)
 })

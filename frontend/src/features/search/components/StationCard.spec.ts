@@ -21,6 +21,13 @@ describe('충전소 검색 카드', () => {
     await wrapper.get('button[aria-expanded]').trigger('click')
     expect(wrapper.find('.charger-badges').exists()).toBe(false)
   })
+  it('카드 제목을 키보드로 선택할 수 있도록 지도 선택 이벤트를 전달한다', async () => {
+    const wrapper = mount(StationCard, { props: { station, selected: false } })
+    await wrapper.get('h3 button').trigger('click')
+    expect(wrapper.emitted('select')).toEqual([[]])
+    await wrapper.setProps({ selected: true })
+    expect(wrapper.get('h3 button').attributes('aria-pressed')).toBe('true')
+  })
   it('상세에 들어가지 않고 길찾기를 선택할 수 있다', async () => {
     const wrapper = mount(StationCard, { props: { station } })
     expect(wrapper.find('button[aria-label="가까운 충전소 길찾기"]').exists()).toBe(true)

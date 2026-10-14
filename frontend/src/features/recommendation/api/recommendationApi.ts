@@ -29,4 +29,5 @@ function isRecommendedStation(value: unknown): value is RecommendedStation {
   return isRecord(value) && isStationId(value.id) && isNonblankString(value.name)
     && isNonnegativeNumber(value.distanceMeters) && Array.isArray(value.reasonCodes)
     && value.reasonCodes.every(isNonblankString)
+    && (value.chargerStatuses === undefined || (Array.isArray(value.chargerStatuses) && value.chargerStatuses.every(isNonblankString)))
 }

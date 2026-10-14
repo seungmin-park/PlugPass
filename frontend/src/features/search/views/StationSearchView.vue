@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import SearchForm from '../components/SearchForm.vue'
 import PlaceSearch from '../components/PlaceSearch.vue'
 import type { PlaceMatch } from '../api/placeApi'
+import CollectionSummary from '../../charging-info/components/CollectionSummary.vue'
 import StationCard from '../components/StationCard.vue'
 import StationMap from '../components/StationMap.vue'
 import StationActionSheet from '../../station-detail/components/StationActionSheet.vue'
@@ -14,6 +15,8 @@ import { isSearchArea, searchCriteriaForArea, type SearchArea } from '../searchA
 import type { SearchConditions, SearchCriteria } from '../types'
 import { clearVehicleProfile, readVehicleProfile, saveVehicleProfile } from '../../vehicle/vehicleProfile'
 import { resolveVehicleCompatibility } from '../../vehicle/vehicleCompatibility'
+import { vehicleCatalog, adapterCatalog } from '../../vehicle/vehicleCatalog'
+import { connectorLabel } from '../../charging-info/presentation'
 import { formatTimestamp } from '../../charging-info/presentation'
 import { useStationSearchStore } from '../stores/stationSearchStore'
 import { useCurrentLocation, type LocationCoordinates } from '../../../shared/location/useCurrentLocation'
@@ -44,6 +47,13 @@ const savedConditions = computed<SearchConditions | null>(() => {
     ...(profile.vehicleSupportConfirmed ? { vehicleSupportConfirmed: true } : {}) }
 })
 const selectedConditions = ref<SearchConditions | null>(savedConditions.value)
+const conditionSummary = computed(() => {
+  const conditions = selectedConditions.value
+  if (!conditions) return '차량과 장비를 선택하세요'
+  const vehicle = vehicleCatalog.find(item => item.id === conditions.vehicleId)?.label
+  const equipment = adapterCatalog.filter(item => conditions.adapterIds?.includes(item.id)).map(item => item.label)
+  return [vehicle ?? (conditions.connectors ?? [conditions.connector]).map(connectorLabel).join(' · '), ...equipment].join(' · ')
+})
 const selectedStationId = ref<number | null>(null)
 const selectedStation = computed(() => store.response?.stations.find(station => station.id === selectedStationId.value))
 watch(() => store.status, status => {
@@ -249,7 +259,7 @@ function directionsInstallHref(station: StationSummary): string | undefined {
     </div>
     <div class="search-layout" :class="{ 'results-layout': confirmedCriteria }">
       <details id="search-conditions" class="search-panel" :open="conditionsOpen || !confirmedCriteria || !!fieldErrors.connector || !!fieldErrors.connectors || !!fieldErrors.vehicleId" @toggle="conditionsOpen = ($event.target as HTMLDetailsElement).open">
-        <summary><span>{{ confirmedCriteria ? '검색 조건 변경' : '검색 위치와 조건' }}</span><span v-if="confirmedCriteria" class="criteria-summary">{{ locationLabel }} 주변</span></summary>
+        <summary><span>{{ confirmedCriteria ? '검색 조건 변경' : '검색 위치와 조건' }}</span><span v-if="confirmedCriteria" class="criteria-summary">{{ conditionSummary }}</span></summary>
         <div class="panel-heading">
           <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16M8 3v6m8 0v6M8 15v6" /></svg>
           <h2>검색 조건</h2>
@@ -319,15 +329,14 @@ function directionsInstallHref(station: StationSummary): string | undefined {
             {{ store.response.stations.length ? '전체 수집 완료 전 정보입니다. 일부 충전소만 표시될 수 있습니다.' : '아직 전체 수집이 완료되지 않았습니다. 수집 후 다시 조회해 주세요.' }}
           </p>
           <p v-else-if="!store.response.stations.length" class="request-notice" role="status">조건에 맞는 충전소가 없습니다. 지도 위치나 차량 조건을 변경해 주세요.</p>
-          <p v-if="store.response.collection?.state === 'DELAYED'" class="collection-summary" role="status">갱신이 지연되고 있습니다. 마지막으로 저장된 정보를 표시합니다.</p>
-          <p v-else-if="store.response.collection?.state === 'NOT_READY'" class="collection-summary" role="status">전체 데이터 준비 전 · 일부 지역의 정보가 없을 수 있습니다.</p>
+          <CollectionSummary :collection="store.response.collection" />
           <p class="results-count">{{ store.response.stations.length }}개 표시 · 최대 {{ confirmedCriteria.limit }}개 표시</p>
           <p v-if="selectedStation" role="status">선택한 충전소: {{ selectedStation.name }}</p>
           <div class="station-list"><StationCard v-for="station in store.response.stations" :key="station.id" :station="station"
             :detail-href="detailHref(station.id)" :directions-href="directionsHref(station)" :directions-install-href="directionsInstallHref(station)" :selected="selectedStationId === station.id"
-            @directions="selectStation(station.id)" @open-detail="openDetail(station.id)" /></div>
+            @select="selectStation(station.id)" @directions="selectStation(station.id)" @open-detail="openDetail(station.id)" /></div>
           <p v-if="vehicleResultMessage" class="vehicle-result-note">{{ vehicleResultMessage }}</p>
-          <p class="results-caution">{{ confirmedCriteria.area ? '지도 중심에서의 직선거리 기준입니다.' : '선택 위치에서의 직선거리 기준입니다.' }} 이용 가능 보고는 도착 시점의 빈자리를 보장하지 않습니다.</p>
+          <p class="results-caution">{{ confirmedCriteria.area ? '지도 중심에서의 직선거리 기준입니다.' : '선택 위치에서의 직선거리 기준입니다.' }} 이용 가능 표시는 도착 시점의 빈자리를 보장하지 않습니다.</p>
           <details class="collection-details"><summary>정보 갱신 안내</summary>
           <p class="result-time">조회 시각: {{ formatTimestamp(store.fetchedAt) }}</p>
           <p class="result-time">전체 수집 성공 시각: {{ formatTimestamp(store.response.lastSuccessfulRunAt) }}</p>

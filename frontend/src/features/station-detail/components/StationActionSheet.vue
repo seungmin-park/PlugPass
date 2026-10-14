@@ -28,7 +28,7 @@ onUnmounted(() => {
   <section ref="sheet" class="station-action-sheet" role="dialog" :aria-labelledby="titleId" tabindex="-1" @keydown.esc.stop.prevent="emit('close')">
     <button type="button" class="secondary-button sheet-close" @click="emit('close')">닫기</button>
     <h2 :id="titleId">{{ props.station.name }}</h2>
-    <p>호환 충전기 {{ station.compatibleChargerCount }}대 · 이용 가능 보고 {{ station.reportedAvailableCount }}대</p>
+    <p>{{ station.compatibleChargerCount }}대 중 {{ station.reportedAvailableCount }}대 이용 가능</p>
     <p class="access-summary">{{ accessSummary }}</p>
     <StationDirections :destination="station" expanded />
     <a :href="detailHref" @click.exact.left.prevent="emit('open-detail')">이용 조건·상세 보기</a>

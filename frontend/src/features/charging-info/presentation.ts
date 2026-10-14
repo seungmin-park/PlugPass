@@ -1,5 +1,5 @@
 const statusLabels = new Map<string, string>([
-  ['AVAILABLE', '이용 가능 보고'], ['OCCUPIED', '사용 중'], ['UNAVAILABLE', '이용 불가'], ['UNKNOWN', '상태 확인 불가'],
+  ['AVAILABLE', '이용 가능'], ['OCCUPIED', '사용 중'], ['UNAVAILABLE', '이용 불가'], ['UNKNOWN', '상태 확인 불가'],
 ])
 const freshnessLabels = new Map<string, string>([
   ['RECENT', '최근 관측'], ['STALE', '오래된 정보'], ['UNVERIFIED', '최신성 확인 불가'],
@@ -7,8 +7,8 @@ const freshnessLabels = new Map<string, string>([
 export function statusLabel(status: string): string { return statusLabels.get(status) ?? '상태 확인 불가' }
 export function freshnessLabel(freshness: string): string { return freshnessLabels.get(freshness) ?? '최신성 확인 불가' }
 const reasonLabels = new Map<string, string>([
-  ['RECENT_AVAILABLE', '최근 관측에서 이용 가능으로 보고되었습니다'],
-  ['UNVERIFIED_AVAILABLE', '이용 가능 보고가 있으나 최신성을 확인할 수 없습니다'],
+  ['RECENT_AVAILABLE', '최근 확인된 이용 가능 충전기가 있어 먼저 살펴볼 수 있습니다'],
+  ['UNVERIFIED_AVAILABLE', '이용 가능한 충전기가 있습니다. 출발 전 상태를 확인해 주세요'],
   ['INCOMPATIBLE_CONNECTOR', '선택한 차량 커넥터와 호환되지 않습니다'],
   ['DELETED_BY_PROVIDER', '공급자가 삭제한 충전기입니다'],
   ['ACCESS_RESTRICTED', '이용 제한이 보고되었습니다'],
@@ -40,7 +40,7 @@ export function formatTimestamp(time: string | null): string {
   const date = new Date(time)
   if (!Number.isFinite(date.getTime())) return '확인 불가'
   return new Intl.DateTimeFormat('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit',
-    hour: '2-digit', minute: '2-digit', second: '2-digit', timeZoneName: 'short' }).format(date)
+    hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'Asia/Seoul' }).format(date)
 }
 export function observationSummary(time: string | null): string {
   if (!time) return '현장 관측 시각이 제공되지 않았습니다. 현재 상태는 출발 전 확인해 주세요.'
@@ -51,7 +51,7 @@ export function observationSummary(time: string | null): string {
 export function formatSourceStatusChangedAt(raw: string | null): string | null {
   const value = raw?.trim()
   if (!value) return null
-  const unparsed = `원본 시각: ${value} · 형식 해석 불가, 시간대 미확인`
+  const unparsed = '변경 시각 확인 필요 · 시간대 미확인'
   if (!/^\d{14}$/.test(value)) return unparsed
   const year = Number(value.slice(0, 4))
   const month = Number(value.slice(4, 6))
@@ -66,3 +66,8 @@ export function formatSourceStatusChangedAt(raw: string | null): string | null {
     || calendarDate.getUTCMinutes() !== minute || calendarDate.getUTCSeconds() !== second) return unparsed
   return `${value.slice(0, 4)}-${value.slice(4, 6)}-${value.slice(6, 8)} ${value.slice(8, 10)}:${value.slice(10, 12)}:${value.slice(12, 14)} · 시간대 미확인`
 }
+
+const connectorLabels = new Map<string, string>([
+  ['DC_COMBO', 'DC 콤보'], ['DC_CHADEMO', 'CHAdeMO'], ['AC_SLOW', 'AC 완속'], ['AC_THREE_PHASE', 'AC 3상'], ['NACS', 'NACS'],
+])
+export function connectorLabel(connector: string): string { return connectorLabels.get(connector) ?? '규격 확인 필요' }

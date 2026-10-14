@@ -4,6 +4,10 @@ import com.plugpass.search.dto.ChargerObservation;
 import com.plugpass.search.dto.StationDetail;
 import com.plugpass.search.service.StationQueryService;
 import com.plugpass.ingestion.service.CollectionStatusService;
+import com.plugpass.ingestion.dto.CollectionStatus;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.Arguments;
+import java.util.stream.Stream;
 
 import java.time.Instant;
 import java.util.List;
@@ -23,6 +27,7 @@ import org.springframework.boot.restdocs.test.autoconfigure.AutoConfigureRestDoc
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -43,6 +48,33 @@ class StationDetailHttpTests {
     @MockitoBean private StationQueryService stationQueryService;
     @MockitoBean private CollectionStatusService collectionStatusService;
 
+    @ParameterizedTest
+    @DisplayName("상세는 원본 규격을 보존하며 해석된 규격과 전체 수집 상태를 반환한다")
+    @MethodSource("connectorContexts")
+    void exposesConnectorAndCollectionContext(String connectorCode, String state, List<String> connectors) throws Exception {
+        Instant now = Instant.parse("2026-10-15T00:00:00Z");
+        ChargerDetails details = new ChargerDetails(connectorCode,"24시간","N",null,null,null,null,null,null);
+        ChargerObservation charger = new ChargerObservation("01",ChargerStatus.OCCUPIED,"3",null,now.minusSeconds(86400),
+                new FreshnessAssessment(Freshness.UNVERIFIED,"SOURCE_OBSERVED_AT_MISSING"),details);
+        StationDetail detail = mock(StationDetail.class);
+        when(detail.id()).thenReturn(7L); when(detail.provider()).thenReturn("ME"); when(detail.providerStationId()).thenReturn("one");
+        when(detail.name()).thenReturn("충전소"); when(detail.location()).thenReturn(new GeoPoint(37.5,126.6)); when(detail.chargers()).thenReturn(List.of(charger));
+        when(stationQueryService.detail(7L)).thenReturn(detail);
+        when(collectionStatusService.current()).thenReturn(new CollectionStatus(state,null,now,now,"SUCCESS",300));
+        mockMvc.perform(get("/api/v1/stations/7")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.collection.state").value(state))
+                .andExpect(jsonPath("$.collection.lastStatusSuccessAt").value(now.toString()))
+                .andExpect(jsonPath("$.chargers[0].status").value("OCCUPIED"))
+                .andExpect(jsonPath("$.chargers[0].connectorCode").value(connectorCode))
+                .andExpect(jsonPath("$.chargers[0].connectors").value(equalTo(connectors)));
+    }
+
+    static Stream<Arguments> connectorContexts() {
+        return Stream.of(Arguments.of("04", "CURRENT", List.of("DC_COMBO")),
+                Arguments.of("06", "DELAYED", List.of("DC_CHADEMO", "AC_THREE_PHASE", "DC_COMBO")),
+                Arguments.of("99", "NOT_READY", List.of()));
+    }
+
     @Test
     @DisplayName("상세의 상태·원본·UTC 시각·제한 정보 값과 REST Docs 모든 필드를 확인한다")
     void documentsDetail() throws Exception {
@@ -55,6 +87,7 @@ class StationDetailHttpTests {
         when(detail.id()).thenReturn(7L); when(detail.provider()).thenReturn("ME");when(detail.providerStationId()).thenReturn("one");
         when(detail.name()).thenReturn("충전소");when(detail.location()).thenReturn(new GeoPoint(37.5,126.6));when(detail.chargers()).thenReturn(List.of(available,occupied,unknown));
         when(stationQueryService.detail(7L)).thenReturn(detail);
+        when(collectionStatusService.current()).thenReturn(new CollectionStatus("CURRENT",now,now,now,"SUCCESS",300));
         mockMvc.perform(get("/api/v1/stations/{stationId}",7))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.id").value(7)).andExpect(jsonPath("$.providerStationId").value("one"))
                 .andExpect(jsonPath("$.chargers.length()").value(3))
@@ -73,6 +106,13 @@ class StationDetailHttpTests {
                 .andExpect(jsonPath("$.chargers[2].freshness").value("UNVERIFIED"))
                 .andExpect(jsonPath("$.chargers[2].reasonCode").value("SOURCE_OBSERVED_AT_MISSING"))
                 .andDo(document("station-detail",pathParameters(parameterWithName("stationId").description("내부 충전소 ID, 공급자 ID와 다름")),responseFields(
+                        fieldWithPath("collection").description("전체 수집 상태; 개별 충전기 수신 시각과 무관"),
+                        fieldWithPath("collection.state").description("CURRENT/DELAYED/NOT_READY"),
+                        fieldWithPath("collection.lastCatalogSuccessAt").description("최근 전체 목록 수집 성공 UTC 시각"),
+                        fieldWithPath("collection.lastStatusSuccessAt").description("최근 상태 수집 성공 UTC 시각"),
+                        fieldWithPath("collection.lastAttemptAt").description("최근 수집 시도 UTC 시각"),
+                        fieldWithPath("collection.lastAttemptStatus").description("최근 수집 결과"),
+                        fieldWithPath("collection.statusIntervalSeconds").description("상태 수집 간격(초)"),
                         fieldWithPath("id").description("내부 충전소 ID"),fieldWithPath("provider").description("공급자"),
                         fieldWithPath("providerStationId").description("공급자 충전소 ID"),fieldWithPath("name").description("이름"),
                         fieldWithPath("latitude").description("위도"),fieldWithPath("longitude").description("경도"),
@@ -82,6 +122,7 @@ class StationDetailHttpTests {
                         fieldWithPath("chargers[].sourceObservedAt").type(JsonFieldType.STRING).optional().description("신뢰 가능한 관측 시각, UTC offset ISO 8601, 미확인 null"),
                         fieldWithPath("chargers[].collectedAt").description("수집 시각, UTC offset ISO 8601, 최신성 근거 아님"),
                         fieldWithPath("chargers[].freshness").description("RECENT/STALE/UNVERIFIED"),fieldWithPath("chargers[].reasonCode").description("최신성 판정의 근거 코드"),
+                        fieldWithPath("chargers[].connectors").description("해석된 연결 규격 배열; 알 수 없는 코드는 빈 배열"),
                         fieldWithPath("chargers[].connectorCode").type(JsonFieldType.STRING).optional().description("공급자 조합 원본 코드"),
                         fieldWithPath("chargers[].useTime").type(JsonFieldType.STRING).optional().description("원본 이용 시간, 미제공 null"),
                         fieldWithPath("chargers[].limitYn").type(JsonFieldType.STRING).optional().description("원본 제한 여부, 미제공 null; null을 제한 없음으로 추정하지 않음"),

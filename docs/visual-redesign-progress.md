@@ -3,8 +3,8 @@
 기준: 사용자 승인 계획, origin/main 0c8f4a0. 별도 worktree PlugPass-visual.
 
 1. 공통 디자인·조건 유지 헤더: PR84 병합, 운영 배포 실패 원인 확인.
-2. 조건→지도→목록, 요약 카드·펼침·선택: PR85 검증 중.
-3. 상세 수집 계약·규격·시각·제한 안내: 대기.
+2. 조건→지도→목록, 요약 카드·펼침·선택: PR85 필수 CI 성공·병합.
+3. 상세 수집 계약·규격·시각·제한 안내·README: 로컬 전체 검증 완료, PR 전달 단계.
 
 공유 경계: 1의 공통 토큰은 2·3 화면에 적용. 2의 카드 요약은 3의 상태 의미를 유지해야 함.
 개별 수신 시각으로 지연을 계산하지 않고 서버 collection을 사용한다.
@@ -34,4 +34,35 @@ cmux workspace:1000070003 / 검증 surface:1000070011.
 - 검증 명령: `npm --prefix frontend run test:unit -- src/features/search/views/MapSearchView.spec.ts` (최종7/7). Red 로그 `/tmp/plugpass-map-intent-red.log`, `/tmp/plugpass-map-wheel-red.log`; 폰트 Red `/tmp/plugpass-font-red.log`.
 - 불변식: 지도 자동 초기화는 사용자 위치 선택이 아니다. 주소/GPS를 명시적으로 선택하면 지도 선택 상태를 해제한다. 지도 이동 중 영역이 null이면 준비 안내를 유지하고 GPS로 전환하지 않는다.
 
-- PR85 최종 공용 verify 종료0: Java458·프런트422·개발 E2E56·JAR5·MySQL 계약8/브라우저7, 실패·오류·skip0. `/tmp/plugpass-pr2-final-verify.log`; 글꼴 분할본과 지도 선택 수정 포함. 운영 배포는 PR85 필수 CI·병합 뒤 재확인한다.
+## 3. 상태 맥락과 프로젝트 소개
+
+- 상세 HTTP의 collection 누락3건, 규격·원본 숨김·수집 상태 표현·카드 선택·조건 요약을 먼저 assertion Red로 확인했다. 로그 `/tmp/plugpass-status-red-java.log`, `/tmp/plugpass-status-red-ui.log`, `/tmp/plugpass-status-red-context.log`.
+- Green: DTO에 기존 규격 해석·전체 수집 상태를 추가하고 화면은 공통 CollectionSummary/ChargerStatusSummary를 사용한다. 추천 상태 배열은 호환 충전기의 실제 상태만 포함하며 AVAILABLE/OCCUPIED 혼합+비호환 제외를 정확한 목록으로 검증한다. 새 필드 미제공·알 수 없는 값은 확인 필요로 표현한다.
+- 정상 수집+오래된 개별 수신 시각, 전체 지연, 준비 전, 제한·삭제·알 수 없는 규격을 구분한다. 공급자 상태 변경 시각의 시간대는 추정하지 않는다. 외부 HTTP 실패·GPS 거부·지도 SDK 실패·응답 역전은 기존 회귀 suite를 유지한다.
+- Refactor: 반복되는 상태 요약/수집 안내를 표현 컴포넌트로 추출하고, 중복·덮어쓰기 CSS를 정리했다. View가 위치/라우팅·선택을 소유하고 DTO는 응답 변환, 기존 도메인은 규격 판단을 소유한다. 새 저장 구조나 트랜잭션 변경은 없다.
+- 전체 E2E에서 새 문구에 맞지 않는 assertion과 데스크톱 첫 제목 밀림을 확인했다. 문구 계약을 갱신하고 지도240px·수집 안내 줄 배치를 조정했다. 320/375/430/1440px 첫 제목·겹침·가로 넘침·44px 터치·키보드·200% 글자 확대를 다시 검사한다.
+- README를 제품 소개·사용 흐름·상태 한계·기술 역할·로컬 실행·검증 안내 중심으로 다시 작성했다. 상대 링크 검사 누락0.
+- HTTP 배열 검증 보강 중 JsonPath의 실제 배열 타입을 List 구현 클래스로 변환하는 assertion이 null을 반환했다. 응답 원문 배열은 정상임을 확인하고 Hamcrest 전체 배열 동등성으로 수정했다. 기능 Red로 계산하지 않았다.
+- 현재 대상/프런트 검증: Java 상세10·추천 도메인 통과, 프런트431·type-check·lint 통과. 최종 전체 verify와 원격 CI/배포 결과는 아래에 추가한다.
+- PR85 최종 공용 verify 종료0: Java458·프런트422·개발 E2E56·JAR5·MySQL 계약8/브라우저7. `/tmp/plugpass-pr2-final-verify.log`.
+
+### 최종 검증 중 발견한 경계
+
+- 상세에 collection이 추가되면서 MySQL 재시작 전체 응답 비교가 실패했다. 테스트 수집 시계(2026-10-05)와 운영 JAR 실제 시계의 차이로 검색·상세 모두 CURRENT→DELAYED가 되는 정상 계산이다. 목록과 상세 collection 전체 일치를 먼저 assertion하고, state를 제외한 모든 저장 필드의 재시작 전후 동등성은 유지했다. `/tmp/plugpass-stage3-final-verify.log`의 실패를 통과로 계산하지 않았다.
+- 실제 로컬 SDK 요청은 localhost:5183과 127.0.0.1:5183에서 HTTP401, 운영 도메인 Origin에서는 HTTP200이었다. 로컬 도메인 허용 범위 때문에 cmux의 실제 지도는 실패 화면이다. 자동 E2E는 SDK mock을 사용한다. cmux에서는 카드 펼침→상세→대체→헤더 복귀와 query 유지를 직접 확인했다. 실제 타일·지역 검색은 운영 배포 후 확인한다.
+- 로컬 최종 화면 캡처: `frontend/test-results/redesign-{320,375,430,1440}.png`, `redesign-large-text.png`; 직접 브라우저 상세 `/tmp/plugpass-final-local-detail.png`. 운영 전 기준 `/tmp/plugpass-production-before.png`. 데이터가 서로 다르므로 픽셀 동일성 대신 위계·첫 제목·겹침·조건 복귀를 비교한다.
+- iPhone Safari 실기기 지도 터치·글자 확대·앱 전환은 이 환경에서 실행하지 않았으며 Chromium의 모바일 크기 검증으로 대체 완료 처리하지 않는다.
+
+### 최종 로컬 검증 결과
+
+`/tmp/plugpass-stage3-final2-verify.log`, 현재 cmux 검증 pane에서 `VERIFY_EXIT:0` 확인. Java462·프런트431·개발 headed E2E57·JAR 브라우저5·MySQL 계약8/브라우저7, 실패·오류·skip0. type-check/lint/build 통과. MySQL 재시작 뒤 저장 데이터·수집 이력 유지 및 시간에 따른 상세/목록 지연 상태 일치 통과.
+
+320/375/430/1440px 순서·첫 제목·겹침·넘침, 200% 글자 확대, 키보드 선택/닫기, 핀44px·표시20px을 확인했다. 대비: 본문13.98:1, 보조 글자5.99:1, 흰 글자/청록 버튼6.15:1, 흰 배경 상태 문구8.30/6.64/7.97/7.50:1. 원격 CI·운영 배포는 이 로컬 결과와 별도로 기록한다.
+
+
+### PR 전달 근거
+
+- [PR84](https://github.com/seungmin-park/PlugPass/pull/84): CI 성공·보호된 자동 병합 `030f956`. 첫 CD는 글꼴 크기 제한으로 실패했으며 PR85에 수정 포함.
+- [PR85](https://github.com/seungmin-park/PlugPass/pull/85): 최종 head `720a76b`, CI `38612594674` 성공, 보호된 자동 병합 `2e9e29b`. 이후 main CI와 Production CD가 운영 전달을 검증한다.
+- 3단계는 최신 main `2e9e29b`를 병합했다. squash 이력으로 생긴 중복 충돌을 해결한 뒤 전체 파일 tree `28e269e2a02d60aab24c51ea3abfc00c62dbd922`가 로컬 검증한 구현과 같음을 확인했다. 이후 변경은 작업 상태 문서뿐이다.
+- 최종 원격 CI·CD·운영 지역별 화면 확인 결과는 PR 본문/Actions 링크에 후속 기록한다. 이 문서의 로컬 통과를 배포 성공으로 해석하지 않는다.

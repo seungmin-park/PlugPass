@@ -1,3 +1,4 @@
+import { isCollectionStatus } from '../../search/api/stationApi'
 import type { StationDetail } from '../types'
 import { ApiError } from '../../../shared/api/apiError'
 import { getValidatedJson } from '../../../shared/api/httpClient'
@@ -14,5 +15,6 @@ export async function getStationDetail(stationId: number, signal?: AbortSignal):
 function isStationDetail(value: unknown): value is StationDetail {
   return isRecord(value) && isStationId(value.id) && hasNonblankStrings(value, ['provider', 'providerStationId', 'name'])
     && isNumberInRange(value.latitude, -90, 90) && isNumberInRange(value.longitude, -180, 180)
+    && (value.collection === undefined || value.collection === null || isCollectionStatus(value.collection))
     && Array.isArray(value.chargers) && value.chargers.every(isChargerInfo)
 }

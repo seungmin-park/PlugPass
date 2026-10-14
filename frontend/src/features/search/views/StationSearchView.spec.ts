@@ -47,6 +47,7 @@ describe('위치 선택부터 실제 API 계약까지 검색 화면', () => {
     expect(getCurrentPosition).toHaveBeenCalledTimes(1)
     expect(adapter).toHaveBeenCalledTimes(1)
     expect(router.currentRoute.value.query).toMatchObject({ latitude: '37.5', longitude: '127', vehicleId: 'kona-electric-2020-kr' })
+    expect(wrapper.get('.criteria-summary').text()).toContain('현대 코나')
     expect(wrapper.find('.station-map-panel').exists()).toBe(true)
     expect(wrapper.findAll('.station-card')).toHaveLength(2)
   })
@@ -210,7 +211,7 @@ describe('위치 선택부터 실제 API 계약까지 검색 화면', () => {
   })
   it.each([
     ['CURRENT', '수집 정상'],
-    ['DELAYED', '갱신이 지연되고 있습니다. 마지막으로 저장된 정보를 표시합니다'],
+    ['DELAYED', '정보 갱신 지연·출발 전 확인'],
     ['NOT_READY', '전체 데이터 준비 전'],
   ])('수집 상태 %s를 충전기 관측 시각과 구분한다', async (state, message) => {
     const collection = { state, lastCatalogSuccessAt: '2026-10-13T00:00:00Z', lastStatusSuccessAt: null,

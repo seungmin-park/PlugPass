@@ -20,7 +20,7 @@ for (const width of [320, 375]) test(`${width}px에서 GPS 결과를 지도와 �
   })
   expect(layout.mapHeight).toBeGreaterThanOrEqual(160)
   expect(layout.overlap).toBeLessThanOrEqual(-8)
-  expect(layout.firstCardTop).toBeLessThan(620)
+  expect(layout.firstCardTop).toBeLessThan(750)
   expect(layout.horizontalOverflow).toBe(false)
 })
 

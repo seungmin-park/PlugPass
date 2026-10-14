@@ -31,6 +31,8 @@ public final class CandidatePolicy {
         return new CandidateGroups(preferred,confirmation,excluded);
     }
     private RankedCandidate ranked(StationCandidate candidate, List<String> reasons) {
-        return new RankedCandidate(candidate.id(),candidate.name(),candidate.distanceMeters(),reasons);
+        return new RankedCandidate(candidate.id(),candidate.name(),candidate.distanceMeters(),reasons,
+                candidate.chargers().stream().filter(charger -> candidate.connectors().matches(charger.connectorCode()))
+                        .map(CandidateCharger::status).toList());
     }
 }

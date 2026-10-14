@@ -19,6 +19,19 @@ class RecommendationTests {
     private final CandidatePolicy candidatePolicy = new CandidatePolicy();
 
     @Test
+    @DisplayName("대체 후보 상태 분포는 호환 충전기의 상태만 빠짐없이 제공한다")
+    void includesOnlyCompatibleChargerStatuses() {
+        CandidateCharger available = charger("04", ChargerStatus.AVAILABLE, Freshness.RECENT, "N", "24시간", null);
+        CandidateCharger occupied = charger("06", ChargerStatus.OCCUPIED, Freshness.RECENT, "N", "24시간", null);
+        CandidateCharger incompatible = charger("02", ChargerStatus.AVAILABLE, Freshness.RECENT, "N", "24시간", null);
+        StationCandidate candidate = new StationCandidate(1L, "혼합 상태", 100, Connector.DC_COMBO,
+                List.of(available, occupied, incompatible));
+        CandidateGroups groups = candidatePolicy.rank(List.of(candidate));
+        assertThat(groups.preferred().getFirst().chargerStatuses())
+                .containsExactly(ChargerStatus.AVAILABLE, ChargerStatus.OCCUPIED);
+    }
+
+    @Test
     @DisplayName("최신 이용 가능 후보는 우선 그룹에 두고 거리와 ID로 정렬한다")
     void ranksRecentAvailable() {
         CandidateCharger charger = charger("04", ChargerStatus.AVAILABLE, Freshness.RECENT, "N", "24시간", null);

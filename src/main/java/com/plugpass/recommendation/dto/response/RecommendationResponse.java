@@ -1,5 +1,6 @@
 package com.plugpass.recommendation.dto.response;
 import java.util.List;
+import com.plugpass.station.domain.ChargerStatus;
 import com.plugpass.recommendation.domain.CandidateGroups;
 import com.plugpass.recommendation.domain.RankedCandidate;
 public record RecommendationResponse(List<CandidateResponse> preferred, List<CandidateResponse> requiresConfirmation, List<CandidateResponse> excluded) {
@@ -7,9 +8,9 @@ public record RecommendationResponse(List<CandidateResponse> preferred, List<Can
         return new RecommendationResponse(groups.preferred().stream().map(CandidateResponse::from).toList(),
                 groups.requiresConfirmation().stream().map(CandidateResponse::from).toList(),groups.excluded().stream().map(CandidateResponse::from).toList());
     }
-    public record CandidateResponse(Long id, String name, double distanceMeters, List<String> reasonCodes) {
+    public record CandidateResponse(Long id, String name, double distanceMeters, List<String> reasonCodes, List<ChargerStatus> chargerStatuses) {
         static CandidateResponse from(RankedCandidate candidate) {
-            return new CandidateResponse(candidate.id(),candidate.name(),candidate.distanceMeters(),candidate.reasonCodes());
+            return new CandidateResponse(candidate.id(),candidate.name(),candidate.distanceMeters(),candidate.reasonCodes(),candidate.chargerStatuses());
         }
     }
 }

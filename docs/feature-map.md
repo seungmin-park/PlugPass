@@ -325,3 +325,7 @@ CLI `--plugpass.ingestion.command.mode=auto` → ScheduledSyncService/Collection
 ## 위치 오류 안내 간격 T47
 
 `useCurrentLocation`의 권한 오류 → `StationSearchView`의 오류 문구 → 재시도 또는 주소 검색. View가 두 행동의 배치와 포커스를 소유한다. 320px 화면에서 문구 위·아래 및 버튼 사이의 실제 좌표 간격과 가로 넘침을 브라우저에서 검증한다.
+
+## 현재 위치 중심 검색 T48
+
+저장 차량/차량 선택 → View의 자동 위치 요청 판단 → `useCurrentLocation` → URL 검색 조건 → `stationSearchStore`/API → 카카오 지도와 결과 목록 시트. 지도 영역을 먼저 선택하거나 URL이 있으면 자동 GPS를 건너뛴다. 위치 실패는 상단 안내와 재시도·주소 검색으로 회복한다. [시나리오와 출처](t48-nearby-first-test-plan.md).

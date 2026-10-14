@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import SearchForm from '../components/SearchForm.vue'
 import PlaceSearch from '../components/PlaceSearch.vue'
@@ -35,6 +35,7 @@ const revealResultsOnSuccess = ref(false)
 const pendingArea = ref<SearchArea | null>(null)
 const restoredArea = ref<SearchArea | undefined>(undefined)
 const savedProfile = ref((() => { try { return readVehicleProfile(window.localStorage) } catch { return null } })())
+const autoLocationAttempted = ref(false)
 const savedConditions = computed<SearchConditions | null>(() => {
   const profile = savedProfile.value
   if (!profile) return null
@@ -99,6 +100,11 @@ watch(() => route.query, () => {
   else store.reset()
 }, { immediate: true })
 onBeforeUnmount(() => store.reset())
+onMounted(() => {
+  if (parsedCriteria.value.kind !== 'empty' || !savedConditions.value) return
+  autoLocationAttempted.value = true
+  void selectCurrentLocation()
+})
 
 async function selectCurrentLocation(): Promise<void> {
   selectedLocation.value = null
@@ -108,7 +114,12 @@ async function selectCurrentLocation(): Promise<void> {
   selectedLocation.value = coordinates
   locationLabel.value = '현재 위치'
   needsVehicleSelection.value = false
-  guidance.value = '현재 위치를 선택했습니다. 검색 버튼을 눌러 주세요.'
+  mapVisible.value = true
+  if (selectedConditions.value) {
+    await confirmSearch({ ...coordinates, ...selectedConditions.value, radiusMeters: 1000, limit: 20 }, false)
+    return
+  }
+  guidance.value = '현재 위치를 선택했습니다. 차량을 선택해 주세요.'
 }
 async function selectPlace(place: PlaceMatch): Promise<void> {
   cancelLocation()
@@ -148,11 +159,18 @@ async function submitSearch(conditions: SearchConditions): Promise<void> {
     await confirmSearch({ ...searchCriteriaForArea(pendingArea.value, conditions.connector, confirmedCriteria.value?.limit ?? 20), ...conditions })
     return
   }
-  guidance.value = '검색할 위치를 먼저 선택해 주세요.'
+  await selectCurrentLocation()
 }
-async function confirmSearch(criteria: SearchCriteria): Promise<void> {
+function receiveConditions(conditions: SearchConditions | null): void {
+  selectedConditions.value = conditions
+  if (!conditions?.vehicleId || selectedLocation.value || mapVisible.value || parsedCriteria.value.kind !== 'empty'
+    || autoLocationAttempted.value || locationStatus.value !== 'idle') return
+  autoLocationAttempted.value = true
+  void selectCurrentLocation()
+}
+async function confirmSearch(criteria: SearchCriteria, revealResults = true): Promise<void> {
   conditionsOpen.value = false
-  revealResultsOnSuccess.value = true
+  revealResultsOnSuccess.value = revealResults
   const current = confirmedCriteria.value
   if (current && JSON.stringify(toSearchQuery(current)) === JSON.stringify(toSearchQuery(criteria))) {
     void store.search(criteria)
@@ -167,7 +185,7 @@ async function confirmSearch(criteria: SearchCriteria): Promise<void> {
     } else if (clearVehicleProfile(window.localStorage)) savedProfile.value = null
   } catch { /* 저장소가 차단돼도 현재 검색은 계속한다. */ }
   await nextTick()
-  if (!store.error) resultsHeading.value?.focus()
+  if (revealResults && !store.error) resultsHeading.value?.focus()
 }
 function refreshSearch(): void {
   if (confirmedCriteria.value) void store.search(confirmedCriteria.value)
@@ -206,12 +224,20 @@ function openDetail(stationId: number): void {
 </script>
 
 <template>
-  <section aria-labelledby="search-heading" class="search-view" :class="{ 'has-results': confirmedCriteria }">
+  <section aria-labelledby="search-heading" class="search-view" :class="{ 'has-results': confirmedCriteria, 'map-open': mapVisible }">
     <div class="intro">
       <h1 id="search-heading">주변 충전소 찾기</h1>
       <p v-if="!confirmedCriteria">차량에 맞는 충전소와 이용 조건을 확인하세요.</p>
     </div>
     <PlaceSearch @select="selectPlace" />
+    <div v-if="locationError && autoLocationAttempted" ref="locationNotice" class="search-location-alert" tabindex="-1" role="alert">
+      <strong>현재 위치를 확인하지 못했어요</strong>
+      <p>{{ locationError }}</p>
+      <div class="location-error-actions">
+        <button type="button" class="secondary-button" id="retry-location" @click="selectCurrentLocation">현재 위치 다시 시도</button>
+        <button type="button" class="secondary-button" id="location-address" @click="focusPlaceSearch">주소로 검색하기</button>
+      </div>
+    </div>
     <div v-if="needsVehicleSelection && !selectedConditions" ref="prerequisiteNotice" class="search-prerequisite-notice" role="alert" tabindex="-1">
       <div>
         <strong>{{ selectedLocation ? `${locationLabel} 위치를 선택했어요.` : '지도에서 검색할 지역을 골랐어요.' }}</strong>
@@ -241,7 +267,7 @@ function openDetail(stationId: number): void {
           <button type="button" class="secondary-button" id="current-location" @click="selectCurrentLocation">현재 위치 사용</button>
           <p v-if="selectedLocation" class="selected-location">{{ locationLabel }} 선택됨</p>
           <LoadingIndicator v-if="locationStatus === 'loading'" message="현재 위치를 확인하고 있습니다. 최대 10초 기다려 주세요." />
-          <div v-if="locationError" ref="locationNotice" class="location-error" tabindex="-1" role="alert">
+          <div v-if="locationError && !autoLocationAttempted" ref="locationNotice" class="location-error" tabindex="-1" role="alert">
             <p>{{ locationError }}</p>
             <div class="location-error-actions">
               <button type="button" class="secondary-button" id="retry-location" @click="selectCurrentLocation">현재 위치 다시 시도</button>
@@ -255,7 +281,7 @@ function openDetail(stationId: number): void {
           :initial-vehicle-id="confirmedCriteria?.vehicleId ?? (!confirmedCriteria ? savedProfile?.vehicleId : undefined)"
           :initial-adapter-ids="confirmedCriteria?.adapterIds ?? (!confirmedCriteria ? savedProfile?.adapterIds : undefined)"
           :initial-vehicle-support-confirmed="confirmedCriteria?.vehicleSupportConfirmed ?? (!confirmedCriteria ? savedProfile?.vehicleSupportConfirmed : undefined)"
-          :field-errors="fieldErrors" @change="selectedConditions = $event" @submit="submitSearch" />
+          :field-errors="fieldErrors" @change="receiveConditions" @submit="submitSearch" />
         <div class="location-guidance">
           <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7" /><circle cx="12" cy="12" r="2.5" /><path d="M12 2v3m0 14v3M2 12h3m14 0h3" /></svg>
           <div><h3>위치 선택 안내</h3><p class="initial-guidance" role="status">{{ guidance }}</p></div>
@@ -297,12 +323,12 @@ function openDetail(stationId: number): void {
           <p v-if="store.response.collection?.state === 'DELAYED'" class="collection-summary" role="status">갱신이 지연되고 있습니다. 마지막으로 저장된 정보를 표시합니다.</p>
           <p v-else-if="store.response.collection?.state === 'NOT_READY'" class="collection-summary" role="status">전체 데이터 준비 전 · 일부 지역의 정보가 없을 수 있습니다.</p>
           <p class="results-count">{{ store.response.stations.length }}개 표시 · 최대 {{ confirmedCriteria.limit }}개 표시</p>
-          <p v-if="vehicleResultMessage" class="vehicle-result-note">{{ vehicleResultMessage }}</p>
-          <p class="results-caution">{{ confirmedCriteria.area ? '지도 중심에서의 직선거리 기준입니다.' : '선택 위치에서의 직선거리 기준입니다.' }} 이용 가능 보고는 도착 시점의 빈자리를 보장하지 않습니다.</p>
           <p v-if="selectedStation" role="status">선택한 충전소: {{ selectedStation.name }}</p>
           <div class="station-list"><StationCard v-for="station in store.response.stations" :key="station.id" :station="station"
             :detail-href="detailHref(station.id)" :directions-href="directionsHref(station)" :map-selectable="mapVisible" :selected="selectedStationId === station.id"
             @directions="selectStation(station.id)" @select="selectStation(station.id)" @open-detail="openDetail(station.id)" /></div>
+          <p v-if="vehicleResultMessage" class="vehicle-result-note">{{ vehicleResultMessage }}</p>
+          <p class="results-caution">{{ confirmedCriteria.area ? '지도 중심에서의 직선거리 기준입니다.' : '선택 위치에서의 직선거리 기준입니다.' }} 이용 가능 보고는 도착 시점의 빈자리를 보장하지 않습니다.</p>
           <details class="collection-details"><summary>정보 갱신 안내</summary>
           <p class="result-time">조회 시각: {{ formatTimestamp(store.fetchedAt) }}</p>
           <p class="result-time">전체 수집 성공 시각: {{ formatTimestamp(store.response.lastSuccessfulRunAt) }}</p>

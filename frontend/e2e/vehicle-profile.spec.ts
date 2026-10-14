@@ -26,6 +26,8 @@ test('차량 선택과 이번에 사용할 어댑터가 검색·상세·후보 U
   await page.getByRole('link', { name: '다른 충전소 찾기' }).click()
   await expect(page).toHaveURL(/connectors=DC_COMBO,AC_SLOW/)
   await page.goto('/app/index.html#/stations')
+  await expect(page.getByRole('link', { name: '데모 가까운 충전소 상세 보기' })).toBeVisible()
+  await page.getByText('검색 조건 변경', { exact: true }).click()
   await expect(page.getByLabel('내 차량', { exact: true })).toHaveValue('tesla-kr')
   await expect(page.getByRole('checkbox', { name: /Tesla CCS 콤보 1 어댑터/ })).toBeChecked()
 })

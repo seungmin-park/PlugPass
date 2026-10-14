@@ -79,7 +79,7 @@ describe('검색 지도의 목록 선택', () => {
     expect(wrapper.find('.station-action-sheet').exists()).toBe(false)
   })
 
-  it('지도 앱을 고른 뒤 패널을 닫으면 바뀐 카드 길찾기 링크로 초점이 돌아온다', async () => {
+  it('지도 앱을 고른 뒤에도 목록 길찾기는 선택 패널을 열고 닫으면 버튼으로 초점이 돌아온다', async () => {
     vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue('iPhone')
     httpClient.defaults.adapter = async config => jsonResponse(config, searchResponse)
     const router = searchRouter()
@@ -96,7 +96,10 @@ describe('검색 지도의 목록 선택', () => {
       await wrapper.get('#navigation-kakao').trigger('click')
       await wrapper.get('.station-action-sheet .sheet-close').trigger('click')
       await flushPromises()
-      expect(document.activeElement).toBe(wrapper.get('a[aria-label="가까운 충전소 길찾기"]').element)
+      const directionsButton = wrapper.get('button[aria-label="가까운 충전소 길찾기"]')
+      expect(document.activeElement).toBe(directionsButton.element)
+      await directionsButton.trigger('click')
+      expect(wrapper.get('#navigation-kakao').attributes('href')).toBe('kakaomap://route?ep=37.5,127&by=car')
     } finally {
       wrapper.unmount()
       host.remove()

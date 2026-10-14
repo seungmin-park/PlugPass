@@ -329,3 +329,7 @@ CLI `--plugpass.ingestion.command.mode=auto` → ScheduledSyncService/Collection
 ## 현재 위치 중심 검색 T48
 
 저장 차량/차량 선택 → View의 자동 위치 요청 판단 → `useCurrentLocation` → URL 검색 조건 → `stationSearchStore`/API → 카카오 지도와 결과 목록 시트. 지도 영역을 먼저 선택하거나 URL이 있으면 자동 GPS를 건너뛴다. 위치 실패는 상단 안내와 재시도·주소 검색으로 회복한다. [시나리오와 출처](t48-nearby-first-test-plan.md).
+
+## 검색 목록 길찾기 선택 T49
+
+검색 카드의 길찾기 버튼 → `StationSearchView`의 충전소 선택 상태 → `StationActionSheet`의 하단 패널 → `StationDirections`의 카카오맵·네이버 지도 또는 웹 링크. 카드는 외부 URL을 판단하지 않고 사용자 이벤트만 보낸다. 패널은 선택한 충전소와 앱 링크를 표시하고 닫은 뒤 원래 버튼으로 초점을 돌린다. 상세 화면은 기존 앱 선호 바로가기를 유지한다. [시나리오와 근거](t49-navigation-choice-test-plan.md).

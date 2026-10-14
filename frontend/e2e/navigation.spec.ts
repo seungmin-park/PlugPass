@@ -54,7 +54,10 @@ for (const device of [
       await popup.close()
       await page.getByRole('button', { name: '닫기', exact: true }).click()
       await expect(page.getByRole('dialog')).toHaveCount(0)
-      await expect(page.getByRole('link', { name: '데모 대체 충전소 길찾기', exact: true })).toHaveAttribute('href', new RegExp(`${device.prefix}route\\?ep=37\\.5,127\\.001&by=car`))
+      await page.getByRole('button', { name: '데모 대체 충전소 길찾기', exact: true }).click()
+      await expect(page.getByRole('dialog')).toContainText('데모 대체 충전소')
+      await expect(page.getByRole('link', { name: '카카오맵으로 길찾기', exact: true })).toHaveAttribute('href', new RegExp(`${device.prefix}route\\?ep=37\\.5,127\\.001&by=car`))
+      await page.getByRole('button', { name: '닫기', exact: true }).click()
       await page.getByRole('link', { name: '데모 대체 충전소 상세 보기' }).click()
       await expect(page.locator('#navigation-primary')).toHaveAttribute('href', new RegExp(`${device.prefix}route\\?ep=37\\.5,127\\.001&by=car`))
       await page.getByRole('button', { name: '지도 앱 변경', exact: true }).click()
@@ -68,11 +71,11 @@ for (const device of [
   })
 }
 
-test('데스크톱에서는 목록에서 바로 웹 길찾기를 열고 상세에서도 키보드로 앱 선택을 조작한다', async ({ page }) => {
+test('데스크톱에서도 목록에서 지도 선택 패널을 열고 상세에서는 키보드로 앱 선택을 조작한다', async ({ page }) => {
   await page.goto('/app/index.html#/stations?latitude=37.5&longitude=127&radiusMeters=1000&connector=DC_COMBO&limit=20')
-  const direct = page.getByRole('link', { name: '데모 가까운 충전소 길찾기', exact: true })
-  await expect(direct).toHaveAttribute('href', 'https://map.kakao.com/link/to/%EB%8D%B0%EB%AA%A8%20%EA%B0%80%EA%B9%8C%EC%9A%B4%20%EC%B6%A9%EC%A0%84%EC%86%8C,37.5,127')
-  await expect(direct).toHaveAttribute('target', '_blank')
+  await page.getByRole('button', { name: '데모 가까운 충전소 길찾기', exact: true }).click()
+  await expect(page.getByRole('dialog').getByRole('link', { name: '웹 지도에서 길찾기 (카카오맵)' })).toHaveAttribute('href', 'https://map.kakao.com/link/to/%EB%8D%B0%EB%AA%A8%20%EA%B0%80%EA%B9%8C%EC%9A%B4%20%EC%B6%A9%EC%A0%84%EC%86%8C,37.5,127')
+  await page.getByRole('button', { name: '닫기', exact: true }).click()
   await page.getByRole('link', { name: '데모 가까운 충전소 상세 보기' }).click()
   await expect(page.locator('#navigation-primary')).toHaveAttribute('target', '_blank')
   const change = page.getByRole('button', { name: '지도 앱 변경', exact: true })

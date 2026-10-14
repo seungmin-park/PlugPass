@@ -256,7 +256,7 @@ function directionsInstallHref(station: StationSummary): string | undefined {
       </template>
     </div>
     <div class="search-layout" :class="{ 'results-layout': confirmedCriteria }">
-      <details class="search-panel" :open="conditionsOpen || !confirmedCriteria || !!fieldErrors.connector || !!fieldErrors.connectors || !!fieldErrors.vehicleId" @toggle="conditionsOpen = ($event.target as HTMLDetailsElement).open">
+      <details id="search-conditions" class="search-panel" :open="conditionsOpen || !confirmedCriteria || !!fieldErrors.connector || !!fieldErrors.connectors || !!fieldErrors.vehicleId" @toggle="conditionsOpen = ($event.target as HTMLDetailsElement).open">
         <summary><span>{{ confirmedCriteria ? '검색 조건 변경' : '검색 위치와 조건' }}</span><span v-if="confirmedCriteria" class="criteria-summary">{{ locationLabel }} 주변</span></summary>
         <div class="panel-heading">
           <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16M8 3v6m8 0v6M8 15v6" /></svg>

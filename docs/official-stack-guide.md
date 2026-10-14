@@ -306,3 +306,6 @@ Java25·Boot4.1.1·MySQL8.4를 유지한다. [MySQL8.4 GET_LOCK](https://dev.mys
 ## T38 위치 복구 (2026-10-13)
 
 [W3C Geolocation](https://www.w3.org/TR/geolocation/)의 secure context·권한/오류·getCurrentPosition을 재확인했다. 비보안 접속을 권한 거부와 구분하며 요청마다 API를 다시 호출한다. 기기/사이트 권한의 실제 허용은 브라우저/OS 책임이고 앱은 강제 변경하지 않는다. 주소 대안·전체10초 제한·늦은 callback 방어는 프로젝트 정책이다. 버전 변경 없음. [실행 근거](t38-verification.md).
+
+## 핵심 화면 개편 (2026-10-15)
+Pretendard Variable 1.3.9의 [공식 안내](https://github.com/orioncactus/pretendard/blob/main/packages/pretendard/README.md)와 v1.3.9 태그의 OFL을 확인하고 woff2를 자체 제공한다. Vue 3.5.43·Router 4.6.4는 lockfile과 설치 결과를 유지한다. [Router query navigation](https://router.vuejs.org/guide/essentials/navigation.html)에 따라 검증된 query를 보존한다. 색 기준은 [WCAG 2.2 대비](https://www.w3.org/TR/WCAG22/#contrast-minimum)의 일반 본문 4.5:1이며 전체 접근성 인증으로 해석하지 않는다.

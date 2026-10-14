@@ -22,6 +22,28 @@ describe('웹앱 화면 이동', () => {
     expect(router.currentRoute.value.path).toBe('/stations')
     wrapper.unmount()
   })
+  it('충전소 찾기는 다른 화면에서도 검색 조건을 보존한다', async () => {
+    const query = { latitude: '37.5', longitude: '127', radiusMeters: '1000', connector: 'DC_COMBO', limit: '20' }
+    await router.push({ path: '/missing-screen', query })
+    const wrapper = mount(App, { global: { plugins: [router, createPinia()] } })
+    await flushPromises()
+    const link = wrapper.get('nav[aria-label="주요 메뉴"] a')
+    expect(link.text()).toBe('충전소 찾기')
+    expect(link.attributes('href')).toContain('connector=DC_COMBO')
+    wrapper.unmount()
+  })
+  it('검색 화면의 충전소 찾기는 조건을 펼치고 포커스를 이동한다', async () => {
+    await router.push('/stations')
+    const wrapper = mount(App, { attachTo: document.body, global: { plugins: [router, createPinia()] } })
+    await flushPromises()
+    const conditions = wrapper.get('details.search-panel')
+    ;(conditions.element as HTMLDetailsElement).open = false
+    await wrapper.get('nav[aria-label="주요 메뉴"] a').trigger('click')
+    await flushPromises()
+    expect((conditions.element as HTMLDetailsElement).open).toBe(true)
+    expect(document.activeElement).toBe(conditions.get('summary').element)
+    wrapper.unmount()
+  })
   it('없는 화면은 안내와 검색 복귀 링크를 제공한다', async () => {
     await router.push('/missing-screen')
     const wrapper = mount(App, { global: { plugins: [router, createPinia()] } })

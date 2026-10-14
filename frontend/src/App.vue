@@ -1,7 +1,23 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { useRoute } from 'vue-router'
+import { parseSearchCriteria, toSearchQuery } from './features/search/criteria'
 import plugpassLogo from './shared/assets/plugpass-logo.svg'
 
+const route = useRoute()
+const searchTarget = computed(() => {
+  const parsed = parseSearchCriteria(route.query)
+  return { path: '/stations', query: parsed.kind === 'valid' ? toSearchQuery(parsed.criteria) : {} }
+})
+function focusSearchConditions(event: MouseEvent): void {
+  if (route.path !== '/stations' || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return
+  event.preventDefault()
+  const panel = document.querySelector<HTMLDetailsElement>('#search-conditions')
+  if (!panel) return
+  panel.open = true
+  panel.querySelector('summary')?.focus()
+  panel.scrollIntoView?.({ block: 'start' })
+}
 const mainContent = ref<HTMLElement | null>(null)
 </script>
 
@@ -9,13 +25,13 @@ const mainContent = ref<HTMLElement | null>(null)
   <div class="app-shell">
     <a href="#main-content" class="skip-link" @click.prevent="mainContent?.focus()">본문으로 건너뛰기</a>
     <header class="site-header">
-      <RouterLink to="/stations" class="brand" aria-label="PlugPass 주변 검색">
+      <RouterLink :to="searchTarget" @click="focusSearchConditions" class="brand" aria-label="PlugPass 충전소 찾기">
         <img :src="plugpassLogo" alt="" width="144" height="44" />
       </RouterLink>
       <nav aria-label="주요 메뉴">
-        <RouterLink to="/stations">
+        <RouterLink :to="searchTarget" @click="focusSearchConditions">
           <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 3h8v18H6zM8 7h4M8 11h4m2-5h2l3 3v8a2 2 0 0 1-4 0v-3h-1m3-9 2 2" /></svg>
-          주변 검색
+          충전소 찾기
         </RouterLink>
       </nav>
     </header>

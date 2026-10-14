@@ -3,8 +3,13 @@ import type { StationSummary } from '../types'
 import { formatDistance } from '../../charging-info/presentation'
 import StatusBadge from '../../charging-info/components/StatusBadge.vue'
 import FreshnessBadge from '../../charging-info/components/FreshnessBadge.vue'
-defineProps<{ station: StationSummary; detailHref?: string; selected?: boolean }>()
+import { scheduleIosInstallFallback } from '../../station-detail/navigation/navigationHandoff'
+const props = defineProps<{ station: StationSummary; detailHref?: string; directionsHref?: string | undefined; directionsInstallHref?: string | undefined; selected?: boolean }>()
 defineEmits<{ openDetail: []; directions: [] }>()
+function prepareDirections(event: MouseEvent): void {
+  if (event.defaultPrevented || !props.directionsInstallHref) return
+  scheduleIosInstallFallback(document, props.directionsInstallHref, href => window.location.assign(href))
+}
 </script>
 <template>
   <article class="station-card" :class="{ 'station-card-selected': selected }" :aria-labelledby="`station-${station.id}`">
@@ -22,7 +27,8 @@ defineEmits<{ openDetail: []; directions: [] }>()
     </ul>
     <p v-else>충전기 정보 확인 필요</p>
     <div class="station-actions">
-      <button :id="`station-directions-${station.id}`" type="button" class="search-button" :aria-label="`${station.name} 길찾기`" @click="$emit('directions')">길찾기</button>
+      <a v-if="directionsHref" :id="`station-directions-${station.id}`" :href="directionsHref" :aria-label="`${station.name} 길찾기`" @click="prepareDirections">길찾기</a>
+      <button v-else :id="`station-directions-${station.id}`" type="button" class="search-button" :aria-label="`${station.name} 길찾기`" @click="$emit('directions')">길찾기</button>
     <a v-if="detailHref" :href="detailHref" @click.exact.left.prevent="$emit('openDetail')">{{ station.name }} 상세 보기</a>
     </div>
   </article>

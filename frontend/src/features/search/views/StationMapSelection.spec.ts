@@ -18,6 +18,18 @@ function searchRouter() {
 }
 
 describe('검색 지도의 목록 선택', () => {
+  it('Android 카드 길찾기는 웹 패널 없이 운영체제 지도 요청을 바로 전달한다', async () => {
+    vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue('Android')
+    httpClient.defaults.adapter = async config => jsonResponse(config, searchResponse)
+    const router = searchRouter()
+    await router.push({ path: '/stations', query })
+    const wrapper = mount(StationSearchView, { global: { plugins: [router, createPinia()] } })
+    await flushPromises()
+    const directions = wrapper.get('a[aria-label="가까운 충전소 길찾기"]')
+    expect(directions.attributes('href')).toContain('scheme=geo;')
+    expect(wrapper.find('.station-action-sheet').exists()).toBe(false)
+  })
+
   it('실제 SDK 마커를 클릭하면 같은 ID의 카드만 선택한다', async () => {
     httpClient.defaults.adapter = async config => jsonResponse(config, searchResponse)
     const router = searchRouter()
@@ -51,7 +63,7 @@ describe('검색 지도의 목록 선택', () => {
     expect(wrapper.get('.station-action-sheet .access-summary').text()).toContain('이용 제한이 보고됐습니다. 방문 전 운영 주체에 확인해 주세요')
   })
 
-  it('카드에서 길찾기를 연 뒤 다른 마커를 선택하면 목적지도 함께 바뀐다', async () => {
+  it('iPhone 카드 길찾기는 바로 연결하고 마커를 누르면 해당 충전소 패널을 연다', async () => {
     vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue('iPhone')
     httpClient.defaults.adapter = async config => jsonResponse(config, searchResponse)
     const router = searchRouter()
@@ -60,11 +72,11 @@ describe('검색 지도의 목록 선택', () => {
     await flushPromises()
     await wrapper.get('#show-map').trigger('click')
     await vi.waitFor(() => expect(wrapper.findAll('.kakao-station-marker')).toHaveLength(2))
-    await wrapper.get('button[aria-label="가까운 충전소 길찾기"]').trigger('click')
-    expect(wrapper.get('.station-action-sheet h2').text()).toBe('가까운 충전소')
+    expect(wrapper.get('a[aria-label="가까운 충전소 길찾기"]').attributes('href')).toBe('kakaomap://route?ep=37.5,127&by=car')
+    expect(wrapper.find('.station-action-sheet').exists()).toBe(false)
     await wrapper.get('[aria-label="대체 충전소 지도 마커"]').trigger('click')
     expect(wrapper.get('.station-action-sheet h2').text()).toBe('대체 충전소')
-    expect(wrapper.get('#navigation-kakao').attributes('href')).toBe('kakaomap://route?ep=37.5,127.001&by=car')
+    expect(wrapper.get('#navigation-primary').attributes('href')).toBe('kakaomap://route?ep=37.5,127.001&by=car')
   })
 
   it('하단 패널의 길찾기 링크에서도 Escape로 닫을 수 있다', async () => {
@@ -80,7 +92,7 @@ describe('검색 지도의 목록 선택', () => {
     expect(wrapper.find('.station-action-sheet').exists()).toBe(false)
   })
 
-  it('지도 앱을 고른 뒤에도 목록 길찾기는 선택 패널을 열고 닫으면 버튼으로 초점이 돌아온다', async () => {
+  it('iPhone 카드 길찾기 링크는 추가 선택 패널 없이 키보드로도 누를 수 있다', async () => {
     vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue('iPhone')
     httpClient.defaults.adapter = async config => jsonResponse(config, searchResponse)
     const router = searchRouter()
@@ -90,17 +102,11 @@ describe('검색 지도의 목록 선택', () => {
     const wrapper = mount(StationSearchView, { attachTo: host, global: { plugins: [router, createPinia()] } })
     try {
       await flushPromises()
-      const initialButton = wrapper.get('button[aria-label="가까운 충전소 길찾기"]')
-      ;(initialButton.element as HTMLElement).focus()
-      await initialButton.trigger('click')
-      wrapper.get('#navigation-kakao').element.addEventListener('click', event => event.preventDefault(), { once: true })
-      await wrapper.get('#navigation-kakao').trigger('click')
-      await wrapper.get('.station-action-sheet .sheet-close').trigger('click')
-      await flushPromises()
-      const directionsButton = wrapper.get('button[aria-label="가까운 충전소 길찾기"]')
-      expect(document.activeElement).toBe(directionsButton.element)
-      await directionsButton.trigger('click')
-      expect(wrapper.get('#navigation-kakao').attributes('href')).toBe('kakaomap://route?ep=37.5,127&by=car')
+      const directions = wrapper.get('a[aria-label="가까운 충전소 길찾기"]')
+      ;(directions.element as HTMLElement).focus()
+      expect(document.activeElement).toBe(directions.element)
+      expect(directions.attributes('href')).toBe('kakaomap://route?ep=37.5,127&by=car')
+      expect(wrapper.find('.station-action-sheet').exists()).toBe(false)
     } finally {
       wrapper.unmount()
       host.remove()

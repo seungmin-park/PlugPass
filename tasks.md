@@ -584,10 +584,11 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 - [x] 320px·375px에서 기존 18px 겹침을 실제 브라우저 assertion 실패로 확인했다.
 - [x] 지도와 결과를 8px 분리하고 첫 결과 위치·가로 넘침을 함께 검증했다.
 - [x] 공용 verify 종료 코드 0과 개발 Chromium 57건·MySQL 8건을 확인했다. [검증 기록](docs/t52-map-results-spacing.md).
-- [ ] PR CI·main 병합을 확인한다.
+- [x] [PR #81](https://github.com/seungmin-park/PlugPass/pull/81)의 필수 CI 성공·보호된 자동 병합·main `8bca239`를 확인했다.
 
 ## 모바일 길찾기 외부 앱 연결 — T53
 
-- [ ] Android 공통 지도 인텐트, iOS 카카오맵 바로 연결과 대체 경로, PC 웹 지도를 각각 검증한다.
-- [ ] 앱 미설치·기본 앱 설정에 따른 실제 시스템 화면은 실기기에서 확인할 범위를 기록한다.
-- [ ] 공용 verify·PR CI·main 병합을 확인한다.
+- [x] Android 공통 지도 인텐트, iOS 카카오맵 바로 연결과 대체 경로, PC 웹 지도를 각각 검증했다.
+- [x] 앱 미설치·기본 앱 설정에 따른 실제 시스템 화면은 실기기에서 확인할 범위를 [검증 계획](docs/t53-mobile-navigation.md)에 기록했다.
+- [x] 공용 verify 종료 코드 0, 프런트 414건·개발 Chromium 57건·MySQL 8건과 재시작 Chromium 7건을 확인했다.
+- [ ] PR CI·main 병합을 확인한다.

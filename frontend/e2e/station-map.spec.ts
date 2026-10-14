@@ -2,6 +2,24 @@ import { test, expect } from './fixtures'
 import { mockKakaoSdk } from './kakaoSdkMock'
 
 const criteria = 'latitude=37.5&longitude=127&radiusMeters=1000&connector=DC_COMBO&limit=20'
+test('마커는 작은 시각 핀과 손가락으로 누를 수 있는 44px 영역을 함께 제공한다', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await page.goto(`/app/index.html#/stations?${criteria}`)
+  await expect(page.getByRole('link', { name: '데모 가까운 충전소 상세 보기' })).toBeVisible()
+  await page.getByRole('button', { name: '지도 보기', exact: true }).click()
+  const marker = page.getByRole('button', { name: '데모 대체 충전소 지도 마커' })
+  await expect(marker).toBeVisible()
+  const sizes = await marker.evaluate(element => ({
+    hitWidth: element.getBoundingClientRect().width,
+    hitHeight: element.getBoundingClientRect().height,
+    pinWidth: getComputedStyle(element, '::before').width,
+  }))
+  expect(sizes.hitWidth).toBeGreaterThanOrEqual(44)
+  expect(sizes.hitHeight).toBeGreaterThanOrEqual(44)
+  expect(sizes.pinWidth).toBe('24px')
+  await marker.click()
+  await expect(page.getByRole('dialog')).toContainText('데모 대체 충전소')
+})
 test('검색 전 지도 버튼·안내문·지도 사이의 간격을 유지한다', async ({ page }) => {
   await page.goto('/app/index.html#/stations')
   await page.getByRole('button', { name: '지도 보기', exact: true }).click()

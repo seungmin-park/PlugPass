@@ -556,4 +556,11 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 - [x] 지도 영역을 먼저 선택하거나 직접 URL로 들어오면 자동 GPS를 건너뛰며, 권한 거부는 API 미호출·상단 재시도/주소 안내로 처리한다.
 - [x] 320px·375px 지도와 결과 시트의 시각적 연결을 headless Chromium으로 검증한다. [시나리오·근거](docs/t48-nearby-first-test-plan.md).
 - [x] 공용 verify 종료 코드 0, 개발 Chromium 49건·배포 JAR 5건·MySQL 재시작 Chromium 7건을 확인했다. [실행 기록](docs/t48-nearby-first-test-plan.md).
-- [ ] 필수 CI·병합을 확인한다.
+- [x] [PR #77](https://github.com/seungmin-park/PlugPass/pull/77)의 필수 CI 성공과 main `b80976a` 병합을 확인했다.
+
+## 검색 목록 길찾기 선택 — T49
+
+- [x] `feat/navigation-choice-sheet`: 카드에서 길찾기를 누르면 앱 선호와 관계없이 지도 앱 선택 패널을 연다.
+- [x] Red: 앱 선택 뒤 카드가 직접 링크로 바뀌어 선택 패널이 열리지 않는 실패를 확인했다. Green: 카드의 길찾기를 버튼과 이벤트로 통일했다.
+- [x] 현재 cmux 보조 pane에서 Chromium 사용자 흐름과 공용 verify를 완료했다. [시나리오·실행 기록](docs/t49-navigation-choice-test-plan.md).
+- [ ] 기능 PR의 필수 CI·보호된 자동 병합·실제 main 반영을 확인한다.

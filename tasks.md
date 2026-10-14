@@ -570,4 +570,11 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 - [x] `feat/charging-map-visuals`: 상태별 배지 색을 분리하고 작은 지도 핀과 44px 터치 영역을 적용한다.
 - [x] Red: 상태별 배지 클래스가 없어 5개 사례가 실패함을 확인했다. Green: 알 수 없는 상태의 보수적 표시를 포함해 대상 단위 검사를 통과했다.
 - [x] 현재 cmux 보조 pane에서 작은 핀·선택·전체 사용자 흐름 및 공용 verify 종료 코드 0을 확인했다. [기록](docs/t50-map-visuals-test-plan.md).
+- [x] [PR #79](https://github.com/seungmin-park/PlugPass/pull/79)의 필수 CI 성공과 main `6e3d46b` 병합을 확인했다.
+
+## 지도 카드 행동 정리 — T51
+
+- [x] `refactor/map-card-actions`: 중복 카드 버튼을 제거하고 첫 마커를 가리는 지도 접기 버튼을 지도 왼쪽 아래로 옮긴다.
+- [x] Red: 카드에 `지도에서 선택` 버튼이 남아 있고 375px에서 첫 마커와 접기 버튼이 겹치는 실패를 확인했다. 상단 별도 줄은 첫 결과를 아래로 밀어 회귀 검사에 걸렸다. Green: 카드 이벤트를 줄이고 지도 버튼을 왼쪽 아래에 배치했다.
+- [x] 현재 cmux 보조 pane에서 카드·마커·GPS·오류 흐름, 국내 6개 거점과 공용 verify 종료 코드 0을 확인했다. [기록](docs/t51-map-card-actions-test-plan.md).
 - [ ] 기능 PR의 필수 CI·보호된 자동 병합·실제 main 반영을 확인한다.

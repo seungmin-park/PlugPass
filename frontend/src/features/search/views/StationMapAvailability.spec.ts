@@ -55,7 +55,7 @@ describe('지도 실패와 목록의 독립성', () => {
     expect(wrapper.find('[role="alert"]').exists()).toBe(true)
   })
 
-  it('지도 배경이 준비되지 않으면 안내하고 목록 선택·상세 이동을 유지한다', async () => {
+  it('지도 배경이 준비되지 않으면 안내하고 목록 길찾기·상세 이동을 유지한다', async () => {
     setKakaoMapTilesEnabled(false)
     vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
     httpClient.defaults.adapter = async config => jsonResponse(config, searchResponse)
@@ -67,8 +67,8 @@ describe('지도 실패와 목록의 독립성', () => {
     await vi.advanceTimersByTimeAsync(10_000)
     expect(wrapper.find('[role="alert"]').exists()).toBe(true)
     expect(wrapper.text()).toContain('배경 지도를 불러오지 못했습니다')
-    await wrapper.get('button[aria-label="가까운 충전소 지도에서 선택"]').trigger('click')
-    expect(wrapper.get('button[aria-label="가까운 충전소 지도에서 선택"]').attributes('aria-pressed')).toBe('true')
+    await wrapper.get('button[aria-label="가까운 충전소 길찾기"]').trigger('click')
+    expect(wrapper.get('.station-action-sheet h2').text()).toBe('가까운 충전소')
     expect(wrapper.findAll('article a').filter(link => link.text().includes('상세 보기'))).toHaveLength(2)
   })
 })

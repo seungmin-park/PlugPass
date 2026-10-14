@@ -23,6 +23,11 @@ describe('충전소 검색 카드', () => {
     await wrapper.get('button[aria-label="가까운 충전소 길찾기"]').trigger('click')
     expect(wrapper.emitted('directions')).toEqual([[]])
   })
+  it('지도가 열려도 중복된 지도에서 선택 버튼을 표시하지 않는다', () => {
+    const wrapper = mount(StationCard, { props: { station, selected: true } })
+    expect(wrapper.find('button[aria-label="가까운 충전소 지도에서 선택"]').exists()).toBe(false)
+    expect(wrapper.find('button[aria-label="가까운 충전소 길찾기"]').exists()).toBe(true)
+  })
   it('빈 충전기일 때 정보 확인 안내를 제공한다', () => {
     const wrapper = mount(StationCard, { props: { station: { ...station, chargers: [] } } })
     expect(wrapper.text()).toContain('충전기 정보 확인 필요')

@@ -23,13 +23,6 @@ const sdk = (failFirstTiles: boolean) => `
       const surface = document.createElement('div')
       surface.className = 'kakao-test-map'
       container.append(surface)
-      const zoomIn = document.createElement('button')
-      zoomIn.className = 'kakao-test-zoom-in'
-      zoomIn.addEventListener('click', () => this.zoom(0.5))
-      const zoomOut = document.createElement('button')
-      zoomOut.className = 'kakao-test-zoom-out'
-      zoomOut.addEventListener('click', () => this.zoom(2))
-      container.append(zoomIn, zoomOut)
       container.addEventListener('keydown', event => {
         if (!event.key.startsWith('Arrow')) return
         this.emit('dragstart')
@@ -42,7 +35,12 @@ const sdk = (failFirstTiles: boolean) => `
     setBounds(bounds) { this.bounds = bounds; this.emit('idle') }
     setCenter() { this.emit('idle') }
     getLevel() { return this.level }
-    setLevel(level) { this.level = level; this.emit('zoom_start'); this.emit('zoom_changed'); this.emit('idle') }
+    setLevel(level) {
+      const scale = 2 ** (level - this.level)
+      this.level = level
+      this.zoom(scale)
+      this.emit('zoom_changed')
+    }
     zoom(scale) {
       this.emit('zoom_start')
       const southWest = this.bounds.getSouthWest()

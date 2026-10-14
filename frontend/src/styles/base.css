@@ -233,7 +233,7 @@ h1 { font-size: 36px; font-weight: 700; letter-spacing: -0.025em; margin-bottom:
 .has-results.map-open .place-search { margin: 0 0 8px; padding: 10px; }
 .has-results.map-open .place-search-form label { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .has-results.map-open .search-map-explorer { position: relative; margin-bottom: 0; }
-.has-results.map-open .search-map-explorer #show-map { position: absolute; top: 24px; left: 12px; z-index: 2; }
+.has-results.map-open .search-map-explorer #show-map { position: absolute; bottom: 24px; left: 12px; z-index: 2; }
 .has-results.map-open .search-map-explorer #search-map-area { position: absolute; right: 12px; bottom: 24px; z-index: 2; }
 .has-results.map-open .search-map-explorer:has(.map-failed) #show-map { position: static; }
 .has-results.map-open .search-map-explorer:has(.map-failed) #search-map-area { position: static; }

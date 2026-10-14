@@ -316,8 +316,8 @@ function openDetail(stationId: number): void {
           <p class="results-count">{{ store.response.stations.length }}개 표시 · 최대 {{ confirmedCriteria.limit }}개 표시</p>
           <p v-if="selectedStation" role="status">선택한 충전소: {{ selectedStation.name }}</p>
           <div class="station-list"><StationCard v-for="station in store.response.stations" :key="station.id" :station="station"
-            :detail-href="detailHref(station.id)" :map-selectable="mapVisible" :selected="selectedStationId === station.id"
-            @directions="selectStation(station.id)" @select="selectStation(station.id)" @open-detail="openDetail(station.id)" /></div>
+            :detail-href="detailHref(station.id)" :selected="selectedStationId === station.id"
+            @directions="selectStation(station.id)" @open-detail="openDetail(station.id)" /></div>
           <p v-if="vehicleResultMessage" class="vehicle-result-note">{{ vehicleResultMessage }}</p>
           <p class="results-caution">{{ confirmedCriteria.area ? '지도 중심에서의 직선거리 기준입니다.' : '선택 위치에서의 직선거리 기준입니다.' }} 이용 가능 보고는 도착 시점의 빈자리를 보장하지 않습니다.</p>
           <details class="collection-details"><summary>정보 갱신 안내</summary>

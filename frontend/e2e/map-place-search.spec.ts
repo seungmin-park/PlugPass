@@ -9,7 +9,7 @@ test('지도 이동 뒤 재검색한 영역을 새로고침과 상세 복귀까�
   await page.getByRole('button', { name: '현재 위치 사용', exact: true }).click()
   await expect(page.getByText('현재 위치 선택됨', { exact: true })).toBeVisible()
   await page.getByLabel('내 차량').selectOption('manual')
-  await page.getByRole('button', { name: '지도 보기', exact: true }).click()
+  await expect(page.getByRole('button', { name: '지도 접기', exact: true })).toBeVisible()
   await expect(page.locator('.kakao-test-zoom-in')).toBeVisible()
   await page.locator('.kakao-test-zoom-in').click()
   const response = page.waitForResponse(response => response.url().includes('/api/v1/stations/area?'))

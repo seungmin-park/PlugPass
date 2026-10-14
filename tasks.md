@@ -549,3 +549,11 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 - [x] 320px headless Chromium에서 기존 문구 아래 간격 0px 실패를 확인하고 수정 후 간격·가로 넘침 검사를 통과했다.
 - [x] 공용 verify 종료 코드 0, 개발 Chromium 45건·배포 JAR 5건·MySQL 재시작 Chromium 7건을 확인했다. [실행 기록](docs/t47-location-error-spacing.md).
 - [ ] PR 필수 CI와 실제 병합을 확인한다.
+
+## 현재 위치 중심 검색 — T48
+
+- [x] `feat/nearby-first-search`: 저장 차량 또는 새 차량 선택 뒤 GPS 성공 시 추가 제출 없이 결과를 조회한다.
+- [x] 지도 영역을 먼저 선택하거나 직접 URL로 들어오면 자동 GPS를 건너뛰며, 권한 거부는 API 미호출·상단 재시도/주소 안내로 처리한다.
+- [x] 320px·375px 지도와 결과 시트의 시각적 연결을 headless Chromium으로 검증한다. [시나리오·근거](docs/t48-nearby-first-test-plan.md).
+- [x] 공용 verify 종료 코드 0, 개발 Chromium 49건·배포 JAR 5건·MySQL 재시작 Chromium 7건을 확인했다. [실행 기록](docs/t48-nearby-first-test-plan.md).
+- [ ] 필수 CI·병합을 확인한다.

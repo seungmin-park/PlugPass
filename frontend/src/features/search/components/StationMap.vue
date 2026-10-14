@@ -101,7 +101,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <section id="station-map-panel" class="station-map-panel" aria-label="검색 결과 지도" :aria-busy="status === 'loading' || backgroundLoading">
+  <section id="station-map-panel" class="station-map-panel" :class="{ 'map-failed': !!errorMessage }" aria-label="검색 결과 지도" :aria-busy="status === 'loading' || backgroundLoading">
     <p v-if="!compact && stations.length">마커 또는 카드의 ‘지도에서 선택’을 누르면 같은 충전소가 선택됩니다.</p>
     <LoadingIndicator v-if="status === 'loading' || backgroundLoading" message="지도를 불러오고 있습니다." />
     <p v-if="errorMessage" ref="errorNotice" role="alert" tabindex="-1">{{ errorMessage }}</p>

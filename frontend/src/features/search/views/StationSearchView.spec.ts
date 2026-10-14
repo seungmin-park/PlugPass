@@ -7,6 +7,7 @@ import StationSearchView from './StationSearchView.vue'
 import { httpClient } from '../../../shared/api/httpClient'
 import { jsonResponse } from '../../../../tests/httpResponse'
 import searchResponse from '../../../../tests/fixtures/search.json'
+import { saveVehicleProfile } from '../../vehicle/vehicleProfile'
 
 const originalAdapter = httpClient.defaults.adapter
 if (originalAdapter === undefined) throw new Error('Axios 기본 adapter가 필요합니다')
@@ -17,6 +18,59 @@ function searchRouter() {
 }
 
 describe('위치 선택부터 실제 API 계약까지 검색 화면', () => {
+  it('저장된 차량이 있으면 첫 화면에서 현재 위치로 한 번만 검색한다', async () => {
+    saveVehicleProfile(window.localStorage, { vehicleId: 'kona-electric-2020-kr', adapterIds: [], vehicleSupportConfirmed: false })
+    const getCurrentPosition = vi.fn<Geolocation['getCurrentPosition']>(success => success({ coords: {
+      latitude: 37.5, longitude: 127, accuracy: 1, altitude: null, altitudeAccuracy: null, heading: null, speed: null, toJSON: () => ({}),
+    }, timestamp: 0, toJSON: () => ({}) }))
+    vi.stubGlobal('navigator', { userAgent: navigator.userAgent, maxTouchPoints: 0, geolocation: { getCurrentPosition } })
+    const adapter = vi.fn<AxiosAdapter>(async config => jsonResponse(config, searchResponse))
+    httpClient.defaults.adapter = adapter
+    const router = searchRouter()
+    await router.push('/stations')
+    const wrapper = mount(StationSearchView, { global: { plugins: [router, createPinia()] } })
+    await flushPromises()
+    expect(getCurrentPosition).toHaveBeenCalledTimes(1)
+    expect(adapter).toHaveBeenCalledTimes(1)
+    expect(router.currentRoute.value.query).toMatchObject({ latitude: '37.5', longitude: '127', vehicleId: 'kona-electric-2020-kr' })
+    expect(wrapper.get('#show-map').attributes('aria-expanded')).toBe('true')
+    expect(wrapper.findAll('.station-card')).toHaveLength(2)
+  })
+  it('차량을 처음 선택하면 GPS 성공 후 추가 제출 없이 결과를 보여 준다', async () => {
+    const getCurrentPosition = vi.fn<Geolocation['getCurrentPosition']>(success => success({ coords: {
+      latitude: 37.5, longitude: 127, accuracy: 1, altitude: null, altitudeAccuracy: null, heading: null, speed: null, toJSON: () => ({}),
+    }, timestamp: 0, toJSON: () => ({}) }))
+    vi.stubGlobal('navigator', { userAgent: navigator.userAgent, maxTouchPoints: 0, geolocation: { getCurrentPosition } })
+    const adapter = vi.fn<AxiosAdapter>(async config => jsonResponse(config, searchResponse))
+    httpClient.defaults.adapter = adapter
+    const router = searchRouter()
+    await router.push('/stations')
+    const wrapper = mount(StationSearchView, { global: { plugins: [router, createPinia()] } })
+    await wrapper.get('#vehicle-choice').setValue('kona-electric-2020-kr')
+    await flushPromises()
+    expect(getCurrentPosition).toHaveBeenCalledTimes(1)
+    expect(adapter).toHaveBeenCalledTimes(1)
+    expect(wrapper.findAll('.station-card')).toHaveLength(2)
+  })
+  it('자동 GPS 권한이 거부되면 검색하지 않고 주소 검색과 재시도를 안내한다', async () => {
+    saveVehicleProfile(window.localStorage, { vehicleId: 'kona-electric-2020-kr', adapterIds: [], vehicleSupportConfirmed: false })
+    const getCurrentPosition = vi.fn<Geolocation['getCurrentPosition']>((_success, failure) => failure?.({
+      code: 1, message: 'denied', PERMISSION_DENIED: 1, POSITION_UNAVAILABLE: 2, TIMEOUT: 3,
+    }))
+    vi.stubGlobal('navigator', { userAgent: navigator.userAgent, maxTouchPoints: 0, geolocation: { getCurrentPosition } })
+    const adapter = vi.fn<AxiosAdapter>(async config => jsonResponse(config, searchResponse))
+    httpClient.defaults.adapter = adapter
+    const router = searchRouter()
+    await router.push('/stations')
+    const wrapper = mount(StationSearchView, { global: { plugins: [router, createPinia()] } })
+    await flushPromises()
+    expect(getCurrentPosition).toHaveBeenCalledTimes(1)
+    expect(adapter).not.toHaveBeenCalled()
+    expect(wrapper.get('[role="alert"]').text()).toContain('위치 권한이 거부되었습니다')
+    expect(wrapper.get('.search-location-alert').text()).toContain('위치 권한이 거부되었습니다')
+    expect(wrapper.get('.search-location-alert #location-address').text()).toBe('주소로 검색하기')
+    expect(wrapper.get('.search-location-alert').element.compareDocumentPosition(wrapper.get('.search-map-explorer').element) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  })
   it('차량 URL을 복원해 검색·상세 복귀에 여러 규격을 유지한다', async () => {
     const adapter = vi.fn<AxiosAdapter>(async config => jsonResponse(config, searchResponse))
     httpClient.defaults.adapter = adapter
@@ -34,7 +88,9 @@ describe('위치 선택부터 실제 API 계약까지 검색 화면', () => {
     expect(wrapper.get('.station-list a[href^="#/stations/"]').attributes('href')).toContain('connectors=DC_COMBO%2CAC_SLOW')
   })
   it('초기 화면에서 위치·API를 자동 요청하지 않고 현재 위치와 주소 검색을 제공한다', async () => {
-    const getCurrentPosition = vi.fn<Geolocation['getCurrentPosition']>()
+    const getCurrentPosition = vi.fn<Geolocation['getCurrentPosition']>((_success, failure) => failure?.({
+      code: 1, message: 'denied', PERMISSION_DENIED: 1, POSITION_UNAVAILABLE: 2, TIMEOUT: 3,
+    }))
     vi.stubGlobal('navigator', { geolocation: { getCurrentPosition } })
     const adapter = vi.fn<AxiosAdapter>(async config => jsonResponse(config, searchResponse))
     httpClient.defaults.adapter = adapter
@@ -51,7 +107,9 @@ describe('위치 선택부터 실제 API 계약까지 검색 화면', () => {
     expect(wrapper.text()).toContain('차량을 먼저 선택해 주세요')
     await wrapper.get('#vehicle-choice').setValue('manual')
     await wrapper.get('.search-form').trigger('submit')
-    expect(wrapper.text()).toContain('검색할 위치를 먼저 선택해 주세요')
+    await flushPromises()
+    expect(getCurrentPosition).toHaveBeenCalledTimes(1)
+    expect(wrapper.text()).toContain('위치 권한이 거부되었습니다')
     expect(adapter).not.toHaveBeenCalled()
   })
   it('현재 위치와 미제출 조건은 검색 버튼을 누를 때 URL·API로 확정한다', async () => {

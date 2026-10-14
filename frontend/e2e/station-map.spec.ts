@@ -20,19 +20,24 @@ test('지도 축척을 조절하고 안내·조작 요소가 작은 화면에서
   await page.setViewportSize({ width: 375, height: 812 })
   await page.goto(`/app/index.html#/stations?${criteria}`)
   await page.getByRole('button', { name: '지도 보기', exact: true }).click()
+  await expect(page.getByRole('button', { name: '지도 확대' })).toBeVisible()
   for (const width of [320, 375, 768, 1440]) {
     await page.setViewportSize({ width, height: 812 })
     const metrics = await page.evaluate(() => {
       const button = document.getElementById('show-map')?.getBoundingClientRect()
       const frame = document.querySelector('.station-map-frame')?.getBoundingClientRect()
       const search = document.getElementById('search-map-area')?.getBoundingClientRect()
-      if (!button || !frame || !search) return null
-      return { topGap: frame.top - button.bottom, bottomGap: search.top - frame.bottom,
+      const zoom = document.querySelector('.map-zoom-controls')?.getBoundingClientRect()
+      if (!button || !frame || !search || !zoom) return null
+      return { buttonInside: button.top >= frame.top && button.left >= frame.left,
+        searchInside: search.bottom <= frame.bottom && search.right <= frame.right,
+        controlsSeparated: button.right + 8 <= zoom.left && search.top >= zoom.bottom + 8,
         fitsWidth: document.documentElement.scrollWidth <= innerWidth }
     })
     expect(metrics, `${width}px 지도 요소`).not.toBeNull()
-    expect(metrics!.topGap, `${width}px 지도 위 간격`).toBeGreaterThanOrEqual(10)
-    expect(metrics!.bottomGap, `${width}px 지도 아래 간격`).toBeGreaterThanOrEqual(10)
+    expect(metrics!.buttonInside, `${width}px 지도 접기 버튼`).toBe(true)
+    expect(metrics!.searchInside, `${width}px 재검색 버튼`).toBe(true)
+    expect(metrics!.controlsSeparated, `${width}px 지도 조작 버튼 간격`).toBe(true)
     expect(metrics!.fitsWidth, `${width}px 가로 폭`).toBe(true)
   }
   await page.getByRole('button', { name: '지도 확대' }).click()

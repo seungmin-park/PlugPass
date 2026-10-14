@@ -6,7 +6,6 @@ test('마커는 작은 시각 핀과 손가락으로 누를 수 있는 44px 영�
   await page.setViewportSize({ width: 375, height: 812 })
   await page.goto(`/app/index.html#/stations?${criteria}`)
   await expect(page.getByRole('link', { name: '데모 가까운 충전소 상세 보기' })).toBeVisible()
-  await page.getByRole('button', { name: '지도 보기', exact: true }).click()
   const marker = page.getByRole('button', { name: '데모 대체 충전소 지도 마커' })
   await expect(marker).toBeVisible()
   const sizes = await marker.evaluate(element => ({
@@ -16,58 +15,48 @@ test('마커는 작은 시각 핀과 손가락으로 누를 수 있는 44px 영�
   }))
   expect(sizes.hitWidth).toBeGreaterThanOrEqual(44)
   expect(sizes.hitHeight).toBeGreaterThanOrEqual(44)
-  expect(sizes.pinWidth).toBe('24px')
+  expect(sizes.pinWidth).toBe('20px')
   await marker.click()
   await expect(page.getByRole('dialog')).toContainText('데모 대체 충전소')
 })
-test('지도 접기 버튼이 첫 마커를 가리지 않아 직접 선택할 수 있다', async ({ page }) => {
-  await page.setViewportSize({ width: 375, height: 812 })
+test('조건·지도·목록은 겹침과 내부 스크롤 없이 첫 결과를 보여 준다', async ({ page }) => {
   await page.goto(`/app/index.html#/stations?${criteria}`)
-  await expect(page.getByRole('link', { name: '데모 가까운 충전소 상세 보기' })).toBeVisible()
-  await page.getByRole('button', { name: '지도 보기', exact: true }).click()
-  const marker = page.getByRole('button', { name: '데모 가까운 충전소 지도 마커' })
-  await expect(marker).toBeVisible()
-  const markerBox = await marker.boundingBox()
-  const toggleBox = await page.getByRole('button', { name: '지도 접기', exact: true }).boundingBox()
-  expect(markerBox && toggleBox).toBeTruthy()
-  expect(toggleBox!.y + toggleBox!.height <= markerBox!.y || markerBox!.y + markerBox!.height <= toggleBox!.y).toBe(true)
-  await marker.click()
-  await expect(page.getByRole('dialog')).toContainText('데모 가까운 충전소')
-})
-test('검색 전 지도 버튼·안내문·지도 사이의 간격을 유지한다', async ({ page }) => {
-  await page.goto('/app/index.html#/stations')
-  await page.getByRole('button', { name: '지도 보기', exact: true }).click()
-  for (const width of [320, 375, 768, 1440]) {
+  await expect(page.locator('.station-card').first()).toBeVisible()
+  for (const width of [320, 375, 430, 1440]) {
     await page.setViewportSize({ width, height: 812 })
-    const button = await page.getByRole('button', { name: '지도 접기', exact: true }).boundingBox()
-    const guidance = await page.locator('.search-map-explorer > p').first().boundingBox()
-    const frame = await page.locator('.station-map-frame').boundingBox()
-    expect(button && guidance && frame).toBeTruthy()
-    expect(guidance!.y - (button!.y + button!.height)).toBeGreaterThanOrEqual(10)
-    expect(frame!.y - (guidance!.y + guidance!.height)).toBeGreaterThanOrEqual(10)
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+    await page.evaluate(() => window.scrollTo(0, 0))
+    const layout = await page.evaluate(() => {
+      const conditions = document.querySelector('#search-conditions')!.getBoundingClientRect()
+      const map = document.querySelector('.search-map-explorer')!.getBoundingClientRect()
+      const results = document.querySelector('.search-results')!.getBoundingClientRect()
+      const title = document.querySelector('.station-card h3')!.getBoundingClientRect()
+      const list = document.querySelector('.station-list')!
+      return { conditionsBeforeMap: conditions.bottom <= map.top, mapBeforeResults: map.bottom <= results.top,
+        firstTitleVisible: title.bottom <= innerHeight, overflow: getComputedStyle(list).overflowY,
+        fits: document.documentElement.scrollWidth <= innerWidth }
+    })
+    expect(layout).toEqual({ conditionsBeforeMap: true, mapBeforeResults: true, firstTitleVisible: true, overflow: 'visible', fits: true })
+    await expect(page.getByRole('button', { name: '지도 접기', exact: true })).toHaveCount(0)
+    await page.screenshot({ path: `test-results/redesign-${width}.png`, fullPage: true })
   }
 })
 test('지도 축척을 조절하고 안내·조작 요소가 작은 화면에서 겹치지 않는다', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 })
   await page.goto(`/app/index.html#/stations?${criteria}`)
-  await page.getByRole('button', { name: '지도 보기', exact: true }).click()
   await expect(page.getByRole('button', { name: '지도 확대' })).toBeVisible()
   for (const width of [320, 375, 768, 1440]) {
     await page.setViewportSize({ width, height: 812 })
     const metrics = await page.evaluate(() => {
-      const button = document.getElementById('show-map')?.getBoundingClientRect()
       const frame = document.querySelector('.station-map-frame')?.getBoundingClientRect()
       const search = document.getElementById('search-map-area')?.getBoundingClientRect()
       const zoom = document.querySelector('.map-zoom-controls')?.getBoundingClientRect()
-      if (!button || !frame || !search || !zoom) return null
-      return { buttonInside: button.top >= frame.top && button.left >= frame.left,
+      if (!frame || !search || !zoom) return null
+      return {
         searchInside: search.bottom <= frame.bottom && search.right <= frame.right,
-        controlsSeparated: button.right + 8 <= zoom.left && search.top >= zoom.bottom + 8,
+        controlsSeparated: search.right + 8 <= zoom.left || search.top >= zoom.bottom + 8,
         fitsWidth: document.documentElement.scrollWidth <= innerWidth }
     })
     expect(metrics, `${width}px 지도 요소`).not.toBeNull()
-    expect(metrics!.buttonInside, `${width}px 지도 접기 버튼`).toBe(true)
     expect(metrics!.searchInside, `${width}px 재검색 버튼`).toBe(true)
     expect(metrics!.controlsSeparated, `${width}px 지도 조작 버튼 간격`).toBe(true)
     expect(metrics!.fitsWidth, `${width}px 가로 폭`).toBe(true)
@@ -80,8 +69,7 @@ test('지도 축척을 조절하고 안내·조작 요소가 작은 화면에서
 test('실제 검색 결과의 마커↔카드 선택과 조건 변경 초기화를 연결한다', async ({ page }) => {
   await page.goto(`/app/index.html#/stations?${criteria}`)
   await expect(page.getByRole('link', { name: '데모 가까운 충전소 상세 보기' })).toBeVisible()
-  await expect(page.locator('.kakao-test-map')).toHaveCount(0)
-  await page.getByRole('button', { name: '지도 보기', exact: true }).click()
+  await expect(page.locator('.kakao-test-map')).toHaveCount(1)
   const firstMarker = page.getByRole('button', { name: '데모 가까운 충전소 지도 마커', exact: true })
   const secondMarker = page.getByRole('button', { name: '데모 대체 충전소 지도 마커', exact: true })
   const firstCard = page.getByRole('article', { name: '데모 가까운 충전소', exact: true })
@@ -113,13 +101,11 @@ test('SDK 다운로드 실패에도 목록·상세 링크를 유지하고 복구
     await route.fulfill({ status: 503, body: 'SDK failure' })
   }, { times: 1 })
   await page.goto(`/app/index.html#/stations?${criteria}`)
-  await page.getByRole('button', { name: '지도 보기', exact: true }).click()
   await expect(page.getByRole('alert')).toContainText('지도를 불러오지 못했습니다')
   await expect(page.getByRole('alert')).toBeFocused()
   await expect(page.getByRole('link', { name: '데모 가까운 충전소 상세 보기' })).toBeVisible()
   await page.getByRole('button', { name: '화면 새로고침', exact: true }).click()
   await expect(page).toHaveURL(/latitude=37\.5&longitude=127&radiusMeters=1000&connector=DC_COMBO&limit=20$/)
-  await page.getByRole('button', { name: '지도 보기', exact: true }).click()
   await expect(page.getByRole('button', { name: '데모 가까운 충전소 지도 마커', exact: true })).toBeVisible()
   await expect(page.getByRole('alert')).toHaveCount(0)
 })
@@ -127,7 +113,6 @@ test('SDK 다운로드 실패에도 목록·상세 링크를 유지하고 복구
 test('지도 배경 준비가 늦어져도 목록을 유지하고 재시도로 복구한다', async ({ page }) => {
   await mockKakaoSdk(page, { failFirstTiles: true })
   await page.goto(`/app/index.html#/stations?${criteria}`)
-  await page.getByRole('button', { name: '지도 보기', exact: true }).click()
   await expect(page.getByRole('alert')).toContainText('배경 지도를 불러오지 못했습니다', { timeout: 15000 })
   await expect(page.getByRole('link', { name: '데모 대체 충전소 상세 보기' })).toBeVisible()
   await page.getByRole('button', { name: '지도 다시 시도' }).click()
@@ -139,9 +124,6 @@ test('지도 배경 준비가 늦어져도 목록을 유지하고 재시도로 �
 test('모바일·데스크톱의 지도는 가로 넘침 없이 키보드로 마커를 선택한다', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 })
   await page.goto(`/app/index.html#/stations?${criteria}`)
-  const showMap = page.getByRole('button', { name: '지도 보기', exact: true })
-  await showMap.focus()
-  await page.keyboard.press('Enter')
   const marker = page.getByRole('button', { name: '데모 가까운 충전소 지도 마커', exact: true })
   await marker.focus()
   await page.keyboard.press('Space')
@@ -152,15 +134,11 @@ test('모바일·데스크톱의 지도는 가로 넘침 없이 키보드로 마
   await page.keyboard.press('Enter')
   await expect(marker).toHaveAttribute('aria-pressed', 'true')
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
-  await page.getByRole('button', { name: '지도 접기', exact: true }).click()
-  await expect(page.getByRole('region', { name: '검색 결과 지도' })).toHaveCount(0)
-  await page.getByRole('button', { name: '지도 보기', exact: true }).click()
-  await expect(marker).toHaveAttribute('aria-pressed', 'false')
+
 })
 
 test('지도 마커를 키보드로 선택하면 하단 패널을 열고 닫은 뒤 마커에 돌아온다', async ({ page }) => {
   await page.goto(`/app/index.html#/stations?${criteria}`)
-  await page.getByRole('button', { name: '지도 보기', exact: true }).click()
   const marker = page.getByRole('button', { name: '데모 가까운 충전소 지도 마커', exact: true })
   await marker.focus()
   await marker.press('Enter')

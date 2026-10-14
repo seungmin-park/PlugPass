@@ -8,7 +8,7 @@ for (const width of [320, 375]) test(`${width}px에서 GPS 결과를 지도와 �
     vehicleId: 'kona-electric-2020-kr', adapterIds: [], vehicleSupportConfirmed: false,
   })))
   await page.goto('/app/index.html#/stations')
-  await expect(page.getByRole('button', { name: '지도 접기', exact: true })).toBeVisible()
+  await expect(page.getByRole('region', { name: '검색 결과 지도' })).toBeVisible()
   await expect(page.getByRole('link', { name: '데모 가까운 충전소 상세 보기' })).toBeVisible()
   const layout = await page.evaluate(() => {
     const map = document.querySelector('.station-map-canvas')?.getBoundingClientRect()
@@ -18,7 +18,7 @@ for (const width of [320, 375]) test(`${width}px에서 GPS 결과를 지도와 �
     return { mapHeight: map.height, overlap: map.bottom - results.top,
       firstCardTop: firstCard.top, horizontalOverflow: document.documentElement.scrollWidth > innerWidth }
   })
-  expect(layout.mapHeight).toBeGreaterThanOrEqual(260)
+  expect(layout.mapHeight).toBeGreaterThanOrEqual(160)
   expect(layout.overlap).toBeLessThanOrEqual(-8)
   expect(layout.firstCardTop).toBeLessThan(620)
   expect(layout.horizontalOverflow).toBe(false)
@@ -57,7 +57,7 @@ test('직접 검색 URL에서는 GPS를 요청하지 않고 지도 열기 버튼
   await page.goto('/app/index.html#/stations?latitude=37.5&longitude=127&radiusMeters=1000&connector=DC_COMBO&limit=20')
   await expect(page.getByRole('link', { name: '데모 가까운 충전소 상세 보기' })).toBeVisible()
   const layout = await page.evaluate(() => {
-    const toggle = document.querySelector('#show-map')?.getBoundingClientRect()
+    const toggle = document.querySelector('.search-map-explorer')?.getBoundingClientRect()
     const results = document.querySelector('.search-results')?.getBoundingClientRect()
     if (!toggle || !results) throw new Error('지도 버튼 또는 결과가 없습니다')
     return { toggleBottom: toggle.bottom, resultsTop: results.top }

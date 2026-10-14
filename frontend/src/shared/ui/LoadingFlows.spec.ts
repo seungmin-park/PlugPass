@@ -1,5 +1,7 @@
+import { loadStationMap } from '../../features/search/map/loadStationMap'
+import { installKakaoMapFake } from '../../../tests/kakaoMapFake'
 import { mount, flushPromises } from '@vue/test-utils'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest'
 import { createPinia } from 'pinia'
 import App from '../../App.vue'
 import router from '../../router'
@@ -9,6 +11,8 @@ import search from '../../../tests/fixtures/search.json'
 import detail from '../../../tests/fixtures/detail.json'
 import alternatives from '../../../tests/fixtures/alternative.json'
 
+beforeEach(async () => { installKakaoMapFake(); await loadStationMap() })
+afterEach(() => { vi.unstubAllEnvs(); Reflect.deleteProperty(window, 'kakao') })
 const originalAdapter = httpClient.defaults.adapter
 if (originalAdapter === undefined) throw new Error('Axios 기본 adapter가 필요합니다')
 afterEach(() => { httpClient.defaults.adapter = originalAdapter })
@@ -27,11 +31,11 @@ describe('실제 조회 상태에 연결한 진행 표시', () => {
     await router.push({ path, query })
     const wrapper = mount(App, { global: { plugins: [router, createPinia()] } })
     await flushPromises()
-    expect(wrapper.findAll('.loading-indicator').map(indicator => indicator.text())).toEqual(messages)
+    await vi.waitFor(() => expect(wrapper.findAll('.loading-indicator').map(indicator => indicator.text())).toEqual(messages))
     expect(wrapper.findAll('.loading-spinner')).toHaveLength(messages.length)
     finish()
     await flushPromises()
-    expect(wrapper.find('.loading-spinner').exists()).toBe(false)
+    await vi.waitFor(() => expect(wrapper.find('.loading-spinner').exists()).toBe(false))
   })
 
   it('위치 확인 중 원을 표시하고 실패하면 제거한다', async () => {
@@ -44,7 +48,7 @@ describe('실제 조회 상태에 연결한 진행 표시', () => {
     expect(wrapper.get('.loading-indicator').text()).toContain('현재 위치를 확인하고 있습니다')
     getCurrentPosition.mock.calls[0]?.[1]?.({ code: 1, message: 'denied', PERMISSION_DENIED: 1, POSITION_UNAVAILABLE: 2, TIMEOUT: 3 })
     await flushPromises()
-    expect(wrapper.find('.loading-spinner').exists()).toBe(false)
+    await vi.waitFor(() => expect(wrapper.find('.loading-spinner').exists()).toBe(false))
     expect(wrapper.get('[role="alert"]').text()).toContain('위치 권한이 거부되었습니다')
   })
 })

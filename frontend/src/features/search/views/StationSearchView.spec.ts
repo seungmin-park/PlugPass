@@ -18,6 +18,20 @@ function searchRouter() {
 }
 
 describe('위치 선택부터 실제 API 계약까지 검색 화면', () => {
+  it('조건 다음 지도 다음 목록을 제공하고 지도 접기 없이 검색을 유지한다', async () => {
+    httpClient.defaults.adapter = async config => jsonResponse(config, searchResponse)
+    const router = searchRouter()
+    await router.push({ path: '/stations', query })
+    const wrapper = mount(StationSearchView, { global: { plugins: [router, createPinia()] } })
+    await flushPromises()
+    expect(wrapper.find('#show-map').exists()).toBe(false)
+    expect(wrapper.find('.search-map-explorer').exists()).toBe(true)
+    const conditions = wrapper.get('#search-conditions').element
+    const map = wrapper.get('.search-map-explorer').element
+    const results = wrapper.get('.search-results').element
+    expect(conditions.compareDocumentPosition(map) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(map.compareDocumentPosition(results) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  })
   it('저장된 차량이 있으면 첫 화면에서 현재 위치로 한 번만 검색한다', async () => {
     saveVehicleProfile(window.localStorage, { vehicleId: 'kona-electric-2020-kr', adapterIds: [], vehicleSupportConfirmed: false })
     const getCurrentPosition = vi.fn<Geolocation['getCurrentPosition']>(success => success({ coords: {
@@ -33,7 +47,7 @@ describe('위치 선택부터 실제 API 계약까지 검색 화면', () => {
     expect(getCurrentPosition).toHaveBeenCalledTimes(1)
     expect(adapter).toHaveBeenCalledTimes(1)
     expect(router.currentRoute.value.query).toMatchObject({ latitude: '37.5', longitude: '127', vehicleId: 'kona-electric-2020-kr' })
-    expect(wrapper.get('#show-map').attributes('aria-expanded')).toBe('true')
+    expect(wrapper.find('.station-map-panel').exists()).toBe(true)
     expect(wrapper.findAll('.station-card')).toHaveLength(2)
   })
   it('차량을 처음 선택하면 GPS 성공 후 추가 제출 없이 결과를 보여 준다', async () => {
@@ -144,8 +158,8 @@ describe('위치 선택부터 실제 API 계약까지 검색 화면', () => {
     expect(wrapper.findAll('article')).toHaveLength(2)
     expect(wrapper.text()).toContain('최대 2개 표시')
     expect(wrapper.text()).toContain('직선거리')
-    expect(wrapper.text()).toContain('이용 가능 보고 1대')
-    expect(wrapper.text()).toContain('최신성 확인 불가')
+    expect(wrapper.text()).toContain('1대 중 1대 이용 가능')
+    expect(wrapper.text()).not.toContain('최신성 확인 불가')
     expect(wrapper.text()).toContain('조회 시각')
     expect(wrapper.text()).toContain('전체 수집 성공 시각')
     await wrapper.get('.search-form').trigger('submit')
@@ -234,12 +248,12 @@ describe('위치 선택부터 실제 API 계약까지 검색 화면', () => {
     await router.push({ path: '/stations', query })
     const wrapper = mount(StationSearchView, { global: { plugins: [router, createPinia()] } })
     await flushPromises()
-    expect(wrapper.get('[role="alert"]').text()).toContain(message)
+    expect(wrapper.get('.search-results [role="alert"]').text()).toContain(message)
     expect(wrapper.findAll('article')).toHaveLength(0)
     expect(adapter).toHaveBeenCalledTimes(1)
     await wrapper.get('#retry').trigger('click')
     await flushPromises()
-    expect(wrapper.find('[role="alert"]').exists()).toBe(false)
+    expect(wrapper.find('.search-results [role="alert"]').exists()).toBe(false)
     expect(wrapper.findAll('article')).toHaveLength(2)
     expect(adapter).toHaveBeenCalledTimes(2)
   })

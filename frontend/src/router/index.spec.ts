@@ -1,8 +1,14 @@
+import { httpClient } from '../shared/api/httpClient'
+import { jsonResponse } from '../../tests/httpResponse'
+import searchResponse from '../../tests/fixtures/search.json'
 import { mount, flushPromises } from '@vue/test-utils'
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, afterEach } from 'vitest'
 import App from '../App.vue'
 import { createPinia } from 'pinia'
 import router from './index'
+
+const originalAdapter = httpClient.defaults.adapter
+afterEach(() => { httpClient.defaults.adapter = originalAdapter })
 
 describe('웹앱 화면 이동', () => {
   it('첫 경로는 주변 검색으로 이동한다', async () => {
@@ -42,6 +48,19 @@ describe('웹앱 화면 이동', () => {
     await flushPromises()
     expect((conditions.element as HTMLDetailsElement).open).toBe(true)
     expect(document.activeElement).toBe(conditions.get('summary').element)
+    wrapper.unmount()
+  })
+  it('기본 limit을 생략한 검색 화면에서도 헤더는 URL을 바꾸거나 조건을 다시 닫지 않는다', async () => {
+    httpClient.defaults.adapter = async config => jsonResponse(config, searchResponse)
+    const query = { latitude: '37.5', longitude: '127', radiusMeters: '1000', connector: 'DC_COMBO' }
+    await router.push({ path: '/stations', query })
+    const wrapper = mount(App, { attachTo: document.body, global: { plugins: [router, createPinia()] } })
+    await flushPromises()
+    await wrapper.get('nav[aria-label="주요 메뉴"] a').trigger('click')
+    await flushPromises()
+    expect(router.currentRoute.value.query).toEqual(query)
+    expect((wrapper.get('#search-conditions').element as HTMLDetailsElement).open).toBe(true)
+    expect(document.activeElement).toBe(wrapper.get('#search-conditions summary').element)
     wrapper.unmount()
   })
   it('없는 화면은 안내와 검색 복귀 링크를 제공한다', async () => {

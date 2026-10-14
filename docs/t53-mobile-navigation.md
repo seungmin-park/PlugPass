@@ -16,4 +16,6 @@
 
 Red: Android 공통 링크·iPhone 직접 링크가 없다는 단위 assertion 실패, 검색 카드가 링크 대신 선택 버튼인 컴포넌트 assertion 실패, iOS 앱 미전환 대체 동작 assertion 실패를 확인했다. Android `intent://`가 `geo://`로 해석될 수 있는 문제도 URL assertion 실패로 재현해 `intent:` 형식으로 수정했다. Green: 대상 단위 39건, headless Chromium의 iPhone·Android·PC 흐름 3건 통과. 브라우저 테스트는 목적지 URL과 내부 패널 미표시를 검증하며 실제 OS 선택창·앱 실행을 성공이라고 주장하지 않는다.
 
-최종 `CI=1 KAKAO_JS_KEY=test-js-key bash scripts/verify.sh`는 두 기능이 함께 있는 최신 main 기반 소스에서 현재 cmux 보조 pane에 표시하며 실행했고 종료 코드 0이었다. 프런트 단위 414건, 개발 Chromium 57건, 배포 JAR Chromium 5건, MySQL 8건과 재시작 뒤 Chromium 7건이 통과했다. 로그는 `/tmp/plugpass-navigation-verify-final2.log`다. PR CI·main 병합 및 실제 기기 검증 결과는 별도로 확인한다.
+최종 `CI=1 KAKAO_JS_KEY=test-js-key bash scripts/verify.sh`는 두 기능이 함께 있는 최신 main 기반 소스에서 현재 cmux 보조 pane에 표시하며 실행했고 종료 코드 0이었다. 프런트 단위 414건, 개발 Chromium 57건, 배포 JAR Chromium 5건, MySQL 8건과 재시작 뒤 Chromium 7건이 통과했다. 로그는 `/tmp/plugpass-navigation-verify-final2.log`다.
+
+[PR #82](https://github.com/seungmin-park/PlugPass/pull/82)의 CI와 [main CI](https://github.com/seungmin-park/PlugPass/actions/runs/38553895806)가 성공했고, 보호 규칙 아래 자동 병합된 `c8fcbfb`의 [운영 배포](https://github.com/seungmin-park/PlugPass/actions/runs/38554572680)도 성공했다. 배포 후 시흥 좌표의 실제 운영 검색 결과 9개를 headless Chromium에서 iPhone·Android 사용자 환경으로 열어 첫 카드가 각각 `kakaomap://route?ep=...&by=car`, `intent:0,0?q=...#Intent;scheme=geo;...` 링크를 가지며 PlugPass 선택 창이 열리지 않음을 확인했다. cmux 검증 pane 종료 코드 0, 로그 `/tmp/plugpass-live-t53.log`. URL과 웹 동작 검증이며 실제 iPhone·Android에서 앱 설치 여부, 앱 전환, 마켓 이동, 시스템 선택 창의 모양은 아직 검증하지 않았다.

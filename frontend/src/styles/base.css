@@ -248,7 +248,7 @@ h1 { font-size: 36px; font-weight: 700; letter-spacing: -0.025em; margin-bottom:
 .has-results .station-map-canvas { height: 240px; }
 .has-results #search-map-area { min-height: 44px; font-size: 13px; }
 @media (max-width: 767px) { .has-results .station-map-canvas { height: 180px; } }
-.has-results.map-open .station-map-canvas { height: min(42dvh, 380px); min-height: 280px; }
+.has-results.map-open .station-map-canvas { height: min(calc(42dvh - 16px), 364px); min-height: 280px; }
 
 .station-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 16px; }
 .station-actions > a:first-child { min-height: 44px; display: inline-flex; align-items: center; padding: 8px 14px; background: var(--color-primary); color: white; border-radius: 8px; text-decoration: none; }

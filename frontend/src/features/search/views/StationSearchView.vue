@@ -30,6 +30,7 @@ const conditionsOpen = ref(false)
 const resultsHeading = ref<HTMLElement | null>(null)
 const revealResultsOnSuccess = ref(false)
 const pendingArea = ref<SearchArea | null>(null)
+const mapSelectionActive = ref(false)
 const restoredArea = ref<SearchArea | undefined>(undefined)
 const savedProfile = ref((() => { try { return readVehicleProfile(window.localStorage) } catch { return null } })())
 const autoLocationAttempted = ref(false)
@@ -84,6 +85,7 @@ watch(() => route.query, () => {
   const sameLocation = criteria?.latitude === selectedLocation.value?.latitude && criteria?.longitude === selectedLocation.value?.longitude
   selectedLocation.value = criteria ? { latitude: criteria.latitude, longitude: criteria.longitude } : null
   restoredArea.value = criteria?.area
+  mapSelectionActive.value = !!criteria?.area
   selectedConditions.value = criteria ? { connector: criteria.connector,
     ...(criteria.connectors ? { connectors: criteria.connectors } : {}),
     ...(criteria.vehicleId ? { vehicleId: criteria.vehicleId } : {}),
@@ -104,6 +106,7 @@ onMounted(() => {
 })
 
 async function selectCurrentLocation(): Promise<void> {
+  mapSelectionActive.value = false
   selectedLocation.value = null
   const coordinates = await requestLocation()
   if (!coordinates || locationStatus.value !== 'success') return
@@ -118,6 +121,7 @@ async function selectCurrentLocation(): Promise<void> {
   guidance.value = '현재 위치를 선택했습니다. 차량을 선택해 주세요.'
 }
 async function selectPlace(place: PlaceMatch): Promise<void> {
+  mapSelectionActive.value = false
   cancelLocation()
   restoredArea.value = undefined
   selectedLocation.value = { latitude: place.latitude, longitude: place.longitude }
@@ -142,11 +146,11 @@ function focusVehicleChoice(): void {
 }
 async function submitSearch(conditions: SearchConditions): Promise<void> {
   selectedConditions.value = conditions
-  if (selectedLocation.value) {
+  if (selectedLocation.value && !mapSelectionActive.value) {
     await confirmSearch({ ...selectedLocation.value, ...conditions, radiusMeters: confirmedCriteria.value?.radiusMeters ?? 1000, limit: confirmedCriteria.value?.limit ?? 20 })
     return
   }
-  if (pendingArea.value) {
+  if (mapSelectionActive.value || pendingArea.value) {
     if (!pendingArea.value || !validMapArea.value) {
       guidance.value = '지도가 준비되고 이동이 끝난 후 검색해 주세요. 지도를 사용할 수 없다면 주소나 현재 위치로 검색해 주세요.'
       return
@@ -158,7 +162,7 @@ async function submitSearch(conditions: SearchConditions): Promise<void> {
 }
 function receiveConditions(conditions: SearchConditions | null): void {
   selectedConditions.value = conditions
-  if (!conditions?.vehicleId || selectedLocation.value || parsedCriteria.value.kind !== 'empty'
+  if (!conditions?.vehicleId || mapSelectionActive.value || selectedLocation.value || parsedCriteria.value.kind !== 'empty'
     || autoLocationAttempted.value || locationStatus.value !== 'idle') return
   autoLocationAttempted.value = true
   void selectCurrentLocation()
@@ -186,7 +190,13 @@ function refreshSearch(): void {
   if (confirmedCriteria.value) void store.search(confirmedCriteria.value)
 }
 function receiveMapArea(area: SearchArea | null): void { pendingArea.value = area }
+function selectMapArea(event?: KeyboardEvent): void {
+  if (event && !['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', '+', '-'].includes(event.key)) return
+  mapSelectionActive.value = true
+  cancelLocation()
+}
 function searchMapArea(): void {
+  selectMapArea()
   const conditions = selectedConditions.value
   if (!conditions) { promptForVehicle(); return }
   if (!pendingArea.value || !validMapArea.value) return
@@ -269,7 +279,7 @@ function directionsInstallHref(station: StationSummary): string | undefined {
           <div><h3>위치 선택 안내</h3><p class="initial-guidance" role="status">{{ guidance }}</p></div>
         </div>
       </details>
-    <div class="search-map-explorer">
+    <div class="search-map-explorer" @pointerdown.capture="selectMapArea()" @wheel.capture.passive="selectMapArea()" @click.capture="selectMapArea()" @keydown.capture="selectMapArea">
         <p v-if="!confirmedCriteria && !selectedLocation">지도를 움직여 찾을 지역을 고른 뒤 ‘이 지역 재검색’을 눌러 주세요. 위치를 선택하지 않았다면 서울 시청 주변에서 시작합니다.</p>
         <StationMap :stations="store.response?.stations ?? []" :center="mapCenter" :area="restoredArea"
           :selected-station-id="selectedStationId" :compact="!!confirmedCriteria" @select="selectStation" @area-change="receiveMapArea" />

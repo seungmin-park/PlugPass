@@ -1,10 +1,4 @@
-@font-face {
-  font-family: "Pretendard Variable";
-  src: url('../shared/assets/fonts/PretendardVariable.woff2') format('woff2');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
+@import '../shared/assets/fonts/pretendardvariable-dynamic-subset.css';
 
 :root {
   --space-xs: 8px;

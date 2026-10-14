@@ -599,7 +599,8 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 - [x] 조건→지도→목록, 요약·펼침, 지도 위치 의도와 GPS 응답 분리: 구현·대상 테스트.
 - [x] 상세 collection·해석된 connectors, 대체 후보 상태 분포와 사용자 문구: 구현·대상 테스트.
 - [x] README를 프로젝트 소개 중심으로 전면 개편.
-- [ ] 최종 공용 verify·필수 CI·보호된 자동 병합·운영 배포 후 확인.
+- [x] 최종 로컬 공용 verify 완료(Java462·프런트431·개발 E2E57·JAR5·MySQL 계약8/브라우저7).
+- 원격 CI·보호된 자동 병합·운영 배포 결과는 각 PR 본문과 Actions 실행을 최종 근거로 기록한다.
 - [ ] iPhone Safari 실기기의 지도 터치·글자 확대·외부 앱 전환.
 
 과정·명령·실패/성공 근거는 [개편 실행 기록](docs/visual-redesign-progress.md)에 기록한다.

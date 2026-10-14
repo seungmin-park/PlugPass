@@ -4,7 +4,7 @@ import { createNavigationLinks } from './navigationLinks'
 describe('길찾기 목적지 경계', () => {
   it('Android는 특정 지도 앱을 고정하지 않는 공통 위치 요청과 카카오맵 설치 대안을 만든다', () => {
     const links = createNavigationLinks({ name: '시흥 충전소', latitude: 37.5, longitude: 127 }, 'android')
-    expect(links?.directHref).toContain('intent://0,0?q=37.5%2C127')
+    expect(links?.directHref).toContain('intent:0,0?q=37.5%2C127')
     expect(links?.directHref).toContain('scheme=geo;')
     expect(links?.directHref).not.toContain('package=')
     expect(links?.directHref).toContain(encodeURIComponent('https://play.google.com/store/apps/details?id=net.daum.android.map'))

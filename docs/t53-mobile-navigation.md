@@ -14,6 +14,6 @@
 
 `navigationLinks`가 목적지 검증·플랫폼별 URL 생성, `navigationHandoff`가 iOS 대체 이동의 취소 조건을 소유한다. 검색 카드·상세·마커 패널은 동일한 링크를 보여 주고 사용자 클릭을 전달한다. 서버 API·저장 계약은 바꾸지 않는다.
 
-Red: Android 공통 링크·iPhone 직접 링크가 없다는 단위 assertion 실패, 검색 카드가 링크 대신 선택 버튼인 컴포넌트 assertion 실패, iOS 앱 미전환 대체 동작 assertion 실패를 확인했다. Green: 대상 단위 47건, headless Chromium의 iPhone·Android·PC 흐름 3건 통과. 브라우저 테스트는 목적지 URL과 내부 패널 미표시를 검증하며 실제 OS 선택창·앱 실행을 성공이라고 주장하지 않는다.
+Red: Android 공통 링크·iPhone 직접 링크가 없다는 단위 assertion 실패, 검색 카드가 링크 대신 선택 버튼인 컴포넌트 assertion 실패, iOS 앱 미전환 대체 동작 assertion 실패를 확인했다. Android `intent://`가 `geo://`로 해석될 수 있는 문제도 URL assertion 실패로 재현해 `intent:` 형식으로 수정했다. Green: 대상 단위 39건, headless Chromium의 iPhone·Android·PC 흐름 3건 통과. 브라우저 테스트는 목적지 URL과 내부 패널 미표시를 검증하며 실제 OS 선택창·앱 실행을 성공이라고 주장하지 않는다.
 
-공용 verify·PR CI·main 병합 및 실제 기기 검증 결과는 후속으로 기록한다.
+최종 `CI=1 KAKAO_JS_KEY=test-js-key bash scripts/verify.sh`는 두 기능이 함께 있는 최신 main 기반 소스에서 현재 cmux 보조 pane에 표시하며 실행했고 종료 코드 0이었다. 프런트 단위 414건, 개발 Chromium 57건, 배포 JAR Chromium 5건, MySQL 8건과 재시작 뒤 Chromium 7건이 통과했다. 로그는 `/tmp/plugpass-navigation-verify-final2.log`다. PR CI·main 병합 및 실제 기기 검증 결과는 별도로 확인한다.

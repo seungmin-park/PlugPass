@@ -24,7 +24,7 @@ export function createNavigationLinks(destination: NavigationDestination, platfo
     ? 'https://play.google.com/store/apps/details?id=net.daum.android.map'
     : 'https://apps.apple.com/app/id304608425'
   const directHref = platform === 'android'
-    ? `intent://0,0?q=${encodeURIComponent(`${latitude},${longitude}(${name})`)}#Intent;scheme=geo;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(installHref)};end`
+    ? `intent:0,0?q=${encodeURIComponent(`${latitude},${longitude}(${name})`)}#Intent;scheme=geo;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(installHref)};end`
     : `kakaomap://route?ep=${latitude},${longitude}&by=car`
   return { webHref, directHref, installHref }
 }

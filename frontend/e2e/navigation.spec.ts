@@ -2,7 +2,7 @@ import { test, expect } from './fixtures'
 
 for (const device of [
   { name: 'iPhone', userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1', expected: 'kakaomap://route?ep=37.5,127&by=car' },
-  { name: 'Android', userAgent: 'Mozilla/5.0 (Linux; Android 15) AppleWebKit/537.36 Chrome/130.0.0.0 Mobile Safari/537.36', expected: 'intent://0,0?q=37.5%2C127' },
+  { name: 'Android', userAgent: 'Mozilla/5.0 (Linux; Android 15) AppleWebKit/537.36 Chrome/130.0.0.0 Mobile Safari/537.36', expected: 'intent:0,0?q=37.5%2C127' },
 ]) {
   test.describe(device.name, () => {
     test.use({ userAgent: device.userAgent, viewport: { width: 375, height: 812 }, hasTouch: true, isMobile: true })

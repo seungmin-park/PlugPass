@@ -34,7 +34,7 @@ describe('상세에서 외부 지도 길찾기', () => {
     const wrapper = mount(App, { global: { plugins: [router, createPinia()] } })
     await flushPromises()
     const href = wrapper.find('a#navigation-primary').attributes('href') ?? ''
-    expect(href).toContain('intent://0,0?q=37.5%2C127')
+    expect(href).toContain('intent:0,0?q=37.5%2C127')
     expect(href).toContain(';scheme=geo;action=android.intent.action.VIEW;')
     expect(href).not.toContain('package=')
     expect(href).toContain('S.browser_fallback_url=https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dnet.daum.android.map;end')

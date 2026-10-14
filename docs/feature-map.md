@@ -333,3 +333,7 @@ CLI `--plugpass.ingestion.command.mode=auto` → ScheduledSyncService/Collection
 ## 검색 목록 길찾기 선택 T49
 
 검색 카드의 길찾기 버튼 → `StationSearchView`의 충전소 선택 상태 → `StationActionSheet`의 하단 패널 → `StationDirections`의 카카오맵·네이버 지도 또는 웹 링크. 카드는 외부 URL을 판단하지 않고 사용자 이벤트만 보낸다. 패널은 선택한 충전소와 앱 링크를 표시하고 닫은 뒤 원래 버튼으로 초점을 돌린다. 상세 화면은 기존 앱 선호 바로가기를 유지한다. [시나리오와 근거](t49-navigation-choice-test-plan.md).
+
+## 상태 색상·지도 핀 T50
+
+충전기 상태 문자열 → `StatusBadge`의 보수적인 색조 선택과 기존 한국어 문구 → 목록·상세·패널에 같은 표현. 카카오 지도 어댑터는 충전소 ID의 클릭 가능한 버튼을 계속 만들고 CSS가 작은 시각 핀과 44px 터치 영역을 분리한다. 상태·거리·검색 API 판단은 유지한다. [검증 계획](t50-map-visuals-test-plan.md).

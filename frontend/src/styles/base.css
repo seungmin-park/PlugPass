@@ -152,7 +152,10 @@ h1 { font-size: 36px; font-weight: 700; letter-spacing: -0.025em; margin-bottom:
 .charger-badges li + li { margin-top: 8px; }
 .charger-label { color: var(--color-muted); font-size: 12px; margin-right: 4px; }
 .info-badge { display: inline-block; padding: 4px 9px; border-radius: 6px; font-size: 12px; line-height: 1.5; }
-.status-badge { color: #175a7c; background: #e9f5ff; }
+.status-available { color: #075a38; background: #dcf5e7; }
+.status-occupied { color: #865000; background: #fff0d0; }
+.status-unavailable { color: #912d37; background: #ffe6e9; }
+.status-unknown { color: #46566a; background: #e9eef3; }
 .freshness-recent { color: #00594f; background: #d9f5e7; }
 .freshness-uncertain { color: #775600; background: #fff2cc; }
 @media (max-width: 767px) { .station-card { padding: 18px; } }
@@ -178,10 +181,12 @@ h1 { font-size: 36px; font-weight: 700; letter-spacing: -0.025em; margin-bottom:
 .map-zoom-controls button:hover { background: var(--color-field); }
 .map-zoom-controls button:disabled { color: var(--color-muted); opacity: .5; cursor: default; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.station-map-marker { display: grid; place-items: center; background: #ffffff; color: var(--color-primary); border: 3px solid var(--color-primary); border-radius: 50% 50% 50% 0; transform-origin: center; font-size: 20px; }
-.station-map-marker-selected { background: var(--color-primary); color: #ffffff; border-color: var(--color-ink); }
+.station-map-marker { position: relative; display: block; border: 0; background: transparent; color: transparent; font-size: 0; }
+.station-map-marker::before { content: ''; position: absolute; left: 10px; bottom: 3px; width: 24px; height: 24px; border: 2px solid #ffffff; border-radius: 50% 50% 50% 0; background: var(--color-primary); box-shadow: 0 3px 9px #123d4250; transform: rotate(-45deg); }
+.station-map-marker::after { content: ''; position: absolute; left: 18px; bottom: 13px; width: 8px; height: 8px; border-radius: 50%; background: #ffffff; }
+.station-map-marker-selected::before { background: var(--color-ink); box-shadow: 0 0 0 3px #ffffff, 0 3px 9px #123d4250; }
 .station-map-marker:focus-visible { outline: 3px solid var(--color-ink); outline-offset: 4px; }
-.kakao-station-marker { width: 36px; height: 36px; padding: 0; cursor: pointer; box-shadow: 0 5px 16px #123d4260; }
+.kakao-station-marker { width: 44px; height: 44px; padding: 0; cursor: pointer; }
 @media (max-width: 767px) { .station-map-canvas { height: 280px; } }
 .candidate-group { margin-top: 28px; }
 .candidate-list { display: grid; gap: 14px; list-style: none; padding: 0; margin: 16px 0; }

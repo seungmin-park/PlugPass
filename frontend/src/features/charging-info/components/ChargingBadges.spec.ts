@@ -16,4 +16,14 @@ describe('상태와 최신성을 별도로 읽는 배지', () => {
     expect(status.text()).toBe('상태 확인 불가')
     expect(freshness.text()).toBe('최신성 확인 불가')
   })
+  it.each([
+    ['AVAILABLE', 'status-available'],
+    ['OCCUPIED', 'status-occupied'],
+    ['UNAVAILABLE', 'status-unavailable'],
+    ['UNKNOWN', 'status-unknown'],
+    ['FUTURE', 'status-unknown'],
+  ])('상태 %s를 서로 구별되는 배지 스타일로 표시한다', (status, className) => {
+    const badge = mount(StatusBadge, { props: { status } })
+    expect(badge.classes()).toContain(className)
+  })
 })

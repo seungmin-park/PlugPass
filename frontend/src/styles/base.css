@@ -1,10 +1,4 @@
-@font-face {
-  font-family: "Pretendard Variable";
-  src: url('../shared/assets/fonts/PretendardVariable.woff2') format('woff2');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
+@import '../shared/assets/fonts/pretendardvariable-dynamic-subset.css';
 
 :root {
   --space-xs: 8px;
@@ -190,7 +184,7 @@ h1 { font-size: 32px; font-weight: 700; letter-spacing: -0.025em; margin-bottom:
 .map-zoom-controls button:disabled { color: var(--color-muted); opacity: .5; cursor: default; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .station-map-marker { position: relative; display: block; border: 0; background: transparent; color: transparent; font-size: 0; }
-.station-map-marker::before { content: ''; position: absolute; left: 10px; bottom: 3px; width: 24px; height: 24px; border: 2px solid #ffffff; border-radius: 50% 50% 50% 0; background: var(--color-primary); box-shadow: 0 3px 9px #123d4250; transform: rotate(-45deg); }
+.station-map-marker::before { content: ''; position: absolute; left: 12px; bottom: 5px; width: 20px; height: 20px; border: 2px solid #ffffff; border-radius: 50% 50% 50% 0; background: var(--color-primary); box-shadow: 0 3px 9px #123d4250; transform: rotate(-45deg); }
 .station-map-marker::after { content: ''; position: absolute; left: 18px; bottom: 13px; width: 8px; height: 8px; border-radius: 50%; background: #ffffff; }
 .station-map-marker-selected::before { background: var(--color-ink); box-shadow: 0 0 0 3px #ffffff, 0 3px 9px #123d4250; }
 .station-map-marker:focus-visible { outline: 3px solid var(--color-ink); outline-offset: 4px; }
@@ -236,27 +230,12 @@ h1 { font-size: 32px; font-weight: 700; letter-spacing: -0.025em; margin-bottom:
 .has-results .station-list { margin-top: 12px; }
 .has-results .intro { margin-bottom: 12px; }
 .has-results .intro h1 { margin-bottom: 0; font-size: 28px; }
-.has-results.map-open { margin-top: -16px; }
-.has-results.map-open .intro { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.has-results.map-open .place-search { margin: 0 0 8px; padding: 10px; }
-.has-results.map-open .place-search-form label { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.has-results.map-open .search-map-explorer { position: relative; margin-bottom: 0; }
-.has-results.map-open .search-map-explorer #show-map { position: absolute; bottom: 24px; left: 12px; z-index: 2; }
-.has-results.map-open .search-map-explorer #search-map-area { position: absolute; right: 12px; bottom: 24px; z-index: 2; }
-.has-results.map-open .search-map-explorer:has(.map-failed) #show-map { position: static; }
-.has-results.map-open .search-map-explorer:has(.map-failed) #search-map-area { position: static; }
-.has-results.map-open .station-map-panel { margin: 0; }
-.has-results.map-open .search-layout { position: relative; z-index: 3; display: flex; flex-direction: column; gap: 0; margin-top: 8px; }
-.has-results.map-open .search-results { order: -1; width: 100%; padding: 8px 16px 16px; background: var(--color-panel); border: 1px solid var(--color-line); border-radius: 20px 20px 0 0; box-shadow: 0 -8px 24px #102b2d18; }
-.has-results.map-open .search-panel { width: 100%; margin-top: 16px; }
-.has-results.map-open .station-list { max-height: 48dvh; overflow-y: auto; }
 .collection-details { margin-top: 20px; font-size: 13px; }
 .collection-details > summary { cursor: pointer; padding-block: 10px; }
 .collection-summary { margin-bottom: 8px; font-size: 13px; }
 .has-results .station-map-canvas { height: 240px; }
 .has-results #search-map-area { min-height: 44px; font-size: 13px; }
 @media (max-width: 767px) { .has-results .station-map-canvas { height: 180px; } }
-.has-results.map-open .station-map-canvas { height: min(calc(42dvh - 16px), 364px); min-height: 280px; }
 
 .station-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 16px; }
 .station-actions > a:first-child { min-height: 44px; display: inline-flex; align-items: center; padding: 8px 14px; background: var(--color-primary); color: white; border-radius: 8px; text-decoration: none; }
@@ -268,3 +247,31 @@ h1 { font-size: 32px; font-weight: 700; letter-spacing: -0.025em; margin-bottom:
 .alternative-view .candidate-state { display: grid; justify-items: start; gap: var(--space-sm); }
 .alternative-view .candidate-state > .candidate-group { width: 100%; }
 .detail-view .station-source p + p { margin-top: var(--space-xs); }
+
+/* 조건 → 지도 → 결과는 문서 흐름을 유지한다. */
+.search-view .search-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+.search-map-explorer { position: relative; }
+.search-map-explorer #search-map-area { position: absolute; right: 12px; bottom: 18px; z-index: 2; min-height: 44px; }
+.search-map-explorer:has(.map-failed) #search-map-area { position: static; }
+.search-map-explorer .station-map-panel { margin: 0; }
+.has-results .station-map-canvas { height: 280px; min-height: 0; }
+.search-results { min-width: 0; }
+.station-list { overflow: visible; }
+.charger-counts { font-size: 16px; }
+.charger-counts strong { color: var(--color-primary); }
+.status-distribution { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 14px; }
+.charger-toggle { padding: 8px 0; min-height: 44px; border: 0; background: transparent; color: var(--color-muted); cursor: pointer; }
+.station-card .station-actions { border-top: 1px solid var(--color-line); padding-top: 12px; margin-top: 8px; }
+.station-card .station-actions > :last-child { margin-right: auto; order: -1; }
+@media (max-width: 767px) {
+  .has-results .station-map-canvas { height: 170px; }
+  .has-results .search-layout { gap: 12px; }
+  .has-results .place-search { margin: 0 0 12px; padding: 10px; }
+  .station-card { padding: 16px; }
+}
+
+.has-results .place-search-form label { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); }
+.has-results .place-search { margin: 0 0 12px; padding: 10px; }
+.has-results .intro h1 { font-size: 24px; }
+.has-results .search-map-explorer #search-map-area { left: 12px; right: auto; }
+@media (max-width: 767px) { main:has(.has-results) { padding-top: 16px; } }

@@ -9,7 +9,7 @@ test('지도 이동 뒤 재검색한 영역을 새로고침과 상세 복귀까�
   await page.getByRole('button', { name: '현재 위치 사용', exact: true }).click()
   await expect(page.getByText('현재 위치 선택됨', { exact: true })).toBeVisible()
   await page.getByLabel('내 차량').selectOption('manual')
-  await expect(page.getByRole('button', { name: '지도 접기', exact: true })).toBeVisible()
+  await expect(page.getByRole('region', { name: '검색 결과 지도' })).toBeVisible()
   await expect(page.locator('.kakao-test-zoom-in')).toHaveCount(0)
   await page.getByRole('button', { name: '지도 확대' }).click()
   const response = page.waitForResponse(response => response.url().includes('/api/v1/stations/area?'))
@@ -24,7 +24,7 @@ test('지도 이동 뒤 재검색한 영역을 새로고침과 상세 복귀까�
   await expect(page.getByRole('button', { name: '지도 확대' })).toBeVisible()
   await page.reload()
   await expect(page.getByRole('link', { name: '데모 가까운 충전소 상세 보기' })).toBeVisible()
-  await expect(page.getByRole('button', { name: '지도 접기', exact: true })).toBeVisible()
+  await expect(page.getByRole('region', { name: '검색 결과 지도' })).toBeVisible()
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
 })
 
@@ -59,7 +59,6 @@ test('카카오 위치 후보 선택과 실제 충전소 조회를 연결한다'
 test('차량 없이 지도 재검색을 누르면 차량 선택 단계를 알려 준다', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 })
   await page.goto('/app/index.html#/stations')
-  await page.getByRole('button', { name: '지도 보기', exact: true }).click()
   await page.getByRole('button', { name: '지도 확대' }).click()
   await page.getByRole('button', { name: '이 지역 재검색' }).click()
   const notice = page.locator('.search-prerequisite-notice')

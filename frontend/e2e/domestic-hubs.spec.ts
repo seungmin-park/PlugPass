@@ -26,8 +26,7 @@ for (const hub of [
     await page.goto(`/app/index.html#/stations?${query}`)
     await expect(page.getByRole('link', { name: `${hub.name} 검증 충전소 상세 보기` })).toBeVisible()
     expect(requestedLocations).toEqual([{ latitude: String(hub.latitude), longitude: String(hub.longitude) }])
-    await page.getByRole('button', { name: '지도 보기', exact: true }).click()
-    await page.getByRole('button', { name: `${hub.name} 검증 충전소 지도 마커` }).click()
+      await page.getByRole('button', { name: `${hub.name} 검증 충전소 지도 마커` }).click()
     await expect(page.getByRole('dialog')).toContainText(`${hub.name} 검증 충전소`)
   })
 }

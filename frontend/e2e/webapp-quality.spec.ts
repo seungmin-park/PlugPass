@@ -30,8 +30,6 @@ test('키보드로 본문·위치·주소 입력·차량·검색을 조작한다
   await page.keyboard.press('Tab')
   await expect(page.getByRole('button', { name: '주소·장소 찾기' })).toBeFocused()
   await page.keyboard.press('Tab')
-  await expect(page.getByRole('button', { name: '지도 보기', exact: true })).toBeFocused()
-  await page.keyboard.press('Tab')
   await expect(page.locator('.search-panel > summary')).toBeFocused()
   await page.keyboard.press('Tab')
   await expect(page.getByRole('button', { name: '현재 위치 사용' })).toBeFocused()

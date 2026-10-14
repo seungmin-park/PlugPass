@@ -26,11 +26,11 @@ const route = useRoute()
 const router = useRouter()
 const store = useStationSearchStore()
 const platform = navigationPlatform(navigator.userAgent, navigator.maxTouchPoints)
-const mapVisible = ref(route.query.south !== undefined)
 const conditionsOpen = ref(false)
 const resultsHeading = ref<HTMLElement | null>(null)
 const revealResultsOnSuccess = ref(false)
 const pendingArea = ref<SearchArea | null>(null)
+const mapSelectionActive = ref(false)
 const restoredArea = ref<SearchArea | undefined>(undefined)
 const savedProfile = ref((() => { try { return readVehicleProfile(window.localStorage) } catch { return null } })())
 const autoLocationAttempted = ref(false)
@@ -85,6 +85,7 @@ watch(() => route.query, () => {
   const sameLocation = criteria?.latitude === selectedLocation.value?.latitude && criteria?.longitude === selectedLocation.value?.longitude
   selectedLocation.value = criteria ? { latitude: criteria.latitude, longitude: criteria.longitude } : null
   restoredArea.value = criteria?.area
+  mapSelectionActive.value = !!criteria?.area
   selectedConditions.value = criteria ? { connector: criteria.connector,
     ...(criteria.connectors ? { connectors: criteria.connectors } : {}),
     ...(criteria.vehicleId ? { vehicleId: criteria.vehicleId } : {}),
@@ -105,6 +106,7 @@ onMounted(() => {
 })
 
 async function selectCurrentLocation(): Promise<void> {
+  mapSelectionActive.value = false
   selectedLocation.value = null
   const coordinates = await requestLocation()
   if (!coordinates || locationStatus.value !== 'success') return
@@ -112,7 +114,6 @@ async function selectCurrentLocation(): Promise<void> {
   selectedLocation.value = coordinates
   locationLabel.value = '현재 위치'
   needsVehicleSelection.value = false
-  mapVisible.value = true
   if (selectedConditions.value) {
     await confirmSearch({ ...coordinates, ...selectedConditions.value, radiusMeters: 1000, limit: 20 }, false)
     return
@@ -120,11 +121,11 @@ async function selectCurrentLocation(): Promise<void> {
   guidance.value = '현재 위치를 선택했습니다. 차량을 선택해 주세요.'
 }
 async function selectPlace(place: PlaceMatch): Promise<void> {
+  mapSelectionActive.value = false
   cancelLocation()
   restoredArea.value = undefined
   selectedLocation.value = { latitude: place.latitude, longitude: place.longitude }
   locationLabel.value = place.name
-  mapVisible.value = true
   if (!selectedConditions.value) { promptForVehicle(); return }
   await confirmSearch({ latitude: place.latitude, longitude: place.longitude, ...selectedConditions.value,
     radiusMeters: confirmedCriteria.value?.radiusMeters ?? 1000, limit: confirmedCriteria.value?.limit ?? 20 })
@@ -145,13 +146,13 @@ function focusVehicleChoice(): void {
 }
 async function submitSearch(conditions: SearchConditions): Promise<void> {
   selectedConditions.value = conditions
-  if (selectedLocation.value) {
+  if (selectedLocation.value && !mapSelectionActive.value) {
     await confirmSearch({ ...selectedLocation.value, ...conditions, radiusMeters: confirmedCriteria.value?.radiusMeters ?? 1000, limit: confirmedCriteria.value?.limit ?? 20 })
     return
   }
-  if (mapVisible.value) {
+  if (mapSelectionActive.value || pendingArea.value) {
     if (!pendingArea.value || !validMapArea.value) {
-      guidance.value = '지도가 준비되고 이동이 끝난 후 검색해 주세요. 지도를 사용할 수 없다면 접고 선택 위치 주변을 검색할 수 있습니다.'
+      guidance.value = '지도가 준비되고 이동이 끝난 후 검색해 주세요. 지도를 사용할 수 없다면 주소나 현재 위치로 검색해 주세요.'
       return
     }
     await confirmSearch({ ...searchCriteriaForArea(pendingArea.value, conditions.connector, confirmedCriteria.value?.limit ?? 20), ...conditions })
@@ -161,7 +162,7 @@ async function submitSearch(conditions: SearchConditions): Promise<void> {
 }
 function receiveConditions(conditions: SearchConditions | null): void {
   selectedConditions.value = conditions
-  if (!conditions?.vehicleId || selectedLocation.value || mapVisible.value || parsedCriteria.value.kind !== 'empty'
+  if (!conditions?.vehicleId || mapSelectionActive.value || selectedLocation.value || parsedCriteria.value.kind !== 'empty'
     || autoLocationAttempted.value || locationStatus.value !== 'idle') return
   autoLocationAttempted.value = true
   void selectCurrentLocation()
@@ -189,16 +190,17 @@ function refreshSearch(): void {
   if (confirmedCriteria.value) void store.search(confirmedCriteria.value)
 }
 function receiveMapArea(area: SearchArea | null): void { pendingArea.value = area }
+function selectMapArea(event?: KeyboardEvent): void {
+  if (event && !['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', '+', '-'].includes(event.key)) return
+  mapSelectionActive.value = true
+  cancelLocation()
+}
 function searchMapArea(): void {
+  selectMapArea()
   const conditions = selectedConditions.value
   if (!conditions) { promptForVehicle(); return }
   if (!pendingArea.value || !validMapArea.value) return
   void confirmSearch({ ...searchCriteriaForArea(pendingArea.value, conditions.connector, confirmedCriteria.value?.limit ?? 20), ...conditions })
-}
-function toggleMap(): void {
-  pendingArea.value = null
-  mapVisible.value = !mapVisible.value
-  selectedStationId.value = null
 }
 function selectStation(stationId: number): void {
   if (store.response?.stations.some(station => station.id === stationId)) selectedStationId.value = stationId
@@ -224,7 +226,7 @@ function directionsInstallHref(station: StationSummary): string | undefined {
 </script>
 
 <template>
-  <section aria-labelledby="search-heading" class="search-view" :class="{ 'has-results': confirmedCriteria, 'map-open': mapVisible }">
+  <section aria-labelledby="search-heading" class="search-view" :class="{ 'has-results': confirmedCriteria }">
     <div class="intro">
       <h1 id="search-heading">주변 충전소 찾기</h1>
       <p v-if="!confirmedCriteria">차량에 맞는 충전소와 이용 조건을 확인하세요.</p>
@@ -244,16 +246,6 @@ function directionsInstallHref(station: StationSummary): string | undefined {
         <p>충전소 결과를 보려면 내 차량을 선택해 주세요. 목록에 없다면 충전구를 직접 확인할 수 있어요.</p>
       </div>
       <button type="button" class="secondary-button" @click="focusVehicleChoice">내 차량 선택하기</button>
-    </div>
-    <div class="search-map-explorer">
-      <button type="button" id="show-map" class="secondary-button" :aria-expanded="mapVisible" aria-controls="station-map-panel" @click="toggleMap">{{ mapVisible ? '지도 접기' : '지도 보기' }}</button>
-      <template v-if="mapVisible">
-        <p v-if="!confirmedCriteria && !selectedLocation">지도를 움직여 찾을 지역을 고른 뒤 ‘이 지역 재검색’을 눌러 주세요. 위치를 선택하지 않았다면 서울 시청 주변에서 시작합니다.</p>
-        <StationMap :stations="store.response?.stations ?? []" :center="mapCenter" :area="restoredArea"
-          :selected-station-id="selectedStationId" :compact="!!confirmedCriteria" @select="selectStation" @area-change="receiveMapArea" />
-        <p v-if="pendingArea && !validMapArea" role="status">검색 영역이 너무 넓거나 지원 범위를 벗어났습니다. 지도를 확대해 주세요.</p>
-        <button id="search-map-area" type="button" class="search-button" :disabled="!validMapArea || store.status === 'loading'" @click="searchMapArea">이 지역 재검색</button>
-      </template>
     </div>
     <div class="search-layout" :class="{ 'results-layout': confirmedCriteria }">
       <details id="search-conditions" class="search-panel" :open="conditionsOpen || !confirmedCriteria || !!fieldErrors.connector || !!fieldErrors.connectors || !!fieldErrors.vehicleId" @toggle="conditionsOpen = ($event.target as HTMLDetailsElement).open">
@@ -287,6 +279,13 @@ function directionsInstallHref(station: StationSummary): string | undefined {
           <div><h3>위치 선택 안내</h3><p class="initial-guidance" role="status">{{ guidance }}</p></div>
         </div>
       </details>
+    <div class="search-map-explorer" @pointerdown.capture="selectMapArea()" @wheel.capture.passive="selectMapArea()" @click.capture="selectMapArea()" @keydown.capture="selectMapArea">
+        <p v-if="!confirmedCriteria && !selectedLocation">지도를 움직여 찾을 지역을 고른 뒤 ‘이 지역 재검색’을 눌러 주세요. 위치를 선택하지 않았다면 서울 시청 주변에서 시작합니다.</p>
+        <StationMap :stations="store.response?.stations ?? []" :center="mapCenter" :area="restoredArea"
+          :selected-station-id="selectedStationId" :compact="!!confirmedCriteria" @select="selectStation" @area-change="receiveMapArea" />
+        <p v-if="pendingArea && !validMapArea" role="status">검색 영역이 너무 넓거나 지원 범위를 벗어났습니다. 지도를 확대해 주세요.</p>
+        <button id="search-map-area" type="button" class="search-button" :disabled="!validMapArea || store.status === 'loading'" @click="searchMapArea">이 지역 재검색</button>
+    </div>
       <aside v-if="parsedCriteria.kind === 'empty'" class="search-explainer" aria-labelledby="information-heading">
         <div class="explainer-heading">
           <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6zM8 12l3 3 5-6" /></svg>

@@ -52,7 +52,6 @@ it('차량 없이 주소를 고르면 지도보다 앞에서 다음 행동을 �
   const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/stations', component: StationSearchView }] })
   await router.push('/stations')
   const wrapper = mount(StationSearchView, { attachTo: document.body, global: { plugins: [router, createPinia()] } })
-  await wrapper.get('#show-map').trigger('click')
   expect(wrapper.text()).toContain('위치를 선택하지 않았다면 서울 시청 주변에서 시작합니다')
   expect(wrapper.text()).not.toContain('마커 또는 카드의 ‘지도에서 선택’')
   await wrapper.get('#place-query').setValue('서울 시청')

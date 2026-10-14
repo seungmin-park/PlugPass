@@ -309,3 +309,7 @@ Java25·Boot4.1.1·MySQL8.4를 유지한다. [MySQL8.4 GET_LOCK](https://dev.mys
 
 ## 핵심 화면 개편 (2026-10-15)
 Pretendard Variable 1.3.9의 [공식 안내](https://github.com/orioncactus/pretendard/blob/main/packages/pretendard/README.md)와 v1.3.9 태그의 OFL을 확인하고 woff2를 자체 제공한다. Vue 3.5.43·Router 4.6.4는 lockfile과 설치 결과를 유지한다. [Router query navigation](https://router.vuejs.org/guide/essentials/navigation.html)에 따라 검증된 query를 보존한다. 색 기준은 [WCAG 2.2 대비](https://www.w3.org/TR/WCAG22/#contrast-minimum)의 일반 본문 4.5:1이며 전체 접근성 인증으로 해석하지 않는다.
+
+### Pretendard 자체 제공의 배포 크기 경계
+
+v1.3.9 [공식 dynamic subset CSS](https://github.com/orioncactus/pretendard/blob/v1.3.9/packages/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css)와 92개 woff2를 그대로 자체 제공한다. 단일2MiB 파일은 현재 배포 저장소의 파일당1MiB 상한에 걸렸다. 공식 unicode-range 분할본은 브라우저가 필요한 문자 범위만 받으며 전체 문자 범위를 보존한다. 런타임 CDN은 사용하지 않는다. `scripts/test_font_assets.py`가 크기 경계를 검사한다.

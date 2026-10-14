@@ -592,3 +592,14 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 - [x] 앱 미설치·기본 앱 설정에 따른 실제 시스템 화면은 실기기에서 확인할 범위를 [검증 계획](docs/t53-mobile-navigation.md)에 기록했다.
 - [x] 공용 verify 종료 코드 0, 프런트 414건·개발 Chromium 57건·MySQL 8건과 재시작 Chromium 7건을 확인했다.
 - [x] [PR #82](https://github.com/seungmin-park/PlugPass/pull/82)의 필수 CI 성공·보호된 자동 병합·main `c8fcbfb`·운영 배포 성공을 확인했다. 운영 화면의 모바일 링크 검증은 [검증 기록](docs/t53-mobile-navigation.md)에 남겼다.
+
+## 핵심 이용 흐름 개편 (2026-10-15)
+
+- [x] 공통 색·글꼴·헤더: PR84 병합. 운영 배포의 글꼴 파일 크기 실패를 확인하고 PR85에 공식 분할본으로 보완.
+- [x] 조건→지도→목록, 요약·펼침, 지도 위치 의도와 GPS 응답 분리: 구현·대상 테스트.
+- [x] 상세 collection·해석된 connectors, 대체 후보 상태 분포와 사용자 문구: 구현·대상 테스트.
+- [x] README를 프로젝트 소개 중심으로 전면 개편.
+- [ ] 최종 공용 verify·필수 CI·보호된 자동 병합·운영 배포 후 확인.
+- [ ] iPhone Safari 실기기의 지도 터치·글자 확대·외부 앱 전환.
+
+과정·명령·실패/성공 근거는 [개편 실행 기록](docs/visual-redesign-progress.md)에 기록한다.

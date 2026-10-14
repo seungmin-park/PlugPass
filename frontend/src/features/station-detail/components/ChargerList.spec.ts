@@ -11,9 +11,17 @@ describe('충전기 목록의 근거 표현', () => {
     const wrapper = mount(ChargerList, { props: { chargers: [charger,
       { ...charger, chargerId: '02', status: 'OCCUPIED', freshness: 'STALE', reasonCode: 'MAX_AGE_EXCEEDED' }] } })
     expect(wrapper.findAll('h3').map(heading => heading.text())).toEqual(['충전기 01', '충전기 02'])
-    expect(wrapper.findAll('.status-badge').map(badge => badge.text())).toEqual(['이용 가능 보고', '사용 중'])
-    expect(wrapper.findAllComponents(FreshnessBadge).map(badge => badge.text())).toEqual(['최신성 확인 불가', '오래된 정보'])
-    expect(wrapper.text()).toContain('서버의 최신성 기준을 지난 정보')
+    expect(wrapper.findAll('.status-badge').map(badge => badge.text())).toEqual(['이용 가능', '사용 중'])
+    expect(wrapper.findAllComponents(FreshnessBadge)).toHaveLength(0)
+    expect(wrapper.text()).not.toContain('서버의 최신성 기준을 지난 정보')
+  })
+  it('원본 코드 대신 연결 규격을 보여 주고 원본 상태·삭제 표시를 숨긴다', () => {
+    const wrapper = mount(ChargerList, { props: { chargers: [{ ...charger, connectors: ['DC_COMBO'], connectorCode: '04', delYn: 'N' }] } })
+    expect(wrapper.text()).toContain('DC 콤보')
+    expect(wrapper.text()).not.toContain('원본 상태 코드')
+    expect(wrapper.text()).not.toContain('원본 커넥터 코드')
+    expect(wrapper.text()).not.toContain('공급자 삭제 표시')
+    expect(wrapper.text()).not.toContain('최신성 확인 불가')
   })
   it('빈 목록은 정보 부재를 알린다', () => {
     const wrapper = mount(ChargerList, { props: { chargers: [] } })
@@ -25,10 +33,10 @@ describe('충전기 목록의 근거 표현', () => {
     const summary = wrapper.get('.charger-summary')
     expect(summary.text()).toContain('운영 시간: 확인 필요')
     expect(summary.text()).toContain('입주자만 이용 · 방문 전 운영 주체에 확인해 주세요')
-    expect(summary.text()).toContain('현장 관측 시각이 제공되지 않았습니다')
+    expect(summary.text()).not.toContain('현장 관측 시각이 제공되지 않았습니다')
     expect(summary.text()).not.toContain('원본 상태 코드')
     expect(summary.text()).not.toContain('수집 시각')
-    expect(wrapper.get('details.charger-source').text()).toContain('원본 상태 코드: 2')
+    expect(wrapper.text()).not.toContain('원본 상태 코드')
     expect(wrapper.get('details.charger-source').text()).toContain('서버 수집 시각')
     expect(wrapper.get('details.charger-source').text()).toContain('현장 관측 시각과 다릅니다')
   })
@@ -42,7 +50,7 @@ describe('충전기 목록의 근거 표현', () => {
   it('비고와 공급자 삭제 표시는 필요한 사용자 안내로 보여 준다', () => {
     const wrapper = mount(ChargerList, { props: { chargers: [{ ...charger, note: '지하 2층', delYn: 'Y' }] } })
     expect(wrapper.get('.charger-summary').text()).toContain('현장 안내: 지하 2층')
-    expect(wrapper.get('.charger-summary').text()).toContain('공급자가 삭제한 충전기입니다')
+    expect(wrapper.get('.charger-summary').text()).toContain('운영 목록에서 제외된 충전기입니다')
   })
   it('깨진 현장 관측 시각과 미래 판정 사유를 확정적인 최신 정보로 표시하지 않는다', () => {
     const wrapper = mount(ChargerList, { props: { chargers: [{ ...charger, sourceObservedAt: 'broken-time', reasonCode: 'SOURCE_OBSERVED_AT_IN_FUTURE' }] } })

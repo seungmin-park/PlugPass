@@ -1,16 +1,13 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import type { StationSummary } from '../types'
 import { formatDistance } from '../../charging-info/presentation'
 import StatusBadge from '../../charging-info/components/StatusBadge.vue'
-import { statusLabel } from '../../charging-info/presentation'
+import ChargerStatusSummary from '../../charging-info/components/ChargerStatusSummary.vue'
 import { scheduleIosInstallFallback } from '../../station-detail/navigation/navigationHandoff'
 const props = defineProps<{ station: StationSummary; detailHref?: string; directionsHref?: string | undefined; directionsInstallHref?: string | undefined; selected?: boolean }>()
-defineEmits<{ openDetail: []; directions: [] }>()
+defineEmits<{ openDetail: []; directions: []; select: [] }>()
 const expanded = ref(false)
-const distribution = computed(() => ['AVAILABLE', 'OCCUPIED', 'UNAVAILABLE', 'UNKNOWN'].map(status => ({
-  status, count: props.station.chargers.filter(charger => (['AVAILABLE', 'OCCUPIED', 'UNAVAILABLE'].includes(charger.status) ? charger.status : 'UNKNOWN') === status).length,
-})).filter(item => item.count > 0))
 function prepareDirections(event: MouseEvent): void {
   if (event.defaultPrevented || !props.directionsInstallHref) return
   scheduleIosInstallFallback(document, props.directionsInstallHref, href => window.location.assign(href))
@@ -19,11 +16,10 @@ function prepareDirections(event: MouseEvent): void {
 <template>
   <article class="station-card" :class="{ 'station-card-selected': selected }" :aria-labelledby="`station-${station.id}`">
     <div class="station-heading">
-      <h3 :id="`station-${station.id}`">{{ station.name }}</h3>
+      <h3 :id="`station-${station.id}`"><button v-if="selected !== undefined" type="button" class="station-select" :aria-pressed="selected" @click="$emit('select')">{{ station.name }}</button><template v-else>{{ station.name }}</template></h3>
       <p>직선거리 {{ formatDistance(station.distanceMeters) }}</p>
     </div>
-    <p class="charger-counts">{{ station.compatibleChargerCount }}대 중 <strong>{{ station.reportedAvailableCount }}대 이용 가능</strong></p>
-    <p v-if="station.chargers.length" class="status-distribution"><span v-for="item in distribution" :key="item.status">{{ statusLabel(item.status).replace(' 보고', '') }} {{ item.count }}대</span></p>
+    <ChargerStatusSummary :statuses="station.chargers.map(charger => charger.status)" :total-count="station.compatibleChargerCount" :available-count="station.reportedAvailableCount" />
     <button v-if="station.chargers.length" class="charger-toggle" type="button" :aria-expanded="expanded" :aria-controls="`chargers-${station.id}`" @click="expanded = !expanded">충전기별 보기 <span aria-hidden="true">{{ expanded ? '−' : '+' }}</span></button>
     <ul v-if="expanded && station.chargers.length" :id="`chargers-${station.id}`" class="charger-badges">
       <li v-for="charger in station.chargers" :key="charger.chargerId">

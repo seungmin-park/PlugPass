@@ -165,14 +165,13 @@ test('수집 지연 중에도 기존 목록을 표시하고 새로고침으로 �
     lastStatusSuccessAt: null, lastAttemptAt: '2026-10-13T00:05:00Z', lastAttemptStatus: 'FAILURE', statusIntervalSeconds: 300 }
   await page.route('**/api/v1/stations?*', route => route.fulfill({ json: { ...searchResponse, collection } }))
   await page.goto(`/app/index.html#/stations?${criteria}`)
-  await expect(page.getByText('갱신이 지연되고 있습니다. 마지막으로 저장된 정보를 표시합니다.')).toBeVisible()
+  await expect(page.getByText('정보 갱신 지연·출발 전 확인')).toBeVisible()
   await expect(page.getByRole('link', { name: '가까운 충전소 상세 보기', exact: true })).toBeVisible()
   await page.unroute('**/api/v1/stations?*')
   await page.route('**/api/v1/stations?*', route => route.fulfill({ json: { ...searchResponse,
     collection: { ...collection, state: 'CURRENT', lastAttemptStatus: 'SUCCESS', lastStatusSuccessAt: '2026-10-13T00:10:00Z' } } }))
   await page.getByRole('button', { name: '새로고침', exact: true }).click()
-  await page.getByText('정보 갱신 안내', { exact: true }).click()
-  await expect(page.getByText('수집 정상 · 상태 변경분은 5분마다 갱신합니다.')).toBeVisible()
-  await expect(page.getByText('갱신이 지연되고 있습니다.', { exact: false })).toHaveCount(0)
+  await expect(page.locator('.collection-summary').getByText('수집 정상', { exact: true })).toBeVisible()
+  await expect(page.getByText('정보 갱신 지연·출발 전 확인', { exact: true })).toHaveCount(0)
   await expect(page.getByRole('link', { name: '가까운 충전소 상세 보기', exact: true })).toBeVisible()
 })

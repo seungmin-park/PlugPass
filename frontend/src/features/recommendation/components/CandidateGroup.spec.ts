@@ -12,10 +12,17 @@ describe('후보 그룹 표현과 선택', () => {
     expect(wrapper.findAll('h3').map(heading => heading.text())).toEqual(['<b>첫 후보</b>', '둘째 후보'])
     expect(wrapper.find('b').exists()).toBe(false)
     expect(wrapper.text()).toContain('직선거리 1km')
-    expect(wrapper.findAll('.candidate-reasons li').map(reason => reason.text())).toEqual(['최근 관측에서 이용 가능으로 보고되었습니다', '상세 확인이 필요한 사유'])
+    expect(wrapper.findAll('.candidate-reasons li').map(reason => reason.text())).toEqual(['최근 확인된 이용 가능 충전기가 있어 먼저 살펴볼 수 있습니다', '상세 확인이 필요한 사유'])
     expect(wrapper.get('#candidate-8').attributes('href')).toBe('#/stations/8?latitude=37.5&longitude=127&radiusMeters=1000&connector=DC_COMBO&limit=20')
     await wrapper.get('#candidate-8').trigger('click')
     expect(wrapper.emitted('openDetail')).toEqual([[8]])
+  })
+  it('대체 후보도 이용 가능 대수와 상태 분포를 같은 요약으로 보여 준다', () => {
+    const wrapper = mount(CandidateGroup, { props: { title: '이용 전 확인 필요', searchQuery, candidates: [
+      { id: 8, name: '첫 후보', distanceMeters: 1000, reasonCodes: ['UNVERIFIED_AVAILABLE'], chargerStatuses: ['AVAILABLE', 'OCCUPIED'] },
+    ] } })
+    expect(wrapper.text()).toContain('2대 중 1대 이용 가능')
+    expect(wrapper.text()).toContain('사용 중 1대')
   })
   it('빈 그룹은 후보 부재를 알린다', () => {
     const wrapper = mount(CandidateGroup, { props: { title: '이용 전 확인 필요', searchQuery, candidates: [] } })

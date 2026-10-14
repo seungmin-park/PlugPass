@@ -16,6 +16,19 @@ afterEach(() => { httpClient.defaults.adapter = originalAdapter })
 const query = { latitude: '37.5', longitude: '127', radiusMeters: '1000', connector: 'DC_COMBO', limit: '20' }
 
 describe('상세의 정보 근거와 이동', () => {
+  it.each([
+    ['CURRENT', '수집 정상'], ['DELAYED', '정보 갱신 지연·출발 전 확인'], ['NOT_READY', '전체 데이터 준비 전'],
+  ])('개별 수신 시각이 오래되어도 전체 수집 %s로 갱신 안내를 판단한다', async (state, expectedMessage) => {
+    const collection = { state, lastCatalogSuccessAt: '2026-10-15T00:00:00Z', lastStatusSuccessAt: '2026-10-15T00:05:00Z',
+      lastAttemptAt: '2026-10-15T00:04:00Z', lastAttemptStatus: 'SUCCESS', statusIntervalSeconds: 300 }
+    httpClient.defaults.adapter = async config => jsonResponse(config, { ...detail, collection,
+      chargers: detail.chargers.map(charger => ({ ...charger, status: 'OCCUPIED', collectedAt: '2020-01-01T00:00:00Z' })) })
+    await router.push({ path: '/stations/2', query })
+    const wrapper = mount(App, { global: { plugins: [router, createPinia()] } })
+    await flushPromises()
+    expect(wrapper.text()).toContain('사용 중')
+    expect(wrapper.get('.collection-summary p').text()).toContain(expectedMessage)
+  })
   it('검색 카드에서 ID와 확정 조건을 상세로 전달한다', async () => {
     httpClient.defaults.adapter = async config => jsonResponse(config, config.url === '/stations' ? search : detail)
     await router.push({ path: '/stations', query })
@@ -36,15 +49,15 @@ describe('상세의 정보 근거와 이동', () => {
     const wrapper = mount(App, { global: { plugins: [router, createPinia()] } })
     await flushPromises()
     expect(wrapper.text()).toContain('가까운 충전소')
-    expect(wrapper.text()).toContain('이용 가능 보고')
-    expect(wrapper.text()).toContain('최신성 확인 불가')
-    expect(wrapper.get('.charger-summary').text()).toContain('현장 관측 시각이 제공되지 않았습니다')
+    expect(wrapper.text()).toContain('이용 가능')
+    expect(wrapper.text()).not.toContain('최신성 확인 불가')
+    expect(wrapper.text()).toContain('현장 확인 시각은 제공되지 않을 수 있습니다')
     expect(wrapper.get('.charger-summary').text()).not.toContain('원본 상태 코드')
     expect(wrapper.get('details.charger-source').text()).toContain(`서버 수집 시각: ${formatTimestamp(detail.chargers[0]?.collectedAt ?? null)}`)
-    expect(wrapper.get('details.charger-source').text()).toContain('원본 상태 코드: 2')
+    expect(wrapper.text()).not.toContain('원본 상태 코드')
     expect(wrapper.text()).toContain('운영 시간: 24시간')
     expect(wrapper.get('details.station-source').text()).toContain('조회 시각:')
-    expect(wrapper.get('details.station-source').text()).toContain('공급자 충전소 ID: first')
+    expect(wrapper.text()).not.toContain('공급자 충전소 ID')
     expect(adapter).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ url: '/stations/2' }))
     const alternatives = wrapper.findAll('a').find(link => link.text() === '다른 충전소 찾기')
     expect(alternatives?.attributes('href')).toContain('excludeStationId=2')
@@ -81,7 +94,7 @@ describe('상세의 정보 근거와 이동', () => {
     const wrapper = mount(App, { global: { plugins: [router, createPinia()] } })
     await flushPromises()
     expect(wrapper.text()).toContain('상태 확인 불가')
-    expect(wrapper.text()).toContain('최신성 확인 불가')
+    expect(wrapper.text()).not.toContain('최신성 확인 불가')
     expect(wrapper.text()).toContain('상세 확인이 필요한 사유')
     expect(wrapper.text()).toContain('이용 조건 정보가 없습니다. 방문 전 운영 주체에 확인해 주세요')
     expect(wrapper.text()).toContain(`<img src=x onerror=alert(1)>`)

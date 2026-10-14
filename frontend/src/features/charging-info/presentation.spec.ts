@@ -13,8 +13,8 @@ describe('서버 판단을 유지하는 표시', () => {
     expect(accessConditionLabel(limitYn, detail)).toBe(expected)
   })
   it.each([
-    ['RECENT_AVAILABLE', '최근 관측에서 이용 가능으로 보고되었습니다'],
-    ['UNVERIFIED_AVAILABLE', '이용 가능 보고가 있으나 최신성을 확인할 수 없습니다'],
+    ['RECENT_AVAILABLE', '최근 확인된 이용 가능 충전기가 있어 먼저 살펴볼 수 있습니다'],
+    ['UNVERIFIED_AVAILABLE', '이용 가능한 충전기가 있습니다. 출발 전 상태를 확인해 주세요'],
     ['INCOMPATIBLE_CONNECTOR', '선택한 차량 커넥터와 호환되지 않습니다'],
     ['DELETED_BY_PROVIDER', '공급자가 삭제한 충전기입니다'],
     ['ACCESS_RESTRICTED', '이용 제한이 보고되었습니다'],
@@ -29,7 +29,7 @@ describe('서버 판단을 유지하는 표시', () => {
   ])('사유 %s는 서버 규칙을 재계산하지 않고 설명한다', (reason, expected) => {
     expect(reasonLabel(reason)).toBe(expected)
   })
-  it.each([['AVAILABLE', '이용 가능 보고'], ['OCCUPIED', '사용 중'], ['UNAVAILABLE', '이용 불가'], ['UNKNOWN', '상태 확인 불가'], ['NEW_STATUS', '상태 확인 불가'], ['constructor', '상태 확인 불가'], ['toString', '상태 확인 불가']])('상태 %s를 %s로 표시한다', (status, label) => {
+  it.each([['AVAILABLE', '이용 가능'], ['OCCUPIED', '사용 중'], ['UNAVAILABLE', '이용 불가'], ['UNKNOWN', '상태 확인 불가'], ['NEW_STATUS', '상태 확인 불가'], ['constructor', '상태 확인 불가'], ['toString', '상태 확인 불가']])('상태 %s를 %s로 표시한다', (status, label) => {
     expect(statusLabel(status)).toBe(label)
   })
   it.each([['RECENT', '최근 관측'], ['STALE', '오래된 정보'], ['UNVERIFIED', '최신성 확인 불가'], ['NEW_FRESHNESS', '최신성 확인 불가'], ['__proto__', '최신성 확인 불가']])('최신성 %s를 %s로 표시한다', (freshness, label) => {
@@ -41,6 +41,11 @@ describe('서버 판단을 유지하는 표시', () => {
   it.each([null, '', 'broken-time'])('누락·깨진 시각 %s는 확인 불가다', time => {
     expect(formatTimestamp(time)).toBe('확인 불가')
   })
+  it('표준 시각은 한국 시간으로 통일하고 GMT 표기를 반복하지 않는다', () => {
+    const formatted = formatTimestamp('2026-10-15T00:30:00Z')
+    expect(formatted).toContain('09')
+    expect(formatted).not.toContain('GMT')
+  })
   it('관측 시각 누락과 깨진 값을 사용자 안내로 구분한다', () => {
     expect(observationSummary(null)).toBe('현장 관측 시각이 제공되지 않았습니다. 현재 상태는 출발 전 확인해 주세요.')
     expect(observationSummary('broken-time')).toBe('현장 관측 시각을 해석할 수 없습니다. 현재 상태는 출발 전 확인해 주세요.')
@@ -48,8 +53,8 @@ describe('서버 판단을 유지하는 표시', () => {
   it.each([
     ['20260920161911', '2026-09-20 16:19:11 · 시간대 미확인'],
     ['20240229010203', '2024-02-29 01:02:03 · 시간대 미확인'],
-    ['20260229010203', '원본 시각: 20260229010203 · 형식 해석 불가, 시간대 미확인'],
-    ['broken', '원본 시각: broken · 형식 해석 불가, 시간대 미확인'],
+    ['20260229010203', '변경 시각 확인 필요 · 시간대 미확인'],
+    ['broken', '변경 시각 확인 필요 · 시간대 미확인'],
   ])('공급자 상태 변경 시각 %s는 관측/시간대를 추정하지 않고 %s로 표시한다', (raw, expected) => {
     expect(formatSourceStatusChangedAt(raw)).toBe(expected)
   })
@@ -57,10 +62,11 @@ describe('서버 판단을 유지하는 표시', () => {
     expect(formatSourceStatusChangedAt('  ')).toBeNull()
     expect(formatSourceStatusChangedAt(null)).toBeNull()
   })
-  it('유효한 UTC 시각은 로컬 시간대 이름을 포함하여 표시한다', () => {
+  it('유효한 UTC 시각은 한국 시간으로 표시한다', () => {
     const formatted = formatTimestamp('2026-10-05T00:00:00Z')
     expect(formatted).toContain('2026')
-    expect(formatted).toMatch(/UTC|GMT|KST/)
+    expect(formatted).toContain('09')
+    expect(formatted).not.toMatch(/UTC|GMT|KST/)
     expect(formatted).not.toContain('T00:00:00Z')
   })
 })

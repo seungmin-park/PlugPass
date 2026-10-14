@@ -10,6 +10,7 @@ export interface ChargerInfo {
   collectedAt: string
   freshness: string
   reasonCode: string
+  connectors?: readonly string[]
   connectorCode: string | null
   useTime: string | null
   limitYn: string | null

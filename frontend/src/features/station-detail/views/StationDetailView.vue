@@ -7,6 +7,7 @@ import { ApiError } from '../../../shared/api/apiError'
 import { parseSearchCriteria, toSearchQuery } from '../../search/criteria'
 import { formatTimestamp } from '../../charging-info/presentation'
 import { useStationDetailStore } from '../stores/stationDetailStore'
+import CollectionSummary from '../../charging-info/components/CollectionSummary.vue'
 import ChargerList from '../components/ChargerList.vue'
 import StationDirections from '../components/StationDirections.vue'
 import LoadingIndicator from '../../../shared/ui/LoadingIndicator.vue'
@@ -41,13 +42,13 @@ function refresh(): void { if (stationId.value !== null) void store.loadStation(
     <template v-if="store.station">
       <div class="results-heading"><h2>{{ store.station.name }}</h2><button class="secondary-button" type="button" @click="refresh">새로고침</button></div>
       <StationDirections :key="store.station.id" :destination="store.station" />
-      <p class="results-caution">이용 가능 보고는 도착 시점의 빈자리를 보장하지 않습니다. 운영 시간과 출입 조건을 확인하세요.</p>
+      <p class="results-caution">이용 가능 표시는 도착 시점의 빈자리를 보장하지 않습니다. 운영 시간과 출입 조건을 확인하세요.</p>
+      <CollectionSummary :collection="store.station.collection" />
+      <p class="results-caution">상태는 공급자가 전달한 정보입니다. 현장 확인 시각은 제공되지 않을 수 있습니다.</p>
       <ChargerList :chargers="store.station.chargers" />
       <details class="station-source">
         <summary>충전소 정보 출처</summary>
         <p>조회 시각: {{ formatTimestamp(store.fetchedAt) }} · 이 화면이 서버에서 정보를 받은 시각입니다. 현장 관측 시각과 다릅니다.</p>
-        <p>충전소 ID: {{ store.station.id }} · 공급자: {{ store.station.provider }} · 공급자 충전소 ID: {{ store.station.providerStationId }}</p>
-        <p>좌표: {{ store.station.latitude }} / {{ store.station.longitude }}</p>
       </details>
     </template>
   </section>

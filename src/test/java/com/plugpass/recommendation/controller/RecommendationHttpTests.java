@@ -57,6 +57,7 @@ class RecommendationHttpTests {
         mockMvc.perform(get("/api/v1/recommendations").param("latitude","0").param("longitude","0")
                 .param("radiusMeters","1000").param("connector","DC_COMBO").param("excludeStationId","10"))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.preferred[0].id").value(12))
+                .andExpect(jsonPath("$.preferred[0].chargerStatuses").isArray())
                 .andExpect(jsonPath("$.preferred[0].name").value("최신 후보"))
                 .andExpect(jsonPath("$.preferred[0].distanceMeters").value(123.5))
                 .andExpect(jsonPath("$.preferred[0].reasonCodes[0]").value("RECENT_AVAILABLE"))
@@ -69,11 +70,14 @@ class RecommendationHttpTests {
                     parameterWithName("excludeStationId").optional().description("제외할 내부 충전소 ID, 양수")),responseFields(
                     fieldWithPath("preferred").description("RECENT·AVAILABLE·명시적 제한 없는 후보"),
                     fieldWithPath("requiresConfirmation").description("UNVERIFIED·AVAILABLE 후보"),fieldWithPath("excluded").description("제외 후보와 이유"),
+                    fieldWithPath("preferred[].chargerStatuses").description("호환 충전기별 공급자 상태; 도착 시 이용 가능 보장 아님"),
                     fieldWithPath("preferred[].id").description("내부 충전소 ID"),
                     fieldWithPath("preferred[].name").description("충전소명"),fieldWithPath("preferred[].distanceMeters").description("직선거리 m"),
                     fieldWithPath("preferred[].reasonCodes").description("판단 이유·운영 조건 경고"),
+                    fieldWithPath("requiresConfirmation[].chargerStatuses").description("호환 충전기별 공급자 상태; 도착 시 이용 가능 보장 아님"),
                     fieldWithPath("requiresConfirmation[].id").description("내부 충전소 ID"),fieldWithPath("requiresConfirmation[].name").description("충전소명"),
                     fieldWithPath("requiresConfirmation[].distanceMeters").description("직선거리 m"),fieldWithPath("requiresConfirmation[].reasonCodes").description("미확인 근거"),
+                    fieldWithPath("excluded[].chargerStatuses").description("호환 충전기별 공급자 상태; 도착 시 이용 가능 보장 아님"),
                     fieldWithPath("excluded[].id").description("내부 충전소 ID"),fieldWithPath("excluded[].name").description("충전소명"),
                     fieldWithPath("excluded[].distanceMeters").description("직선거리 m"),fieldWithPath("excluded[].reasonCodes").description("제외 이유"))));
         verify(recommendationService).recommend(new StationSearchQuery(new GeoPoint(0,0),1000,Connector.DC_COMBO,20),10L);

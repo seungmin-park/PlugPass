@@ -28,7 +28,7 @@ describe('충전소 상세 API', () => {
     await expect(getStationDetail(stationId)).rejects.toMatchObject({ kind: 'validation', fields: { stationId: expect.any(String) } })
     expect(adapter).not.toHaveBeenCalled()
   })
-  it.each([null, {}, { ...detail, id: -1 }, { ...detail, longitude: 181 }, { ...detail, chargers: null },
+  it.each([null, {}, { ...detail, collection: { state: 'UNKNOWN' } }, { ...detail, chargers: detail.chargers.map(charger => ({ ...charger, connectors: 'DC_COMBO' })) }, { ...detail, id: -1 }, { ...detail, longitude: 181 }, { ...detail, chargers: null },
     { ...detail, name: ' ' },
     { ...detail, chargers: detail.chargers.map(charger => ({ ...charger, freshness: null })) },
   ])('깨진 상세 응답 %j를 거부한다', async data => {

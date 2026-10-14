@@ -25,7 +25,7 @@ public class StationController {
     }
     @GetMapping("/{stationId}")
     public StationDetailResponse detail(@PathVariable Long stationId) {
-        return StationDetailResponse.from(stationQueryService.detail(stationId));
+        return StationDetailResponse.from(stationQueryService.detail(stationId), collectionStatusService.current());
     }
 
     @GetMapping("/area")

@@ -26,7 +26,7 @@ function isStationSummary(value: unknown): value is StationSummary {
     && isNonnegativeInteger(value.reportedAvailableCount) && Array.isArray(value.chargers) && value.chargers.every(isChargerInfo)
 }
 
-function isCollectionStatus(value: unknown): value is CollectionStatus {
+export function isCollectionStatus(value: unknown): value is CollectionStatus {
   return isRecord(value) && ['NOT_READY', 'CURRENT', 'DELAYED'].includes(String(value.state))
     && isNullableString(value.lastCatalogSuccessAt) && isNullableString(value.lastStatusSuccessAt)
     && isNullableString(value.lastAttemptAt) && isNullableString(value.lastAttemptStatus)

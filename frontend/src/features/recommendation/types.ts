@@ -3,6 +3,7 @@ export interface RecommendedStation {
   name: string
   distanceMeters: number
   reasonCodes: string[]
+  chargerStatuses?: readonly string[]
 }
 export interface RecommendationResponse {
   preferred: RecommendedStation[]

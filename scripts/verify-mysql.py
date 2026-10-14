@@ -103,10 +103,16 @@ def verify_restart(container, environment, output, serve):
         # The fixture clock is 2026-10-05; the shipped JAR deliberately uses real time.
         assert before['search']['collection']['state'] == 'CURRENT'
         assert after['search']['collection']['state'] == 'DELAYED'
+        assert before['detail']['collection'] == before['search']['collection']
+        assert after['detail']['collection'] == after['search']['collection']
         before_persisted = dict(before, search=dict(before['search'], collection={
-            key:value for key,value in before['search']['collection'].items() if key != 'state'}))
+            key:value for key,value in before['search']['collection'].items() if key != 'state'}),
+            detail=dict(before['detail'], collection={
+                key:value for key,value in before['detail']['collection'].items() if key != 'state'}))
         after_persisted = dict(after, search=dict(after['search'], collection={
-            key:value for key,value in after['search']['collection'].items() if key != 'state'}))
+            key:value for key,value in after['search']['collection'].items() if key != 'state'}),
+            detail=dict(after['detail'], collection={
+                key:value for key,value in after['detail']['collection'].items() if key != 'state'}))
         assert after_persisted == before_persisted, 'Persisted search/detail/recommendation changed across restart'
         with urllib.request.urlopen(base + '/app/index.html', timeout=5) as response:
             assert response.status == 200 and '/app/assets/' in response.read().decode()

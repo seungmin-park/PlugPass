@@ -25,7 +25,7 @@ describe('같은 조건의 대체 후보 화면', () => {
     await flushPromises()
     expect(wrapper.text()).toContain('대체 충전소 후보')
     expect(wrapper.text()).toContain('이용 전 확인 필요')
-    expect(wrapper.text()).toContain('제외 충전소 ID: 2')
+    expect(wrapper.text()).toContain('현재 선택한 충전소를 제외했습니다')
     expect(wrapper.text()).toContain('직선거리 88m')
     expect(wrapper.text()).toContain('관측 시각이 제공되지 않았습니다')
     expect(adapter).toHaveBeenCalledWith(expect.objectContaining({ url: '/recommendations', params: {
@@ -35,7 +35,8 @@ describe('같은 조건의 대체 후보 화면', () => {
     expect(router.currentRoute.value.path).toBe('/stations/3')
     expect(router.currentRoute.value.query).toEqual({ latitude: '37.5', longitude: '127', radiusMeters: '1000', connector: 'DC_COMBO', limit: '20' })
     expect(adapter).toHaveBeenCalledWith(expect.objectContaining({ url: '/stations/3' }))
-    expect(wrapper.text()).toContain('충전소 ID: 3')
+    expect(wrapper.get('.detail-view h2').text()).toBe('대체 충전소')
+    expect(wrapper.text()).not.toContain('충전소 ID:')
   })
   it('세 그룹과 서버 순서를 유지하고 알 수 없는 사유를 추측하지 않는다', async () => {
     httpClient.defaults.adapter = async config => jsonResponse(config, config.url === '/stations' ? search : {

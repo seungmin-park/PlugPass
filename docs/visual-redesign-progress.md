@@ -4,7 +4,7 @@
 
 1. 공통 디자인·조건 유지 헤더: PR84 병합, 운영 배포 실패 원인 확인.
 2. 조건→지도→목록, 요약 카드·펼침·선택: PR85 필수 CI 성공·병합.
-3. 상세 수집 계약·규격·시각·제한 안내·README: 로컬 전체 검증 완료, PR 전달 단계.
+3. 상세 수집 계약·규격·시각·제한 안내·README: 로컬 전체 검증 완료, PR86 CI 성공·main 병합 확인.
 
 공유 경계: 1의 공통 토큰은 2·3 화면에 적용. 2의 카드 요약은 3의 상태 의미를 유지해야 함.
 개별 수신 시각으로 지연을 계산하지 않고 서버 collection을 사용한다.
@@ -66,3 +66,7 @@ cmux workspace:1000070003 / 검증 surface:1000070011.
 - [PR85](https://github.com/seungmin-park/PlugPass/pull/85): 최종 head `720a76b`, CI `38612594674` 성공, 보호된 자동 병합 `2e9e29b`. 이후 main CI와 Production CD가 운영 전달을 검증한다.
 - 3단계는 최신 main `2e9e29b`를 병합했다. squash 이력으로 생긴 중복 충돌을 해결한 뒤 전체 파일 tree `28e269e2a02d60aab24c51ea3abfc00c62dbd922`가 로컬 검증한 구현과 같음을 확인했다. 이후 변경은 작업 상태 문서뿐이다.
 - 최종 원격 CI·CD·운영 지역별 화면 확인 결과는 PR 본문/Actions 링크에 후속 기록한다. 이 문서의 로컬 통과를 배포 성공으로 해석하지 않는다.
+
+### 전달 상태 재확인 (2026-10-15)
+
+[PR86](https://github.com/seungmin-park/PlugPass/pull/86)의 head `dd7b1019417f05d8c870be784e590c65af7ccf98`에서 [PlugPass verify](https://github.com/seungmin-park/PlugPass/actions/runs/38613761227/job/116023449919) 성공과 실제 병합 커밋 `be66b314eda84c8a349aded55434a13c957de808`을 GitHub API로 확인했다. 이번 재확인은 CI·병합 상태 조회이며 운영 배포나 실기기 검증을 새로 실행한 것은 아니다.

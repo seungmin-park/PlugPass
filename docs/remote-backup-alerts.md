@@ -26,4 +26,10 @@
 
 GCS에서 SQL과 VERIFIED.json을 모두 내려받아 네트워크 없는 별도 MySQL에 복원하는 검증도 성공했다. 네 테이블 전체 건수와 위 SHA-256이 일치하고 운영 DB는 변경하지 않았다. 최종 운영 저장소 전체 unittest188건 성공, cmux 최종 종료0을 확인했다. 상세 구현·명령·실제 결과·복구 절차는 [운영 PR #5](https://github.com/seungmin-park/gcp-deployment/pull/5)와 해당 PR의 `docs/plugpass-remote-backup-alerts.md`가 소유한다.
 
-운영 PR #5는 보호 규칙 조회403·native auto-merge 비활성 상태이므로 PR까지만 전달한다. 이미 확인한 운영 적용과 원격 CI/실제 머지는 별개다. 원격 CI 최종 결과는 PR 본문과 Actions를 따른다.
+최초 전달 당시 운영 PR #5는 보호 규칙 조회403·native auto-merge 비활성 상태이므로 PR까지만 전달했다. 이후 상태는 아래 재확인 결과를 따른다. 이미 확인한 운영 적용과 원격 CI/실제 머지는 별개다.
+
+## 전달 상태 재확인 (2026-10-15 21:34 KST)
+
+- GitHub API에서 [운영 PR #5](https://github.com/seungmin-park/gcp-deployment/pull/5)의 `merged=true`, 병합 시각 2026-10-15 18:51:39 KST, 병합 커밋 `fa645e3d576c0f140eb2e85fd25afba82a754f41`을 확인했다. 이번 확인에서 머지를 실행하지 않았으며 보호된 자동 머지였다고 해석하지 않는다.
+- 검증 head `785be8dfcac27587841f54565c8d38248e090434`의 [CI run 38711304076](https://github.com/seungmin-park/gcp-deployment/actions/runs/38711304076)에서 `verify`·`runtime` 모두 `success`를 확인했다. 이 조회는 기존 CI 결과 확인이며 운영 복원 시험을 새로 실행한 것은 아니다.
+- 다음 예약 2026-10-16 02:30 KST는 확인 시각 이후다. 새 설정의 야간 예약 성공은 아직 미관측으로 유지한다. 예약 이후 타이머 실행 로그 → 원격 성공 기록 → 해당 실행의 GCS 검증본을 연결해 확인해야 한다. 수동 실행 성공으로 예약 실행을 대체하지 않는다.

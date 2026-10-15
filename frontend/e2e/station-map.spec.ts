@@ -1,6 +1,17 @@
 import { test, expect } from './fixtures'
 import { mockKakaoSdk } from './kakaoSdkMock'
 
+test('native 지도 자리 밖에 확대와 영역 검색 버튼을 배치한다', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await page.goto('/app/index.html#/stations?latitude=37.5&longitude=127&radiusMeters=1000&connector=DC_COMBO&limit=20')
+  await expect(page.getByRole('link', { name: '데모 가까운 충전소 상세 보기' })).toBeVisible()
+  // Native 화면 배치만 검사한다. SDK/기기 터치는 이 브라우저 검사에서 대체하지 않는다.
+  await page.locator('html').evaluate(element => { element.dataset.platform = 'native' })
+  const mapBottom = await page.locator('.station-map-canvas').evaluate(element => element.getBoundingClientRect().bottom)
+  expect(await page.getByRole('button', { name: '지도 확대', exact: true }).evaluate(element => element.getBoundingClientRect().top)).toBeGreaterThanOrEqual(mapBottom)
+  expect(await page.getByRole('button', { name: '이 지역 재검색', exact: true }).evaluate(element => element.getBoundingClientRect().top)).toBeGreaterThanOrEqual(mapBottom)
+})
+
 const criteria = 'latitude=37.5&longitude=127&radiusMeters=1000&connector=DC_COMBO&limit=20'
 test('마커는 작은 시각 핀과 손가락으로 누를 수 있는 44px 영역을 함께 제공한다', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 })

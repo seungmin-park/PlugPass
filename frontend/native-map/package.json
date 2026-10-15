@@ -1,0 +1,6 @@
+{
+  "name": "@plugpass/native-map",
+  "version": "0.1.0",
+  "private": true,
+  "capacitor": { "ios": { "src": "ios" } }
+}

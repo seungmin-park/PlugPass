@@ -87,9 +87,9 @@
 
 ## N05 전달·최종 판정
 
-- [ ] N05.1a **우선 수정:** 사용자의 iPhone 실화면에서 맨 위 로고/메뉴가 상태바 영역에 겹쳐 흐림. 안전 영역 배치 Red → viewport/CSS 보정 → 웹 회귀 → 서명 설치 → 실제 화면 확인. 브라우저 inset 주입은 배치 계약만 검증하며 iOS 흐림 해결의 증거로 대체하지 않는다.
+- [x] N05.1a **우선 수정:** 사용자의 iPhone 실화면에서 맨 위 로고/메뉴가 상태바 영역에 겹쳐 흐림. 안전 영역 배치 Red → viewport/CSS 보정 → 웹 회귀 → 서명 설치 → 사용자 실제 화면 확인 완료. CI/병합은 아래 전달 항목에서 별도로 추적한다.
 - [x] N05.1a-코드: 실제 HTML 설정 누락1건·배치2건 assertion Red 확인, 공통 CSS/viewport 수정, 배치4건·전체 공용 회귀 통과.
-- [ ] N05.1a-기기: 같은 수정본 서명 설치 후 맨 위 로고/메뉴·스크롤/복귀·회전 실제 확인.
+- [x] N05.1a-기기: 같은 수정본 서명 설치 후 맨 위 로고/메뉴를 사용자 확인. 응답 “로고·메뉴가 선명하게 보임”. 회전/키보드의 실기기 전체 검증은 N05.1에 남긴다.
 - [ ] N05.1a-전달: CI·PR·실제 병합 확인.
 - [ ] N05.1 safe area·홈 표시줄·키보드·글자 확대·주요 44px 터치.
 - [ ] N05.2 CI Android/iOS 빌드·단위 검사, 서명/비밀 제외.
@@ -167,8 +167,9 @@
 | 테스트 준비 수정 | 첫 실행의 일반 웹2건은 기존 초기 focus 뒤 scroll 위치를 초기화하지 않은 테스트 준비 오류였다. 명시적으로 맨 위로 이동한 뒤 의도한2건 Red를 다시 확인. 키보드도 현재 focus에 의존하지 않고 로고→Shift+Tab으로 시작점을 고정했다. 해당 준비 오류를 제품 Red로 세지 않는다. |
 | 대상 Green | 상단 복귀·키보드 링크, 회전/하단/portrait 복귀, 375/1440px 일반 웹4건 통과. `safe-area-green-confirmed.log` |
 | 전체 공용 회귀 | `SAFE_AREA_VERIFY_EXIT=0`: frontend447·Java462·Python42·개발 브라우저61·JAR5·MySQL8·재시작 브라우저7, 실패/오류/skip0. 타입/lint/build 포함. `safe-area-verify.log` |
+| iPhone16/iOS27.0.1 | 동일 코드 `5b6c34d`의 서명 BUILD SUCCEEDED → codesign → 설치/실행 `IOS_DEVICE_INSTALL_EXIT=0`. 사용자 “로고·메뉴가 선명하게 보임” 확인. 원본은 로컬 `safe-area-install-device.log`, 개인 서명값은 비공개 |
 
-로그는 `/private/tmp/plugpass-native-evidence/`에 보관한다. Chromium CDP는 OS inset 입력만 제어하고 실제 CSS 배치/스크롤을 검사한다. iOS blur·네이티브 터치는 별도 기기 관찰 전 미확인이다. 공통 화면 틀의 책임이므로 각 Vue 화면이나 기종 분기는 추가하지 않았다. CSS `--page-gutter`로 기존 40/20/16px 가로 여백만 바꿔 미디어 쿼리가 안전 영역을 지우지 못하게 정리했다. API/DTO/저장/도메인 실패·응답 순서는 변경하지 않아 기존 회귀를 유지한다.
+로그는 `/private/tmp/plugpass-native-evidence/`에 보관한다. Chromium CDP는 OS inset 입력만 제어하고 실제 CSS 배치/스크롤을 검사한다. 상단 흐림 수정은 사용자 실기기 관찰로 확인했고, 회전·키보드·native 지도 터치의 기기 관문은 별도로 남긴다. 공통 화면 틀의 책임이므로 각 Vue 화면이나 기종 분기는 추가하지 않았다. CSS `--page-gutter`로 기존 40/20/16px 가로 여백만 바꿔 미디어 쿼리가 안전 영역을 지우지 못하게 정리했다. API/DTO/저장/도메인 실패·응답 순서는 변경하지 않아 기존 회귀를 유지한다.
 
 ## 검토·판단
 

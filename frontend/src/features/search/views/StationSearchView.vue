@@ -292,7 +292,7 @@ function directionsInstallHref(station: StationSummary): string | undefined {
     <div class="search-map-explorer" @pointerdown.capture="selectMapArea()" @wheel.capture.passive="selectMapArea()" @click.capture="selectMapArea()" @keydown.capture="selectMapArea">
         <p v-if="!confirmedCriteria && !selectedLocation">지도를 움직여 찾을 지역을 고른 뒤 ‘이 지역 재검색’을 눌러 주세요. 위치를 선택하지 않았다면 서울 시청 주변에서 시작합니다.</p>
         <StationMap :stations="store.response?.stations ?? []" :center="mapCenter" :area="restoredArea"
-          :selected-station-id="selectedStationId" :compact="!!confirmedCriteria" @select="selectStation" @area-change="receiveMapArea" />
+          :selected-station-id="selectedStationId" :compact="!!confirmedCriteria" @select="selectStation" @area-change="receiveMapArea" @interact="selectMapArea()" />
         <p v-if="pendingArea && !validMapArea" role="status">검색 영역이 너무 넓거나 지원 범위를 벗어났습니다. 지도를 확대해 주세요.</p>
         <button id="search-map-area" type="button" class="search-button" :disabled="!validMapArea || store.status === 'loading'" @click="searchMapArea">이 지역 재검색</button>
     </div>

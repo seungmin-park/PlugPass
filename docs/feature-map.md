@@ -1,5 +1,10 @@
 # 기능과 검증 범위
 
+## N02b iOS 지도 연결 (중단 시점의 구현, 실기기 미확인)
+
+`앱 시작 플랫폼 선택 → nativeStationMap(세션/이벤트·DOM 배치) → PlugPassMapPlugin(입력·명령 변환) → KakaoMapSession(SDK 수명·카메라) → StationMapMarkers(표시)`.
+`NativeMapViewport`는 WKWebView 스크롤과 DOM의 문서 좌표로 지도 위치·잘림을 맞춘다. Swift `MapPlacement`·`MapInput`·`MapRenderPhase`의17건과 TypeScript/Vue 회귀는 좌표·키보드 높이·늦은 이벤트/GPS·준비 중 렌더링을 검증한다. native 조작 버튼 배치는 브라우저에서 검사한다. 실제 인증·배경·마커/터치는 아직 iPhone에서 확인하지 않았다. [현재 구현·재개 순서](native-app/tasks.md#n02b-일시-중단-기록).
+
 ## N05.1a 앱 안전 영역
 
 `OS 안전 영역 → CSS env/Capacitor inset → App 화면 틀·본문 건너뛰기 링크`. `frontend/e2e/safe-area.spec.ts`는 상단 복귀·회전·하단·키보드 링크와 안전 영역 없는 웹을 실제 CSS 배치로 검사한다. 브라우저에 주입한 inset을 iPhone 흐림 해결의 실기기 증거로 사용하지 않는다. [기기 관찰/실행 근거](native-app/tasks.md).
@@ -13,7 +18,7 @@
 
 ## N01 Android·iOS 앱 기반 (진행 중)
 
-`공유 Vue → Vite native 모드(상대 자산/dist-native) → Capacitor sync → Android Java / iOS Swift·SPM`. 웹 모드는 `/app/`·dist를 유지한다. `frontend/tests/nativeBuild.spec.ts`가 실제 빌드 HTML의 상대 script 경로와 웹/앱 산출물 분리를 검증한다. 원격 사이트 로딩 설정은 없다. native 빌드 명령은 `npm --prefix frontend run build:ios`, `build:ios:device`, `build:android`. `install:ios`는 선택 기기용 자동 서명→codesign 검사→설치→실행을 소유하며 `scripts/test_ios_install.py`가 실패 뒤 후속 동작 중단을 검증한다. iPhone16/iOS27.0.1의 실제 설치/실행은 성공했고, 사용자가 검색 화면과 차량 선택 조작을 확인했다. native 지도/GPS/API/저장 연결은 아직 구현되지 않았다. [별도 계획](native-app/plan.md)·[상세 작업과 실제 결과](native-app/tasks.md)·[설치 안내](native-app/installation.md).
+`공유 Vue → Vite native 모드(상대 자산/dist-native) → Capacitor sync → Android Java / iOS Swift·SPM`. 웹 모드는 `/app/`·dist를 유지한다. `frontend/tests/nativeBuild.spec.ts`가 실제 빌드 HTML의 상대 script 경로와 웹/앱 산출물 분리를 검증한다. 원격 사이트 로딩 설정은 없다. native 빌드 명령은 `npm --prefix frontend run build:ios`, `build:ios:device`, `build:android`. `install:ios`는 선택 기기용 자동 서명→codesign 검사→설치→실행을 소유하며 `scripts/test_ios_install.py`가 실패 뒤 후속 동작 중단을 검증한다. iPhone16/iOS27.0.1의 실제 설치/실행은 성공했고, 사용자가 검색 화면과 차량 선택 조작을 확인했다. iOS 지도 연결은 N02b에서 구현 중이며 GPS/API/저장은 후속이다. [별도 계획](native-app/plan.md)·[상세 작업과 실제 결과](native-app/tasks.md)·[설치 안내](native-app/installation.md).
 
 ## T37 원격 백업·외부 알림 후속 (2026-10-15)
 

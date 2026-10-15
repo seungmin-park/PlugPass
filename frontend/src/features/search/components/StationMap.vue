@@ -7,7 +7,7 @@ import { useErrorFocus } from '../../../shared/ui/useErrorFocus'
 import LoadingIndicator from '../../../shared/ui/LoadingIndicator.vue'
 
 const props = defineProps<{ stations: readonly MapStation[]; center: MapCoordinates; area?: SearchArea | undefined; compact?: boolean; selectedStationId: number | null }>()
-const emit = defineEmits<{ select: [stationId: number]; 'area-change': [area: SearchArea | null] }>()
+const emit = defineEmits<{ select: [stationId: number]; 'area-change': [area: SearchArea | null]; interact: [] }>()
 const container = ref<HTMLElement | null>(null)
 const canvasKey = ref(0)
 const status = ref<'loading' | 'ready' | 'error'>('loading')
@@ -93,6 +93,7 @@ async function openMap(): Promise<void> {
     const initialStations = props.stations
     const initialCenter = { ...props.center }
     const created = await createMap(container.value, initialStations, initialCenter, {
+      interacted: () => { if (currentGeneration === generation) emit('interact') },
       areaChanged: area => { if (currentGeneration === generation) emit('area-change', area) },
       zoomChanged: state => { if (currentGeneration === generation) zoomState.value = state },
       selectStation: stationId => { if (currentGeneration === generation) emit('select', stationId) },

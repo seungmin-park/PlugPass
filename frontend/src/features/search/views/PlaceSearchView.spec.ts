@@ -41,10 +41,10 @@ it('주소를 검색하고 후보를 고른 뒤에만 그 위치의 충전소를
   expect(readVehicleProfile(window.localStorage)).toEqual({ vehicleId: 'kona-electric-2020-kr', adapterIds: [], vehicleSupportConfirmed: false })
 })
 it('차량 없이 주소를 고르면 지도보다 앞에서 다음 행동을 알리고 차량 선택으로 이동한다', async () => {
-  vi.spyOn(mapLoader, 'loadStationMap').mockResolvedValue((_container, _stations, _center, callbacks) => {
-    callbacks.tilesLoaded()
-    return { selectStation: () => {}, updateStations: () => {}, moveTo: () => {}, showArea: () => {}, destroy: () => {},
-      zoomIn: () => 4, zoomOut: () => 6, getZoomLevel: () => 5 }
+  vi.spyOn(mapLoader, 'loadStationMap').mockResolvedValue(async (_container, _stations, _center, callbacks) => {
+    callbacks.ready()
+    return { selectStation: async () => {}, updateStations: async () => {}, moveTo: async () => {}, showArea: async () => {}, destroy: async () => {},
+      zoomIn: async () => {}, zoomOut: async () => {} }
   })
   const adapter = vi.fn<AxiosAdapter>(async config => jsonResponse(config, config.url === '/places'
     ? { places: [{ name: '선택할 장소', address: '서울 주소', latitude: 37.5, longitude: 127 }] } : searchResponse))

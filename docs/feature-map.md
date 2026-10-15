@@ -1,5 +1,12 @@
 # 기능과 검증 범위
 
+## N02a 비동기 지도 계약
+
+`StationMap(Vue: 명령 순서·화면 수명·선택) → StationMapSession(Promise 명령) → Kakao Web 어댑터`.
+지도 어댑터는 `ready/failed`, 선택 ID, 이동 시작(null)/완료(실제 영역), 가능한 확대 조작과 설명을 돌려준다. 숫자 확대 단계의 방향/한계는 어댑터가 소유한다. Vue는 늦은 생성/이벤트를 세션 번호로 걸러내고 종료된 지도를 해제한다. SDK 파일 로딩 실패에는 새로고침, 지도 생성/명령 실패에는 지도 재시도를 제공하며 목록은 독립적으로 유지한다.
+
+`StationMapAsync.spec.ts`는 지연 생성·최신 입력·명령 순서/실패·시간 초과·재시도 간 DOM 격리·늦은 이벤트를, 기존 지도/주소/영역 테스트는 웹 계약을 검증한다. [진행 근거](native-app/tasks.md). 실제 iOS SDK/GPS/API 연결 성공과는 구분한다.
+
 ## N01 Android·iOS 앱 기반 (진행 중)
 
 `공유 Vue → Vite native 모드(상대 자산/dist-native) → Capacitor sync → Android Java / iOS Swift·SPM`. 웹 모드는 `/app/`·dist를 유지한다. `frontend/tests/nativeBuild.spec.ts`가 실제 빌드 HTML의 상대 script 경로와 웹/앱 산출물 분리를 검증한다. 원격 사이트 로딩 설정은 없다. native 빌드 명령은 `npm --prefix frontend run build:ios`, `build:ios:device`, `build:android`. `install:ios`는 선택 기기용 자동 서명→codesign 검사→설치→실행을 소유하며 `scripts/test_ios_install.py`가 실패 뒤 후속 동작 중단을 검증한다. iPhone16/iOS27.0.1의 실제 설치/실행은 성공했고, 사용자가 검색 화면과 차량 선택 조작을 확인했다. native 지도/GPS/API/저장 연결은 아직 구현되지 않았다. [별도 계획](native-app/plan.md)·[상세 작업과 실제 결과](native-app/tasks.md)·[설치 안내](native-app/installation.md).

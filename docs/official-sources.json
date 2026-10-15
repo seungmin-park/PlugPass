@@ -862,5 +862,21 @@
     "cache": ".firecrawl/native-kakao-ios-start.md",
     "coverage": "SPM 공식 URL, iOS13 하한; native 지도 구현/실기기 인증은 미확인",
     "sha256": "ca0b037fdcc76046322382bcbdcf24e10083d9db7d502867586d81549f3afdec"
+  },
+  {
+    "id": "webkit-safe-area",
+    "url": "https://webkit.org/blog/7929/designing-websites-for-iphone-x/",
+    "accessed": "2026-10-16",
+    "cache": ".firecrawl/native-safe-area-webkit.html",
+    "coverage": "viewport-fit=cover, env(safe-area-inset-*), max와 기존 여백 조합",
+    "sha256": "af51233c74adf9d147c78d362686cad6bd08673597bcac3eea5ad35277112a5b"
+  },
+  {
+    "id": "capacitor-system-bars",
+    "url": "https://capacitorjs.com/docs/apis/system-bars",
+    "accessed": "2026-10-16",
+    "cache": ".firecrawl/native-system-bars.html",
+    "coverage": "v8 공식 문서와 설치된8.5.3 대조: Android CSS inset 변수·iOS env 사용, 상태바 설정",
+    "sha256": "b16c728ffc50f54842314d1034f485eb73d61a5bc390276b96a99511c0cfa3a6"
   }
 ]

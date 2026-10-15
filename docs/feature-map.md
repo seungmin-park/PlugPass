@@ -1,5 +1,9 @@
 # 기능과 검증 범위
 
+## N05.1a 앱 안전 영역
+
+`OS 안전 영역 → CSS env/Capacitor inset → App 화면 틀·본문 건너뛰기 링크`. `frontend/e2e/safe-area.spec.ts`는 상단 복귀·회전·하단·키보드 링크와 안전 영역 없는 웹을 실제 CSS 배치로 검사한다. 브라우저에 주입한 inset을 iPhone 흐림 해결의 실기기 증거로 사용하지 않는다. [기기 관찰/실행 근거](native-app/tasks.md).
+
 ## N02a 비동기 지도 계약
 
 `StationMap(Vue: 명령 순서·화면 수명·선택) → StationMapSession(Promise 명령) → Kakao Web 어댑터`.

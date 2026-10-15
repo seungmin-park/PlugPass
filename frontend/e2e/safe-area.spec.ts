@@ -1,0 +1,50 @@
+import { test, expect } from './fixtures'
+
+test('상단으로 돌아오면 로고와 메뉴가 상태바 아래에 있고 본문 건너뛰기도 가려지지 않는다', async ({ page }) => {
+  await page.setViewportSize({ width: 393, height: 852 })
+  const device = await page.context().newCDPSession(page)
+  await device.send('Emulation.setSafeAreaInsetsOverride', { insets: { top: 59, bottom: 34, left: 0, right: 0 } })
+  await page.goto('/app/index.html#/stations')
+  await expect(page.getByRole('heading', { name: '주변 충전소 찾기' })).toBeVisible()
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
+  await page.evaluate(() => window.scrollTo(0, 0))
+  await expect.poll(() => page.locator('.site-header').evaluate(element => element.getBoundingClientRect().top)).toBeGreaterThanOrEqual(59)
+  await expect(page.getByRole('link', { name: 'PlugPass 충전소 찾기' })).toBeInViewport()
+  await expect(page.getByRole('navigation', { name: '주요 메뉴' })).toBeInViewport()
+  const skipLink = page.getByRole('link', { name: '본문으로 건너뛰기' })
+  expect(await skipLink.evaluate(element => element.getBoundingClientRect().bottom)).toBeLessThanOrEqual(0)
+  await page.getByRole('link', { name: 'PlugPass 충전소 찾기' }).focus()
+  await page.keyboard.press('Shift+Tab')
+  await expect(skipLink).toBeFocused()
+  expect(await skipLink.evaluate(element => element.getBoundingClientRect().top)).toBeGreaterThanOrEqual(59)
+  await page.keyboard.press('Enter')
+  await expect(page.getByRole('main')).toBeFocused()
+})
+
+test('회전으로 안전 영역이 바뀌면 헤더와 하단 안내가 잘림 영역 밖에 놓인다', async ({ page }) => {
+  await page.setViewportSize({ width: 852, height: 393 })
+  const device = await page.context().newCDPSession(page)
+  await device.send('Emulation.setSafeAreaInsetsOverride', { insets: { top: 0, bottom: 21, left: 59, right: 59 } })
+  await page.goto('/app/index.html#/stations')
+  const header = page.locator('.site-header')
+  expect(await header.evaluate(element => element.getBoundingClientRect().left)).toBeGreaterThanOrEqual(59)
+  expect(await header.evaluate(element => element.getBoundingClientRect().right)).toBeLessThanOrEqual(852 - 59)
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
+  expect(await page.locator('.site-footer').evaluate(element => innerHeight - element.getBoundingClientRect().bottom)).toBeGreaterThanOrEqual(21)
+  await page.setViewportSize({ width: 393, height: 852 })
+  await device.send('Emulation.setSafeAreaInsetsOverride', { insets: { top: 59, bottom: 34, left: 0, right: 0 } })
+  await page.evaluate(() => window.scrollTo(0, 0))
+  await expect.poll(() => header.evaluate(element => element.getBoundingClientRect().top)).toBeGreaterThanOrEqual(59)
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+})
+
+for (const viewport of [{ width: 375, height: 812 }, { width: 1440, height: 900 }]) {
+  test(`안전 영역이 없는 ${viewport.width}px 웹은 상단 여백이 추가되지 않는다`, async ({ page }) => {
+    await page.setViewportSize(viewport)
+    await page.goto('/app/index.html#/stations')
+    await page.getByRole('heading', { name: '주변 충전소 찾기' }).waitFor()
+    await page.evaluate(() => window.scrollTo(0, 0))
+    expect(await page.locator('.site-header').evaluate(element => element.getBoundingClientRect().top)).toBe(0)
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+  })
+}

@@ -14,6 +14,10 @@
   --color-primary: #006e64;
   --color-primary-hover: #005049;
   --color-line: #cfdeda;
+  --app-safe-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+  --app-safe-right: var(--safe-area-inset-right, env(safe-area-inset-right, 0px));
+  --app-safe-bottom: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+  --app-safe-left: var(--safe-area-inset-left, env(safe-area-inset-left, 0px));
   font-family: "Pretendard Variable", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
   color: var(--color-ink);
   background: var(--color-canvas);
@@ -33,15 +37,20 @@ h1, h2, h3, p, dl, dd { margin: 0; }
 h1, h2, h3 { line-height: 1.4; }
 p { color: var(--color-muted); }
 
-.app-shell { max-width: 1120px; min-height: 100dvh; margin: 0 auto; padding: 0 40px; display: flex; flex-direction: column; }
+.app-shell {
+  --page-gutter: 40px;
+  max-width: 1120px; min-height: 100dvh; margin: 0 auto;
+  padding: var(--app-safe-top) max(var(--page-gutter), var(--app-safe-right)) var(--app-safe-bottom) max(var(--page-gutter), var(--app-safe-left));
+  display: flex; flex-direction: column;
+}
 .site-header { display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 88px; border-bottom: 1px solid var(--color-line); }
 .brand { display: inline-flex; align-items: center; }
 .brand img { width: 144px; height: 44px; display: block; }
 .site-header nav a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 14px; border-radius: 8px; font-size: 14px; font-weight: 600; text-decoration: none; }
 .site-header nav .router-link-active { background: var(--color-notice); }
 .site-header nav a:hover { background: var(--color-line); }
-.skip-link { position: fixed; top: 12px; left: 16px; z-index: 10; transform: translateY(-160%); padding: 12px 18px; border-radius: 8px; background: var(--color-panel); font-weight: 700; }
-.skip-link:focus { transform: translateY(0); }
+.skip-link { position: fixed; top: 0; left: max(16px, var(--app-safe-left)); z-index: 10; transform: translateY(-100%); padding: 12px 18px; border-radius: 8px; background: var(--color-panel); font-weight: 700; }
+.skip-link:focus { top: calc(var(--app-safe-top) + 12px); transform: translateY(0); }
 main { flex: 1; padding: 32px 0 48px; }
 .intro { margin-bottom: 28px; }
 h1 { font-size: 32px; font-weight: 700; letter-spacing: -0.025em; margin-bottom: 12px; }
@@ -98,7 +107,7 @@ h1 { font-size: 32px; font-weight: 700; letter-spacing: -0.025em; margin-bottom:
 .site-footer p { max-width: 70ch; font-size: 12px; }
 
 @media (max-width: 767px) {
-  .app-shell { padding: 0 20px; }
+  .app-shell { --page-gutter: 20px; }
   .site-header { min-height: 72px; }
   .brand img { width: 132px; height: 40px; }
   main { padding: 32px 0 36px; }
@@ -111,7 +120,7 @@ h1 { font-size: 32px; font-weight: 700; letter-spacing: -0.025em; margin-bottom:
 }
 
 @media (max-width: 400px) {
-  .app-shell { padding: 0 16px; }
+  .app-shell { --page-gutter: 16px; }
   .site-header nav a { gap: 6px; padding: 8px 10px; font-size: 13px; }
   .search-panel, .search-explainer { padding: 16px; }
   .filter-option span { padding: 8px 3px; }

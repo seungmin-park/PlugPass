@@ -5,6 +5,11 @@ description: Verify PlugPass behavior and architecture checks, H2 regression and
 
 # PlugPass 검증
 
+## N05.1a 앱 안전 영역
+
+- `CI=1 KAKAO_JS_KEY=test-js-key bash scripts/frontend-e2e.sh safe-area.spec.ts`: 현재 cmux 보조 pane에서 사용자의 headless 지시를 따른다. Chromium inset 주입으로 세로/가로·상단 복귀·본문 건너뛰기·하단 배치와 일반 웹을 검사한다.
+- nativeBuild.spec.ts는 실제 묶음 HTML의 viewport-fit도 검사한다. iOS 실제 blur/터치 관찰을 브라우저 결과로 대체하지 않는다. 같은 소스를 서명 설치한 뒤 기기 상태를 [tasks](../../../docs/native-app/tasks.md)에 기록한다.
+
 ## N02a 비동기 지도 계약
 
 - `npm --prefix frontend run test:unit -- src/features/search/components/StationMapAsync.spec.ts src/features/search/components/StationMap.spec.ts src/features/search/map/kakaoStationMap.spec.ts`: 늦은 생성/입력·화면 이탈·명령 순서/실패·시간 초과·재시도 DOM 격리·종료 뒤 이벤트, 웹 확대/선택을 확인한다.

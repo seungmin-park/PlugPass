@@ -5,7 +5,7 @@
 ## 현재 진행
 
 - 2026-10-15: N01 iOS 실기기 설치 관문 통과. 두 native 프로젝트·묶음 자산 생성 완료, iOS simulator/device unsigned 빌드 성공. iPhone16에 Personal Team 서명·설치·프로세스 실행 성공, 사용자가 검색 화면과 차량 선택 정상 확인. 지도/외부 앱은 후속 구현이며 미확인.
-- 작업 위치: `/private/tmp/plugpass-native-app`, `feat/native-map-async`, N01 병합 기준 `f18b404`.
+- 작업 위치: `/private/tmp/plugpass-native-app`, `fix/ios-safe-area`, N02a 병합 기준 `c509c31`.
 - cmux 검증: `workspace:1000090002`, `surface:1000090016`. 사용 중인 호출 터미널에는 실행 명령을 보내지 않는다.
 - 사용자 최신 지시: **Android 폰은 현재 없음, iOS 먼저**. Android 실기기 설치/검증은 대기. Android SDK는 사용자 직접 약관 동의 후 설치 완료.
 - 사용자 후속 지시: **브라우저는 headless 실행**. 이후 실행은 `CI=1`로 진행하고 명령/로그는 cmux pane에 유지한다. 첫 공용 verify는 지시 확인 시 이미 headed 종료 0이었다.
@@ -57,7 +57,7 @@
 - [ ] N02.9b 카카오 Android 패키지/서명 해시 등록.
 - [ ] N02.10 Android 실기기 지도/배경·이동/확대·마커·스크롤·상세/복귀.
 - [ ] N02.11 iPhone 실기기 동일 흐름. **N03/N04 연결 전 관문.**
-- [ ] N02.12a 공통 비동기 지도 PR: 최종 공용 회귀·native CI 빌드·PR/병합. **진행 중**
+- [x] N02.12a 공통 비동기 지도 PR90: head `f74078f`의 web/backend·iOS·Android·필수 verify 모두 성공, 실제 병합 `c509c31` 확인. 로컬 최종 공용 verify와 두 native 빌드 성공.
 - [ ] N02.12b iOS/Android SDK 단위·빌드·전체 회귀·PR/CI/병합.
 
 ## N03 운영 API·주소 검색 (지도 관문 통과 후)
@@ -87,6 +87,10 @@
 
 ## N05 전달·최종 판정
 
+- [ ] N05.1a **우선 수정:** 사용자의 iPhone 실화면에서 맨 위 로고/메뉴가 상태바 영역에 겹쳐 흐림. 안전 영역 배치 Red → viewport/CSS 보정 → 웹 회귀 → 서명 설치 → 실제 화면 확인. 브라우저 inset 주입은 배치 계약만 검증하며 iOS 흐림 해결의 증거로 대체하지 않는다.
+- [x] N05.1a-코드: 실제 HTML 설정 누락1건·배치2건 assertion Red 확인, 공통 CSS/viewport 수정, 배치4건·전체 공용 회귀 통과.
+- [ ] N05.1a-기기: 같은 수정본 서명 설치 후 맨 위 로고/메뉴·스크롤/복귀·회전 실제 확인.
+- [ ] N05.1a-전달: CI·PR·실제 병합 확인.
 - [ ] N05.1 safe area·홈 표시줄·키보드·글자 확대·주요 44px 터치.
 - [ ] N05.2 CI Android/iOS 빌드·단위 검사, 서명/비밀 제외.
 - [ ] N05.3 Android APK/해시·iOS 프로젝트·직접 설치/7일 만료 재설치 문서.
@@ -151,6 +155,20 @@
 | 최종 공용 회귀 | `CI=1 KAKAO_JS_KEY=test-js-key bash scripts/verify.sh` | `N02_FINAL_VERIFY_EXIT=0`: frontend447/44파일·타입/lint/build·Java462·Python42·MySQL8·개발 브라우저57·JAR5·MySQL 재시작 브라우저7. 실패/오류/skip0. `n02-final-verify.log` |
 
 이번 단계는 SDK 경계를 제어한 계약 테스트와 기존 웹 회귀다. 실제 iOS 지도 인증·배경 표시·터치 검증은 N02b에 남아 있다. 사용자 등록 응답과 키 읽기 성공을 SDK 인증 성공으로 바꾸어 기록하지 않는다.
+
+## N05.1a 상단 안전 영역 실행 기록
+
+2026-10-16. 사용자 실제 iPhone 캡처에서 맨 위 로고/메뉴가 상태바 영역과 겹쳤다. Capacitor8.5.3 iOS 기본 content inset은 never, HTML에는 viewport-fit이 없고 CSS 미디어 쿼리는 상단 여백을 0으로 두었다.
+
+| 검증 | 실제 결과 |
+| --- | --- |
+| `npm --prefix frontend run test:unit -- tests/nativeBuild.spec.ts` | HTML viewport-fit 누락 assertion1실패/2통과 → 수정 후3통과. `safe-area-build-red.log`, `safe-area-build-green.log` |
+| `CI=1 KAKAO_JS_KEY=test-js-key bash scripts/frontend-e2e.sh safe-area.spec.ts` | 상단 기대59px/실제0, 가로 안전 영역 기대59px/실제40: 2실패, 일반 웹2통과. `safe-area-red-confirmed.log` |
+| 테스트 준비 수정 | 첫 실행의 일반 웹2건은 기존 초기 focus 뒤 scroll 위치를 초기화하지 않은 테스트 준비 오류였다. 명시적으로 맨 위로 이동한 뒤 의도한2건 Red를 다시 확인. 키보드도 현재 focus에 의존하지 않고 로고→Shift+Tab으로 시작점을 고정했다. 해당 준비 오류를 제품 Red로 세지 않는다. |
+| 대상 Green | 상단 복귀·키보드 링크, 회전/하단/portrait 복귀, 375/1440px 일반 웹4건 통과. `safe-area-green-confirmed.log` |
+| 전체 공용 회귀 | `SAFE_AREA_VERIFY_EXIT=0`: frontend447·Java462·Python42·개발 브라우저61·JAR5·MySQL8·재시작 브라우저7, 실패/오류/skip0. 타입/lint/build 포함. `safe-area-verify.log` |
+
+로그는 `/private/tmp/plugpass-native-evidence/`에 보관한다. Chromium CDP는 OS inset 입력만 제어하고 실제 CSS 배치/스크롤을 검사한다. iOS blur·네이티브 터치는 별도 기기 관찰 전 미확인이다. 공통 화면 틀의 책임이므로 각 Vue 화면이나 기종 분기는 추가하지 않았다. CSS `--page-gutter`로 기존 40/20/16px 가로 여백만 바꿔 미디어 쿼리가 안전 영역을 지우지 못하게 정리했다. API/DTO/저장/도메인 실패·응답 순서는 변경하지 않아 기존 회귀를 유지한다.
 
 ## 검토·판단
 

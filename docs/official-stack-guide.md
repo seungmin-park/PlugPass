@@ -329,3 +329,9 @@ v1.3.9 [공식 dynamic subset CSS](https://github.com/orioncactus/pretendard/blo
 [Apple Personal Team](https://developer.apple.com/help/account/basics/about-your-developer-account)의 직접 설치와 7일 provisioning 만료에 따라 [설치 안내](native-app/installation.md)를 작성했다. 개인 Team·인증서는 저장소에 넣지 않는다. 최초 시도는 Xcode 미설치 exit1이었고, Xcode27.0 설치 후 simulator/device unsigned 빌드가 성공했다. 개인 서명·실기기 설치와 원격 CI는 별도 기록한다. [현재 tasks](native-app/tasks.md).
 
 Xcode27.0의 설치된 `xcodebuild -help`에서 `-allowProvisioningUpdates`가 계정 설정 후 인증서·앱ID·프로파일을 생성/갱신하고 `-allowProvisioningDeviceRegistration`이 선택 기기를 등록하는 동작을 확인했다. 같은 Xcode의 `devicectl device install app --help`, `device process launch --help`에 맞춰 headless 설치를 연결했다. 명시적 기기 UDID, 서명 검사 후에만 설치, 실패 시 중단은 프로젝트 판단이다. iPhone16/iOS27.0.1에서 실제 서명·설치·실행 종료0과 7일짜리 embedded profile을 확인했다. 이 결과를 native 지도/GPS 검증으로 확대하지 않는다.
+
+## N05.1a iPhone 상단 안전 영역 (2026-10-16)
+
+설치된 Capacitor8.5.3은 iOS WebView의 contentInsetAdjustmentBehavior 기본값이 never다. 현재 화면에는 안전 영역 여백이 없어 로고/메뉴가 상태바 아래에 겹쳤다. [WebKit 공식 가이드](https://webkit.org/blog/7929/designing-websites-for-iphone-x/)의 `viewport-fit=cover`와 `env(safe-area-inset-*)`를 함께 적용한다. 고정 기종별 여백 대신 OS의 값으로 전체 화면 틀과 포커스된 본문 건너뛰기 링크를 배치하는 것은 프로젝트 판단이다. 작은 화면 미디어 쿼리는 가로 기본 여백만 바꾸므로 상단 안전 영역을 다시 0으로 덮지 않는다.
+
+[Capacitor v8 SystemBars](https://capacitorjs.com/docs/apis/system-bars)와 설치된 Android SystemBars.java를 대조했다. Android 기본 css 처리는 `--safe-area-inset-*`를 주입하며 OS가 이미 여백을 적용한 경우 0으로 전달한다. 이를 우선하고 iOS/웹은 env로 대체한다. Chromium CDP의 inset 주입은 실제 CSS 배치·회전 재계산만 검사한다. iOS의 스크롤 가장자리 효과와 기기 화면은 서명 설치 후 별도 관찰한다.

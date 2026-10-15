@@ -24,5 +24,6 @@ describe('웹과 설치 앱의 빌드 계약', () => {
     if (!html || html.type !== 'asset' || typeof html.source !== 'string') throw new Error('앱 index.html 누락')
     expect(html.source).toMatch(/src="\.\/assets\//)
     expect(html.source).not.toContain('="/app/')
+    expect(html.source).toMatch(/name="viewport"[^>]+viewport-fit=cover/)
   })
 })

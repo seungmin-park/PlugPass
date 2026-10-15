@@ -2,6 +2,7 @@
   "charging-journey.spec.ts",
   "ui-failures.spec.ts",
   "webapp-quality.spec.ts",
+  "safe-area.spec.ts",
   "station-map.spec.ts",
   "navigation.spec.ts",
   "loading.spec.ts",

@@ -1,5 +1,9 @@
 # 기능과 검증 범위
 
+## N01 Android·iOS 앱 기반 (진행 중)
+
+`공유 Vue → Vite native 모드(상대 자산/dist-native) → Capacitor sync → Android Java / iOS Swift·SPM`. 웹 모드는 `/app/`·dist를 유지한다. `frontend/tests/nativeBuild.spec.ts`가 실제 빌드 HTML의 상대 script 경로와 웹/앱 산출물 분리를 검증한다. 원격 사이트 로딩 설정은 없다. native 빌드 명령은 `npm --prefix frontend run build:ios`, `build:ios:device`, `build:android`. 생성·컴파일·실기기 설치를 별도 판정한다. native 지도/GPS/API/저장 연결은 아직 구현되지 않았다. [별도 계획](native-app/plan.md)·[상세 작업과 실제 결과](native-app/tasks.md)·[설치 안내](native-app/installation.md).
+
 ## T37 원격 백업·외부 알림 후속 (2026-10-15)
 
 운영 저장소의 backup timer → 격리 복원 검증 → 비공개 GCS → 재다운로드 SHA-256 확인. 별도 operations timer가 검증된 원격 영수증과 공개 API의 collection을 읽어 Cloud Monitoring에 보고한다. Cloud Monitoring은 HTTPS 실패·백업/수집 이상·보고 누락을 지정 Slack 채널로 전달한다. 앱/DB 스키마 변경 없이 운영 저장소가 스크립트·타이머·알림 정책을 소유한다. [실제 실행과 한계](remote-backup-alerts.md).

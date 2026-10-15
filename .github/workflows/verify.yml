@@ -15,8 +15,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  verify:
-    name: PlugPass verify
+  web:
+    name: Web and backend verify
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -63,3 +63,65 @@ jobs:
             frontend/test-results/
             frontend/dist/
             frontend/playwright-report/
+
+  ios:
+    name: iOS build
+    runs-on: macos-26
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version-file: .node-version
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm --prefix frontend ci
+      - name: Compile bundled iOS app without personal signing credentials
+        run: npm --prefix frontend run build:ios
+
+  android:
+    name: Android build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: zulu
+          java-version: '21'
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version-file: .node-version
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm --prefix frontend ci
+      - name: Compile and lint bundled Android app
+        run: npm --prefix frontend run build:android
+      - name: Preserve development APK
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: plugpass-dev-apk-${{ github.run_id }}-${{ github.run_attempt }}
+          path: frontend/android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 7
+          if-no-files-found: error
+
+  verify:
+    name: PlugPass verify
+    needs: [web, ios, android]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - name: Require every verification job to succeed
+        env:
+          WEB_RESULT: ${{ needs.web.result }}
+          IOS_RESULT: ${{ needs.ios.result }}
+          ANDROID_RESULT: ${{ needs.android.result }}
+        run: |
+          test "$WEB_RESULT" = success
+          test "$IOS_RESULT" = success
+          test "$ANDROID_RESULT" = success

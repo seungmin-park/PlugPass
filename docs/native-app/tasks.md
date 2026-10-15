@@ -4,13 +4,14 @@
 
 ## 현재 진행
 
-- 2026-10-15: N01 구현 중. 두 native 프로젝트·묶음 자산 생성 완료, iOS simulator/device unsigned 빌드 성공. 실제 기기 설치/지도/외부 앱은 모두 미확인.
+- 2026-10-15: N01 iOS 실기기 설치 관문 통과. 두 native 프로젝트·묶음 자산 생성 완료, iOS simulator/device unsigned 빌드 성공. iPhone16에 Personal Team 서명·설치·프로세스 실행 성공, 사용자가 검색 화면과 차량 선택 정상 확인. 지도/외부 앱은 후속 구현이며 미확인.
 - 작업 위치: `/private/tmp/plugpass-native-app`, `feat/native-app-foundation`, 기준 `bb3f106`.
 - cmux 검증: `workspace:1000090002`, `surface:1000090016`. 사용 중인 호출 터미널에는 실행 명령을 보내지 않는다.
 - 사용자 최신 지시: **Android 폰은 현재 없음, iOS 먼저**. Android 실기기 설치/검증은 대기. Android SDK는 사용자 직접 약관 동의 후 설치 완료.
 - 사용자 후속 지시: **브라우저는 headless 실행**. 이후 실행은 `CI=1`로 진행하고 명령/로그는 cmux pane에 유지한다. 첫 공용 verify는 지시 확인 시 이미 headed 종료 0이었다.
 - Xcode27.0 설치를 확인했고 `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer`로 전역 선택 변경 없이 simulator/device 모두 컴파일했다. 첫 환경 실패는 아래 기록에 보존한다.
-- 사용자 조작은 [iPhone 설치 안내](installation.md) 3단계. 연결 기기 0대·유효 서명 identity 0개를 확인했다. 케이블 연결/신뢰·Xcode Apple 계정/Personal Team 설정이 필요하다.
+- 사용자 조작은 [iPhone 설치 안내](installation.md) 3단계. **iPhone16/iOS27.0.1 연결·paired·개발자 모드 enabled 확인**, Apple 계정·Personal Team 선택 뒤 CLI 자동 서명/설치/실행 완료. 사용자 개인 Team 설정은 로컬 변경으로 유지하고 커밋하지 않는다.
+- 앱 기반 [PR89](https://github.com/seungmin-park/PlugPass/pull/89), 서명 commit `0ed44a4`의 원격 web/backend·iOS·Android·필수 PlugPass verify 모두 성공. headless 설치 명령을 포함한 최종 공용 verify도 종료0. iOS 실기기 설치 관문을 통과했으므로 최종 변경 push 뒤 같은 head의 CI·병합을 확인한다.
 
 ## N00 계획·사전 조사
 
@@ -26,16 +27,19 @@
 - [x] N01.1 Red: 앱 outDir=dist·HTML /app/assets를 실제 assertion 실패 2건으로 확인, 웹 경로 1건 통과.
 - [x] N01.2 Green: Capacitor core/cli/android/ios 8.5.3 고정, native 빌드 분리. 대상 3건·전체 434건·타입/lint 통과.
 - [x] N01.3 Android Java 프로젝트 생성: 앱 ID·표시 이름·Java21·SDK36, 생성 명령 종료 0. APK 빌드와는 구분.
-- [x] N01.4 iOS Swift/SPM 프로젝트 생성: 앱 ID·표시 이름, Personal Team 정보 없음. 생성 명령 종료 0. iOS 컴파일 미실행.
-- [x] N01.5 build/sync·Android Java21 경계·iOS unsigned build 명령과 설치 안내 추가. 실제 iOS 명령은 도구 부족 exit1; 빌드 성공은 미확인.
+- [x] N01.4 iOS Swift/SPM 프로젝트 생성: 앱 ID·표시 이름, Personal Team 정보 없음. 생성 명령 종료 0. 이후 컴파일 결과는 N01.8a.
+- [x] N01.5 build/sync·Android Java21 경계·iOS unsigned build 명령과 설치 안내 추가. 최초 도구 부족 exit1, 설치 후 성공은 N01.8a와 실행 기록으로 구분.
 - [x] N01.6 iOS .app의 local index.html·상대 자산 3개가 dist-native와 바이트 일치, server.url 없음. 기존 웹 공용 회귀 통과. 앱 운영 API 주소 주입은 N03에서 별도 구현.
 - [x] N01.7a Android assembleDebug/lintDebug 종료0·APK 생성. native 단위/실기기 테스트로 세지 않음.
 - [ ] N01.7b SDK 기능의 native 단위 검증은 N02 구현에서 추가.
 - [x] N01.8a iOS simulator/device unsigned 빌드 성공, Xcode27.0/iOS27 SDK.
-- [ ] N01.8b Personal Team 사용자 설정·서명. 현재 유효 signing identity 0개.
+- [x] N01.8b Personal Team 사용자 설정·자동 서명. 실제 embedded profile의 앱ID 일치·기기1대·7일 만료 확인.
+- [x] N01.8c headless 설치 명령: 기기 명시·서명 빌드·서명 검사·설치·실행 순서. 외부 도구 실패 시 후속 실행 중단 6건 Red→전체7건 Green. 실제 설치는 N01.10.
 - [ ] N01.9 Android 실기기 설치·공통 화면 확인.
-- [ ] N01.10 iPhone 실기기 설치·공통 화면 확인.
-- [ ] N01.11 변경 리뷰·공용 verify·작은 PR·CI·실제 병합 기록.
+- [x] N01.10a iPhone 실기기 설치·프로세스 실행: `IOS_DEVICE_INSTALL_EXIT=0`.
+- [x] N01.10b iPhone 공통 화면과 차량 선택 조작 확인. 사용자 실기기 응답: “검색 화면과 차량 선택이 정상”. 자동 UI assertion으로 바꾸어 세지 않음.
+- [x] N01.11a 변경 자체 리뷰·공용 verify·작은 PR. 개인 Team/IDE 변경은 커밋 대상에서 제외.
+- [ ] N01.11b 최종 head의 CI·실제 병합 기록.
 
 ## N02 native 지도 (N01 이후)
 
@@ -112,6 +116,17 @@
 | APK 묶음 검사 | 실제 zip의 config·index.html 비교 | 앱ID 일치·server.url 없음·dist-native index와 바이트 일치. SHA256 `046f267c7efa3c3d25bc851957682c51b9131871f61a549f8647dd46fe2cc862`. 기기 실행 미확인 |
 | 공용 회귀 | `KAKAO_JS_KEY=test-js-key bash scripts/verify.sh` | cmux 종료 0, frontend434·개발 브라우저57·JAR5·MySQL8·재시작 뒤 브라우저7. 실제 카카오 인증은 mock 범위 밖. 원본 `/private/tmp/plugpass-native-evidence/verify.log` |
 | 결과 집계 | JUnit XML 직접 집계 | Java462·MySQL8, 실패/오류/skip 모두0. 프런트434건, Python35건 |
+| 기기 연결 | Xcode devicectl list devices | iPhone16/iOS27.0.1, paired, developerMode enabled. 앱 설치/렌더링 관찰과는 구분 |
+| headless 공용 회귀 | `CI=1 KAKAO_JS_KEY=test-js-key bash scripts/verify.sh` | cmux `N01_HEADLESS_VERIFY_EXIT=0`. 전체 기존 assertion 유지, `/private/tmp/plugpass-native-evidence/verify-headless.log` |
+| 원격 CI | PR89, head `0ed44a4`, run38744592556 | web/backend·iOS·Android·필수 PlugPass verify 4개 성공. 실제 설치 검증 아님 |
+| 서명 시도 | `xcodebuild ... -allowProvisioningUpdates build` | `Signing for App requires a development team`, BUILD FAILED. 인증을 우회하지 않음. `signing-probe.log` |
+| 설치 명령 Red | `python3 -m unittest discover -s scripts -p test_ios_install.py -v` | install 모드 누락 때문에 assertion 6실패, 기존 unsigned 동작1통과. `ios-install-red.log` |
+| 설치 명령 Green | 동일 대상 명령 | 7건 통과. 외부 Apple/device 도구를 경계에서 대체한 CLI 순서·실패 전파 검증, 실기기 설치 성공과 구분. `ios-install-green.log` |
+| 설치 명령 전체 | `python3 -m unittest discover -s scripts -p 'test_*.py' -v` | 42건 통과. `ios-install-python-all.log` |
+| iPhone 설치 | `PLUGPASS_IOS_DEVICE_ID=<UDID> PLUGPASS_IOS_TEAM_ID=<Team> npm --prefix frontend run install:ios` | 서명 BUILD SUCCEEDED → codesign 성공 → 설치 → Launched application. cmux `IOS_DEVICE_INSTALL_EXIT=0`. 개인정보를 포함한 원본 로그는 로컬 `ios-install-device.log`에만 보관 |
+| 실제 서명 | 앱 embedded.mobileprovision 읽기 | 앱ID 일치·기기1대·생성 2026-10-15 13:55:13 UTC, 만료 2026-10-22 13:55:13 UTC(한국 22:55:13). 공개 가능한 요약만 `ios-profile-summary.json`에 기록 |
+| iPhone 화면 | 사용자가 설치된 앱의 검색 화면·차량 선택 직접 조작 | 정상 응답. 앱에 묶인 공통 화면 관찰이며 지도/GPS/운영 API 성공 증거는 아님 |
+| 최종 공용 회귀 | `CI=1 KAKAO_JS_KEY=test-js-key bash scripts/verify.sh` | cmux `N01_INSTALL_VERIFY_EXIT=0`. Java462·MySQL8·frontend434·Python42, 개발 브라우저57·JAR5·MySQL 재시작 후 브라우저7. 실패/오류/skip0. `verify-install-headless.log` |
 
 초기 N01 로그는 공용 verify의 clean 전에 `/private/tmp/plugpass-native-evidence/n01/`에 보존했다.
 
@@ -125,4 +140,5 @@
 - `npm audit`는 CLI 개발 의존성의 xcode→uuid 경로에 moderate 3개를 보고했다(운영 Vue 의존성 아님). 강제 하향/추측성 override는 적용하지 않았다. N02 이후 SDK 도입 시 재검토한다. 원본 `n01/npm-audit.json`.
 - N01 CI 컴파일을 먼저 연결한다. 필수 PlugPass verify는 web/ios/android의 성공을 모두 요구한다. native 기능 테스트는 구현 시 추가하며 compile 성공을 실기기 통과로 바꾸지 않는다.
 - Red→Green: native 모드의 outDir/HTML 경로 실제 실패 후 Vite의 mode 기반 설정만 변경했다. Refactor는 기존 Vitest가 같은 Vite 설정 함수를 호출하도록 조정한 범위다. 화면·상태·API DTO·DB는 변경하지 않았다.
+- headless 설치: 기존 build-ios 명령에 install 모드를 추가했다. 서명 없는 빌드와 산출물 폴더를 분리해 이전 unsigned 앱을 설치하지 않고, 명시한 기기로만 설치한다. 외부 도구 실패는 원래 종료 코드를 보존한다. 별도 설치 프레임워크/전역 Xcode 설정 변경은 불필요해 도입하지 않았다.
 - 이름/책임 검토: Vite는 자산 경로/산출물, Capacitor 설정은 앱ID/묶음 위치, build-ios/build-android는 도구 경계와 빌드를 소유한다. 추측성 상태 관리/플랫폼 인터페이스는 아직 추가하지 않았다. 기존 웹 공개 경로는 공용 회귀로 확인했다.

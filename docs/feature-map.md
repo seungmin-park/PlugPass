@@ -2,7 +2,7 @@
 
 ## N01 Android·iOS 앱 기반 (진행 중)
 
-`공유 Vue → Vite native 모드(상대 자산/dist-native) → Capacitor sync → Android Java / iOS Swift·SPM`. 웹 모드는 `/app/`·dist를 유지한다. `frontend/tests/nativeBuild.spec.ts`가 실제 빌드 HTML의 상대 script 경로와 웹/앱 산출물 분리를 검증한다. 원격 사이트 로딩 설정은 없다. native 빌드 명령은 `npm --prefix frontend run build:ios`, `build:ios:device`, `build:android`. 생성·컴파일·실기기 설치를 별도 판정한다. native 지도/GPS/API/저장 연결은 아직 구현되지 않았다. [별도 계획](native-app/plan.md)·[상세 작업과 실제 결과](native-app/tasks.md)·[설치 안내](native-app/installation.md).
+`공유 Vue → Vite native 모드(상대 자산/dist-native) → Capacitor sync → Android Java / iOS Swift·SPM`. 웹 모드는 `/app/`·dist를 유지한다. `frontend/tests/nativeBuild.spec.ts`가 실제 빌드 HTML의 상대 script 경로와 웹/앱 산출물 분리를 검증한다. 원격 사이트 로딩 설정은 없다. native 빌드 명령은 `npm --prefix frontend run build:ios`, `build:ios:device`, `build:android`. `install:ios`는 선택 기기용 자동 서명→codesign 검사→설치→실행을 소유하며 `scripts/test_ios_install.py`가 실패 뒤 후속 동작 중단을 검증한다. iPhone16/iOS27.0.1의 실제 설치/실행은 성공했고, 사용자가 검색 화면과 차량 선택 조작을 확인했다. native 지도/GPS/API/저장 연결은 아직 구현되지 않았다. [별도 계획](native-app/plan.md)·[상세 작업과 실제 결과](native-app/tasks.md)·[설치 안내](native-app/installation.md).
 
 ## T37 원격 백업·외부 알림 후속 (2026-10-15)
 

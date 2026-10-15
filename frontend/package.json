@@ -20,6 +20,7 @@
     "sync:native": "npm run build:native && cap sync",
     "build:ios": "bash ../scripts/build-ios.sh simulator",
     "build:ios:device": "bash ../scripts/build-ios.sh device",
+    "install:ios": "bash ../scripts/build-ios.sh install",
     "build:android": "bash ../scripts/build-android.sh",
     "open:android": "cap open android",
     "open:ios": "cap open ios"

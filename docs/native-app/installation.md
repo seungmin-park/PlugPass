@@ -41,23 +41,39 @@ npm --prefix frontend run build:ios
 npm --prefix frontend run build:ios:device
 ```
 
-첫 명령은 simulator SDK, 둘째는 device SDK로 컴파일한다. 산출물은 `build/native/ios-simulator`, `build/native/ios-device`다. **서명하지 않은 device 빌드만으로 iPhone에 설치할 수 없다.** 실제 설치는 다음 단계에서 Xcode가 처리한다.
+첫 명령은 simulator SDK, 둘째는 device SDK로 컴파일한다. 산출물은 `build/native/ios-simulator`, `build/native/ios-device`다. **서명하지 않은 device 빌드만으로 iPhone에 설치할 수 없다.** 최초 계정/Team 설정 후 아래 headless 명령으로 설치한다.
 
-## 3. iPhone 연결·서명·설치 (사용자 조작)
+## 3. 최초 iPhone 연결·계정·Team 설정 (사용자 조작)
 
 1. iPhone을 케이블로 연결하고 잠금을 해제한다. Mac/iPhone의 **신뢰** 확인과 기기 암호 입력은 직접 처리한다.
 2. Xcode 왼쪽 프로젝트 **App → TARGETS App → Signing & Capabilities**에서 **Automatically manage signing**을 켜고 **Team**에 자신의 **Personal Team**을 선택한다.
 3. Bundle Identifier는 `org.duckdns.plugpass.dev`다. 다른 계정에서 이미 사용 중이라는 오류가 나오면 임의로 바꾸지 말고 작업 기록과 카카오 iOS 등록값을 함께 조정한다.
 4. Xcode 상단 실행 대상에서 연결한 **실제 iPhone**을 선택한다. Simulator 선택과 구분한다.
 5. 기기에서 개발자 모드가 필요하다고 나오면 **설정 → 개인정보 보호 및 보안 → 개발자 모드**를 켜고 안내대로 재시작/확인한다. 이 항목은 Xcode에 기기를 연결한 뒤 표시될 수 있다.
-6. Xcode의 **Run(▶)**으로 빌드·설치한다. 개발자 신뢰 안내가 나오면 iPhone의 해당 설정 화면에서 직접 확인한다.
+6. 이후 빌드·설치는 아래 명령으로 진행할 수 있다. 개발자 신뢰 안내가 나오면 iPhone의 해당 설정 화면에서 직접 확인한다.
 7. 앱이 열리면 기기 모델·iOS 버전·빌드 commit을 기록한다. 지도/위치/운영 검색 검증은 별도 체크리스트를 이어간다.
 
 Signing의 Team 선택 등 개인 설정 변경과 `xcuserdata`, 인증서, provisioning profile은 커밋하지 않는다. 팀 ID·기기 식별자를 공개 로그에 남기지 않는다.
 
-## 4. 무료 서명 만료 후 재설치
+## 4. headless 빌드·서명·설치
 
-무료 Personal Team provisioning profile은 발급 후 7일에 만료된다. 같은 Mac·Apple 계정으로 프로젝트를 열고 iPhone을 연결해 **동일한 Bundle ID와 Team**으로 다시 Run한다. 앱을 먼저 삭제할 필요는 없다. 앱을 삭제하면 앱 내부에 저장한 차량 설정이 사라질 수 있다. 최신 소스라면 2단계의 build/sync부터 다시 실행한다. 무료 계정의 앱/기기 수 제한도 [Apple 안내](https://developer.apple.com/help/account/basics/about-your-developer-account)를 따른다.
+처음 Apple 계정을 추가한 뒤에는 Xcode 창의 Run 버튼 없이 실행할 수 있다. 연결한 기기의 UDID는 `xcrun xctrace list devices`로 확인한다. `devicectl` 목록의 CoreDevice UUID와 xcodebuild의 목적지 UDID는 다른 값일 수 있으므로 **실제 기기의 UDID**를 사용한다.
+
+```bash
+export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
+export PLUGPASS_IOS_DEVICE_ID='<연결한 iPhone의 UDID>'
+# 프로젝트에서 Team을 선택한 경우 생략 가능. 공유 소스는 Team 값을 포함하지 않는다.
+export PLUGPASS_IOS_TEAM_ID='<자신의 Personal Team ID>'
+npm --prefix frontend run install:ios
+```
+
+명령은 자산 build/sync → 지정 기기용 자동 서명 build → codesign 검증 → devicectl 설치 → 앱 실행 순서다. 어느 단계라도 실패하면 뒤의 단계를 진행하지 않는다. 자동 서명은 Xcode에 추가한 계정으로 인증서·앱 ID·프로파일을 생성/갱신할 수 있으며 필요한 경우 선택 기기를 등록한다. 개인 값은 현재 터미널 환경에만 전달하고 커밋하지 않는다. 유효한 서명이 없으면 unsigned 앱으로 우회하지 않는다.
+
+설치 산출물은 `build/native/ios-install/Build/Products/Debug-iphoneos/App.app`다. 명령 성공은 설치/프로세스 시작의 결과이며, 실제 지도·GPS와 화면 터치까지 검증했다는 뜻은 아니다.
+
+## 5. 무료 서명 만료 후 재설치
+
+무료 Personal Team provisioning profile은 발급 후 7일에 만료된다. 같은 Mac·Apple 계정으로 iPhone을 연결해 **동일한 Bundle ID와 Team**으로 `install:ios`를 다시 실행한다. Xcode의 Run으로도 재설치할 수 있다. 앱을 먼저 삭제할 필요는 없다. 앱을 삭제하면 앱 내부에 저장한 차량 설정이 사라질 수 있다. `install:ios`는 최신 소스의 build/sync부터 다시 실행한다. 무료 계정의 앱/기기 수 제한도 [Apple 안내](https://developer.apple.com/help/account/basics/about-your-developer-account)를 따른다.
 
 ## Android는 기기 확보 후
 

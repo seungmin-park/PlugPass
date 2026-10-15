@@ -321,3 +321,5 @@ v1.3.9 [공식 dynamic subset CSS](https://github.com/orioncactus/pretendard/blo
 [설정 reference](https://capacitorjs.com/docs/config)의 `webDir`는 묶음 자산, `server.url`은 외부 URL 로딩이다. 앱 모드를 상대 경로·dist-native로 분리하고 server.url을 두지 않는 것은 프로젝트 결정이다. 실제 Vite 빌드 HTML의 상대 script 경로와 웹 경로/산출물 유지를 테스트했다. 빌드 명령의 성공을 실기기 지도·GPS 성공으로 해석하지 않는다.
 
 [Apple Personal Team](https://developer.apple.com/help/account/basics/about-your-developer-account)의 직접 설치와 7일 provisioning 만료에 따라 [설치 안내](native-app/installation.md)를 작성했다. 개인 Team·인증서는 저장소에 넣지 않는다. 최초 시도는 Xcode 미설치 exit1이었고, Xcode27.0 설치 후 simulator/device unsigned 빌드가 성공했다. 개인 서명·실기기 설치와 원격 CI는 별도 기록한다. [현재 tasks](native-app/tasks.md).
+
+Xcode27.0의 설치된 `xcodebuild -help`에서 `-allowProvisioningUpdates`가 계정 설정 후 인증서·앱ID·프로파일을 생성/갱신하고 `-allowProvisioningDeviceRegistration`이 선택 기기를 등록하는 동작을 확인했다. 같은 Xcode의 `devicectl device install app --help`, `device process launch --help`에 맞춰 headless 설치를 연결했다. 명시적 기기 UDID, 서명 검사 후에만 설치, 실패 시 중단은 프로젝트 판단이다. iPhone16/iOS27.0.1에서 실제 서명·설치·실행 종료0과 7일짜리 embedded profile을 확인했다. 이 결과를 native 지도/GPS 검증으로 확대하지 않는다.

@@ -15,15 +15,27 @@
     "test:e2e": "playwright test",
     "type-check": "vue-tsc --build",
     "lint": "eslint . --max-warnings 0",
-    "build": "npm run type-check && vite build"
+    "build": "npm run type-check && vite build",
+    "build:native": "npm run type-check && vite build --mode native",
+    "sync:native": "npm run build:native && cap sync",
+    "build:ios": "bash ../scripts/build-ios.sh simulator",
+    "build:ios:device": "bash ../scripts/build-ios.sh device",
+    "install:ios": "bash ../scripts/build-ios.sh install",
+    "build:android": "bash ../scripts/build-android.sh",
+    "open:android": "cap open android",
+    "open:ios": "cap open ios"
   },
   "dependencies": {
+    "@capacitor/android": "8.5.3",
+    "@capacitor/core": "8.5.3",
+    "@capacitor/ios": "8.5.3",
     "axios": "1.20.0",
     "pinia": "4.0.3",
     "vue": "3.5.43",
     "vue-router": "4.6.4"
   },
   "devDependencies": {
+    "@capacitor/cli": "8.5.3",
     "@eslint/js": "10.0.1",
     "@playwright/test": "1.63.0",
     "@tsconfig/node24": "24.0.5",

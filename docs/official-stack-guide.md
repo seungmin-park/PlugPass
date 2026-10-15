@@ -313,3 +313,13 @@ Pretendard Variable 1.3.9의 [공식 안내](https://github.com/orioncactus/pret
 ### Pretendard 자체 제공의 배포 크기 경계
 
 v1.3.9 [공식 dynamic subset CSS](https://github.com/orioncactus/pretendard/blob/v1.3.9/packages/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css)와 92개 woff2를 그대로 자체 제공한다. 단일2MiB 파일은 현재 배포 저장소의 파일당1MiB 상한에 걸렸다. 공식 unicode-range 분할본은 브라우저가 필요한 문자 범위만 받으며 전체 문자 범위를 보존한다. 런타임 CDN은 사용하지 않는다. `scripts/test_font_assets.py`가 크기 경계를 검사한다.
+
+## Android·iOS 앱 기반 N01 (2026-10-15)
+
+기존 Vue3.5.43·TypeScript6.0.3을 유지하고 Capacitor core/cli/android/ios 8.5.3을 정확한 버전으로 고정했다. [Capacitor8 공식 요구](https://capacitorjs.com/docs/updating/8-0)는 Node22+, Xcode26+, iOS15, Android API24/SDK36이며 설치된 Android 소스는 Java21을 요구한다. 백엔드 Java25와 분리한다. 기본 iOS 생성 방식은 SPM이고 `CapApp-SPM/Package.swift`가 Capacitor Swift 패키지를 exact 8.5.3으로 참조한다.
+
+[설정 reference](https://capacitorjs.com/docs/config)의 `webDir`는 묶음 자산, `server.url`은 외부 URL 로딩이다. 앱 모드를 상대 경로·dist-native로 분리하고 server.url을 두지 않는 것은 프로젝트 결정이다. 실제 Vite 빌드 HTML의 상대 script 경로와 웹 경로/산출물 유지를 테스트했다. 빌드 명령의 성공을 실기기 지도·GPS 성공으로 해석하지 않는다.
+
+[Apple Personal Team](https://developer.apple.com/help/account/basics/about-your-developer-account)의 직접 설치와 7일 provisioning 만료에 따라 [설치 안내](native-app/installation.md)를 작성했다. 개인 Team·인증서는 저장소에 넣지 않는다. 최초 시도는 Xcode 미설치 exit1이었고, Xcode27.0 설치 후 simulator/device unsigned 빌드가 성공했다. 개인 서명·실기기 설치와 원격 CI는 별도 기록한다. [현재 tasks](native-app/tasks.md).
+
+Xcode27.0의 설치된 `xcodebuild -help`에서 `-allowProvisioningUpdates`가 계정 설정 후 인증서·앱ID·프로파일을 생성/갱신하고 `-allowProvisioningDeviceRegistration`이 선택 기기를 등록하는 동작을 확인했다. 같은 Xcode의 `devicectl device install app --help`, `device process launch --help`에 맞춰 headless 설치를 연결했다. 명시적 기기 UDID, 서명 검사 후에만 설치, 실패 시 중단은 프로젝트 판단이다. iPhone16/iOS27.0.1에서 실제 서명·설치·실행 종료0과 7일짜리 embedded profile을 확인했다. 이 결과를 native 지도/GPS 검증으로 확대하지 않는다.

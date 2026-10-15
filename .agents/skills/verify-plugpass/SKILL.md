@@ -5,6 +5,18 @@ description: Verify PlugPass behavior and architecture checks, H2 regression and
 
 # PlugPass 검증
 
+## Android·iOS 앱 기반 N01 (진행 중)
+
+- [별도 모바일 계획](../../../docs/native-app/plan.md)과 [상세 tasks](../../../docs/native-app/tasks.md)의 현재 단계를 따른다. 사용자는 iOS 우선, 이후 브라우저 검증은 headless를 명시했다. cmux pane의 명령·로그는 유지한다.
+- `npm --prefix frontend run test:unit -- tests/nativeBuild.spec.ts`: 실제 Vite HTML 상대 자산, 웹 /app/와 dist 유지, 앱 dist-native 분리를 검사한다. 전체 프런트/type/lint·공용 verify도 유지한다.
+- `npm --prefix frontend run build:native`, `sync:native`: 기기 안에 묶음 자산을 복사한다. 원격 server.url 설정을 추가하지 않는다.
+- `npm --prefix frontend run build:ios` / `build:ios:device`: Xcode26+로 simulator/device unsigned 컴파일. Personal Team 실기기 설치와 구분한다. Xcode 없음 exit1은 환경 실패이며 통과로 처리하지 않는다.
+- `python3 -m unittest discover -s scripts -p test_ios_install.py -v`: 실제 CLI의 기기 명시·서명/설치 순서·실패 전파를 외부 도구 경계에서 검사한다. 실기기 증거와 구분한다.
+- `PLUGPASS_IOS_DEVICE_ID=<UDID> PLUGPASS_IOS_TEAM_ID=<Team> npm --prefix frontend run install:ios`: 계정 설정 후 headless 서명·검사·설치·실행. 개인 값/프로젝트 Team 변경은 커밋하지 않는다. 실제 화면 조작 관찰은 별도로 tasks에 기록한다.
+- `PLUGPASS_ANDROID_JAVA_HOME=<JDK21> ANDROID_HOME=<SDK36> npm --prefix frontend run build:android`: APK 컴파일와 lint. 백엔드 Java25 설정을 바꾸지 않는다.
+- 초기 생성기의 2+2 샘플 테스트와 잘못된 예제 패키지 assertion은 제품 검증으로 사용하지 않는다. N01 native 컴파일을 native 단위/실기기 테스트로 보고하지 않는다.
+- CI `PlugPass verify`는 웹/backend와 iOS·Android 빌드 모두 성공해야 통과한다. skip/failure를 통과로 바꾸지 않는다. 기기 지도/GPS/길찾기는 아직 미확인이고 후속 체크리스트로 실제 확인한다.
+
 ## 환경 확인
 
 2026-10-12부터 운영 DB는 MySQL8.4 LTS이며 기본 개발/기존 회귀는 H2를 유지한다. 아래 과거 T항목의 건수·제약은 당시 기록이다. MySQL 전환의 실제 결과는 `docs/mysql-verification.md`를 따른다.

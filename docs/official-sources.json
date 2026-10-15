@@ -822,5 +822,45 @@
     "cache": "frontend/src/shared/assets/fonts/pretendardvariable-dynamic-subset.css",
     "coverage": "공식 unicode-range 분할본 자체 제공, OFL, 배포 파일 크기 경계",
     "sha256": "2973bcae80262dcb630cfb793fbf6af29bd986c769ee54953fb3e5b3e32323ca"
+  },
+  {
+    "id": "capacitor-8",
+    "url": "https://capacitorjs.com/docs/updating/8-0",
+    "accessed": "2026-10-15",
+    "cache": ".firecrawl/native-capacitor-8.md",
+    "coverage": "Capacitor8 요구 Node22+, Xcode26+, iOS15, Android24/SDK36, 기본 SPM",
+    "sha256": "c8d0e5a6fc6e857f7685a79adecec8a00ff84c67f8a15aefb0859a88af119790"
+  },
+  {
+    "id": "capacitor-config",
+    "url": "https://capacitorjs.com/docs/config",
+    "accessed": "2026-10-15",
+    "cache": ".firecrawl/native-capacitor-config.md",
+    "coverage": "webDir 묶음 자산, localhost scheme 기본값과 server.url 원격 로딩 경계",
+    "sha256": "8350936cca6fddc331b1df42a7d371a482c18a8f7f84e3bad662e5152a26654b"
+  },
+  {
+    "id": "capacitor-ios",
+    "url": "https://capacitorjs.com/docs/ios",
+    "accessed": "2026-10-15",
+    "cache": ".firecrawl/native-ios.md",
+    "coverage": "iOS SDK/Xcode 요구, 생성·sync·실기기 실행 경계",
+    "sha256": "bcb282f8b6318d308fc2754c591a033dcd96b77324b0941448f6865a9cdf4e05"
+  },
+  {
+    "id": "apple-personal-team",
+    "url": "https://developer.apple.com/help/account/basics/about-your-developer-account",
+    "accessed": "2026-10-15",
+    "cache": ".firecrawl/native-apple-account.md",
+    "coverage": "Personal Team 직접 설치, 7일 provisioning 만료/재설치",
+    "sha256": "bec37d2c9ec642bffc6f281849993f8055407218b8116b7e458ec4534279816d"
+  },
+  {
+    "id": "kakao-native-ios-start",
+    "url": "https://apis.map.kakao.com/ios_v2/docs/getting-started/gettingstarted/",
+    "accessed": "2026-10-15",
+    "cache": ".firecrawl/native-kakao-ios-start.md",
+    "coverage": "SPM 공식 URL, iOS13 하한; native 지도 구현/실기기 인증은 미확인",
+    "sha256": "ca0b037fdcc76046322382bcbdcf24e10083d9db7d502867586d81549f3afdec"
   }
 ]

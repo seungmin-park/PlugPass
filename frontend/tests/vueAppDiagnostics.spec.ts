@@ -4,6 +4,18 @@ import { TestDiagnostics } from './vueWarnings'
 import { monitorVueApp } from './vueAppDiagnostics'
 
 describe('Vue 진단 handler의 재설정', () => {
+  it('후속 handler가 기존 error handler로 전달해도 같은 오류를 한 번만 수집한다', () => {
+    const app = createApp({})
+    const diagnostics = new TestDiagnostics()
+    const originalError = vi.fn<Console['error']>()
+    monitorVueApp(app, diagnostics, vi.fn(), originalError)
+    const previousHandler = app.config.errorHandler
+    const forwarded = vi.fn<NonNullable<typeof previousHandler>>((...args) => previousHandler?.(...args))
+    app.config.errorHandler = forwarded
+    expect(() => app.config.errorHandler?.(new Error('전달된 오류'), null, 'unmount')).not.toThrow()
+    expect(forwarded).toHaveBeenCalledTimes(1)
+    expect(() => diagnostics.assertEmpty()).toThrowError('[Vue error] Error: 전달된 오류 (unmount)')
+  })
   it('같은 error handler를 다시 대입해도 재귀 없이 실제 오류를 수집한다', () => {
     const app = createApp({})
     const diagnostics = new TestDiagnostics()

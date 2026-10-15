@@ -5,6 +5,13 @@ description: Verify PlugPass behavior and architecture checks, H2 regression and
 
 # PlugPass 검증
 
+## N02a 비동기 지도 계약
+
+- `npm --prefix frontend run test:unit -- src/features/search/components/StationMapAsync.spec.ts src/features/search/components/StationMap.spec.ts src/features/search/map/kakaoStationMap.spec.ts`: 늦은 생성/입력·화면 이탈·명령 순서/실패·시간 초과·재시도 DOM 격리·종료 뒤 이벤트, 웹 확대/선택을 확인한다.
+- 확대 숫자는 공통 화면이 해석하지 않는다. 어댑터의 `MapZoomState`와 실제 영역 이벤트를 검증한다. 생성/명령/해제는 Promise 경계다.
+- `tests/vueAppDiagnostics.spec.ts`는 후속 오류 handler가 기존 handler로 전달할 때 재귀 없이 실제 오류를 수집하는지 검사한다. 진단을 무시하지 않는다.
+- 전체 프런트/type/lint·공용 verify·iOS/Android 빌드를 유지한다. 현재 구현과 실제 native 지도/실기기 완료는 [모바일 tasks](../../../docs/native-app/tasks.md)에서 구분한다.
+
 ## Android·iOS 앱 기반 N01 (진행 중)
 
 - [별도 모바일 계획](../../../docs/native-app/plan.md)과 [상세 tasks](../../../docs/native-app/tasks.md)의 현재 단계를 따른다. 사용자는 iOS 우선, 이후 브라우저 검증은 headless를 명시했다. cmux pane의 명령·로그는 유지한다.

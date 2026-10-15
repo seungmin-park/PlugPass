@@ -80,32 +80,39 @@ export function loadKakaoMaps(key: string): Promise<KakaoMaps> {
   return pendingSdk
 }
 
-export function createKakaoStationMap(
+export async function createKakaoStationMap(
   container: HTMLElement,
   stations: readonly MapStation[],
   center: MapCoordinates,
   callbacks: StationMapCallbacks,
-): StationMapSession {
+): Promise<StationMapSession> {
   const maps = (window as KakaoWindow).kakao?.maps
   if (!maps) throw new Error('카카오 지도 SDK가 준비되지 않았습니다.')
   const stationMap = new maps.Map(container, { center: new maps.LatLng(center.latitude, center.longitude), level: 5, scrollwheel: true, keyboardShortcuts: true })
   let overlays = new Map<number, { overlay: KakaoOverlay; button: HTMLButtonElement; coordinates: MapCoordinates }>()
+  let destroyed = false
+  const requireActive = () => { if (destroyed) throw new Error('이미 종료한 지도입니다.') }
 
   const toArea = (): SearchArea => {
     const bounds = stationMap.getBounds()
     return { south: bounds.getSouthWest().getLat(), north: bounds.getNorthEast().getLat(),
       west: bounds.getSouthWest().getLng(), east: bounds.getNorthEast().getLng() }
   }
-  const reportArea = () => callbacks.areaChanged?.(toArea())
-  const reportZoom = () => callbacks.zoomChanged?.(stationMap.getLevel())
-  const clearArea = () => callbacks.areaChanged?.(null)
-  const reportTiles = () => callbacks.tilesLoaded()
+  const reportArea = () => { if (!destroyed) callbacks.areaChanged?.(toArea()) }
+  const reportZoom = () => {
+    if (destroyed) return
+    const level = stationMap.getLevel()
+    callbacks.zoomChanged?.({ canZoomIn: level > 1, canZoomOut: level < 14, description: `지도 확대 수준 ${level}단계` })
+  }
+  const clearArea = () => { if (!destroyed) callbacks.areaChanged?.(null) }
+  const reportTiles = () => { if (!destroyed) callbacks.ready() }
   maps.event.addListener(stationMap, 'dragstart', clearArea)
   maps.event.addListener(stationMap, 'zoom_start', clearArea)
   maps.event.addListener(stationMap, 'idle', reportArea)
   maps.event.addListener(stationMap, 'zoom_changed', reportZoom)
   maps.event.addListener(stationMap, 'tilesloaded', reportTiles)
   reportArea()
+  reportZoom()
 
   function replaceStations(nextStations: readonly MapStation[]): void {
     for (const entry of overlays.values()) entry.overlay.setMap(null)
@@ -117,7 +124,7 @@ export function createKakaoStationMap(
       button.textContent = '●'
       button.setAttribute('aria-label', `${station.name} 지도 마커`)
       button.setAttribute('aria-pressed', 'false')
-      button.addEventListener('click', () => callbacks.selectStation(station.id))
+      button.addEventListener('click', () => { if (!destroyed) callbacks.selectStation(station.id) })
       const overlay = new maps!.CustomOverlay({ map: stationMap, position: new maps!.LatLng(station.latitude, station.longitude),
         content: button, clickable: true, yAnchor: 1 })
       overlays.set(station.id, { overlay, button, coordinates: station })
@@ -126,18 +133,20 @@ export function createKakaoStationMap(
   replaceStations(stations)
 
   return {
-    zoomIn() {
+    async zoomIn() {
+      requireActive()
       const level = Math.max(1, stationMap.getLevel() - 1)
       stationMap.setLevel(level)
-      return level
+      reportZoom()
     },
-    zoomOut() {
+    async zoomOut() {
+      requireActive()
       const level = Math.min(14, stationMap.getLevel() + 1)
       stationMap.setLevel(level)
-      return level
+      reportZoom()
     },
-    getZoomLevel() { return stationMap.getLevel() },
-    selectStation(stationId) {
+    async selectStation(stationId) {
+      requireActive()
       for (const [id, entry] of overlays) {
         const selected = id === stationId
         entry.button.setAttribute('aria-pressed', String(selected))
@@ -146,12 +155,15 @@ export function createKakaoStationMap(
       const selected = stationId === null ? undefined : overlays.get(stationId)
       if (selected) stationMap.setCenter(new maps.LatLng(selected.coordinates.latitude, selected.coordinates.longitude))
     },
-    updateStations: replaceStations,
-    moveTo(nextCenter) { stationMap.setCenter(new maps.LatLng(nextCenter.latitude, nextCenter.longitude)) },
-    showArea(area) {
+    async updateStations(nextStations) { requireActive(); replaceStations(nextStations) },
+    async moveTo(nextCenter) { requireActive(); stationMap.setCenter(new maps.LatLng(nextCenter.latitude, nextCenter.longitude)) },
+    async showArea(area) {
+      requireActive()
       stationMap.setBounds(new maps.LatLngBounds(new maps.LatLng(area.south, area.west), new maps.LatLng(area.north, area.east)))
     },
-    destroy() {
+    async destroy() {
+      if (destroyed) return
+      destroyed = true
       for (const entry of overlays.values()) entry.overlay.setMap(null)
       overlays.clear()
       maps.event.removeListener(stationMap, 'dragstart', clearArea)

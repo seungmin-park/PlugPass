@@ -5,13 +5,14 @@
 ## 현재 진행
 
 - 2026-10-15: N01 iOS 실기기 설치 관문 통과. 두 native 프로젝트·묶음 자산 생성 완료, iOS simulator/device unsigned 빌드 성공. iPhone16에 Personal Team 서명·설치·프로세스 실행 성공, 사용자가 검색 화면과 차량 선택 정상 확인. 지도/외부 앱은 후속 구현이며 미확인.
-- 작업 위치: `/private/tmp/plugpass-native-app`, `feat/native-app-foundation`, 기준 `bb3f106`.
+- 작업 위치: `/private/tmp/plugpass-native-app`, `feat/native-map-async`, N01 병합 기준 `f18b404`.
 - cmux 검증: `workspace:1000090002`, `surface:1000090016`. 사용 중인 호출 터미널에는 실행 명령을 보내지 않는다.
 - 사용자 최신 지시: **Android 폰은 현재 없음, iOS 먼저**. Android 실기기 설치/검증은 대기. Android SDK는 사용자 직접 약관 동의 후 설치 완료.
 - 사용자 후속 지시: **브라우저는 headless 실행**. 이후 실행은 `CI=1`로 진행하고 명령/로그는 cmux pane에 유지한다. 첫 공용 verify는 지시 확인 시 이미 headed 종료 0이었다.
 - Xcode27.0 설치를 확인했고 `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer`로 전역 선택 변경 없이 simulator/device 모두 컴파일했다. 첫 환경 실패는 아래 기록에 보존한다.
 - 사용자 조작은 [iPhone 설치 안내](installation.md) 3단계. **iPhone16/iOS27.0.1 연결·paired·개발자 모드 enabled 확인**, Apple 계정·Personal Team 선택 뒤 CLI 자동 서명/설치/실행 완료. 사용자 개인 Team 설정은 로컬 변경으로 유지하고 커밋하지 않는다.
-- 앱 기반 [PR89](https://github.com/seungmin-park/PlugPass/pull/89), 서명 commit `0ed44a4`의 원격 web/backend·iOS·Android·필수 PlugPass verify 모두 성공. headless 설치 명령을 포함한 최종 공용 verify도 종료0. iOS 실기기 설치 관문을 통과했으므로 최종 변경 push 뒤 같은 head의 CI·병합을 확인한다.
+- 앱 기반 [PR89](https://github.com/seungmin-park/PlugPass/pull/89)의 최종 head `31d0ccd`에서 web/backend·iOS·Android·필수 PlugPass verify 모두 성공. 2026-10-15 14:18:25 UTC에 보호 규칙 아래 squash 병합(`f18b404`)을 확인했다.
+- N02 진행: 사용자가 카카오 iOS Bundle ID 등록 완료를 확인했다. 네이티브 키는 1Password 개발 환경에서 읽고 값/환경 ID를 저장소에 기록하지 않는다. N02a 비동기 지도 계약·웹 회귀 → N02b iOS SDK·실기기 관찰로 나눈다.
 
 ## N00 계획·사전 조사
 
@@ -39,22 +40,25 @@
 - [x] N01.10a iPhone 실기기 설치·프로세스 실행: `IOS_DEVICE_INSTALL_EXIT=0`.
 - [x] N01.10b iPhone 공통 화면과 차량 선택 조작 확인. 사용자 실기기 응답: “검색 화면과 차량 선택이 정상”. 자동 UI assertion으로 바꾸어 세지 않음.
 - [x] N01.11a 변경 자체 리뷰·공용 verify·작은 PR. 개인 Team/IDE 변경은 커밋 대상에서 제외.
-- [ ] N01.11b 최종 head의 CI·실제 병합 기록.
+- [x] N01.11b 최종 head `31d0ccd`의 CI 4개 성공·PR89 실제 병합 `f18b404` 확인.
 
 ## N02 native 지도 (N01 이후)
 
-- [ ] N02.1 Red: 비동기 지도 명령/준비·실패·선택·이동 이벤트·종료 후 이벤트 무시.
-- [ ] N02.2 공통 StationMapSession 변경과 웹 adapter 회귀.
+- [x] N02.1a Red: 생성 대기·종료 뒤 반환·최신 입력·명령 순서/실패·확대 상태·시간 초과·재시도 DOM 격리·SDK 실패 이벤트·멈춘 명령과 종료 분리. 실제 assertion 실패와 Green은 아래 실행 기록.
+- [x] N02.2a 공통 StationMapSession의 Promise 명령과 이벤트, 웹 어댑터 변경. 비동기 대상11건·기존 지도8건·진단3건 통과. 최종 전체 검증/CI는 N02.12a에서 별도 추적.
+- [ ] N02.1b native bridge/각 SDK의 실제 이벤트·명령 계약 Red/Green.
 - [ ] N02.3 TypeScript Capacitor bridge: 입력/이벤트 검증·세션별 수명·오류/재시도.
 - [ ] N02.4 Android Kakao SDK Java 구현: 인증·지도/마커·카메라/영역·수명.
 - [ ] N02.5 iOS Kakao SDK Swift/SPM 구현: 인증·지도/마커·카메라/영역·수명.
 - [ ] N02.6 지도 DOM/native 배치·잘림·스크롤·resize·키보드·페이지 이탈.
 - [ ] N02.7 앱 지도 버튼을 native 사각형 바깥에 배치, 선택 상태는 Vue에 유지.
 - [ ] N02.8 로딩/인증 실패와 재시도, 목록·상세 접근 유지.
-- [ ] N02.9 카카오 Android 패키지/서명 해시·iOS Bundle ID 등록.
+- [x] N02.9a 카카오 iOS Bundle ID 등록: 사용자 완료 응답. 실제 SDK 인증 성공은 N02.11에서 별도 확인.
+- [ ] N02.9b 카카오 Android 패키지/서명 해시 등록.
 - [ ] N02.10 Android 실기기 지도/배경·이동/확대·마커·스크롤·상세/복귀.
 - [ ] N02.11 iPhone 실기기 동일 흐름. **N03/N04 연결 전 관문.**
-- [ ] N02.12 native 단위/빌드·전체 회귀·PR/CI/병합.
+- [ ] N02.12a 공통 비동기 지도 PR: 최종 공용 회귀·native CI 빌드·PR/병합. **진행 중**
+- [ ] N02.12b iOS/Android SDK 단위·빌드·전체 회귀·PR/CI/병합.
 
 ## N03 운영 API·주소 검색 (지도 관문 통과 후)
 
@@ -130,6 +134,24 @@
 
 초기 N01 로그는 공용 verify의 clean 전에 `/private/tmp/plugpass-native-evidence/n01/`에 보존했다.
 
+### N02a 비동기 지도 계약
+
+로그 경로는 `/private/tmp/plugpass-native-evidence/` 기준이다.
+
+| 단계 | 명령/관찰 | 실제 결과 |
+| --- | --- | --- |
+| 생성 Red | `npm --prefix frontend run test:unit -- src/features/search/components/StationMap.spec.ts` | 지연 생성 중 로딩이 false인 assertion 실패. 오류 수집기의 재귀도 함께 노출됨. `n02-async-red.log` |
+| 진단 Red→Green | `... tests/vueAppDiagnostics.spec.ts` | 후속 handler가 기존 handler로 전달하면 RangeError 발생, 1실패/2통과 → 동일 오류의 재진입만 막아 3통과. 오류 수집/실패 판정은 유지. `n02-diagnostics-red.log`, `n02-async-green.log` |
+| 생성 Green | `... StationMap.spec.ts tests/vueAppDiagnostics.spec.ts` | factory 결과를 기다린 뒤 초기화하여 11건 통과. `n02-async-green.log` |
+| 수명 Red→Green | `... StationMapAsync.spec.ts` | 늦은 생성·입력·확대 상태·실패 재시도·timeout·명령 순서·실패 후 이벤트의 7건 실패 → 7통과. `n02-lifecycle-red.log`, `n02-map-green.log` |
+| 재시도 Red→Green | `... StationMapAsync.spec.ts StationMap.spec.ts` | 이전 destroy가 새 DOM을 지움, 실패 뒤 ready가 조작을 다시 노출하는 assertion 2실패 → 세션별 DOM/이벤트 무효화로 통과. `n02-retry-red.log`, `n02-unit.log` |
+| 웹 전체 회귀 | `npm --prefix frontend run test:unit` | 초기 중심을 다시 이동해 area 이벤트가 2번 발생하는 기존 assertion 실패. 초기 입력과 현재 입력이 달라진 경우만 재전달하여 445건/44파일 통과. 타입·lint 종료0 |
+| 첫 공용 회귀 | `CI=1 KAKAO_JS_KEY=test-js-key bash scripts/verify.sh` | `N02_VERIFY_EXIT=0`: Java462·MySQL8·frontend445·Python42·개발 브라우저57·JAR5·MySQL 재시작 브라우저7. `n02-verify.log` |
+| 종료 Red→Green | `... StationMapAsync.spec.ts` | 멈춘 명령을 기다려 destroy/새 지도 생성이 지연되는 assertion 2실패 → 종료 시 이전 명령 대기열 분리, 대상11건+기존8건+진단3건 통과. `n02-retire-red.log`, `n02-retire-green.log` |
+| 최종 공용 회귀 | `CI=1 KAKAO_JS_KEY=test-js-key bash scripts/verify.sh` | `N02_FINAL_VERIFY_EXIT=0`: frontend447/44파일·타입/lint/build·Java462·Python42·MySQL8·개발 브라우저57·JAR5·MySQL 재시작 브라우저7. 실패/오류/skip0. `n02-final-verify.log` |
+
+이번 단계는 SDK 경계를 제어한 계약 테스트와 기존 웹 회귀다. 실제 iOS 지도 인증·배경 표시·터치 검증은 N02b에 남아 있다. 사용자 등록 응답과 키 읽기 성공을 SDK 인증 성공으로 바꾸어 기록하지 않는다.
+
 ## 검토·판단
 
 - 상태 소유: Vue(Store/컴포넌트)는 선택/검색, native adapter는 기기 자원. 테스트로 계약을 먼저 고정한다.
@@ -142,3 +164,6 @@
 - Red→Green: native 모드의 outDir/HTML 경로 실제 실패 후 Vite의 mode 기반 설정만 변경했다. Refactor는 기존 Vitest가 같은 Vite 설정 함수를 호출하도록 조정한 범위다. 화면·상태·API DTO·DB는 변경하지 않았다.
 - headless 설치: 기존 build-ios 명령에 install 모드를 추가했다. 서명 없는 빌드와 산출물 폴더를 분리해 이전 unsigned 앱을 설치하지 않고, 명시한 기기로만 설치한다. 외부 도구 실패는 원래 종료 코드를 보존한다. 별도 설치 프레임워크/전역 Xcode 설정 변경은 불필요해 도입하지 않았다.
 - 이름/책임 검토: Vite는 자산 경로/산출물, Capacitor 설정은 앱ID/묶음 위치, build-ios/build-android는 도구 경계와 빌드를 소유한다. 추측성 상태 관리/플랫폼 인터페이스는 아직 추가하지 않았다. 기존 웹 공개 경로는 공용 회귀로 확인했다.
+- N02a 이름/책임: `StationMapSession`은 지도 명령의 비동기 계약, `MapZoomState`는 어댑터가 해석한 조작 가능 여부/설명이다. `StationMap`은 화면 세션·명령 순서·Vue props 동기화를 소유하고 SDK 숫자/OS 판단을 소유하지 않는다. 타일에 한정된 callback 이름을 `ready/failed`로 정리했다. 화면 이탈/실패는 진행 중 명령을 기다리지 않고 destroy하며, 어댑터는 종료 뒤 작업을 무효화해야 한다.
+- N02a Refactor: 선택/검색 Store나 별도 범용 작업 큐를 만들지 않고 기존 지도 경계 안에서 수명을 정리했다. SDK 로딩은 화면 새로고침, 지도 생성/명령은 지도 재시도로 구분한다. 초기 입력을 불필요하게 재전달하지 않아 기존 영역 이벤트 계약을 유지한다. API DTO·DB·검색 URL·차량 규칙은 변경하지 않는다.
+- N02a 실패 범위: 생성/명령 실패·10초 준비/배경 제한·늦은 응답·종료·빈 결과/같은 좌표/HTML 이름·확대 경계는 테스트한다. 네이티브 SDK 인증/프레임/네트워크와 실기기 위치·외부 앱은 이번 계약 PR에서 적용하지 않으며 후속 native 구현 관문에 남긴다.

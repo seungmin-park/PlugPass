@@ -1,5 +1,11 @@
 # PlugPass 기술 스택과 개발 기준
 
+## 비동기 지도 경계 (2026-10-15, N02a)
+
+Vue3.5.43·TypeScript6.0.3·Capacitor8.5.3을 유지한다. [Vue watcher 정리](https://vuejs.org/guide/essentials/watchers.html#side-effect-cleanup)처럼 이전 비동기 작업이 현재 상태를 덮지 않도록 수명을 구분한다. 이 프로젝트는 생성·명령·지도 이벤트가 같은 수명을 공유하므로 컴포넌트의 세션 번호를 사용한다. 명령 직렬 실행과 재시도 DOM 분리는 프로젝트 설계 판단이다.
+
+기존 [카카오 Web Map API](https://apis.map.kakao.com/web/documentation/)의 1~14 단계와 작은 숫자일수록 확대되는 규칙을 어댑터 내부에 유지한다. 공통 계약은 `MapZoomState`의 가능한 조작·설명만 노출한다. `ready`는 웹 어댑터에서 `tilesloaded`에 연결한다. iOS SDK의 준비 의미와 확대 단계는 N02b에서 실제 SDK 버전과 함께 확인하며 같은 숫자로 추정하지 않는다.
+
 ## 지도 축척 조작 (2026-10-14, T46)
 
 기존 카카오 Web SDK를 사용한다. [공식 Map 문서](https://apis.map.kakao.com/web/documentation/)에서 ROADMAP 확대 수준 1~14, 작은 값일수록 확대, `setLevel`/`getLevel`, `scrollwheel`과 `keyboardShortcuts` 옵션을 확인했다. [공식 확대 예제](https://apis.map.kakao.com/web/sample/changeLevel/)도 같은 증감 방향을 사용한다. 사용자가 말한 1:250/1:500은 축척의 예이며, SDK의 확대 수준 숫자를 실제 축척 비율이라고 표시하지 않는다. 화면 안의 버튼과 상태 문구는 프로젝트의 UI 판단이다. SDK 옵션·경계 단위 테스트와 Chromium 지도 흐름으로 확인한다.

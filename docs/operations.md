@@ -107,4 +107,4 @@ H2 메모리 방식은 프로세스 재시작 후 업무 데이터·수집 이�
 
 조회 결과의 collection CURRENT/DELAYED/NOT_READY는 수집 작업의 건강 상태다. 현장 관측 시각이나 빈자리 보장이 아니며 기존 충전기 UNVERIFIED를 유지한다. 실패 시 이전 목록·성공 시각을 유지하고 갱신 지연을 안내한다. 데이터/이력 자동 삭제는 없고 공급자의 누락을 폐쇄나 삭제로 추측하지 않는다.
 
-`plugpass-backup.timer`: 매일02:30 KST, 성공한 로컬 백업7일, 격리 MySQL 복원·건수 일치 후 성공 표시. 서버 내 백업과 일회 로컬 사본을 검증했으며 자동 원격 저장소는 미설정이다. 타이머/스크립트와 명령은 [운영 저장소 PR4](https://github.com/seungmin-park/gcp-deployment/pull/4), 실제 건수·해시·한계는 [운영 검증](production-data-verification.md)을 따른다.
+`plugpass-backup.timer`: 매일02:30 KST, 성공한 로컬 백업7일, 격리 MySQL 복원·건수 일치 후 성공 표시. 2026-10-15부터 전용 비공개 GCS 7일 보관과 원격 재다운로드 해시 검증·Slack 장애/복구 알림을 연결했다. [원격 백업·알림 기록](remote-backup-alerts.md)의 실제 건수·해시·예약 관측 범위를 따른다. 초기 타이머/스크립트는 [운영 저장소 PR4](https://github.com/seungmin-park/gcp-deployment/pull/4), 당시 검증은 [운영 검증](production-data-verification.md)에 남아 있다.

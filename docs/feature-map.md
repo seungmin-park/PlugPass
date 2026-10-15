@@ -1,5 +1,9 @@
 # 기능과 검증 범위
 
+## T37 원격 백업·외부 알림 후속 (2026-10-15)
+
+운영 저장소의 backup timer → 격리 복원 검증 → 비공개 GCS → 재다운로드 SHA-256 확인. 별도 operations timer가 검증된 원격 영수증과 공개 API의 collection을 읽어 Cloud Monitoring에 보고한다. Cloud Monitoring은 HTTPS 실패·백업/수집 이상·보고 누락을 지정 Slack 채널로 전달한다. 앱/DB 스키마 변경 없이 운영 저장소가 스크립트·타이머·알림 정책을 소유한다. [실제 실행과 한계](remote-backup-alerts.md).
+
 ## T28 모바일 지도 앱 길찾기
 
 `상세 API → StationDetailView → StationDirections → navigationLinks → OS/외부 앱`.

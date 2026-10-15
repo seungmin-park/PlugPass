@@ -491,7 +491,7 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 - [x] T35: 상태 API5분 갱신·10분 겹침·중단 복구·metadata 보존·이력 구분을 검증했다. 운영 타이머 run4에서16687건 성공.
 - [x] T36: 준비/최근 갱신/지연/실패 API·화면과 전체 verify, PR60 CI·자동 머지·배포·운영 새로고침을 확인했다.
 - [x] T37 실행: 운영 타이머·중복 방지·실데이터 검색/상세·실제 백업/격리 복원·실행 이력과 지연 안내를 확인했다.
-- [ ] T37 후속: 자동 원격 백업·외부 장애 알림 수신자 설정, 다음 예약 백업 실행 관측. 현재 미설정을 완료로 처리하지 않는다.
+- [x] T37 후속(2026-10-15): 전용 비공개 GCS 7일 보관·원격 재다운로드 SHA-256 검증, Cloud Monitoring 외부 HTTPS/백업/수집/보고 누락 정책과 지정 Slack 채널 연결. 기존 야간 예약 백업 및 새 원격 설정의 자동 재시도 성공을 확인했다. [실행 근거와 남은 관측](docs/remote-backup-alerts.md).
 - [x] 기능별 서명 PR57~60·필수 CI·보호된 자동 머지·운영 배포 결과를 기록했다. 운영 PR4도 사용자 후속 continue에 따라 CI 성공 head6574de3을 지정해 일반 squash 머지a13aead를 완료했다. [실행 근거와 한계](docs/production-data-verification.md).
 
 #### T35 상태 수집 PR
@@ -601,6 +601,6 @@ T18 전달: PR [#36](https://github.com/seungmin-park/PlugPass/pull/36) 실제 �
 - [x] README를 프로젝트 소개 중심으로 전면 개편.
 - [x] 최종 로컬 공용 verify 완료(Java462·프런트431·개발 E2E57·JAR5·MySQL 계약8/브라우저7).
 - 원격 CI·보호된 자동 병합·운영 배포 결과는 각 PR 본문과 Actions 실행을 최종 근거로 기록한다.
-- [ ] iPhone Safari 실기기의 지도 터치·글자 확대·외부 앱 전환.
+- [x] 사용자 실사용 확인(2026-10-15): 운영 흐름과 실기기 확인을 해봤을 때 아직 문제를 찾지 못했다고 보고했다. 에이전트가 각 실기기 assertion을 직접 실행했다는 의미는 아니다.
 
 과정·명령·실패/성공 근거는 [개편 실행 기록](docs/visual-redesign-progress.md)에 기록한다.

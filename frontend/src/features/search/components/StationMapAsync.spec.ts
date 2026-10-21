@@ -23,6 +23,22 @@ class ControlledMap implements StationMapSession {
 
 afterEach(() => vi.useRealTimers())
 
+it('native 지도 상호작용을 화면으로 전달하고 종료 뒤에는 무시한다', async () => {
+  let events!: StationMapCallbacks
+  const onInteract = vi.fn()
+  vi.spyOn(loader, 'loadStationMap').mockResolvedValue(async (_container, _stations, _center, callbacks) => {
+    events = callbacks
+    return new ControlledMap()
+  })
+  const wrapper = mount(StationMap, { props: { stations: [], center: { latitude: 37.5, longitude: 127 }, selectedStationId: null, onInteract } })
+  await flushPromises()
+  events.interacted?.()
+  expect(onInteract).toHaveBeenCalledTimes(1)
+  wrapper.unmount()
+  events.interacted?.()
+  expect(onInteract).toHaveBeenCalledTimes(1)
+})
+
 it('생성 중 화면을 떠나면 늦게 반환한 지도도 해제하고 이벤트를 무시한다', async () => {
   const creation = new Deferred<StationMapSession>()
   const map = new ControlledMap()

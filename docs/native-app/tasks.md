@@ -4,8 +4,9 @@
 
 ## 현재 진행
 
+- 2026-10-16 사용자 지시로 **N02b 현재 변경 검증 후 일시 중단**. 네이티브 지도 전체 완료·실기기 통과를 선언하지 않는다. N03/API·N04/GPS·Android SDK 구현은 시작하지 않는다. 아래 N02b 중단 기록을 재개 기준으로 삼는다.
 - 2026-10-15: N01 iOS 실기기 설치 관문 통과. 두 native 프로젝트·묶음 자산 생성 완료, iOS simulator/device unsigned 빌드 성공. iPhone16에 Personal Team 서명·설치·프로세스 실행 성공, 사용자가 검색 화면과 차량 선택 정상 확인. 지도/외부 앱은 후속 구현이며 미확인.
-- 작업 위치: `/private/tmp/plugpass-native-app`, `fix/ios-safe-area`, N02a 병합 기준 `c509c31`.
+- 작업 위치: `/private/tmp/plugpass-native-app`, `feat/ios-native-map`, 상단 수정 병합 기준 `f16371c`.
 - cmux 검증: `workspace:1000090002`, `surface:1000090016`. 사용 중인 호출 터미널에는 실행 명령을 보내지 않는다.
 - 사용자 최신 지시: **Android 폰은 현재 없음, iOS 먼저**. Android 실기기 설치/검증은 대기. Android SDK는 사용자 직접 약관 동의 후 설치 완료.
 - 사용자 후속 지시: **브라우저는 headless 실행**. 이후 실행은 `CI=1`로 진행하고 명령/로그는 cmux pane에 유지한다. 첫 공용 verify는 지시 확인 시 이미 headed 종료 0이었다.
@@ -32,7 +33,7 @@
 - [x] N01.5 build/sync·Android Java21 경계·iOS unsigned build 명령과 설치 안내 추가. 최초 도구 부족 exit1, 설치 후 성공은 N01.8a와 실행 기록으로 구분.
 - [x] N01.6 iOS .app의 local index.html·상대 자산 3개가 dist-native와 바이트 일치, server.url 없음. 기존 웹 공용 회귀 통과. 앱 운영 API 주소 주입은 N03에서 별도 구현.
 - [x] N01.7a Android assembleDebug/lintDebug 종료0·APK 생성. native 단위/실기기 테스트로 세지 않음.
-- [ ] N01.7b SDK 기능의 native 단위 검증은 N02 구현에서 추가.
+- [x] N01.7b iOS native 단위 검증 추가: 입력7·배치5·렌더링 수명5, 총17건 통과. 실제 SDK 인증/기기 조작과 구분하며 Android 단위 검증은 N02.4에 남긴다.
 - [x] N01.8a iOS simulator/device unsigned 빌드 성공, Xcode27.0/iOS27 SDK.
 - [x] N01.8b Personal Team 사용자 설정·자동 서명. 실제 embedded profile의 앱ID 일치·기기1대·7일 만료 확인.
 - [x] N01.8c headless 설치 명령: 기기 명시·서명 빌드·서명 검사·설치·실행 순서. 외부 도구 실패 시 후속 실행 중단 6건 Red→전체7건 Green. 실제 설치는 N01.10.
@@ -47,9 +48,11 @@
 - [x] N02.1a Red: 생성 대기·종료 뒤 반환·최신 입력·명령 순서/실패·확대 상태·시간 초과·재시도 DOM 격리·SDK 실패 이벤트·멈춘 명령과 종료 분리. 실제 assertion 실패와 Green은 아래 실행 기록.
 - [x] N02.2a 공통 StationMapSession의 Promise 명령과 이벤트, 웹 어댑터 변경. 비동기 대상11건·기존 지도8건·진단3건 통과. 최종 전체 검증/CI는 N02.12a에서 별도 추적.
 - [ ] N02.1b native bridge/각 SDK의 실제 이벤트·명령 계약 Red/Green.
-- [ ] N02.3 TypeScript Capacitor bridge: 입력/이벤트 검증·세션별 수명·오류/재시도.
+- [x] N02.3a TypeScript Capacitor bridge의 제어 가능한 경계: 세션별 이벤트·명령·정리·레이아웃·키보드9건, 플랫폼 선택1건, Vue 이벤트/늦은 GPS2건. 실제 브리지는 기기 관문에서 별도 확인.
+- [ ] N02.3b iPhone WebView↔Swift 실제 이벤트·명령 전달 확인.
 - [ ] N02.4 Android Kakao SDK Java 구현: 인증·지도/마커·카메라/영역·수명.
-- [ ] N02.5 iOS Kakao SDK Swift/SPM 구현: 인증·지도/마커·카메라/영역·수명.
+- [x] N02.5a iOS Kakao SDK2.12.19/Capacitor8.5.3 Swift 소스 연결 및 입력·배치·수명 단위17건 통과.
+- [ ] N02.5b iOS 인증·지도/마커·카메라/영역·수명의 실제 동작. 코드/컴파일과 실제 SDK 결과를 구분.
 - [ ] N02.6 지도 DOM/native 배치·잘림·스크롤·resize·키보드·페이지 이탈.
 - [ ] N02.7 앱 지도 버튼을 native 사각형 바깥에 배치, 선택 상태는 Vue에 유지.
 - [ ] N02.8 로딩/인증 실패와 재시도, 목록·상세 접근 유지.
@@ -71,6 +74,64 @@
 - [ ] N03.7 두 실기기 실제 주소 선택→지도 이동→실데이터 검색.
 - [ ] N03.8 전체 회귀·PR/CI/병합.
 
+## N02b 일시 중단 기록
+
+2026-10-16 사용자 요청: **“하던 작업까지만 마무리하고 잠시 중단”**. 현재 iOS 지도 연결 변경의 로컬 검증과 보존까지만 진행했다. iPhone에는 PR91 안전 영역 수정본이 설치되어 있고, 사용자가 “로고·메뉴가 선명하게 보임”을 확인했다. 새 지도 빌드는 기기에 설치하지 않았다. 아래 완료는 중간 소스의 검증 범위이며 N02 실기기 관문이나 앱 전체 완료가 아니다.
+
+```text
+Vue: 검색·선택·늦은 GPS 차단
+  → TypeScript: 현재 세션의 명령/이벤트·DOM 위치·키보드 높이
+  → Swift 플러그인: 입력 검증·SDK 수명·카메라·마커
+  → NativeMapViewport: WebView 스크롤 좌표와 native 지도 잘림 일치
+```
+
+### 실제 실행 결과
+
+로그는 `/private/tmp/plugpass-native-evidence/`에 보존하며 cmux `workspace:1000090002 / surface:1000090016`에서 실행했다. 사용자 지시에 따라 브라우저·시뮬레이터 테스트는 headless다.
+
+| 변경 | Red의 실제 실패 → Green |
+| --- | --- |
+| native 배치 | `native-placement-red-assertions.log`: 스크롤·줌·키보드 배치3건/6assertion 실패 → 최종 배치5건 통과 |
+| bridge | `native-bridge-red.log`: 세션/명령/정리·영역·레이아웃8건 실패 → 최종9건 통과(키보드 포함) |
+| native 입력 | `native-input-red.log`: 범위·중복/형식4건 실패 → 입력7건 통과 |
+| 플랫폼/이벤트 | `native-routing-red.log`: 앱 SDK 선택·상호작용 전달2건 실패 → 전체 프런트에서 통과 |
+| 늦은 GPS | `native-gps-event-red.log`: native 지도 이동 뒤 늦은 GPS가 조회를 시작하는1건 실패 → 상호작용을 기존 지도 선택 상태에 연결해 통과 |
+| 키보드 높이 | `native-keyboard-red.log`: 줄어든 viewport 높이 전달1건 실패 → 실제 visualViewport 높이를 전달해 통과 |
+| 렌더링 수명 | `native-render-red.log`: 준비 중/준비 후 화면 내 활성화2건 실패 → loading/ready/closed 정책5건 통과 |
+| 버튼 배치 | `native-controls-red-confirmed.log`: 지도와 확대 버튼 겹침1건 실패 → 공용 verify의 개발 브라우저62건에 포함되어 통과 |
+| 전체 Swift | `native-map-swift-green.log`: Xcode27/iOS27 iPhone17 Simulator, XCTest17건·실패0, `TEST SUCCEEDED`, 종료0 |
+| 전체 공용 회귀 | `CI=1 KAKAO_JS_KEY=test-js-key bash scripts/verify.sh`: `NATIVE_MAP_PAUSE_VERIFY_EXIT=0`. frontend459/46파일·Java462·Python42·개발 브라우저62·JAR5·MySQL8·재시작 브라우저7, 실패/skip0. `native-map-pause-verify.log` |
+| iOS 앱 통합 | `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer npm --prefix frontend run build:ios` 및 `build:ios:device`: 양쪽 unsigned BUILD SUCCEEDED/종료0. `native-map-simulator-build.log`, `native-map-device-build.log` |
+| 묶음 검사 | simulator/device App.app에 `PlugPassMapPlugin` 등록·올바른 앱ID·로컬 키 설정 주입·dist-native와 동일 HTML·원격 server.url 없음 모두 확인. `native-map-app-build.log`의 두 BUNDLE_CHECK=PASS. 서명/설치/SDK 인증 증거 아님 |
+
+초기 Foundation의 CGRect Equatable import·Cordova 런타임 링크 누락, standalone E2E의 JavaScript 테스트 키 누락은 환경/컴파일 준비 실패로 보존하고 기능 Red로 세지 않는다. Vue Test Utils는 unmount 시 emitted 기록을 지우므로 종료 후 이벤트 검사는 부모 listener spy로 바꿨다. 첫 `native-map-green.log`의 실패는 이 테스트 관찰 오류였으며 assertion 의미를 유지한 전체459건 재실행으로 확인했다. Xcode의 AppIntents metadata 미추출 안내는 이 앱에 AppIntents 의존성이 없는 데 따른 도구 경고다.
+
+### 재현 명령과 보존 상태
+
+공용 회귀와 앱 빌드는 위 명령을 사용한다. native 단위 검사는 설치된 simulator ID를 조회한 뒤 아래처럼 실행한다(실제 실행 ID는 로컬 로그에만 남긴다).
+
+```bash
+export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
+xcrun simctl list devices available
+cd frontend/native-map
+xcodebuild -scheme PlugpassNativeMap \
+  -destination 'platform=iOS Simulator,id=<사용 가능한 simulator ID>' \
+  -derivedDataPath /private/tmp/plugpass-native-map-tests \
+  -parallel-testing-enabled NO CODE_SIGNING_ALLOWED=NO test
+```
+
+KakaoMapsSDK2.12.19와 Capacitor8.5.3의 exact package/lockfile을 저장한다. `Local.xcconfig`는 ignored이며 키는 공개 소스/로그에 넣지 않는다. 사용자의 Xcode Team2줄과 기존 Info.plist 서식 변경은 로컬에 보존하고 기능 커밋에서 제외한다. Info.plist에는 키의 build-setting 참조만 커밋한다.
+
+이름·책임 검토: `MapInput`은 검증, `MapPlacement`는 좌표 변환, `MapRenderPhase`는 렌더링 여부, `NativeMapViewport`는 UIKit 배치/observer, `KakaoMapSession`은 SDK 수명, `StationMapMarkers`는 표시를 소유한다. Vue의 검색·선택 상태와 API/DB 계약은 그대로다. 최초 실행에서 실패한 관찰을 좁게 고쳤으며 별도 구조 재편은 하지 않았다. SDK 입력/실제 callback·터치 품질은 이 단위 검사만으로 보장하지 않는다.
+
+### 재개 순서
+
+1. 이 작업 브랜치/현재 커밋과 사용자 로컬 Team/키 파일을 확인한다. 키 값을 채팅에 요청하거나 출력하지 않는다.
+2. iOS 실제 지도 인증·배경·이동/확대·스크롤·키보드·재시도·화면 이탈/복귀를 확인한다. API 연결 전에는 실제 충전소 마커/상세 관문을 완료했다고 표시하지 않는다.
+3. DOM/native 잘림과 터치·실제 callback 순서의 차이를 실기기에서 확인하고 필요한 회귀를 추가한다. native 단위 검사의 저장소 명령/CI 연결을 마친다.
+4. N02b PR의 미검증 항목과 CI를 해결한 뒤 준비 완료/병합을 판단한다. 현재는 실기기 관문 전이라 Draft로 보존하고 자동 병합을 신청하지 않는다.
+5. 사용자 재개 지시와 지도 관문 이후 N03 운영 API/CORS/주소, N04 기기 기능을 이어간다. Android 실제 지도/설치는 기기 확보 후 별도 검증한다.
+
 ## N04 위치·저장·길찾기·복귀
 
 - [ ] N04.1 Red: 플랫폼 선택은 앱 시작 경계, 화면에는 플랫폼 분기 없음.
@@ -90,7 +151,7 @@
 - [x] N05.1a **우선 수정:** 사용자의 iPhone 실화면에서 맨 위 로고/메뉴가 상태바 영역에 겹쳐 흐림. 안전 영역 배치 Red → viewport/CSS 보정 → 웹 회귀 → 서명 설치 → 사용자 실제 화면 확인 완료. CI/병합은 아래 전달 항목에서 별도로 추적한다.
 - [x] N05.1a-코드: 실제 HTML 설정 누락1건·배치2건 assertion Red 확인, 공통 CSS/viewport 수정, 배치4건·전체 공용 회귀 통과.
 - [x] N05.1a-기기: 같은 수정본 서명 설치 후 맨 위 로고/메뉴를 사용자 확인. 응답 “로고·메뉴가 선명하게 보임”. 회전/키보드의 실기기 전체 검증은 N05.1에 남긴다.
-- [ ] N05.1a-전달: CI·PR·실제 병합 확인.
+- [x] N05.1a-전달: PR91 head `7221c75`의 web/backend·iOS·Android·필수 verify 모두 성공. 2026-10-15 15:20:06 UTC 실제 squash 병합 `f16371c` 확인.
 - [ ] N05.1 safe area·홈 표시줄·키보드·글자 확대·주요 44px 터치.
 - [ ] N05.2 CI Android/iOS 빌드·단위 검사, 서명/비밀 제외.
 - [ ] N05.3 Android APK/해시·iOS 프로젝트·직접 설치/7일 만료 재설치 문서.

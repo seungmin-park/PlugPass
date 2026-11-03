@@ -94,6 +94,6 @@ class KakaoPlaceSearchClientTests {
         });
     }
     private KakaoLocalProperties properties(String key, Duration timeout) {
-        return new KakaoLocalProperties(URI.create("http://127.0.0.1:" + server.getAddress().getPort()), key, timeout);
+        return new KakaoLocalProperties(URI.create("http://127.0.0.1:" + server.getAddress().getPort()), key, timeout, null);
     }
 }

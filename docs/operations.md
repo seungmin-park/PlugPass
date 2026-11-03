@@ -22,6 +22,7 @@ DB 관리자가 빈 `plugpass` 스키마와 전용 계정을 먼저 준비한다
 | `PLUGPASS_DATABASE_USERNAME` | DB 계정, 기본 `plugpass` |
 | `PLUGPASS_DATABASE_PASSWORD` | 필수 DB 암호 |
 | `MANAGEMENT_SERVER_PORT` | 기본8081, 외부에 공개하지 않는 관리 포트 |
+| `PLUGPASS_PLACE_SEARCHES_PER_MINUTE` | 기본30, `/api/v1/places`가 카카오 Local을 호출하는 앱 전체 분당 상한. 요청1회=카카오2회라 30이면 하루 최대86,400회. 초과 시 카카오를 호출하지 않고 429 `PLACE_SEARCH_RATE_LIMIT` |
 
 서버 인증서의 CA·호스트명에 맞는 TLS 구성을 사용한다. `scripts/mysql_environment.py`의 `sslMode=DISABLED`·`allowPublicKeyRetrieval=true`는 임의 인증정보를 사용하는 **loopback 전용 테스트 컨테이너** 설정이다. 운영 URL 예시에는 적용하지 않는다.
 

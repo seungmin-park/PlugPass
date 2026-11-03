@@ -106,7 +106,7 @@ public class Charger {
             return;
         }
         if (this.details != null && ChargerStatusChange.preservesExisting(
-                details == null ? null : details.sourceStatusChangedAtRaw(), this.details.sourceStatusChangedAtRaw())) {
+                details == null ? null : details.sourceStatusChangedAtRaw(), this.details.sourceStatusChangedAtRaw(), collectedAt)) {
             if (details != null) {
                 this.details = new ChargerDetails(details.connectorCode(), details.useTime(), details.limitYn(),
                         details.limitDetail(), details.note(), this.details.sourceStatusChangedAtRaw(),

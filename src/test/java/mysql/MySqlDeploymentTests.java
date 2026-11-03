@@ -22,6 +22,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -87,7 +88,7 @@ class MySqlDeploymentTests {
         JdbcTemplate jdbcTemplate = context.getBean(JdbcTemplate.class);
         assertThat(jdbcTemplate.queryForObject("select version()", String.class)).startsWith("8.4.");
         assertThat(jdbcTemplate.queryForList("select version from flyway_schema_history where success = 1", String.class))
-                .containsExactly("1", "2");
+                .containsExactly("1", "2", "3");
     }
 
     @Test
@@ -236,6 +237,26 @@ class MySqlDeploymentTests {
         assertThat(resumed.status()).isEqualTo(SyncStatus.FAILURE);
         assertThat(resumed.failureCode()).isEqualTo("AUTHENTICATION");
         assertThat(context.getBean(SyncRunRepository.class).count()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("MySQL 충전소 위경도 인덱스가 반경 후보 조회의 사용 가능한 키로 잡힌다")
+    void indexesStationCoordinatesForBoundingBoxSearch() {
+        startApplication();
+        JdbcTemplate jdbcTemplate = context.getBean(JdbcTemplate.class);
+
+        List<String> indexedColumns = jdbcTemplate.queryForList("""
+                select column_name from information_schema.statistics
+                where table_schema = database() and table_name = 'station' and index_name = 'station_location'
+                order by seq_in_index""", String.class);
+        List<Map<String, Object>> plan = jdbcTemplate.queryForList("""
+                explain select c.database_id from charger c join station s on s.database_id = c.station_fk
+                where s.latitude between 37.47 and 37.66 and s.longitude between 126.86 and 127.09
+                  and c.connector_code in ('04', '05')""");
+
+        assertThat(indexedColumns).containsExactly("latitude", "longitude");
+        assertThat(plan).filteredOn(row -> "s".equals(row.get("table"))).singleElement()
+                .satisfies(row -> assertThat(String.valueOf(row.get("possible_keys"))).contains("station_location"));
     }
 
     private Connection databaseConnection() throws Exception {

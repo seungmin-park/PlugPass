@@ -28,7 +28,7 @@ DB 관리자가 빈 `plugpass` 스키마와 전용 계정을 먼저 준비한다
 
 환경 주입 후 `java -jar build/libs/plugpass-0.0.1-SNAPSHOT.jar`로 실행한다. Connector/J는 UTC 세션을 사용하고 Hibernate의 JDBC 시각도 UTC로 고정한다. 스키마의 `DATETIME(6)`은 마이크로초까지 보존한다. 공급자 원문 시각의 시간대 추정과는 다른 문제다.
 
-Flyway `db/migration/mysql/V1__initial_schema.sql`이 station·charger·sync_run과 unique/FK를 만든다. utf8mb4로 한글·이모지를 저장하고 `utf8mb4_0900_bin`으로 식별자의 대소문자·끝 공백을 구분한다. Hibernate는 `validate`만 수행한다. 배포된 V1을 고쳐 쓰지 말고 후속 `V2__...sql`을 추가한다. 기존 데이터가 있는 비관리 스키마를 자동 baseline하거나 H2 데이터를 자동 이관하지 않는다. 이관 대상이 있으면 별도 export/import·대조 계획이 필요하다.
+Flyway `db/migration/mysql/V1__initial_schema.sql`이 station·charger·sync_run과 unique/FK를 만든다. utf8mb4로 한글·이모지를 저장하고 `utf8mb4_0900_bin`으로 식별자의 대소문자·끝 공백을 구분한다. Hibernate는 `validate`만 수행한다. 배포된 V1을 고쳐 쓰지 말고 후속 `V2__...sql`을 추가한다. V3 `station_location`은 충전소 위경도 인덱스로, 반경·지도 영역 후보 조회가 station 전체를 훑지 않게 한다. 운영 앱 계정은 DML 전용이므로 V2와 같이 **머지·자동 배포 전에 임시 마이그레이션 권한으로 V3를 먼저 적용**하고 기존 웹 조회 호환성을 확인한다. 인덱스 추가만 하므로 기존 행과 이전 JAR 조회는 그대로 동작한다. 기존 데이터가 있는 비관리 스키마를 자동 baseline하거나 H2 데이터를 자동 이관하지 않는다. 이관 대상이 있으면 별도 export/import·대조 계획이 필요하다.
 
 공용 `bash scripts/verify.sh`는 Docker를 요구한다. `python3 scripts/verify-mysql.py --tests-only`는 격리된 MySQL에 저장 계약을 검증한다. 패키징 후 `python3 scripts/verify-mysql.py`는 합성 공급자 수집→MySQL→검색/상세/추천→앱 종료·DB 재시작→재수집 없는 운영 JAR 조회와 실제 브라우저 흐름까지 확인한다. 실행할 때마다 임의 컨테이너·인증정보·포트를 사용하고 종료 시 자기 컨테이너/임시 데이터만 삭제한다. 기존 DB와 연결하지 않는다.
 

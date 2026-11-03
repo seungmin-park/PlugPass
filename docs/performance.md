@@ -66,3 +66,18 @@ SQL2개라서 N+1은 이 경로에서 관측하지 않았다. 대신 limit/반�
 측정 176,051건·준비 52,188건, 오류/응답 불일치0. 전체p50 11.11ms·p95 75.04ms, 전체p95≤300ms/오류율<1% 달성. 종료0, 직접 시작한 서버 종료143. 전후10,000/50,000건수·검색/상세/추천 정확성 유지. closed-loop 실험의 같은 머신 관측이며 운영 환경·고정RPS 수용량 보장은 아니다.
 
 [결과](evidence/t16-performance/result.json)·[샘플](evidence/t16-performance/samples.json.gz)·[서버 로그](evidence/t16-performance/server.log)·[전](evidence/t16-performance/correctness-before.json.gz)/[후](evidence/t16-performance/correctness-after.json.gz). 원본 `/tmp/plugpass-t16-measurement`, 샘플SHA256 검증 일치. [T16 Red/Green·책임 기록](t16-verification.md).
+
+## 검색 limit 우선 적용 (2026-11-04)
+
+반경·지도 영역 검색이 박스 안의 모든 호환 충전기·충전소를 엔티티로 읽은 뒤 Java에서 정렬·limit을 적용하던 구조를 두 단계로 바꿨다. ① 후보 충전소의 ID·좌표만 조회 → ② 기존과 같은 거리 계산·정렬(거리, ID)·반경 필터·limit → ③ 남은 충전소의 호환 충전기만 로딩. SQL은 요청당 고정3개(수집 이력·후보 좌표·충전기)다. 대체 후보(추천)는 그룹별 순위에 전체 후보가 필요해 이번 범위에서 유지했다.
+
+같은 grid-v1·10,000충전소/50,000충전기·동시20명·준비30초/측정180초 조건, 같은 기기(Apple Silicon macOS, Corretto 25.0.5)에서 main `82d3502`와 변경 작업 트리를 차례로 측정했다. 변경 측정은 커밋 전 작업 트리(dirty=true)였고 커밋 내용과 동일하다.
+
+| 경로 | main 엔티티/요청 | 변경 후 | main p95 | 변경 후 p95 |
+| --- | ---: | ---: | ---: | ---: |
+| 검색 center | 1,957 | 102 | 23.80ms | 17.35ms |
+| 검색 edge | 542 | 102 | 19.28ms | 16.11ms |
+| 상세 | 7 | 7 | 16.38ms | 14.18ms |
+| 추천(미변경) | 541 | 541 | 18.94ms | 15.85ms |
+
+180초 처리 요청은 366,088→447,331건(+22%), 오류·응답 불일치0, 전후 정확성 assertion 유지. 같은 기기 closed-loop 관측이며 운영 MySQL 지연이나 고정 RPS 수용량을 보장하지 않는다. 반경10km처럼 후보가 많을수록 차이가 커지는 구조이나 이 도구는 1km만 측정한다.

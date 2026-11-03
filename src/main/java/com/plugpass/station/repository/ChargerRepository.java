@@ -6,6 +6,7 @@ import com.plugpass.station.domain.ChargerId;
 import java.util.Optional;
 import java.util.Set;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -31,6 +32,25 @@ public interface ChargerRepository extends JpaRepository<Charger, Long> {
             """)
     List<Charger> findSearchCandidates(@Param("minLatitude") double minLatitude, @Param("maxLatitude") double maxLatitude,
             @Param("minLongitude") double minLongitude, @Param("maxLongitude") double maxLongitude,
+            @Param("connectorCodes") Set<String> connectorCodes);
+
+    @Query("""
+            select distinct station.databaseId as stationId, station.location.latitude as latitude, station.location.longitude as longitude
+            from Charger charger join charger.station station
+            where station.location.latitude between :minLatitude and :maxLatitude
+              and ((:minLongitude <= :maxLongitude and station.location.longitude between :minLongitude and :maxLongitude)
+                or (:minLongitude > :maxLongitude and (station.location.longitude >= :minLongitude or station.location.longitude <= :maxLongitude)))
+              and charger.details.connectorCode in :connectorCodes
+            """)
+    List<CandidateStationLocation> findCandidateStationLocations(@Param("minLatitude") double minLatitude, @Param("maxLatitude") double maxLatitude,
+            @Param("minLongitude") double minLongitude, @Param("maxLongitude") double maxLongitude,
+            @Param("connectorCodes") Set<String> connectorCodes);
+
+    @Query("""
+            select charger from Charger charger join fetch charger.station station
+            where station.databaseId in :stationIds and charger.details.connectorCode in :connectorCodes
+            """)
+    List<Charger> findCompatibleChargersAt(@Param("stationIds") Collection<Long> stationIds,
             @Param("connectorCodes") Set<String> connectorCodes);
 
     @Query("select charger from Charger charger where charger.id in :identities")

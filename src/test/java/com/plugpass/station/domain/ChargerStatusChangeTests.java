@@ -63,5 +63,54 @@ class ChargerStatusChangeTests {
         assertThat(charger.getDetails().chargingStartedAtRaw()).isEqualTo("20261013090000");
         assertThat(charger.getCollectedAt()).isEqualTo(received);
     }
+    @Test
+    @DisplayName("수집 시각보다 하루 넘게 미래인 저장 변경 시각은 이후 상태 갱신을 막지 않는다")
+    void statusFeedReplacesFutureDatedChange() {
+        Instant received = Instant.parse("2026-10-13T00:00:00Z");
+        Station station = Station.builder().provider("ME").stationId("001").name("서울 충전소")
+                .location(new GeoPoint(37.5,127)).createdAt(received).build();
+        ChargerDetails pinned = new ChargerDetails("04", "24시간", "N", null, null, "20991231235959", null, null, null);
+        Charger charger = Charger.builder().id(new ChargerId("ME","001","01")).station(station)
+                .status(ChargerStatus.AVAILABLE).rawStatus("2").details(pinned).collectedAt(received).build();
+
+        charger.updateStatus(new ChargerStatusChange(ChargerStatus.OCCUPIED, "3", "20261013091000", null, null, null, received.plusSeconds(600)));
+
+        assertThat(charger.getStatus()).isEqualTo(ChargerStatus.OCCUPIED);
+        assertThat(charger.getDetails().sourceStatusChangedAtRaw()).isEqualTo("20261013091000");
+        assertThat(charger.getCollectedAt()).isEqualTo(received.plusSeconds(600));
+    }
+    @Test
+    @DisplayName("기본 정보 갱신도 하루 넘게 미래인 저장 변경 시각 대신 새 상태를 반영한다")
+    void catalogRefreshReplacesFutureDatedChange() {
+        Instant received = Instant.parse("2026-10-13T00:00:00Z");
+        Station station = Station.builder().provider("ME").stationId("001").name("서울 충전소")
+                .location(new GeoPoint(37.5,127)).createdAt(received).build();
+        ChargerDetails pinned = new ChargerDetails("04", "24시간", "N", null, null, "20991231235959", null, null, null);
+        Charger charger = Charger.builder().id(new ChargerId("ME","001","01")).station(station)
+                .status(ChargerStatus.AVAILABLE).rawStatus("2").details(pinned).collectedAt(received).build();
+        ChargerDetails catalog = new ChargerDetails("04", "24시간", "N", null, null, "20261013091000", null, null, null);
+
+        charger.update(ChargerStatus.UNAVAILABLE, "4", catalog, null, received.plusSeconds(600));
+
+        assertThat(charger.getStatus()).isEqualTo(ChargerStatus.UNAVAILABLE);
+        assertThat(charger.getRawStatus()).isEqualTo("4");
+        assertThat(charger.getDetails().sourceStatusChangedAtRaw()).isEqualTo("20261013091000");
+        assertThat(charger.getCollectedAt()).isEqualTo(received.plusSeconds(600));
+    }
+    @Test
+    @DisplayName("수집 시각의 한국 시간 기준 정확히 하루 뒤인 저장 변경 시각은 순서 비교에 계속 사용한다")
+    void keepsChangeAtFutureToleranceBoundary() {
+        Instant received = Instant.parse("2026-10-13T00:00:00Z");
+        Station station = Station.builder().provider("ME").stationId("001").name("서울 충전소")
+                .location(new GeoPoint(37.5,127)).createdAt(received).build();
+        ChargerDetails boundary = new ChargerDetails("04", "24시간", "N", null, null, "20261014090000", null, null, null);
+        Charger charger = Charger.builder().id(new ChargerId("ME","001","01")).station(station)
+                .status(ChargerStatus.AVAILABLE).rawStatus("2").details(boundary).collectedAt(received).build();
+
+        charger.updateStatus(new ChargerStatusChange(ChargerStatus.OCCUPIED, "3", "20261013090000", null, null, null, received));
+
+        assertThat(charger.getStatus()).isEqualTo(ChargerStatus.AVAILABLE);
+        assertThat(charger.getDetails()).isEqualTo(boundary);
+    }
 
 }

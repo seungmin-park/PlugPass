@@ -11,7 +11,10 @@
 
 `StationMapAsync.spec.ts`는 지연 생성·최신 입력·명령 순서/실패·시간 초과·재시도 간 DOM 격리·늦은 이벤트를, 기존 지도/주소/영역 테스트는 웹 계약을 검증한다. [진행 근거](native-app/tasks.md). 실제 iOS SDK/GPS/API 연결 성공과는 구분한다.
 
-## N01 Android·iOS 앱 기반 (진행 중)
+## N01 Android·iOS 앱 기반 (보류, 2026-11-04)
+
+2026-11-04 사용자 결정으로 native 앱 작업을 **보류**한다. 포트폴리오 범위를 웹앱으로 한정하고, iOS·Android 빌드를 CI에서 뺐다. 이유: 앱 자체 native 코드가 없어 CI가 템플릿 컴파일만 확인했고, 웹만 바꾼 PR도 macOS 러너에 묶였으며, 배포 JAR과 무관한 native 도구가 CD가 신뢰하는 CI 실행 안에 있었다(보안 감사 run-1). native 소스·빌드 명령·`nativeBuild.spec.ts`는 유지한다. 재개할 때는 native 빌드를 **CD가 신뢰하지 않는 별도 워크플로**로 다시 추가하고 main 필수 검사에 등록한다. `scripts/test_ci_workflow.py`가 배포 신뢰 실행에 `Web and backend verify`와 `PlugPass verify`만 있는지 검사한다.
+
 
 `공유 Vue → Vite native 모드(상대 자산/dist-native) → Capacitor sync → Android Java / iOS Swift·SPM`. 웹 모드는 `/app/`·dist를 유지한다. `frontend/tests/nativeBuild.spec.ts`가 실제 빌드 HTML의 상대 script 경로와 웹/앱 산출물 분리를 검증한다. 원격 사이트 로딩 설정은 없다. native 빌드 명령은 `npm --prefix frontend run build:ios`, `build:ios:device`, `build:android`. `install:ios`는 선택 기기용 자동 서명→codesign 검사→설치→실행을 소유하며 `scripts/test_ios_install.py`가 실패 뒤 후속 동작 중단을 검증한다. iPhone16/iOS27.0.1의 실제 설치/실행은 성공했고, 사용자가 검색 화면과 차량 선택 조작을 확인했다. native 지도/GPS/API/저장 연결은 아직 구현되지 않았다. [별도 계획](native-app/plan.md)·[상세 작업과 실제 결과](native-app/tasks.md)·[설치 안내](native-app/installation.md).
 
@@ -275,6 +278,7 @@ main push → 기존 CI 전체 gate → 성공한 CI artifact
 
 - 진입: `.github/workflows/deploy.yml`. `CD_ENABLED=true`인 경우에만 자동 배포
 - 실행물: `scripts/cd_release.py`가 기존 CI artifact와 manifest를 검증. VM에서 재빌드하지 않음
+- 실행물 출처: JAR을 만들고 올리는 `Web and backend verify` 작업이 성공한 실행만 허용하고, GitHub artifact digest가 없으면 배포를 거부한다(`scripts/test_cd_release.py`). 같은 실행의 다른 작업이 같은 이름으로 artifact를 바꾸는 경우까지 막는 생산 작업 서명(attestation)은 후속 과제
 - 자격 증명: 앱별 WIF·SSH 계정 분리. DB·OpenAI 비밀은 VM의 root 전용 환경 파일에 유지
 - 실패: 준비 실패는 기존 슬롯 유지. 공개 경로 실패는 기존 경로 복구. drain 미완료는 양쪽 슬롯 보존·다음 배포 거부
 - 재시도: 현재 main의 성공한 push CI만 허용. VM의 실행 순서 기준으로 오래된 실행물 거부

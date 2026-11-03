@@ -27,7 +27,7 @@ description: Verify PlugPass behavior and architecture checks, H2 regression and
 - `PLUGPASS_IOS_DEVICE_ID=<UDID> PLUGPASS_IOS_TEAM_ID=<Team> npm --prefix frontend run install:ios`: 계정 설정 후 headless 서명·검사·설치·실행. 개인 값/프로젝트 Team 변경은 커밋하지 않는다. 실제 화면 조작 관찰은 별도로 tasks에 기록한다.
 - `PLUGPASS_ANDROID_JAVA_HOME=<JDK21> ANDROID_HOME=<SDK36> npm --prefix frontend run build:android`: APK 컴파일와 lint. 백엔드 Java25 설정을 바꾸지 않는다.
 - 초기 생성기의 2+2 샘플 테스트와 잘못된 예제 패키지 assertion은 제품 검증으로 사용하지 않는다. N01 native 컴파일을 native 단위/실기기 테스트로 보고하지 않는다.
-- CI `PlugPass verify`는 웹/backend와 iOS·Android 빌드 모두 성공해야 통과한다. skip/failure를 통과로 바꾸지 않는다. 기기 지도/GPS/길찾기는 아직 미확인이고 후속 체크리스트로 실제 확인한다.
+- CI `PlugPass verify`는 웹/backend 작업이 성공해야 통과한다. native 앱 보류(2026-11-04)로 iOS·Android 빌드는 CI에서 실행하지 않으며 위 명령은 로컬 전용이다. 재개 시 CD가 신뢰하지 않는 별도 워크플로로 추가한다. skip/failure를 통과로 바꾸지 않는다. 기기 지도/GPS/길찾기는 아직 미확인이고 후속 체크리스트로 실제 확인한다.
 
 ## 환경 확인
 

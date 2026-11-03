@@ -17,7 +17,7 @@ REPOSITORIES = {
     "crackcs": ("seungmin-park/crackCS", ("crackcs-backend", "crackcs-frontend"), "CrackCS verify"),
     "demp": ("seungmin-park/demp", ("demp",), "DEMP verify"),
     "dempfrontend": ("seungmin-park/dempfrontend", ("dempfrontend",), "DEMP frontend verify"),
-    "plugpass": ("seungmin-park/PlugPass", ("plugpass",), "PlugPass verify"),
+    "plugpass": ("seungmin-park/PlugPass", ("plugpass",), "Web and backend verify"),
 }
 APPLICATIONS = {"crackcs": ("crackcs",), "demp": ("demp", "dempfrontend"), "plugpass": ("plugpass",)}
 
@@ -182,7 +182,9 @@ def assemble(inputs, application):
                     subprocess.run(["gh", "api", f"repos/{repo}/actions/artifacts/{artifact['id']}/zip"],
                                    stdout=output, check=True)
                 digest = artifact.get("digest")
-                if digest and digest != "sha256:" + sha(archive_path):
+                if not digest:
+                    raise ValueError("GitHub artifact digest missing: " + name)
+                if digest != "sha256:" + sha(archive_path):
                     raise ValueError("GitHub artifact digest mismatch: " + name)
                 directory = working / component
                 extract_component(archive_path, directory)

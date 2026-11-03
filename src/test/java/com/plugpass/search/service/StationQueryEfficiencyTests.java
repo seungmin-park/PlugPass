@@ -3,6 +3,8 @@ package com.plugpass.search.service;
 import com.plugpass.ingestion.dto.StationSnapshot;
 import com.plugpass.ingestion.repository.SyncRunRepository;
 import com.plugpass.ingestion.service.StationUpsertService;
+import com.plugpass.search.domain.MapSearchArea;
+import com.plugpass.search.domain.StationAreaSearchQuery;
 import com.plugpass.search.domain.StationSearchQuery;
 import com.plugpass.search.dto.StationMatch;
 import com.plugpass.search.dto.StationSearchResult;
@@ -61,8 +63,46 @@ class StationQueryEfficiencyTests {
         assertThat(result.stations().getFirst().distanceMeters()).isZero();
         assertThat(result.dataReady()).isFalse();
         assertThat(result.lastSuccessfulRunAt()).isNull();
-        assertThat(statistics.getPrepareStatementCount()).isEqualTo(2);
+        assertThat(statistics.getPrepareStatementCount()).isEqualTo(3);
         assertThat(statistics.getEntityLoadCount()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("반경 검색은 limit 안에 드는 가까운 충전소의 충전기만 로딩한다")
+    void loadsChargersOnlyForStationsWithinLimit() {
+        saveCharger("nearest", "01", new GeoPoint(37.5, 127), "04");
+        saveCharger("nearest", "02", new GeoPoint(37.5, 127), "04");
+        saveCharger("middle", "01", new GeoPoint(37.502, 127), "04");
+        saveCharger("middle", "02", new GeoPoint(37.502, 127), "04");
+        saveCharger("farthest", "01", new GeoPoint(37.504, 127), "04");
+        saveCharger("farthest", "02", new GeoPoint(37.504, 127), "04");
+        Statistics statistics = entityManagerFactory.unwrap(SessionFactory.class).getStatistics();
+        statistics.clear();
+
+        StationSearchResult result = stationQueryService.search(
+                new StationSearchQuery(new GeoPoint(37.5, 127), 1000, Connector.DC_COMBO, 1));
+
+        assertThat(result.stations()).extracting(StationMatch::providerStationId).containsExactly("nearest");
+        assertThat(result.stations().getFirst().chargers()).extracting(charger -> charger.chargerId()).containsExactly("01", "02");
+        assertThat(statistics.getEntityLoadCount()).isEqualTo(3);
+    }
+
+    @Test
+    @DisplayName("지도 영역 검색도 limit 안에 드는 중심 가까운 충전소의 충전기만 로딩한다")
+    void areaSearchLoadsChargersOnlyForStationsWithinLimit() {
+        saveCharger("center", "01", new GeoPoint(37.5, 127), "04");
+        saveCharger("center", "02", new GeoPoint(37.5, 127), "04");
+        saveCharger("edge", "01", new GeoPoint(37.504, 127.004), "04");
+        saveCharger("edge", "02", new GeoPoint(37.504, 127.004), "04");
+        Statistics statistics = entityManagerFactory.unwrap(SessionFactory.class).getStatistics();
+        statistics.clear();
+
+        StationSearchResult result = stationQueryService.searchArea(new StationAreaSearchQuery(
+                new MapSearchArea(37.495, 37.505, 126.995, 127.005), Connector.DC_COMBO, 1));
+
+        assertThat(result.stations()).extracting(StationMatch::providerStationId).containsExactly("center");
+        assertThat(result.stations().getFirst().chargers()).extracting(charger -> charger.chargerId()).containsExactly("01", "02");
+        assertThat(statistics.getEntityLoadCount()).isEqualTo(3);
     }
 
     @Test

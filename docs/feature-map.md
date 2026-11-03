@@ -275,6 +275,7 @@ main push → 기존 CI 전체 gate → 성공한 CI artifact
 
 - 진입: `.github/workflows/deploy.yml`. `CD_ENABLED=true`인 경우에만 자동 배포
 - 실행물: `scripts/cd_release.py`가 기존 CI artifact와 manifest를 검증. VM에서 재빌드하지 않음
+- 실행물 출처: JAR을 만들고 올리는 `Web and backend verify` 작업이 성공한 실행만 허용하고, GitHub artifact digest가 없으면 배포를 거부한다(`scripts/test_cd_release.py`). 같은 실행의 다른 작업이 같은 이름으로 artifact를 바꾸는 경우까지 막는 생산 작업 서명(attestation)은 후속 과제
 - 자격 증명: 앱별 WIF·SSH 계정 분리. DB·OpenAI 비밀은 VM의 root 전용 환경 파일에 유지
 - 실패: 준비 실패는 기존 슬롯 유지. 공개 경로 실패는 기존 경로 복구. drain 미완료는 양쪽 슬롯 보존·다음 배포 거부
 - 재시도: 현재 main의 성공한 push CI만 허용. VM의 실행 순서 기준으로 오래된 실행물 거부

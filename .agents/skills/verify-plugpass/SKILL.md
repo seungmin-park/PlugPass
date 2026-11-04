@@ -5,6 +5,14 @@ description: Verify PlugPass behavior and architecture checks, H2 regression and
 
 # PlugPass 검증
 
+## N02b iOS 지도 연결 중단 지점
+
+- 사용자 요청으로 현재 변경을 보존한 뒤 일시 중단한다. 재개 범위·실기기 미확인은 [상세 tasks](../../../docs/native-app/tasks.md#n02b-일시-중단-기록)를 따른다.
+- `npm --prefix frontend run test:unit -- src/features/search/map/nativeStationMap.spec.ts src/features/search/map/loadNativeMap.spec.ts src/features/search/components/StationMapAsync.spec.ts src/features/search/views/MapSearchView.spec.ts`: 세션/입력/이벤트·키보드 높이·native 이동 뒤 늦은 GPS 무시를 확인한다.
+- Swift 패키지는 `frontend/native-map`에서 scheme `PlugpassNativeMap`을 설치된 iOS Simulator 대상으로 `xcodebuild test -parallel-testing-enabled NO CODE_SIGNING_ALLOWED=NO`로 실행한다. 상세 재현 명령과17건 결과는 tasks에 기록한다. 실제 Kakao SDK를 링크하지만 단위 테스트가 SDK 인증/배경을 검증하지는 않는다.
+- `CI=1 VITE_KAKAO_JS_KEY=test-js-key bash scripts/frontend-e2e.sh station-map.spec.ts`는 앱 버튼을 지도 사각형 밖에 배치하는 CSS 계약과 기존 웹 지도 흐름을 검사한다. standalone E2E의 변수는 `VITE_KAKAO_JS_KEY`다. 공용 verify는 `KAKAO_JS_KEY`를 받아 이를 export한다.
+- `build:ios`로 Capacitor sync 후 플러그인이 포함된 앱을 컴파일한다. 개인 Team·키는 커밋하지 않는다. 실제 iPhone 설치/인증/이동/마커/스크롤/복귀는 재개 후 별도로 관찰한다. native 단위 검사의 CI 연결은 아직 후속이다.
+
 ## N05.1a 앱 안전 영역
 
 - `CI=1 KAKAO_JS_KEY=test-js-key bash scripts/frontend-e2e.sh safe-area.spec.ts`: 현재 cmux 보조 pane에서 사용자의 headless 지시를 따른다. Chromium inset 주입으로 세로/가로·상단 복귀·본문 건너뛰기·하단 배치와 일반 웹을 검사한다.

@@ -6,6 +6,9 @@ DerivedData
 xcuserdata
 *.p12
 *.mobileprovision
+Local.xcconfig
+# The app workspace lockfile is tracked; standalone package inspection is generated.
+App/CapApp-SPM/Package.resolved
 
 # Cordova plugins for Capacitor
 capacitor-cordova-ios-plugins

@@ -1,0 +1,3 @@
+// Copy to Local.xcconfig and read the native key from the approved secret store.
+// Local.xcconfig is ignored. Do not commit keys or personal signing settings.
+KAKAO_NATIVE_APP_KEY =

@@ -1,6 +1,6 @@
 # PlugPass 작업 체크리스트
 
-**Android·iOS 앱 (진행 중):** 별도 [계획](docs/native-app/plan.md)·[상세 tasks](docs/native-app/tasks.md). N01 앱 기반부터 순차 구현하며 두 실기기 전체 흐름 확인 전에는 앱 완료로 표시하지 않는다.
+**Android·iOS 앱 (사용자 요청으로 일시 중단):** 별도 [계획](docs/native-app/plan.md)·[상세 tasks](docs/native-app/tasks.md). iOS 설치와 상단 흐림 수정 완료, N02b 지도 연결의 검증된 중간 변경을 보존한다. 실제 iPhone 지도 관문부터 재개하며 두 실기기 전체 흐름 확인 전에는 앱 완료로 표시하지 않는다.
 
 **목표·설계:** [plan.md](plan.md). T01~T25는 구현·검증·main 반영 완료. T15 당시 p95 목표 미달은 T16 동일 조건 재측정75.04ms로 개선했다. 마지막 남은 T01은 2026-10-06 인증된 인천 실응답으로 계약 차이를 수정하고 [PR #49](https://github.com/seungmin-park/PlugPass/pull/49)의 필수 CI·실제 main 병합까지 확인했다. 아래 하위 체크와 근거를 따른다.
 

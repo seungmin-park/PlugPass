@@ -283,3 +283,7 @@ h1 { font-size: 32px; font-weight: 700; letter-spacing: -0.025em; margin-bottom:
 .collection-summary { margin-bottom: 8px; display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 13px; }
 
 .status-distribution > span { background: none; }
+
+/* UIKit 지도 위에 WebView 버튼을 겹치면 터치가 native 지도에 전달된다. */
+[data-platform="native"] .map-zoom-controls { position: static; display: flex; width: fit-content; margin: 8px 0 0 auto; box-shadow: none; }
+[data-platform="native"] .search-map-explorer #search-map-area { position: static; width: 100%; margin-top: 8px; }

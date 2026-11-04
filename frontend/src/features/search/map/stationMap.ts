@@ -24,6 +24,8 @@ export interface StationMapSession {
 }
 export interface StationMapCallbacks {
   selectStation(stationId: number): void
+  /** Native gestures do not bubble DOM pointer events to the search screen. */
+  interacted?(): void
   /** null means movement started; settled movement supplies the actual viewport. */
   areaChanged?(area: SearchArea | null): void
   zoomChanged?(state: MapZoomState): void

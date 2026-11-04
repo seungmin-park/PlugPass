@@ -335,3 +335,11 @@ Xcode27.0의 설치된 `xcodebuild -help`에서 `-allowProvisioningUpdates`가 �
 설치된 Capacitor8.5.3은 iOS WebView의 contentInsetAdjustmentBehavior 기본값이 never다. 현재 화면에는 안전 영역 여백이 없어 로고/메뉴가 상태바 아래에 겹쳤다. [WebKit 공식 가이드](https://webkit.org/blog/7929/designing-websites-for-iphone-x/)의 `viewport-fit=cover`와 `env(safe-area-inset-*)`를 함께 적용한다. 고정 기종별 여백 대신 OS의 값으로 전체 화면 틀과 포커스된 본문 건너뛰기 링크를 배치하는 것은 프로젝트 판단이다. 작은 화면 미디어 쿼리는 가로 기본 여백만 바꾸므로 상단 안전 영역을 다시 0으로 덮지 않는다.
 
 [Capacitor v8 SystemBars](https://capacitorjs.com/docs/apis/system-bars)와 설치된 Android SystemBars.java를 대조했다. Android 기본 css 처리는 `--safe-area-inset-*`를 주입하며 OS가 이미 여백을 적용한 경우 0으로 전달한다. 이를 우선하고 iOS/웹은 env로 대체한다. Chromium CDP의 inset 주입은 실제 CSS 배치·회전 재계산만 검사한다. iOS의 스크롤 가장자리 효과와 기기 화면은 서명 설치 후 별도 관찰한다.
+
+## N02b iOS 지도 연결 (2026-10-16, 실기기 검증 전 중단)
+
+KakaoMapsSDK-SPM **2.12.19**와 Capacitor Swift **8.5.3**을 exact dependency와 Package.resolved로 고정했다. 실제 다운로드된 Swift interface·KMController/KMViewContainer header와 컴파일을 대조했다. [카카오 공식 View Controls](https://apis.map.kakao.com/ios_v2/docs/getting-started/basics/01_view/)의 prepareEngine → activateEngine → addViews 순서에서 addView는 렌더링 준비 중 비동기로 수행된다. 따라서 초기 생성 중에는 화면 밖이어도 엔진을 활성화하고, 준비가 끝난 뒤 화면 밖/백그라운드이면 pause한다. 종료는 reset과 delegate/observer 해제다.
+
+[공식 사용 등록](https://apis.map.kakao.com/ios_v2/docs/getting-started/basics/02_auth/)에 따라 네이티브 키는 Swift SDK 초기화에 전달한다. 프로젝트에서는 ignored Local.xcconfig → Info.plist build setting으로 주입하고 JavaScript나 저장소에 값을 넣지 않는다. 인증 실패의 description에는 민감값이 포함될 가능성이 있어 코드만 전달한다. 실제 키 읽기와 앱 Bundle ID 등록을 실제 SDK 인증 성공으로 취급하지 않는다.
+
+프로젝트 판단: Vue가 선택/검색 상태, TypeScript가 현재 bridge 세션과 DOM 배치, Swift가 SDK·native view 수명을 소유한다. 지도 위에 별도 native view를 얹으므로 앱 조작 버튼을 지도 밖에 두고 대화상자가 열리면 지도를 숨긴다. 좌표/잘림·입력·렌더링 수명은 순수 Swift 단위 검증, 키보드 높이/이벤트는 TypeScript 경계 검증으로 분리했다. WKWebView 실제 스크롤·키보드·터치와 지도 배경은 iPhone에서 추가 확인해야 한다. 새 스택의 Android 구현·native 단위 CI는 중단 뒤 후속이다.

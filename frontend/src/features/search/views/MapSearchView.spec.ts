@@ -9,11 +9,31 @@ import { httpClient } from '../../../shared/api/httpClient'
 import { jsonResponse } from '../../../../tests/httpResponse'
 import searchResponse from '../../../../tests/fixtures/search.json'
 import { readVehicleProfile } from '../../vehicle/vehicleProfile'
+import StationMap from '../components/StationMap.vue'
 
 const originalAdapter = httpClient.defaults.adapter
 if (originalAdapter === undefined) throw new Error('Axios adapter가 필요합니다')
 beforeEach(installKakaoMapFake)
 afterEach(() => { httpClient.defaults.adapter = originalAdapter; window.localStorage.clear(); vi.unstubAllEnvs(); Reflect.deleteProperty(window, 'kakao') })
+
+it('native 지도 상호작용 뒤 늦게 도착한 GPS가 검색을 시작하지 않는다', async () => {
+  const getCurrentPosition = vi.fn<Geolocation['getCurrentPosition']>()
+  vi.stubGlobal('navigator', { userAgent: navigator.userAgent, geolocation: { getCurrentPosition } })
+  const adapter = vi.fn<AxiosAdapter>(async config => jsonResponse(config, searchResponse))
+  httpClient.defaults.adapter = adapter
+  const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/stations', component: StationSearchView }] })
+  await router.push('/stations')
+  const wrapper = mount(StationSearchView, { global: { plugins: [router, createPinia()] } })
+  await wrapper.get('#vehicle-choice').setValue('kona-electric-2020-kr')
+  expect(getCurrentPosition).toHaveBeenCalledOnce()
+  wrapper.findComponent(StationMap).vm.$emit('interact')
+  const success = getCurrentPosition.mock.calls[0]?.[0]
+  if (!success) throw new Error('GPS 요청 callback이 필요합니다')
+  success({ coords: { latitude: 35.1, longitude: 129.1, accuracy: 10, altitude: null, altitudeAccuracy: null, heading: null, speed: null, toJSON: () => ({}) }, timestamp: 0, toJSON: () => ({}) })
+  await flushPromises()
+  expect(adapter).not.toHaveBeenCalled()
+  expect(router.currentRoute.value.query.latitude).toBeUndefined()
+})
 
 it('검색 전 지도를 열고 이동한 영역으로 검색하며 응답 뒤에도 지도를 유지한다', async () => {
   const getCurrentPosition = vi.fn<Geolocation['getCurrentPosition']>()
